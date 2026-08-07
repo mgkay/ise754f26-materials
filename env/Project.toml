@@ -1,0 +1,12 @@
+[deps]
+CairoMakie = "13f3f980-e62b-5c42-98c6-ff1f3baf88f0"
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+GeoMakie = "db073c08-6b98-4ee5-b6a4-5efafb3259c6"
+HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
+JSON3 = "0f8b85d8-7281-11e9-16c2-39a750bddbf1"
+LaTeXStrings = "b964fa9f-0449-5b57-a5c2-d3ea65f4040f"
+LightOSM = "d1922b25-af4e-4ba3-84af-fe9bea896051"
+Logjam = "1d8a39d3-b73b-4a5b-b39c-beddb3604916"
+NearestNeighbors = "b8a86587-4115-5ab1-83bc-aa920d37bbce"
+Optim = "429524aa-4258-5aef-a3af-852621145aeb"
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
