@@ -3,6 +3,9 @@
 Everything you are **given** for the course. Your own work lives in a separate, private
 repository; see the syllabus under *Submitting Work*.
 
+**Start here: [SETUP.md](SETUP.md)** walks through installing everything, in order, and ends with a
+script that checks the whole installation and prints `READY`.
+
 Clone this once and pull it as the semester goes. **No GitHub account is needed to clone it.**
 
 ```
