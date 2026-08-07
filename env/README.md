@@ -1,13 +1,20 @@
 # The Fall 2026 Julia environment
 
-**Julia version: `1.12.1`** — read from `Manifest.toml`.
+**Julia version: `1.12.6`** — read from `Manifest.toml`. This is the pin for the whole
+semester.
 
 Install that version before anything else. `Manifest.toml` is only usable with a compatible
 Julia, so a mismatch here is the first thing to check when nothing works.
 
 ```
-juliaup add 1.12.1
+juliaup add 1.12.6
 ```
+
+**Do not upgrade Julia during the semester.** Julia 1.13 is expected around October, in the
+middle of the term (1.11.0 and 1.12.0 both shipped on October 8, in 2024 and 2025). Staying
+on the pinned version is what keeps your results matching the lectures, and
+`bootstrap_check.jl` compares your running Julia against this pin, so a drift is reported
+rather than silently changing your numbers.
 
 Then, from the `ISE754/materials/env` folder:
 
@@ -38,8 +45,13 @@ canonical pair.** That root environment is what `quarto render` executes every l
 against, so shipping anything else here would let a student's run disagree with the published
 numbers. Do not hand-edit them here. Regenerate by copying from the canonical pair.
 
-⚠ **Open as of 2026-08-07:** this Manifest pins **1.12.1**, while the toolchain was verified
-end to end on **1.12.6**. The pin decision is still open, and it is not resolved by editing
-this file — it is resolved by re-resolving the canonical environment at the chosen version
-and copying the result here. Until then this ships what the lectures were actually rendered
-with, which is 1.12.1.
+✓ **Pin settled 2026-08-07: Julia 1.12.6.** It was resolved the correct way, by moving the
+canonical environment and re-rendering every lecture against it, not by editing a printed
+version number. So the lectures, this Manifest, and the setup instructions all name the same
+version, and it is the one the toolchain was verified end to end on.
+
+The re-resolve moved six packages, all of them standard-library or JLL components that ship
+*with* Julia: `Downloads`, `Pkg`, `LibCURL_jll`, `MozillaCACerts_jll`, `OpenSSL_jll`,
+`p7zip_jll`. **No computational package moved** — CairoMakie, DataFrames, GeoMakie, Optim,
+Logjam and the rest are unchanged, which is why the lectures' numbers are unaffected.
+`Pkg.update()` was deliberately *not* run; only Julia moved.
