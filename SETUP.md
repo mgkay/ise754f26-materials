@@ -147,22 +147,29 @@ for several minutes: **that is the normal case, not a hang.**
 ## Step 4 — Confirm it says READY
 
 The last thing the setup does is run a check that tests eleven things and prints `READY`, or a
-numbered list of what needs attention.
+numbered list of what needs attention. It invokes each tool rather than looking for its files, says
+so when it cannot determine something instead of guessing, and installs nothing, so it is safe to
+run as often as you like.
 
-To run it again at any point, paste this into Claude Code:
+It then writes **`ISE754\bootstrap-report.txt`**, which has two parts:
+
+| Section | What it is |
+|---|---|
+| `WHAT THE SETUP DID` | Claude Code's account of the run: what it installed, what it skipped because you already had it, and anything it had to work around |
+| `CHECK OUTPUT (VERBATIM)` | The check's own output, copied in unchanged |
+
+Those are separate on purpose. The second is what your machine reported; the first is Claude Code's
+description of what it did. Telling the two apart is the habit this whole course is built on.
+
+**Open that file and paste its entire contents into Moodle before class on Thursday August 20**,
+including a `NOT READY` one. An honest report of what broke is exactly what that meeting needs.
+Copying from the file is far easier than selecting text out of the terminal.
+
+To run the check again at any point, paste this into Claude Code:
 
 ```text
-Run materials/env/bootstrap_check.jl with Julia, show me the full output, and also save that output to bootstrap-output.txt
+Run materials/env/bootstrap_check.jl with Julia, show me the full output, and update bootstrap-report.txt
 ```
-
-It invokes each tool rather than looking for its files, says so when it cannot determine something
-instead of guessing, and installs nothing, so it is safe to run as often as you like.
-
-**Paste the entire output into Moodle before class on Thursday August 20** — including a `NOT READY`
-one. An honest report of what broke is exactly what that meeting needs.
-
-Saving it to `bootstrap-output.txt` is the easy way to get it there: open that file and copy from
-it, rather than trying to select the text out of the terminal.
 
 ---
 

@@ -308,19 +308,31 @@ each. Do not skip past a failure, and do not declare the setup finished without 
 
 ---
 
-## Step 9 — Report
+## Step 9 — Write the report
 
-Finish with a short summary for the student:
+Write `ISE754/bootstrap-report.txt` with exactly these two sections, in this order. This single file
+is what the student submits, so everything needed has to be inside it.
+
+**Section 1, headed `WHAT THE SETUP DID` — your own account, in plain prose:**
 
 - Which steps **installed** something, and which were **skipped because the tool was already there**.
-- Anything **left alone deliberately** — an existing Julia, an existing default, an existing
-  extension set.
-- The **full output** of the check, and that a copy was saved to `ISE754/bootstrap-output.txt`.
-- If anything is unresolved, what it is and what the student should do next.
+- Anything **left alone deliberately**: an existing Julia, an existing default version, an existing
+  set of extensions.
+- **Anything you had to improvise** — a command that failed and was retried differently, a step
+  these instructions did not cover, a restart that was needed. Be specific and do not smooth it
+  over. This is the most useful part of the file.
+- Anything still unresolved, and what the student should do next.
 
-Then tell them: **paste the entire check output into Moodle before the second class meeting,
-Thursday August 20.** It is required but not graded. `NOT READY` is a perfectly acceptable thing to
-submit — knowing what broke, across the class, is the point.
+**Section 2, headed `CHECK OUTPUT (VERBATIM)` — the contents of `bootstrap-output.txt`, copied in
+unchanged.** Do not summarize it, reformat it, or correct it.
+
+The two are kept apart on purpose: section 2 is what the machine reported, section 1 is your account
+of what happened, and a reader has to be able to tell which is which.
+
+Finally, tell the student in the terminal where the file is, and that they should **paste its entire
+contents into Moodle before the second class meeting, Thursday August 20**. It is required but not
+graded, and `NOT READY` is a perfectly acceptable thing to submit: knowing what broke, across the
+class, is the point.
 
 ---
 
