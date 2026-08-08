@@ -339,8 +339,15 @@ distinguishes *absent* from *present but failing* and passes the tool's own mess
    spent on it. Above about 75 minutes it is a schedule problem.
 3. **Does the fetched-BOOTSTRAP path complete end to end**, and how many approvals. Untested; the
    ThinkPad is the machine to try it on.
-4. **A macOS student has not been simulated at all.** Every macOS command here is from
-   documentation, not from a run.
+4. **macOS has not been exercised at all.** Every macOS command here is from documentation, not
+   from a run, and no Mac is available. Two specific things to have a Mac student or the TA check:
+   - **Does `Pkg.instantiate()` succeed on macOS against this Manifest?** `Manifest.toml` was
+     resolved on Windows and contains a Windows-only JLL (`dlfcn_win32_jll`, pulled in by
+     `SQLite_jll` via LightOSM). Julia manifests are designed to be cross-platform and this is
+     expected to be harmless, but it has never been instantiated on a Mac. If it instead demands a
+     re-resolve, the pin is at risk and the fix is a decision, not an edit.
+   - **Does `bootstrap_check.jl` run clean on macOS?** Its only platform-specific code is the
+     `cmd /c` wrapper it uses on Windows and the `code`-command advice it gives on macOS.
 
 **Two strings not verified from documentation:**
 

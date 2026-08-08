@@ -30,8 +30,25 @@ not damage work that has nothing to do with this course.
 7. **Report each step's outcome before starting the next**, and stop on a failure rather than
    continuing past it.
 
-Throughout: Windows commands are PowerShell; macOS commands are the terminal. Use the ones matching
-the machine you are on.
+---
+
+## Step 0 — Identify the machine
+
+**Do this first and state the result**, because every step below branches on it. Do not infer the
+platform from the shape of a path or from what a command happened to do.
+
+- If Julia is already present: `julia -e 'println(Sys.MACHINE)'`
+- Otherwise: `uname -sm` on macOS, or `$env:OS` in PowerShell on Windows.
+
+Say which of these the machine is before continuing, then use **only** that column in every step:
+
+- **Windows** — commands are PowerShell.
+- **macOS** — commands are the Terminal. Apple Silicon (`arm64`) and Intel (`x86_64`) are handled
+  identically here; juliaup installs the matching build on its own, and no step below differs
+  between them.
+
+Linux is not covered by this file. It will generally work, but stop and say so rather than
+improvising, so the instructor can confirm the steps.
 
 ---
 
@@ -67,8 +84,9 @@ upgrade it.
 If the command is not found:
 
 - **Windows:** `winget install --id Git.Git -e --source winget`
-- **macOS:** `git --version` triggers the Command Line Tools prompt; accept it. Otherwise install
-  Xcode Command Line Tools with `xcode-select --install`.
+- **macOS:** `xcode-select --install`. **This opens a graphical dialog that only the student can
+  click through**, so do not sit waiting on the command. Tell them to click **Install**, accept the
+  licence, and say when it has finished. Then confirm with `git --version` yourself.
 
 **Verify:** `git --version` in a **new** terminal, since the installer changes the PATH.
 
@@ -117,7 +135,9 @@ Setting the default is correct here: there is no other Julia to disturb.
 
 ### Case C — `julia` works but `juliaup` is not found
 
-**A Julia was installed directly, outside juliaup.** juliaup's own documentation recommends
+**A Julia was installed directly, outside juliaup.** On macOS this is usually Homebrew
+(`brew install julia`) or a downloaded `.dmg`; on Windows, a downloaded installer. juliaup's own
+documentation recommends
 uninstalling a previous Julia first, *"and undo any modifications you might have made to put
 `julia` on the `PATH`"*.
 
