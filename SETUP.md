@@ -109,12 +109,15 @@ Everything for this course lives inside that `ISE754` folder.
 **What that third line does, since you should not run a file you have not been told about.** Claude
 Code asks permission before each command it runs. Left alone, the setup asks about thirty times,
 and approving thirty commands you have not been given any basis to judge teaches the wrong habit.
-That file is a short, readable **allowlist**: it pre-approves exactly the commands this setup needs
-and nothing else. Named packages, this one repository, the pinned Julia. It is
+That file is a short, readable **allowlist**: it pre-approves the commands this setup commonly
+needs, so you are not asked about each one individually. Named packages, this one repository, the
+pinned Julia. It is
 [readable here](https://github.com/mgkay/ise754f26-materials/blob/main/env/claude-settings.json),
-it applies only inside the `ISE754` folder, and **anything outside that list still stops and asks
-you.** If a prompt appears that you did not expect, that is the design working, and it deserves
-reading rather than a reflexive yes.
+and it applies only inside the `ISE754` folder.
+
+**Expect several prompts anyway.** The list does not cover everything, deliberately, and **anything
+it does not cover stops and asks you.** When one appears, that is the design working. Read it rather
+than reflexively approving, because that habit is the one this course is actually about.
 
 **You can run this from any terminal** — a plain PowerShell or Terminal window, or the one built
 into VS Code. It does not matter whether the Claude desktop app is installed, or whether VS Code is
