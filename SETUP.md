@@ -130,8 +130,13 @@ faster. If you do hit a usage limit, note that the limit is shared across models
 At the Claude Code prompt, paste this single line:
 
 ```text
-Fetch https://raw.githubusercontent.com/mgkay/ise754f26-materials/main/BOOTSTRAP.md and follow it exactly.
+Download https://raw.githubusercontent.com/mgkay/ise754f26-materials/main/BOOTSTRAP.md into this folder, then read that file and follow it exactly.
 ```
+
+It says **download it, then read it** rather than "fetch it" for a reason. Fetching a web address
+can hand back a *summary* of the page instead of the page, and a summarized instruction file is
+worse than no file at all. Downloading it first guarantees Claude Code is working from the real
+text, and leaves you a copy in your folder you can read yourself.
 
 That file is the actual setup procedure: it checks what is already installed, installs only what is
 missing, and leaves everything else alone. **You can read it first** — open the link in a browser.
@@ -381,6 +386,21 @@ distinguishes *absent* from *present but failing* and passes the tool's own mess
    precompiled dependencies. All eleven passing also confirms the folder-scoped
    `.vscode/settings.json` pin was written correctly, which had only ever been tested by hand.
    **The approval count is still unrecorded.**
+
+   **The run also found three real defects, all now fixed**, which is the return on doing it:
+
+   - **Step 5 needed a file that step 6 had not cloned yet.** The pin copies
+     `materials/env/vscode-settings.json`, but the materials were cloned one step later, so every
+     single student would have hit it. The agent worked around it by reordering; the two steps are
+     now swapped, and step 5 says why it comes first.
+   - **A stale PATH produced a false `NOT READY`.** The first check run failed checks 5 to 7
+     because the shell predated the VS Code install. The instructions warned about this for Git
+     but not for VS Code. Both step 4 and step 8 now warn explicitly, and step 8 tells the agent to
+     rule out a stale PATH before treating a failure as real.
+   - **Fetching `BOOTSTRAP.md` returned a summary rather than the file**, including invented
+     constraints that appear nowhere in it. A summarized instruction file is worse than none. The
+     pasted line in step 3 now says *download it, then read it*, which forces a verbatim read and
+     leaves the student a copy.
 4. **macOS has not been exercised at all.** Every macOS command here is from documentation, not
    from a run, and no Mac is available. Two specific things to have a Mac student or the TA check:
    - **Does `Pkg.instantiate()` succeed on macOS against this Manifest?** `Manifest.toml` was

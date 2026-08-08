@@ -119,7 +119,7 @@ juliaup add 1.12.6
 ```
 
 **Do not run `juliaup default 1.12.6` if the student already had a different default**, because
-that would change the Julia their other projects get. Step 5 pins the course to 1.12.6 without
+that would change the Julia their other projects get. Step 6 pins the course to 1.12.6 without
 touching the default. Mention that this was left alone.
 
 ### Case B — neither command is found
@@ -159,7 +159,7 @@ uninstalling a previous Julia first, *"and undo any modifications you might have
    be left exactly as it is.
 2. Install juliaup as in case B, then `juliaup add 1.12.6`. **Do not set the default.**
 3. Test whether juliaup's shim is reachable: run `julia +1.12.6 --version` in a new terminal.
-   - **It prints 1.12.6** — good. Step 5 uses `+1.12.6` as written.
+   - **It prints 1.12.6** — good. Step 6 uses `+1.12.6` as written.
    - **It fails** — the existing Julia is earlier on the PATH and shadows juliaup's shim. Get the
      real path to the pinned binary by calling juliaup's shim directly:
 
@@ -172,7 +172,7 @@ uninstalling a previous Julia first, *"and undo any modifications you might have
      ~/.juliaup/bin/julia +1.12.6 -e 'println(joinpath(Sys.BINDIR, "julia"))'
      ```
 
-     Use that absolute path in step 5 in place of `+1.12.6`. This bypasses the PATH entirely, so
+     Use that absolute path in step 6 in place of `+1.12.6`. This bypasses the PATH entirely, so
      the two installations coexist and neither is modified.
 
 ---
@@ -204,6 +204,12 @@ If `code` reports something other than "not found" — for example that VS Code 
 is a real message from VS Code, not a missing install. Report it and wait rather than installing
 over it.
 
+> ⚠ **After installing VS Code, the `code` command will not work in this shell.** The installer
+> puts it on the PATH, but a shell that was already running keeps the PATH it started with. Open a
+> **new** terminal before running `code --version` or the extension commands below. Skipping this
+> produces a false failure here, and again on checks 5 to 7 in step 8, on a machine that is
+> actually fine.
+
 **The extensions.** List what is already there first:
 
 ```
@@ -219,7 +225,28 @@ code --install-extension anthropic.claude-code
 
 ---
 
-## Step 5 — Pin Julia for this folder only
+## Step 5 — The course materials
+
+**Detect:** does `ISE754/materials` already exist?
+
+- **It does** — do not re-clone. Update it instead, from inside that folder:
+  ```
+  git pull
+  ```
+  If `git pull` reports local changes that would be overwritten, **stop and report it**. The
+  student may have edited a file they need.
+- **It does not** — clone it, from inside `ISE754`:
+  ```
+  git clone https://github.com/mgkay/ise754f26-materials materials
+  ```
+
+No GitHub account is needed; the repository is public.
+
+This comes before the pin because **the pin's source file lives inside this repository**.
+
+---
+
+## Step 6 — Pin Julia for this folder only
 
 This is what lets a student keep a different Julia for their other work.
 
@@ -240,25 +267,6 @@ Windows, backslashes in a JSON string must be doubled (`C:\\Users\\...`).
 
 The setting applies to the ISE754 folder alone. It changes nothing about Julia anywhere else on
 the machine.
-
----
-
-## Step 6 — The course materials
-
-**Detect:** does `ISE754/materials` already exist?
-
-- **It does** — do not re-clone. Update it instead, from inside that folder:
-  ```
-  git pull
-  ```
-  If `git pull` reports local changes that would be overwritten, **stop and report it**. The
-  student may have edited a file they need.
-- **It does not** — clone it, from inside `ISE754`:
-  ```
-  git clone https://github.com/mgkay/ise754f26-materials materials
-  ```
-
-No GitHub account is needed; the repository is public.
 
 ---
 
@@ -283,6 +291,12 @@ pinned versions and their results would stop matching the lectures.
 ---
 
 ## Step 8 — Verify
+
+**Run this from a terminal opened AFTER every install above finished.** The check invokes `git`,
+`julia`, `claude` and `code` by name, so a shell whose PATH predates an install reports those tools
+missing on a machine that is fine. If checks 3 to 7 fail and the tools were just installed, a stale
+PATH is the first thing to rule out: open a new terminal and run it again before treating it as a
+real failure.
 
 Run the check, using the pinned Julia, from inside `ISE754`. Save the output to a file as well as
 showing it, because the student has to paste it into Moodle and selecting it out of a terminal is
