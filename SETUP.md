@@ -89,20 +89,32 @@ Make the folder and start Claude Code inside it.
 **Windows:**
 
 ```powershell
-mkdir $env:USERPROFILE\Documents\ISE754
+mkdir $env:USERPROFILE\Documents\ISE754\.claude
 cd $env:USERPROFILE\Documents\ISE754
+Invoke-WebRequest -Uri https://raw.githubusercontent.com/mgkay/ise754f26-materials/main/env/claude-settings.json -OutFile .claude\settings.json
 claude
 ```
 
 **macOS:**
 
 ```bash
-mkdir -p ~/Documents/ISE754
+mkdir -p ~/Documents/ISE754/.claude
 cd ~/Documents/ISE754
+curl -fsSL https://raw.githubusercontent.com/mgkay/ise754f26-materials/main/env/claude-settings.json -o .claude/settings.json
 claude
 ```
 
 Everything for this course lives inside that `ISE754` folder.
+
+**What that third line does, since you should not run a file you have not been told about.** Claude
+Code asks permission before each command it runs. Left alone, the setup asks about thirty times,
+and approving thirty commands you have not been given any basis to judge teaches the wrong habit.
+That file is a short, readable **allowlist**: it pre-approves exactly the commands this setup needs
+and nothing else. Named packages, this one repository, the pinned Julia. It is
+[readable here](https://github.com/mgkay/ise754f26-materials/blob/main/env/claude-settings.json),
+it applies only inside the `ISE754` folder, and **anything outside that list still stops and asks
+you.** If a prompt appears that you did not expect, that is the design working, and it deserves
+reading rather than a reflexive yes.
 
 **You can run this from any terminal** — a plain PowerShell or Terminal window, or the one built
 into VS Code. It does not matter whether the Claude desktop app is installed, or whether VS Code is

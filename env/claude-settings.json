@@ -1,0 +1,51 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(* --version)",
+      "PowerShell(* --version)",
+      "Bash(juliaup status)",
+      "PowerShell(juliaup status)",
+      "Bash(code --list-extensions)",
+      "PowerShell(code --list-extensions)",
+      "Bash(git remote get-url origin)",
+      "PowerShell(git remote get-url origin)",
+
+      "Bash(winget install --id Git.Git *)",
+      "PowerShell(winget install --id Git.Git *)",
+      "Bash(winget install --id Julialang.Juliaup *)",
+      "PowerShell(winget install --id Julialang.Juliaup *)",
+      "Bash(winget install --id Microsoft.VisualStudioCode *)",
+      "PowerShell(winget install --id Microsoft.VisualStudioCode *)",
+
+      "Bash(juliaup add 1.12.6)",
+      "PowerShell(juliaup add 1.12.6)",
+      "Bash(juliaup default 1.12.6)",
+      "PowerShell(juliaup default 1.12.6)",
+
+      "Bash(code --install-extension julialang.language-julia)",
+      "PowerShell(code --install-extension julialang.language-julia)",
+      "Bash(code --install-extension anthropic.claude-code)",
+      "PowerShell(code --install-extension anthropic.claude-code)",
+
+      "Bash(git clone https://github.com/mgkay/ise754f26-materials *)",
+      "PowerShell(git clone https://github.com/mgkay/ise754f26-materials *)",
+      "Bash(git pull)",
+      "PowerShell(git pull)",
+      "Bash(git -C * pull)",
+      "PowerShell(git -C * pull)",
+
+      "Bash(julia +1.12.6 *)",
+      "PowerShell(julia +1.12.6 *)",
+
+      "Bash(mkdir *)",
+      "PowerShell(New-Item -ItemType Directory *)",
+      "PowerShell(Copy-Item *vscode-settings.json*)",
+      "Write(/.vscode/settings.json)",
+      "Edit(/.vscode/settings.json)",
+
+      "Bash(curl -fsSL https://raw.githubusercontent.com/mgkay/ise754f26-materials/*)",
+      "PowerShell(Invoke-WebRequest -Uri https://raw.githubusercontent.com/mgkay/ise754f26-materials/*)",
+      "WebFetch(domain:raw.githubusercontent.com)"
+    ]
+  }
+}
