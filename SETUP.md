@@ -88,10 +88,16 @@ cd ~/Documents/ISE754
 claude
 ```
 
-Everything for this course lives inside that `ISE754` folder. On first run Claude Code opens a
-browser to sign in.<sup>[3]</sup> If the browser does not open, press `c` to copy the login URL and
-paste it in yourself; if the browser shows a code rather than returning, paste that code at the
-prompt.
+Everything for this course lives inside that `ISE754` folder.
+
+On first run Claude Code opens a browser window so you can sign in.<sup>[3]</sup> **The browser is
+used only for signing in. Claude Code itself runs in the terminal**, and you return there once the
+sign-in finishes — the terminal shows `Login successful` and asks you to press Enter to
+continue.<sup>[3]</sup> Nothing about this course runs in the browser.
+
+If the browser does not open, press `c` to copy the login URL and paste it in yourself; if the
+browser shows a code rather than returning you to the terminal, paste that code at the
+`Paste code here if prompted` prompt.<sup>[3]</sup>
 
 ### Paste this in as one message
 
