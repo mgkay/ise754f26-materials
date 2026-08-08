@@ -14,8 +14,10 @@
 # attention. Three properties are deliberate and worth preserving if this file
 # is edited:
 #
-#   1. It INSTALLS NOTHING and CHANGES NOTHING. It is safe to run at any time,
-#      as often as wanted. Nothing here writes outside stdout.
+#   1. It INSTALLS NOTHING and CHANGES NOTHING about the machine. It is safe to
+#      run at any time, as often as wanted. The one file it writes is
+#      bootstrap-output.txt in the ISE754 folder, which is the report the
+#      student submits; nothing else on disk is touched.
 #   2. It INVOKES each tool rather than looking for that tool's files. A file
 #      on disk does not prove a working command; running it does.
 #   3. It reports UNKNOWN rather than guessing. A check that cannot determine

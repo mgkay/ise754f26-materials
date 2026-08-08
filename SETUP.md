@@ -53,8 +53,10 @@ access."*<sup>[1]</sup> Sign up or upgrade at <https://claude.com/pricing>.
 You will not know for certain until you sign in. If the plan does not include Claude Code, it says so
 at that point rather than failing obscurely, so do step 1 early enough to fix it before class.
 
-**2. About 15 GB of free disk space.** Most of it is Julia's package cache, which is larger than it
-sounds because it stores precompiled code and native graphics libraries.
+**2. About 15 GB of free disk space.** Julia's package cache accounts for roughly 1.5 GB of that.
+The rest is the tools themselves — the Xcode command line tools, Julia, VS Code and its
+extensions — which take more room than they sound like they should, because they ship
+precompiled code and native graphics libraries.
 
 That is all to do in advance. **You do not need to install Git, Julia, or VS Code yourself.**
 
@@ -291,6 +293,11 @@ Expected on at least some machines. The loop is short:
    ```
 
 3. **Re-run the check.**
+
+> **One exception to "ask Claude Code to fix it":** if the failing item is the package check,
+> ask only for `Pkg.instantiate()`. Never `Pkg.update()`, `Pkg.add()`, or `Pkg.resolve()` —
+> those move you off the pinned versions and your results stop matching the lectures. A fresh
+> session has not read `BOOTSTRAP.md` and will not know this unless you say it.
 
 That loop — read the error, act on it, confirm the result — is the discipline the whole course
 applies to computational work. Doing it here first is deliberate.
