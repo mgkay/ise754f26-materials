@@ -369,10 +369,18 @@ distinguishes *absent* from *present but failing* and passes the tool's own mess
    as a fallback. The same search exposed **`Julialang.Julia`** on the winget source — a direct
    install with no version management, and the likely origin of the three competing Julia entries
    found on that machine. Both files now warn against it by name.
-2. **Wall-clock time, cold, start to `READY`.** Nobody has this number and the first class period is
-   spent on it. Above about 75 minutes it is a schedule problem.
-3. **Does the fetched-BOOTSTRAP path complete end to end**, and how many approvals. Untested; the
-   ThinkPad is the machine to try it on.
+2. ~~Wall-clock time, cold, start to `READY`.~~ **Resolved 2026-08-08: 26 minutes**, cold, on a
+   stripped Windows 11 ThinkPad. Comfortably under the 75-minute threshold. **But that is one
+   machine on a home connection.** Twelve students pulling roughly 350 packages simultaneously over
+   classroom wifi is a different measurement, and that contention is now the largest remaining
+   schedule risk for class one. It degrades gracefully, since the submission is due before class 2
+   rather than class 1, but the in-room plan should not budget 26 minutes per student.
+3. ~~Does the fetched-BOOTSTRAP path complete end to end?~~ **Resolved 2026-08-08: yes, `READY`, all
+   eleven checks.** It installed Git 2.55.0.windows.3, juliaup 1.21.0 **from the winget source**,
+   Julia 1.12.6 set as default, VS Code 1.130.0, both extensions, the materials clone, and 351
+   precompiled dependencies. All eleven passing also confirms the folder-scoped
+   `.vscode/settings.json` pin was written correctly, which had only ever been tested by hand.
+   **The approval count is still unrecorded.**
 4. **macOS has not been exercised at all.** Every macOS command here is from documentation, not
    from a run, and no Mac is available. Two specific things to have a Mac student or the TA check:
    - **Does `Pkg.instantiate()` succeed on macOS against this Manifest?** `Manifest.toml` was
@@ -382,6 +390,10 @@ distinguishes *absent* from *present but failing* and passes the tool's own mess
      re-resolve, the pin is at risk and the fix is a decision, not an edit.
    - **Does `bootstrap_check.jl` run clean on macOS?** Its only platform-specific code is the
      `cmd /c` wrapper it uses on Windows and the `code`-command advice it gives on macOS.
+5. **The already-installed branches are still untested**, and they are the ones most students will
+   actually take. The ThinkPad run was a bare machine, so step 3 case A and case C, the extension
+   skip, and `git pull` in place of a clone have never executed. **Re-running the bootstrap on that
+   same laptop now exercises all of them**, and with the depot warm it is a short test.
 
 **Two strings not verified from documentation:**
 
