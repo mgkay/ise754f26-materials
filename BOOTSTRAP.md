@@ -126,8 +126,15 @@ touching the default. Mention that this was left alone.
 
 Nothing is installed, so there is nothing to conflict with.
 
-- **Windows:** `winget install --name Julia --id 9NJNWW8PVKMN -e -s msstore`
+- **Windows:** `winget install --id Julialang.Juliaup -e --source winget`
 - **macOS:** `curl -fsSL https://install.julialang.org | sh`
+
+> ⚠ **Install juliaup, not Julia.** `winget search Julia` also lists **`Julialang.Julia`**, which is
+> a direct Julia install with no version management. Installing that one produces exactly the PATH
+> conflict that case C below exists to work around. The identifier must be **`Julialang.Juliaup`**.
+>
+> The Microsoft Store package `9NJNWW8PVKMN` is also juliaup and works as a fallback if the winget
+> source fails, but it may require accepting Store terms interactively.
 
 Then, in a new terminal:
 

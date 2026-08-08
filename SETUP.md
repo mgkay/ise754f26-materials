@@ -229,8 +229,10 @@ Windows;<sup>[10]</sup> on macOS, `xcode-select --install`.
 then confirm `code --version`.<sup>[6]</sup>
 
 **Julia, via juliaup.** `juliaup --version`. If missing:
-`winget install --name Julia --id 9NJNWW8PVKMN -e -s msstore` on Windows, or
-`curl -fsSL https://install.julialang.org | sh` on macOS.<sup>[5]</sup> Then `juliaup add 1.12.6`.
+`winget install --id Julialang.Juliaup -e --source winget` on Windows, or
+`curl -fsSL https://install.julialang.org | sh` on macOS.<sup>[5]</sup> **Install juliaup, not
+Julia** — `Julialang.Julia` is a direct install with no version management and causes PATH
+conflicts. Then `juliaup add 1.12.6`.
 Add `juliaup default 1.12.6` **only if you had no Julia before**. Confirm with
 `julia +1.12.6 --version`, which should print exactly `julia version 1.12.6`.
 
@@ -332,9 +334,13 @@ distinguishes *absent* from *present but failing* and passes the tool's own mess
 
 **Still open:**
 
-1. **Does `winget … -s msstore` prompt for Microsoft Store terms?** If it needs an interactive
-   agreement, the fallback command becomes the primary Windows route. Also worth checking whether
-   `winget search Julia` offers Julia from the `winget` source, which would avoid the Store entirely.
+1. ~~Does `winget … -s msstore` prompt for Microsoft Store terms?~~ **Resolved 2026-08-08.**
+   `winget search Julia` on the ThinkPad returned **`Julialang.Juliaup` 1.21.0.0 from the `winget`
+   source**, so the Microsoft Store is not needed and the terms prompt cannot arise. Both files now
+   use `winget install --id Julialang.Juliaup -e --source winget`, with the Store package kept only
+   as a fallback. The same search exposed **`Julialang.Julia`** on the winget source — a direct
+   install with no version management, and the likely origin of the three competing Julia entries
+   found on that machine. Both files now warn against it by name.
 2. **Wall-clock time, cold, start to `READY`.** Nobody has this number and the first class period is
    spent on it. Above about 75 minutes it is a schedule problem.
 3. **Does the fetched-BOOTSTRAP path complete end to end**, and how many approvals. Untested; the
