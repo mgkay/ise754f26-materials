@@ -81,7 +81,12 @@ git --version
 If that prints a version, Git is present. **Skip the install.** Any version is acceptable; do not
 upgrade it.
 
-If the command is not found:
+**On macOS, `git` may exist as a placeholder that is not a working Git.** A fresh Mac ships a stub
+that, when invoked, opens the Command Line Tools install dialog instead of printing a version. So
+treat "the command exists" as proving nothing here: only a printed version counts, and a dialog
+appearing is the same case as not-found below.
+
+If the command is not found, or opened that dialog:
 
 - **Windows:** `winget install --id Git.Git -e --source winget`
 - **macOS:** `xcode-select --install`. **This opens a graphical dialog that only the student can
@@ -179,9 +184,14 @@ and go straight to the extensions below.
 If the command is not found:
 
 - **Windows:** `winget install --id Microsoft.VisualStudioCode -e --source winget`
-- **macOS:** download from <https://code.visualstudio.com/>, then open VS Code, open the Command
-  Palette with **Cmd+Shift+P**, type `shell command`, and run
-  **Shell Command: Install 'code' command in PATH**. Open a new terminal and confirm `code --version`.
+- **macOS: do not conclude VS Code is missing.** The Windows installer puts `code` on the PATH; the
+  macOS installer **does not**, so `code --version` fails routinely on Macs where VS Code is
+  installed correctly. Check for `/Applications/Visual Studio Code.app` first.
+  - **It exists** — only the command is missing. This is a **graphical step you cannot perform**:
+    ask the student to open VS Code, press **Cmd+Shift+P**, type `shell command`, run
+    **Shell Command: Install 'code' command in PATH**, then open a new terminal and tell you when
+    it is done. Confirm with `code --version` yourself.
+  - **It does not exist** — install from <https://code.visualstudio.com/>, then do the step above.
 
 If `code` reports something other than "not found" — for example that VS Code is mid-update — that
 is a real message from VS Code, not a missing install. Report it and wait rather than installing
