@@ -1,0 +1,11 @@
+// ISE 754 — Fall 2026 workspace settings.
+//
+// Copied to ISE754/.vscode/settings.json during setup. It applies ONLY to the
+// ISE754 folder, so it does not touch Julia anywhere else on your machine.
+//
+// "julia.executablePath" accepts a juliaup channel written as "+<channel>".
+// Pinning it here means VS Code runs the course on Julia 1.12.6 even if your
+// default Julia is a different version for other work.
+{
+  "julia.executablePath": "+1.12.6"
+}

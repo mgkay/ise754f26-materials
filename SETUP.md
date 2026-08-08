@@ -1,21 +1,26 @@
 # ISE 754 — Setting up your computer
 
-**Fall 2026.** Two things to do yourself. Everything else is installed for you, and a script checks
-the result. Done in the first class meeting, with help in the room.
+**Fall 2026.** Four short steps. Claude Code does the installing; a script checks the result.
+Done in the first class meeting, with help in the room.
 
 The check prints either `READY` or the specific reason it is not. **Paste that output into Moodle
-before the second class meeting, Thursday August 20.** It is required but not graded: it records that
-the machine works, and the list of what broke across the class shapes what that meeting covers.
+before the second class meeting, Thursday August 20.** It is required but not graded: it records
+that the machine works, and the list of what broke across the class shapes what that meeting covers.
 
-Every command, menu name, and link below was taken from official documentation on **2026-08-07** and
-is cited at the end. Anything not verified from documentation says so.
+**Already have some of this installed?** That is expected and it is handled. Nothing here removes,
+downgrades, or reconfigures software already on the machine — including an existing Julia, which is
+left exactly as it is. Each step checks first and skips what is already working.
+
+Every command, menu name, and link below was taken from official documentation on **2026-08-08** and
+is cited at the end.
 
 ---
 
 ## Step 0 — Before class: two things
 
-**1. A Claude subscription.** Claude Code requires a **Pro, Max, Team, or Enterprise** plan.<sup>[1]</sup>
-The free plan does not include it. Sign up or upgrade at <https://claude.com/pricing>.
+**1. A Claude subscription.** The documentation is explicit: *"Claude Code requires a Pro, Max,
+Team, Enterprise, or Console account. The free Claude.ai plan does not include Claude Code
+access."*<sup>[1]</sup> Sign up or upgrade at <https://claude.com/pricing>.
 
 > ⚠ **Choose the monthly option, not the annual one.** Pro is **$20 billed monthly**, or $17 per
 > month if you pay **$200 up front for the year**.<sup>[8]</sup> The annual plan saves $3 a month and
@@ -31,23 +36,34 @@ The free plan does not include it. Sign up or upgrade at <https://claude.com/pri
 | Nothing yet | Sign up for **Pro, monthly** |
 
 You will not know for certain until you sign in. If the plan does not include Claude Code, it says so
-at that point rather than failing obscurely — so do step 1 early enough to fix it before class.
+at that point rather than failing obscurely, so do step 1 early enough to fix it before class.
 
 **2. About 15 GB of free disk space.** Most of it is Julia's package cache, which is larger than it
 sounds because it stores precompiled code and native graphics libraries.
 
-That is all. **You do not need to install Git, Julia, or VS Code yourself** — Claude Code installs
-them in step 1.
+That is all to do in advance. **You do not need to install Git, Julia, or VS Code yourself.**
 
 ---
 
-## Step 1 — Install Claude Code, then hand it one prompt
+## Step 1 — Get the `claude` command
 
-### Install it
+**Skip this step if you already have it.** Open a terminal and run:
 
-Open a terminal. On **Windows**, press the Windows key, type `PowerShell`, and press Enter. On
-**macOS**, press Cmd+Space, type `Terminal`, and press Enter. If you have never used a terminal, this
-is the only point in the course where you meet a bare one, and it is two lines.<sup>[2]</sup>
+```
+claude --version
+```
+
+If that prints a version such as `2.1.224 (Claude Code)`, you are done with this step — **go to
+step 2.**
+
+> **Having the Claude desktop app is not the same thing.** The desktop app and the command line
+> tool are separate installs.<sup>[1]</sup> They share one login, so if you have the app you are
+> already signed in, but you still need the command below. Installing it does not affect the app,
+> and the two work side by side.
+
+To open a terminal: on **Windows**, press the Windows key, type `PowerShell`, and press Enter. On
+**macOS**, press Cmd+Space, type `Terminal`, and press Enter. If you have never used a terminal,
+this is the only point in the course where you meet a bare one.<sup>[2]</sup>
 
 **Windows (PowerShell):**
 
@@ -61,16 +77,14 @@ irm https://claude.ai/install.ps1 | iex
 curl -fsSL https://claude.ai/install.sh | bash
 ```
 
-Confirm it worked:<sup>[1]</sup>
+Then confirm with `claude --version`.<sup>[1]</sup> If it still says command not found, open a
+**new** terminal window first, since the installer changes the PATH.
 
-```
-claude --version
-```
+---
 
-That prints a version such as `2.1.211 (Claude Code)`. If it says command not found, open a **new**
-terminal window first, since the installer changes the PATH.
+## Step 2 — Start Claude Code in the course folder
 
-### Make the course folder and start Claude Code
+Make the folder and start Claude Code inside it.
 
 **Windows:**
 
@@ -90,6 +104,10 @@ claude
 
 Everything for this course lives inside that `ISE754` folder.
 
+**You can run this from any terminal** — a plain PowerShell or Terminal window, or the one built
+into VS Code. It does not matter whether the Claude desktop app is installed, or whether VS Code is
+already open with other projects. The `claude` command is independent of both.
+
 On first run Claude Code opens a browser window so you can sign in.<sup>[3]</sup> **The browser is
 used only for signing in. Claude Code itself runs in the terminal**, and you return there once the
 sign-in finishes — the terminal shows `Login successful` and asks you to press Enter to
@@ -99,61 +117,69 @@ If the browser does not open, press `c` to copy the login URL and paste it in yo
 browser shows a code rather than returning you to the terminal, paste that code at the
 `Paste code here if prompted` prompt.<sup>[3]</sup>
 
-### Paste this in as one message
+---
+
+## Step 3 — Give it one instruction
+
+At the Claude Code prompt, paste this single line:
 
 ```text
-Set up this machine for ISE 754. Work through these in order. After each one, tell me
-whether it succeeded before you continue, and stop if one fails rather than skipping ahead.
-
-1. Install Git.
-2. Install Visual Studio Code.
-3. Install juliaup, then run `juliaup add 1.12.6` and `juliaup default 1.12.6`.
-   This course is pinned to Julia 1.12.6. Do not install or select any other version.
-4. On macOS only: make the `code` command available on the PATH, then confirm that
-   `code --version` works in a new shell.
-5. Install the VS Code extension `julialang.language-julia`.
-6. Install the VS Code extension `anthropic.claude-code`.
-7. Clone https://github.com/mgkay/ise754f26-materials into a subfolder named `materials`
-   inside the folder you are working in.
-8. Instantiate the Julia environment in `materials/env` WITHOUT changing any package
-   versions: activate that project and instantiate it, and do not run an update. This
-   downloads and precompiles the packages and takes several minutes on a first run.
-9. Create `hello.jl` in this folder, printing "Hello, World!", and run it with Julia.
-
-Then stop and report which of the nine steps succeeded.
+Fetch https://raw.githubusercontent.com/mgkay/ise754f26-materials/main/BOOTSTRAP.md and follow it exactly.
 ```
 
-**Expect to approve a lot of commands, and expect one long silence.** Claude Code starts in
-**Manual** mode, proposing each command and waiting.<sup>[1]</sup> That is roughly a dozen approvals.
-Step 8 then sits with no output for several minutes while it precompiles: **that is the normal case,
-not a hang.** Reading what it proposes before approving is a habit this course is built around.
+That file is the actual setup procedure: it checks what is already installed, installs only what is
+missing, and leaves everything else alone. **You can read it first** — open the link in a browser.
+It is plain text, and reading what you are about to run is a habit this course is built around.
+
+**Expect to approve a number of commands, and expect one long silence.** Claude Code starts in
+**Manual** mode, proposing each command and waiting for you.<sup>[1]</sup> How many approvals
+depends on how much is already installed. Setting up the Julia environment then sits with no output
+for several minutes: **that is the normal case, not a hang.**
 
 ---
 
-## Step 2 — Move into VS Code
+## Step 4 — Confirm it says READY
 
-From here on, Claude Code runs inside the editor rather than in a bare terminal.
+The last thing the setup does is run a check that tests eleven things and prints `READY`, or a
+numbered list of what needs attention. If you want to run it again later, ask Claude Code:
 
-Open the `ISE754` folder in VS Code. Open its integrated terminal with **Ctrl+`** (Cmd+` on macOS),
-and run `claude` there. Same tool, same session behaviour, but now beside your files and the Julia
-REPL.
+> Run `materials/env/bootstrap_check.jl` with Julia and show me the full output.
+
+It invokes each tool rather than looking for its files, says so when it cannot determine something
+instead of guessing, and installs nothing, so it is safe to run as often as you like.
+
+**Paste the entire output into Moodle before class on Thursday August 20** — including a `NOT READY`
+one. An honest report of what broke is exactly what that meeting needs.
+
+---
+
+## Working in VS Code
+
+From here on, Claude Code runs inside the editor rather than in a bare terminal. Open the `ISE754`
+folder in VS Code, open its integrated terminal with **Ctrl+`** (Cmd+` on macOS), and run `claude`
+there. Same tool, same behaviour, now beside your files and the Julia REPL.
 
 To start Julia itself, open the **Command Palette** and run **Julia: Start REPL**.<sup>[4]</sup>
 
 ---
 
-## Step 3 — Run the check
+## If you already had Julia installed
 
-Everything so far can *appear* to have worked on a machine that is not ready. This is the step that
-settles it. Ask Claude Code:
+Nothing is removed and your default Julia is not changed. The course is pinned to Julia **1.12.6**,
+and the setup pins it **for the `ISE754` folder only**, by writing `julia.executablePath` into that
+folder's VS Code settings. The Julia VS Code extension accepts a juliaup channel as that value, and
+the setting is `machine-overridable`, which VS Code defines as *"Machine specific settings that can
+be overridden by workspace or folder settings."*<sup>[9]</sup>
 
-> Run `materials/env/bootstrap_check.jl` with Julia and show me the full output.
+So Julia in the ISE754 folder is 1.12.6, and Julia everywhere else on your machine is whatever it
+was before. If you have a project that needs a different version, it keeps working.
 
-It tests eleven things and prints `READY`, or a numbered list of what needs attention. It invokes each
-tool rather than looking for its files, says so when it cannot determine something instead of
-guessing, and installs nothing.
+One limit worth knowing: that setting governs the Julia the extension starts. If you type `julia`
+into a bare terminal you still get your machine's default. The check reports the version it actually
+gets, so a mismatch is named rather than silently changing your results.
 
-**Paste the entire output into Moodle before class on Thursday August 20.**
+**Do not upgrade Julia during the semester**, even if something offers to. Julia 1.13 is expected
+around October, mid-term, and moving to it would change results that are meant to match the lectures.
 
 ---
 
@@ -162,16 +188,18 @@ guessing, and installs nothing.
 Expected on at least some machines. The loop is short:
 
 1. **Read the named reason.** The script does not say "failed"; it says which of the eleven checks
-   failed and why.
+   failed and why, and what to do about it.
 2. **Ask Claude Code to fix that one thing**, quoting the line — for example, *"bootstrap_check
    reports the Julia VS Code extension is not installed. Install it and confirm."*
 3. **Re-run the check.**
 
-That loop — read the error, act on it, confirm the result — is the discipline the whole course applies
-to computational work. Doing it here first is deliberate.
+That loop — read the error, act on it, confirm the result — is the discipline the whole course
+applies to computational work. Doing it here first is deliberate.
 
 For installation problems specifically, `claude doctor` prints read-only diagnostics about the
-install and settings without starting a session.<sup>[1]</sup>
+install and settings without starting a session.<sup>[1]</sup> If `claude` behaves oddly and you
+have installed it more than once over the years, the documentation has a **Check for conflicting
+installations** section for exactly that.<sup>[1]</sup>
 
 **If it will not work at all, say so by the second class meeting rather than working around it
 silently.** There is no penalty, and completion is recorded when the problem is resolved. A
@@ -182,42 +210,40 @@ lecture from the third onward assumes a working toolchain.
 
 A Chromebook or an iPad cannot run this: Julia and VS Code need a desktop operating system.
 
-**Do not upgrade Julia during the semester**, even if something offers to. Julia 1.13 is expected
-around October, mid-term, and moving to it would change results that are meant to match the lectures.
-The check compares your running version against the pin, so a drift is reported rather than silently
-changing your numbers.
-
-**If you already had Julia installed**, say so when you run the setup prompt. A previous installation
-can leave an older `julia` earlier on the PATH, so `juliaup default` does not win. The check catches
-this, because it invokes `julia` and reports the version it actually gets rather than the version that
-was requested.
-
 ---
 
 ## Fallback: doing it by hand
 
-If the single prompt stalls and the recovery loop is not getting anywhere, each piece can be done
-directly.
+If the setup stalls and the recovery loop is not getting anywhere, each piece can be done directly.
+Check first in every case, and skip what is already present.
 
-**Git.** <https://git-scm.com/downloads/win> on Windows; macOS includes it.
+**Git.** `git --version`. If missing: `winget install --id Git.Git -e --source winget` on
+Windows;<sup>[10]</sup> on macOS, `xcode-select --install`.
 
-**Visual Studio Code.** <https://code.visualstudio.com/>
+**Visual Studio Code.** `code --version`. If missing:
+`winget install --id Microsoft.VisualStudioCode -e --source winget` on Windows,<sup>[10]</sup> or
+<https://code.visualstudio.com/>.
 
-**Julia, via juliaup.** Windows: `winget install --name Julia --id 9NJNWW8PVKMN -e -s msstore`.
-macOS: `curl -fsSL https://install.julialang.org | sh`.<sup>[5]</sup> Then `juliaup add 1.12.6` and
-`juliaup default 1.12.6`. Confirm with `julia --version`, which should print exactly
-`julia version 1.12.6`.
+**macOS: the `code` command.** Open VS Code, open the Command Palette with **Cmd+Shift+P**, type
+`shell command`, and run **Shell Command: Install 'code' command in PATH**. Restart the terminal,
+then confirm `code --version`.<sup>[6]</sup>
 
-**macOS: the `code` command.** Open VS Code, open the **Command Palette** with **Cmd+Shift+P**, type
-`shell command`, and run **Shell Command: Install 'code' command in PATH**. Restart the terminal, then
-confirm `code --version`.<sup>[6]</sup>
+**Julia, via juliaup.** `juliaup --version`. If missing:
+`winget install --name Julia --id 9NJNWW8PVKMN -e -s msstore` on Windows, or
+`curl -fsSL https://install.julialang.org | sh` on macOS.<sup>[5]</sup> Then `juliaup add 1.12.6`.
+Add `juliaup default 1.12.6` **only if you had no Julia before**. Confirm with
+`julia +1.12.6 --version`, which should print exactly `julia version 1.12.6`.
 
-**The extensions.** `code --install-extension julialang.language-julia` and
+**The extensions.** `code --list-extensions` to see what you have, then install only what is
+missing: `code --install-extension julialang.language-julia` and
 `code --install-extension anthropic.claude-code`.<sup>[7]</sup>
 
+**The folder pin.** Copy `materials/env/vscode-settings.json` to `ISE754/.vscode/settings.json`.
+
 **The materials.** From inside `ISE754`:
-`git clone https://github.com/mgkay/ise754f26-materials materials`. No GitHub account needed. Two
-folders end up side by side, neither inside the other:
+`git clone https://github.com/mgkay/ise754f26-materials materials`. No GitHub account needed. If the
+folder already exists, `git pull` inside it instead. Two folders end up side by side, neither inside
+the other:
 
 ```
 ISE754/
@@ -225,8 +251,8 @@ ISE754/
 └── work/          your own repository, added in the week of August 25
 ```
 
-Side by side rather than nested because where you are standing when you run something decides whether
-it works.
+Side by side rather than nested because where you are standing when you run something decides
+whether it works.
 
 **The Julia environment.** At the `julia>` prompt:
 
@@ -243,56 +269,78 @@ from the ones the lectures were built against.
 
 ## Sources
 
-Taken from these pages on **2026-08-07**.
+Taken from these pages on **2026-08-08**.
 
 1. [Claude Code setup](https://code.claude.com/docs/en/setup) — the install commands for Windows
-   PowerShell and macOS, the subscription requirement, `claude --version`, `claude doctor`, **Manual**
-   permission mode, and that Claude Code uses PowerShell as its shell tool when Git for Windows is
-   absent.
+   PowerShell and macOS, the subscription requirement, that the desktop app is a separate download,
+   `claude --version`, `claude doctor`, the conflicting-installations section, and **Manual**
+   permission mode.
 2. [Terminal guide](https://code.claude.com/docs/en/terminal-guide) — for anyone who has not used a
    terminal before.
 3. [Authentication](https://code.claude.com/docs/en/authentication) — first-run browser login, the
    `c` shortcut to copy the login URL, and the paste-a-code fallback.
 4. [Running code — Julia VS Code documentation](https://www.julia-vscode.org/docs/stable/userguide/runningcode/)
    — the **Julia: Start REPL** command.
-5. [juliaup](https://github.com/JuliaLang/juliaup) — the `winget` and `curl` install commands and
-   `juliaup add` / `juliaup default`.
+5. [juliaup](https://github.com/JuliaLang/juliaup) — the `winget` and `curl` install commands,
+   `juliaup add` / `default` / `status`, and the `julia +channel` selector.
 6. [Visual Studio Code on macOS](https://code.visualstudio.com/docs/setup/mac) — **Cmd+Shift+P**,
    `shell command`, and **Shell Command: Install 'code' command in PATH**.
 7. [Julia in Visual Studio Code](https://code.visualstudio.com/docs/languages/julia) — the extension
    identifier `julialang.language-julia`.
 8. [Claude pricing](https://claude.com/pricing) — Pro at $20 monthly or $17 per month billed
    annually at $200 up front, and that Pro and Max both include Claude Code.
+9. [VS Code configuration scopes](https://code.visualstudio.com/api/references/contribution-points)
+   — the definition of `machine-overridable`, the scope `julia.executablePath` declares.
+10. [winget install](https://learn.microsoft.com/en-us/windows/package-manager/winget/install) — the
+    `Git.Git` and `Microsoft.VisualStudioCode` package identifiers.
 
 ---
 
 ## Notes for review — delete before this reaches students
 
-**The route changed on 2026-08-07, deliberately.** Earlier drafts followed the TA's design, which
-opened with the Claude **desktop app** and its Code tab. This version uses the **CLI, run in VS
-Code's integrated terminal**, for four reasons: the instructor uses the CLI and can therefore support
-it in a classroom, whereas he has never run the desktop app; the desktop app turned out to be
-single-use scaffolding, since the TA's own step 4 already moved to "Claude Code in an editor-area
-terminal"; students are in VS Code anyway for the Julia REPL; and Manual mode still shows diffs and
-waits for approval in the terminal, so the review discipline survives. **The TA's substantive
-contribution is untouched** — the granular-check insight and `bootstrap_check.jl` are what make
-collapsing the install steps safe.
+**Restructured 2026-08-08 to stop assuming a bare machine.** The previous version conflated
+"install Claude Code" and "paste the setup prompt" into one step, so anyone who already had Claude
+Code skipped to the next step and never saw the prompt. It also installed Git, VS Code and juliaup
+unconditionally. Both are fixed: step 1 is skippable on a `claude --version` check, and the
+procedure moved out of an inline pasted prompt into
+[`BOOTSTRAP.md`](BOOTSTRAP.md), which detects before installing.
+
+**Why a fetched file rather than a pasted prompt.** The paste is now one line that never changes,
+the procedure can be arbitrarily detailed without making this page unreadable, and a case
+discovered in week one is fixed by editing one file in the repository rather than by twelve
+students re-copying anything. It matches the pattern already used for course instructions.
+
+**The existing-Julia problem is solved by a folder-scoped pin, not by argument.** `.vscode/settings.json`
+in the `ISE754` folder sets `julia.executablePath` to `+1.12.6`. Verified: the extension documents
+that the setting accepts a juliaup channel in exactly that form, and VS Code documents
+`machine-overridable` as workspace-overridable. Because the value is a channel name and not a path,
+the same file is correct on every machine and is version-controlled at
+`env/vscode-settings.json`. `BOOTSTRAP.md` step 3 case C carries the absolute-path fallback for a
+directly-installed Julia that shadows juliaup's shim on the PATH — the case that actually occurred
+on the instructor's ThinkPad.
 
 **Verified on Windows 2026-08-07, on a stripped ThinkPad:** with Git uninstalled, `claude` started,
 executed a command, and **used PowerShell as its shell tool**, exactly as the CLI documentation
-describes. That is why Git moved out of step 0 and into the setup prompt, and why the student's manual
-work is now two items rather than three. The desktop app may genuinely require Git on Windows; that
-remains untested and no longer matters.
+describes. That is why Git is not a student prerequisite.
+
+**`bootstrap_check.jl` was written 2026-08-08** and run against the instructor's desktop. It uses
+only the Julia standard library, so it runs before the course environment is instantiated. Two real
+defects surfaced on that first run and are fixed: it reported a mid-update VS Code as "the `code`
+command was not found", which is the wrong diagnosis and would have sent a student to reinstall
+something they already had; and it crashed on a `SubString`/`String` signature mismatch. It now
+distinguishes *absent* from *present but failing* and passes the tool's own message through.
 
 **Still open:**
 
-1. **Does `winget … -s msstore` prompt for Microsoft Store terms?** Microsoft's own documentation
-   confirms Store agreement prompts are real winget behaviour. If it needs an interactive agreement,
-   the fallback command becomes the primary Windows route. Also worth checking whether
+1. **Does `winget … -s msstore` prompt for Microsoft Store terms?** If it needs an interactive
+   agreement, the fallback command becomes the primary Windows route. Also worth checking whether
    `winget search Julia` offers Julia from the `winget` source, which would avoid the Store entirely.
 2. **Wall-clock time, cold, start to `READY`.** Nobody has this number and the first class period is
    spent on it. Above about 75 minutes it is a schedule problem.
-3. **Does the one-prompt path complete**, and how many approvals.
+3. **Does the fetched-BOOTSTRAP path complete end to end**, and how many approvals. Untested; the
+   ThinkPad is the machine to try it on.
+4. **A macOS student has not been simulated at all.** Every macOS command here is from
+   documentation, not from a run.
 
 **Two strings not verified from documentation:**
 
