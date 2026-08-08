@@ -193,6 +193,46 @@ Run materials/env/bootstrap_check.jl with Julia, show me the full output, and up
 
 ---
 
+## How Claude Code asks permission
+
+Claude Code pauses and asks before it runs a command. How often it pauses depends on its
+**permission mode**, and the mode changed for everyone in August 2026, so what you see may not match
+what an older guide describes.
+
+**From August 14, 2026, new sessions on Pro, Max, and Team plans start in auto mode.**<sup>[13]</sup>
+In auto mode, a separate classifier model reviews each action before it runs and blocks anything
+that "escalates beyond your request, targets unrecognized infrastructure, or appears driven by
+hostile content Claude read."<sup>[13]</sup> Routine commands go through without asking. So the
+setup may run start to finish with very few prompts, or none.
+
+**You may see a one-time dialog** asking whether to switch to auto mode. That is this change
+arriving, not something the course did.<sup>[14]</sup> Either answer is fine here.
+
+**To see or change the mode:** the status bar shows it, as `⏸ manual mode on` or `⏵⏵ auto mode on`.
+Press `Shift+Tab` to cycle.<sup>[13]</sup>
+
+### Why the course does not rely on those prompts
+
+It would be easy to assume the permission prompt is where you check the tool's work. It is not, and
+Anthropic's own figures are the reason: users approve **97% of permission prompts**, and in a
+controlled study human reviewers caught a dangerous command **13.6% of the time** while auto mode
+blocked **89%** of the same commands.<sup>[14]</sup> A checkpoint you pass 97% of the time is not a
+checkpoint.
+
+So this course puts verification where it can actually be done:
+
+- `bootstrap_check.jl` verifies the machine **mechanically**, by invoking each tool, rather than by
+  asking whether it feels installed.
+- Every computed result is checked against something independent, which is why the lectures print
+  their numbers and why your script has to reproduce them.
+- The in-class examinations are worked by hand, on paper.
+
+Reading a prompt before approving is still a good habit, and worth keeping. It is simply not what
+this course is testing. Note too that auto mode "reduces permission prompts but does not guarantee
+safety,"<sup>[13]</sup> so on anything consequential outside this course, read before approving.
+
+---
+
 ## Working in VS Code
 
 From here on, Claude Code runs inside the editor rather than in a bare terminal. Open the `ISE754`
@@ -347,6 +387,11 @@ Taken from these pages on **2026-08-08**.
     that the default resolves to the recommended model for your account type.
 12. [Manage costs](https://code.claude.com/docs/en/costs) — that usage windows are shared across
     models, so switching with `/model` does not restore access after a limit.
+13. [Choose a permission mode](https://code.claude.com/docs/en/permission-modes) — the August 14,
+    2026 default change, what the auto-mode classifier blocks, the `Shift+Tab` cycle and the status
+    bar labels, and the caution that auto mode does not guarantee safety.
+14. [Auto mode default in Claude Code](https://claude.com/blog/auto-mode-default-in-claude-code) —
+    the 97% approval figure, the 13.6% versus 89% study result, and the one-time switch prompt.
 
 ---
 
