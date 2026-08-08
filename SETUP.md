@@ -117,6 +117,12 @@ If the browser does not open, press `c` to copy the login URL and paste it in yo
 browser shows a code rather than returning you to the terminal, paste that code at the
 `Paste code here if prompted` prompt.<sup>[3]</sup>
 
+**Which model to use: whichever it starts on.** Claude Code opens on the model recommended for your
+account type, and this course needs nothing else.<sup>[11]</sup> You can change it with `/model`,
+but there is no reason to, and moving to a larger model uses up your plan's limits considerably
+faster. If you do hit a usage limit, note that the limit is shared across models, so switching with
+`/model` will not restore access; wait for the reset time the message gives you.<sup>[12]</sup>
+
 ---
 
 ## Step 3 — Give it one instruction
@@ -141,15 +147,22 @@ for several minutes: **that is the normal case, not a hang.**
 ## Step 4 — Confirm it says READY
 
 The last thing the setup does is run a check that tests eleven things and prints `READY`, or a
-numbered list of what needs attention. If you want to run it again later, ask Claude Code:
+numbered list of what needs attention.
 
-> Run `materials/env/bootstrap_check.jl` with Julia and show me the full output.
+To run it again at any point, paste this into Claude Code:
+
+```text
+Run materials/env/bootstrap_check.jl with Julia, show me the full output, and also save that output to bootstrap-output.txt
+```
 
 It invokes each tool rather than looking for its files, says so when it cannot determine something
 instead of guessing, and installs nothing, so it is safe to run as often as you like.
 
 **Paste the entire output into Moodle before class on Thursday August 20** — including a `NOT READY`
 one. An honest report of what broke is exactly what that meeting needs.
+
+Saving it to `bootstrap-output.txt` is the easy way to get it there: open that file and copy from
+it, rather than trying to select the text out of the terminal.
 
 ---
 
@@ -189,8 +202,12 @@ Expected on at least some machines. The loop is short:
 
 1. **Read the named reason.** The script does not say "failed"; it says which of the eleven checks
    failed and why, and what to do about it.
-2. **Ask Claude Code to fix that one thing**, quoting the line — for example, *"bootstrap_check
-   reports the Julia VS Code extension is not installed. Install it and confirm."*
+2. **Ask Claude Code to fix that one thing**, quoting the line. For example:
+
+   ```text
+   bootstrap_check reports the Julia VS Code extension is not installed. Install it and confirm.
+   ```
+
 3. **Re-run the check.**
 
 That loop — read the error, act on it, confirm the result — is the discipline the whole course
@@ -295,6 +312,10 @@ Taken from these pages on **2026-08-08**.
    — the definition of `machine-overridable`, the scope `julia.executablePath` declares.
 10. [winget install](https://learn.microsoft.com/en-us/windows/package-manager/winget/install) — the
     `Git.Git` and `Microsoft.VisualStudioCode` package identifiers.
+11. [Model configuration](https://code.claude.com/docs/en/model-config) — the `/model` command, and
+    that the default resolves to the recommended model for your account type.
+12. [Manage costs](https://code.claude.com/docs/en/costs) — that usage windows are shared across
+    models, so switching with `/model` does not restore access after a limit.
 
 ---
 

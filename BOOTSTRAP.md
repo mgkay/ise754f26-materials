@@ -284,10 +284,20 @@ pinned versions and their results would stop matching the lectures.
 
 ## Step 8 — Verify
 
-Run the check, using the pinned Julia, from inside `ISE754`:
+Run the check, using the pinned Julia, from inside `ISE754`. Save the output to a file as well as
+showing it, because the student has to paste it into Moodle and selecting it out of a terminal is
+awkward.
+
+**Windows:**
 
 ```
-julia +1.12.6 materials/env/bootstrap_check.jl
+julia +1.12.6 materials/env/bootstrap_check.jl 2>&1 | Tee-Object -FilePath bootstrap-output.txt
+```
+
+**macOS:**
+
+```
+julia +1.12.6 materials/env/bootstrap_check.jl 2>&1 | tee bootstrap-output.txt
 ```
 
 It performs eleven checks and installs nothing. It prints either `READY` or a numbered list naming
@@ -305,7 +315,7 @@ Finish with a short summary for the student:
 - Which steps **installed** something, and which were **skipped because the tool was already there**.
 - Anything **left alone deliberately** — an existing Julia, an existing default, an existing
   extension set.
-- The **full output** of the check.
+- The **full output** of the check, and that a copy was saved to `ISE754/bootstrap-output.txt`.
 - If anything is unresolved, what it is and what the student should do next.
 
 Then tell them: **paste the entire check output into Moodle before the second class meeting,
