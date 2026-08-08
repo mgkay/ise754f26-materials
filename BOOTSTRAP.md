@@ -42,6 +42,15 @@ not damage work that has nothing to do with this course.
    the paths differ between machines and install scopes, and it makes every later command
    unpredictable. Refresh the PATH, then use `git`, `juliaup`, `julia`, and `code`.
 
+   Each shell invocation is usually a fresh process, so this refresh does **not** persist. Repeat it
+   in any later command that needs a newly installed tool.
+9. **Run each command directly. Do not wrap it in `powershell -NoProfile -Command "..."`.** `git`,
+   `juliaup`, `julia`, `code`, `winget` and `curl` behave the same whether the shell is PowerShell
+   or Git Bash, so wrapping them changes the command string while changing nothing else. It also
+   defeats the course's permission allowlist, which matches on the plain command, so a wrapped
+   command prompts the student when it should not have. The PATH refresh in rule 8 is the one
+   genuinely PowerShell-specific command in this file.
+
 ---
 
 ## Step 0 — Identify the machine
@@ -54,13 +63,15 @@ platform from the shape of a path or from what a command happened to do.
 
 Say which of these the machine is before continuing, then use **only** that column in every step:
 
-- **Windows** — commands are PowerShell.
-- **macOS** — commands are the Terminal. Apple Silicon (`arm64`) and Intel (`x86_64`) are handled
-  identically here; juliaup installs the matching build on its own, and no step below differs
-  between them.
+- **Windows** — the installer is `winget`, and the PATH refresh in standing rule 8 is PowerShell.
+  Every other command below is the same on both platforms, so run it as written.
+- **macOS** — the installers are `curl` and `xcode-select`. Apple Silicon (`arm64`) and Intel
+  (`x86_64`) are handled identically here; juliaup installs the matching build on its own, and no
+  step below differs between them.
 
-Linux is not covered by this file. It will generally work, but stop and say so rather than
-improvising, so the instructor can confirm the steps.
+**Linux is not supported for this course.** Much of it would work, but none of it has been tested
+and no Linux instructions exist here. If the machine is Linux, **stop and say so** rather than
+improvising a translation, and tell the student to contact the instructor.
 
 ---
 
@@ -227,6 +238,12 @@ over it.
 > produces a false failure here, and again on checks 5 to 7 in step 8, on a machine that is
 > actually fine.
 
+> ⚠ **On Windows, use `code.cmd`, not a bare `code`, for the commands below.** The command line tool
+> is the `code.cmd` shim in the install's `bin` directory, but a bare `code` can resolve first to
+> `Code.exe`, the GUI executable, which **opens a VS Code window instead of running the command**.
+> Which one wins depends on PATH order and therefore on whether VS Code was installed per-user or
+> per-machine, so it differs between two machines that both look correctly installed.
+
 **The extensions.** List what is already there first:
 
 ```
@@ -317,21 +334,16 @@ missing on a machine that is fine. If checks 3 to 7 fail and the tools were just
 PATH is the first thing to rule out: open a new terminal and run it again before treating it as a
 real failure.
 
-Run the check, using the pinned Julia, from inside `ISE754`. Save the output to a file as well as
-showing it, because the student has to paste it into Moodle and selecting it out of a terminal is
-awkward.
-
-**Windows:**
+Run the check, using the pinned Julia, from inside `ISE754`:
 
 ```
-julia +1.12.6 materials/env/bootstrap_check.jl 2>&1 | Tee-Object -FilePath bootstrap-output.txt
+julia +1.12.6 materials/env/bootstrap_check.jl
 ```
 
-**macOS:**
-
-```
-julia +1.12.6 materials/env/bootstrap_check.jl 2>&1 | tee bootstrap-output.txt
-```
+**Do not pipe it through `tee` or `Tee-Object` to save the output.** The script writes
+`ISE754/bootstrap-output.txt` itself, in UTF-8. A Windows PowerShell 5.1 pipeline writes UTF-16 and
+captures the script's output through a legacy code page, which corrupts non-ASCII characters on the
+way to disk. The file the student pastes into Moodle has to be exactly what was printed.
 
 It performs eleven checks and installs nothing. It prints either `READY` or a numbered list naming
 what is wrong and what to do about each item.

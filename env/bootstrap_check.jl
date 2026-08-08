@@ -1,7 +1,12 @@
 #!/usr/bin/env julia
 #
-# ISE 754 — Logistics Engineering, Fall 2026
-# bootstrap_check.jl — verify that this machine is ready for the course.
+# ISE 754 - Logistics Engineering, Fall 2026
+# bootstrap_check.jl - verify that this machine is ready for the course.
+#
+# Output is deliberately ASCII only. A Windows console captures this script's
+# output through a legacy code page, which corrupted an em dash in the title
+# line to a mojibake sequence in a real run, and that text is what a student
+# pastes into Moodle.
 #
 # Run it:   julia materials/env/bootstrap_check.jl
 #
@@ -26,6 +31,15 @@ const PIN        = v"1.12.6"
 const REPO_SLUG  = "mgkay/ise754f26-materials"
 const JULIA_EXT  = "julialang.language-julia"
 const CLAUDE_EXT = "anthropic.claude-code"
+
+# On Windows the VS Code command line tool is the `code.cmd` shim in the
+# install's `bin` directory. A bare `code` can instead resolve to `Code.exe`,
+# the GUI executable, which OPENS A WINDOW rather than answering the command.
+# Which one wins depends on PATH order, and therefore on whether VS Code was
+# installed per-user or per-machine: observed launching windows on a
+# system-scope install and answering correctly on a user-scope one. Always
+# probe the shim, so this script keeps its promise to change nothing.
+const CODE_CMD = Sys.iswindows() ? "code.cmd" : "code"
 
 const ENV_DIR   = @__DIR__                # ISE754/materials/env
 const MATERIALS = dirname(ENV_DIR)        # ISE754/materials
@@ -138,9 +152,9 @@ end
 
 function check_code_cli()
     t = "VS Code (`code` command)"
-    okc, out = probe(["code", "--version"])
+    okc, out = probe([CODE_CMD, "--version"])
     if !okc
-        d, f = probe_failure("code", out,
+        d, f = probe_failure(CODE_CMD, out,
             Sys.isapple() ?
                 "In VS Code run Shell Command: Install 'code' command in PATH " *
                 "from the Command Palette, then open a new terminal." :
@@ -152,7 +166,7 @@ end
 
 """Both extension checks share one `code --list-extensions` call."""
 function extension_list()
-    okc, out = probe(["code", "--list-extensions"])
+    okc, out = probe([CODE_CMD, "--list-extensions"])
     okc || return nothing
     return Set(strip.(lowercase.(split(out, '\n'))))
 end
@@ -255,13 +269,12 @@ end
 # ------------------------------------------------------------------ report
 
 function main()
-    println("ISE 754 — Fall 2026 bootstrap check")
-    println("="^70)
-    println("Machine  : ", Sys.MACHINE)
-    println("OS       : ", Sys.iswindows() ? "Windows" : Sys.isapple() ? "macOS" : "Linux")
-    println("Julia    : ", VERSION)
-    println("Folder   : ", ROOT)
-    println()
+    # Progress notes go straight to the terminal. The report itself is built in
+    # a buffer so this script can write the file in UTF-8 on its own, rather
+    # than relying on the shell to do it. A Windows console pipeline mangles
+    # both the encoding and any non-ASCII character on the way to disk, and the
+    # file a student pastes into Moodle has to be exactly what was printed.
+    println("Running the ISE 754 bootstrap check.")
     println("Loading the course packages takes a few minutes the first time.")
     println()
 
@@ -281,37 +294,68 @@ function main()
         check_packages(),
     ]
 
+    io = IOBuffer()
+    println(io, "ISE 754 - Fall 2026 bootstrap check")
+    println(io, "="^70)
+    println(io, "Machine  : ", Sys.MACHINE)
+    println(io, "OS       : ", Sys.iswindows() ? "Windows" :
+                              Sys.isapple()   ? "macOS"   :
+                              "Linux (NOT a supported platform for ISE 754)")
+    println(io, "Julia    : ", VERSION)
+    println(io, "Folder   : ", ROOT)
+    println(io)
+    if !Sys.iswindows() && !Sys.isapple()
+        println(io, "This course supports Windows and macOS. The checks below still run, but")
+        println(io, "nothing here has been tested on this platform. Say so when you submit.")
+        println(io)
+    end
+
     for (i, r) in enumerate(results)
         mark = r.status === :ok ? "PASS" : r.status === :fail ? "FAIL" : "????"
-        println(lpad(i, 2), ". [", mark, "] ", r.title, " - ", r.detail)
+        println(io, lpad(i, 2), ". [", mark, "] ", r.title, " - ", r.detail)
     end
 
     trouble = [(i, r) for (i, r) in enumerate(results) if r.status !== :ok]
-    println()
-    println("="^70)
+    println(io)
+    println(io, "="^70)
 
     if isempty(trouble)
-        println("READY")
-        println()
-        println("All eleven checks passed. Paste this entire output into Moodle.")
-        return 0
+        println(io, "READY")
+        println(io)
+        println(io, "All eleven checks passed. Paste this entire output into Moodle.")
+    else
+        nfail = count(r -> r.status === :fail, results)
+        nunk  = count(r -> r.status === :unknown, results)
+        println(io, "NOT READY - $nfail failed, $nunk could not be determined.")
+        println(io)
+        println(io, "What to do, in order:")
+        for (i, r) in trouble
+            println(io)
+            println(io, "  Check $i - ", r.title)
+            println(io, "    Problem: ", r.detail)
+            println(io, "    Fix    : ", r.fix)
+        end
+        println(io)
+        println(io, "Ask Claude Code to fix one item, quoting the line above, then run")
+        println(io, "this check again. Paste this entire output into Moodle either way;")
+        println(io, "an honest NOT READY before class is the point of running it early.")
     end
 
-    nfail = count(r -> r.status === :fail, results)
-    nunk  = count(r -> r.status === :unknown, results)
-    println("NOT READY - $nfail failed, $nunk could not be determined.")
-    println()
-    println("What to do, in order:")
-    for (i, r) in trouble
-        println()
-        println("  Check $i - ", r.title)
-        println("    Problem: ", r.detail)
-        println("    Fix    : ", r.fix)
+    report = String(take!(io))
+    print(report)
+
+    outfile = joinpath(ROOT, "bootstrap-output.txt")
+    try
+        open(outfile, "w") do f
+            write(f, report)
+        end
+        println("\nSaved to ", outfile, " - paste that file into Moodle.")
+    catch e
+        println("\nCould not write ", outfile, " ($(typeof(e))).")
+        println("Copy the text above instead.")
     end
-    println()
-    println("Ask Claude Code to fix one item, quoting the line above, then run")
-    println("this check again. Paste this entire output into Moodle either way;")
-    println("an honest NOT READY before class is the point of running it early.")
+
+    return isempty(trouble) ? 0 : 1
     return 1
 end
 

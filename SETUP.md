@@ -249,7 +249,11 @@ none of it is your fault; the usual routes are a personal machine or a campus la
 possible we will sort something out individually. What does not work is staying quiet, because every
 lecture from the third onward assumes a working toolchain.
 
-A Chromebook or an iPad cannot run this: Julia and VS Code need a desktop operating system.
+**Windows and macOS are the supported platforms.** Linux is not supported for this course: much of
+it would work, but none of it has been tested and there are no Linux instructions. If Linux is your
+only option, contact me early rather than working around it.
+
+A Chromebook or an iPad cannot run this at all: Julia and VS Code need a desktop operating system.
 
 ---
 
