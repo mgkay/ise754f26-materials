@@ -14,9 +14,24 @@ is cited at the end. Anything not verified from documentation says so.
 
 ## Step 0 — Before class: two things
 
-**1. A Claude subscription.** Claude Code requires a **Pro, Max, Team, or Enterprise**
-subscription.<sup>[1]</sup> The free plan does not include it. Pro is about $20 per month, billed
-monthly.
+**1. A Claude subscription.** Claude Code requires a **Pro, Max, Team, or Enterprise** plan.<sup>[1]</sup>
+The free plan does not include it. Sign up or upgrade at <https://claude.com/pricing>.
+
+> ⚠ **Choose the monthly option, not the annual one.** Pro is **$20 billed monthly**, or $17 per
+> month if you pay **$200 up front for the year**.<sup>[8]</sup> The annual plan saves $3 a month and
+> commits you to twelve. Monthly means that if you drop the course, you stop paying.
+
+**If you already have a Claude account, you probably do not need to buy anything new:**
+
+| What you have | What to do |
+|---|---|
+| **Pro or Max** already | Nothing. Sign in with that account in step 1 |
+| A **free** account | Upgrade the account you already have; keep the same login |
+| **Team or Enterprise** through an employer | That works too, if the plan includes Claude Code. Sign in with it and check step 1 succeeds; if not, get a Pro plan |
+| Nothing yet | Sign up for **Pro, monthly** |
+
+You will not know for certain until you sign in. If the plan does not include Claude Code, it says so
+at that point rather than failing obscurely — so do step 1 early enough to fix it before class.
 
 **2. About 15 GB of free disk space.** Most of it is Julia's package cache, which is larger than it
 sounds because it stores precompiled code and native graphics libraries.
@@ -240,6 +255,8 @@ Taken from these pages on **2026-08-07**.
    `shell command`, and **Shell Command: Install 'code' command in PATH**.
 7. [Julia in Visual Studio Code](https://code.visualstudio.com/docs/languages/julia) — the extension
    identifier `julialang.language-julia`.
+8. [Claude pricing](https://claude.com/pricing) — Pro at $20 monthly or $17 per month billed
+   annually at $200 up front, and that Pro and Max both include Claude Code.
 
 ---
 
