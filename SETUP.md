@@ -16,6 +16,21 @@ is cited at the end.
 
 ---
 
+## Before anything else: a supported machine
+
+**This course supports macOS and Windows.** Specifically macOS 13 or later, or Windows 10 version
+1809 or later, 64-bit.
+
+**Linux is not supported**, even though every tool used here runs on it. These instructions are
+written and tested for macOS and Windows only, so a Linux machine would mean translating untested
+steps all semester. A Chromebook or an iPad will not work at all, because Julia and Visual Studio
+Code need a desktop operating system.
+
+If a supported machine is a problem, **say so before the course starts** rather than after. There is
+no penalty and it is far easier to solve early.
+
+---
+
 ## Step 0 — Before class: two things
 
 **1. A Claude subscription.** The documentation is explicit: *"Claude Code requires a Pro, Max,
@@ -292,11 +307,8 @@ none of it is your fault; the usual routes are a personal machine or a campus la
 possible we will sort something out individually. What does not work is staying quiet, because every
 lecture from the third onward assumes a working toolchain.
 
-**Windows and macOS are the supported platforms.** Linux is not supported for this course: much of
-it would work, but none of it has been tested and there are no Linux instructions. If Linux is your
-only option, contact me early rather than working around it.
-
-A Chromebook or an iPad cannot run this at all: Julia and VS Code need a desktop operating system.
+**A machine this cannot run on** is covered at the top of this page: macOS and Windows are the
+supported platforms, and Linux, Chromebooks, and iPads are not.
 
 ---
 
