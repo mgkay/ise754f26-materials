@@ -29,6 +29,18 @@ not damage work that has nothing to do with this course.
    pinned versions are what make a student's numbers match the lecture's.
 7. **Report each step's outcome before starting the next**, and stop on a failure rather than
    continuing past it.
+8. **After any install, refresh this shell's PATH before using the new tool, and then call that
+   tool by its plain name.** A running shell keeps the PATH it started with, so a tool installed a
+   moment ago looks missing. On Windows:
+
+   ```
+   $env:Path = [Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [Environment]::GetEnvironmentVariable('Path','User')
+   ```
+
+   **Do not route around a stale PATH by invoking absolute paths like
+   `& "$env:ProgramFiles\Git\cmd\git.exe"`.** It appears to work, but it hides the real problem,
+   the paths differ between machines and install scopes, and it makes every later command
+   unpredictable. Refresh the PATH, then use `git`, `juliaup`, `julia`, and `code`.
 
 ---
 
@@ -163,14 +175,19 @@ uninstalling a previous Julia first, *"and undo any modifications you might have
    - **It fails** — the existing Julia is earlier on the PATH and shadows juliaup's shim. Get the
      real path to the pinned binary by calling juliaup's shim directly:
 
-     **Windows:**
+     **Windows** — locate juliaup's shim rather than assuming where it lives. Installed through
+     winget it lands under `WindowsApps`, **not** under `~\.juliaup\bin`:
      ```
-     & "$env:USERPROFILE\.juliaup\bin\julia.exe" +1.12.6 -e "println(joinpath(Sys.BINDIR, \"julia.exe\"))"
+     $j = Split-Path (Get-Command juliaup).Source
+     & "$j\julia.exe" +1.12.6 -e "print(Sys.BINDIR)"
      ```
+     The pinned executable is the printed directory plus `\julia.exe`.
+
      **macOS:**
      ```
-     ~/.juliaup/bin/julia +1.12.6 -e 'println(joinpath(Sys.BINDIR, "julia"))'
+     $(dirname $(command -v juliaup))/julia +1.12.6 -e 'print(Sys.BINDIR)'
      ```
+     The pinned executable is the printed directory plus `/julia`.
 
      Use that absolute path in step 6 in place of `+1.12.6`. This bypasses the PATH entirely, so
      the two installations coexist and neither is modified.
@@ -272,14 +289,16 @@ the machine.
 
 ## Step 7 — The Julia environment
 
-From inside `ISE754`, using the pinned Julia — `julia +1.12.6`, or the absolute path from step 3
-case C:
+From inside `ISE754`, run exactly this:
 
-```julia
-using Pkg
-Pkg.activate("materials/env")
-Pkg.instantiate()
 ```
+julia +1.12.6 --project=materials/env -e "using Pkg; Pkg.instantiate()"
+```
+
+**Use `--project` and keep the `-e` argument free of inner quotes.** Writing the path inside the
+`-e` string instead, as `Pkg.activate("materials/env")`, makes the shell strip the inner quotes and
+the command fails twice before it works. If step 3 case C gave an absolute path, substitute it for
+`julia +1.12.6`.
 
 **This downloads and precompiles a large set of packages and takes several minutes with no output.
 That is normal, not a hang.** Say so before starting it, so the silence is expected.
