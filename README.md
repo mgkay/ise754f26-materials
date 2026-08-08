@@ -50,6 +50,16 @@ The rendered lectures are on the course site, not in this repository:
 That address is permanent. It names the Fall 2026 edition, so the lectures you were taught stay at
 that URL and are not overwritten by a later offering.
 
+## How this material was produced
+
+These materials are written by **Michael G. Kay**. Claude Code was used throughout as a drafting and
+checking tool, which is stated here rather than left implicit. Nothing reaches this repository
+without being reviewed and approved by the instructor, who is the author of record on every commit.
+
+That is the same standard this course asks of you: **the tool drafts, you verify, and you are
+answerable for what you submit.** It is easier to ask that of you if the course does it visibly
+itself.
+
 ## A note on the environment
 
 `env/Project.toml` and `env/Manifest.toml` are the **exact** environment the lectures were run
