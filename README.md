@@ -40,7 +40,12 @@ ISE754/
 ```
 
 Side by side rather than nested because **where you are standing when you run something decides
-whether it works**. The setup puts them in the right place.
+whether it works**. The setup puts `materials/` in the right place.
+
+`work/` is the other half, and it arrives later: it is a private repository of your own, created for
+you, that you clone beside this one and commit your coursework to. **[SUBMITTING.md](SUBMITTING.md)**
+sets it up and describes the routine. Do that before **Tuesday August 25**, when the first
+submission is due.
 
 ## The lectures themselves
 
