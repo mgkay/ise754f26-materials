@@ -69,9 +69,11 @@ ISE754/
 
 ### What happens the first time, and why the email is not a breach
 
-The repository is private, so git has to establish who you are. On the first clone a browser window
-opens and asks you to sign in to GitHub.<sup>[1]</sup> Sign in with the account that has access to
-your course repository.
+The repository is private and it sits inside an NC State organization, so git has to establish who
+you are twice over. On the first clone a browser window opens: sign in to GitHub, and then pass
+**NC State single sign-on**, the same login used for other university services.<sup>[1]</sup><sup>[3]</sup>
+Both are needed, because access to a repository in this organization is granted only to a credential
+that has been through single sign-on.
 
 **GitHub will then email you** to say that "a first-party GitHub OAuth application has been added to
 your account," listing permissions including `repo`.<sup>[2]</sup> **That email is expected and is
@@ -148,6 +150,12 @@ like a push that worked until you look.
 **`git push` is rejected.** Someone, most likely the instructor leaving feedback, has added a commit
 you do not have. Run `git pull`, then push again.
 
+**A push or pull fails days after a clone that worked, and the message sounds like a permission
+problem.** The single-sign-on session has almost certainly expired rather than access having been
+removed: that login lasts 24 hours unless NC State sets it differently.<sup>[3]</sup> Signing in
+again restores it, so try that before assuming something is broken. This is the failure most likely
+to look alarming and mean nothing, because nothing about the wording says "sign in again."
+
 **"Authentication failed" or the browser sign-in never appears.** Ask Claude Code, quoting the exact
 message. If it cannot resolve it, email me: an access problem is mine to fix, not yours to work
 around.
@@ -171,16 +179,38 @@ Taken from these pages on **2026-08-13**.
 2. [Reviewing and revoking authorization of GitHub Apps](https://docs.github.com/en/apps/using-github-apps/reviewing-and-revoking-authorization-of-github-apps)
    — that authorizing an application is recorded on the account and notified by email, and how to
    review or revoke it from account settings.
+3. [About authentication with single sign-on](https://docs.github.com/en/enterprise-cloud@latest/authentication/authenticating-with-single-sign-on/about-authentication-with-single-sign-on)
+   — that git over HTTPS against an organization using single sign-on requires a credential that has
+   been authorized for it, and that the login period is 24 hours unless the identity provider sets
+   it otherwise.
 
 ---
 
 ## Notes for review — delete before this reaches students
 
-**The repository URL is the one thing not verified**, because the student repositories do not exist
-yet. `ncstate-engr-ise/ise754-f26-<unityid>` is the naming settled in
-`github-guidelines-ise754.md` Sec. 6, where it also records that "confirmation that no other
-convention applies is still outstanding." **Check one real repository resolves before this page is
-posted.**
+**The naming pattern and the privacy are now verified, 2026-08-13**, against
+`ncstate-engr-ise/ise754-f26-test`. It returns 404 to an unauthenticated request on both the web and
+the API while the organization itself resolves, which is the correct signal: private, not missing.
+So `ise754-f26-<unityid>` is a real, working address shape.
+
+**That check also found what this page had missed.** The organization page redirects to
+`github.com/enterprises/ncstate-university/sso`, so the whole organization sits behind NC State
+single sign-on. The first draft described the first clone as a GitHub sign-in and stopped there,
+which would have left every student to discover the university login on their own, and left the
+lapsed-session failure unexplained. Both are now stated, the second in troubleshooting because a
+24-hour session means a clone on Tuesday and a push on Thursday are different events. The
+instructor's own 8/04 note to ITECS flags this shape of problem for the service account: single sign-on
+authorization "is easy to overlook and looks like a permissions failure rather than a missing
+approval."
+
+**`ise754-f26-test` is inside the pattern the submission tooling enumerates.** Delete it, or exclude
+it, before the first collection run, or it will be pulled as though it were a student's.
+
+**Still unverified: the student side.** Every check so far has been made from an account that is an
+organization member with rights to create repositories and teams. A student has base permission
+`None` plus team membership. The two steps that depend on that difference, the browser sign-in on
+first clone and a push succeeding on team write access alone, are exactly the ones a test student
+account is for, and are still untested.
 
 **The credential-helper email warning is the most valuable paragraph here** and it is verified: the
 guidelines record that on 2026-08-04 a first clone authorized Git Credential Manager with `gist`,
