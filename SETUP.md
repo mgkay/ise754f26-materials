@@ -196,9 +196,19 @@ It then writes **`ISE754\bootstrap-report.txt`**, which has two parts:
 Those are separate on purpose. The second is what your machine reported; the first is Claude Code's
 description of what it did. Telling the two apart is the habit this whole course is built on.
 
-**Open that file and paste its entire contents into Moodle before class on Thursday August 20**,
-including a `NOT READY` one. An honest report of what broke is exactly what that meeting needs.
-Copying from the file is far easier than selecting text out of the terminal.
+**Two things go into Moodle before class on Thursday August 20:**
+
+1. **The report.** Open `bootstrap-report.txt` and paste its entire contents, including a
+   `NOT READY` one. An honest report of what broke is exactly what that meeting needs. Copying from
+   the file is far easier than selecting text out of the terminal.
+2. **A short answer, in your own words**, to: *what failed, what you did about it, and how you knew
+   it was fixed.* Two or three sentences. **If nothing failed, write "Nothing failed."** That is a
+   complete answer and counts for as much as a long one.
+
+The second one is typed into Moodle rather than into the file on purpose. Everything in
+`bootstrap-report.txt` was produced for you; that answer is yours. Reading an error, acting on it,
+and confirming the result is the method this whole course runs on, and the first time it happens is
+worth writing down.
 
 To run the check again at any point, paste this into Claude Code:
 
