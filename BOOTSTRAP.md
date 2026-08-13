@@ -219,7 +219,11 @@ and go straight to the extensions below.
 If the command is not found:
 
 - **Windows:** `winget install --id Microsoft.VisualStudioCode -e --source winget`
-- **macOS: do not conclude VS Code is missing.** The Windows installer puts `code` on the PATH; the
+- **macOS: tell the student first that this step leaves the terminal.** It is the only one that does,
+  and unannounced it reads as the setup having stalled rather than as an expected detour: a download,
+  a drag into Applications, and then a Command Palette command. Say that up front, then walk it.
+
+  **And do not conclude VS Code is missing.** The Windows installer puts `code` on the PATH; the
   macOS installer **does not**, so `code --version` fails routinely on Macs where VS Code is
   installed correctly. Check for `/Applications/Visual Studio Code.app` first.
   - **It exists** — only the command is missing. This is a **graphical step you cannot perform**:

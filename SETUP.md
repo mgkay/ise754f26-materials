@@ -292,6 +292,13 @@ Expected on at least some machines. The loop is short:
 
 3. **Re-run the check.**
 
+> ⚠ **One thing not to let it do, whatever the failure: change a package version.** If the failure is
+> a package that will not load, the fix is `Pkg.instantiate()`, which installs exactly the versions
+> `Manifest.toml` records. **Never `Pkg.update()`, `Pkg.add()`, or `Pkg.resolve()`** — each of those
+> moves you off the pinned versions, and your results then stop matching the lectures. Say so if
+> Claude Code proposes one: a fresh session fixing a package error has no way to know the versions
+> are pinned unless told.
+
 That loop — read the error, act on it, confirm the result — is the discipline the whole course
 applies to computational work. Doing it here first is deliberate.
 

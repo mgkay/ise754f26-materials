@@ -3,6 +3,9 @@
     "allow": [
       "Bash(* --version)",
       "PowerShell(* --version)",
+      "Bash(uname *)",
+      "PowerShell(uname *)",
+      "PowerShell($env:OS)",
       "Bash(juliaup status)",
       "PowerShell(juliaup status)",
       "Bash(code --list-extensions)",
