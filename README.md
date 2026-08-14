@@ -44,8 +44,8 @@ whether it works**. The setup puts `materials/` in the right place.
 
 `work/` is the other half, and it arrives later: it is a private repository of your own, created for
 you, that you clone beside this one and commit your coursework to. **[SUBMITTING.md](SUBMITTING.md)**
-sets it up and describes the routine. Do that before **Tuesday August 25**, when the first
-submission is due.
+sets it up and describes the routine. Do that before **8:00 pm Eastern on Monday, August 24**, when
+the first submission is due.
 
 ## The lectures themselves
 

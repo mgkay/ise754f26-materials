@@ -367,7 +367,7 @@ the other:
 ```
 ISE754/
 ├── materials/     this repository, read only
-└── work/          your own repository, added in the week of August 25
+└── work/          your own repository, added before the first submission
 ```
 
 Side by side rather than nested because where you are standing when you run something decides

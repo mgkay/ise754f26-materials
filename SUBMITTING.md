@@ -4,7 +4,8 @@
 you. This page sets that up once and then describes the routine, which is three commands before
 each class meeting.
 
-Set this up **before Tuesday August 25**, when the first submission is due. Everything here assumes
+Set this up **before 8:00 pm Eastern on Monday, August 24**, when the first submission is due, for
+the class meeting the next morning. Everything here assumes
 the toolchain from [SETUP.md](SETUP.md) is working and the check reported `READY`.
 
 Every command, menu name, and link below was taken from official documentation on **2026-08-13** and
@@ -121,8 +122,9 @@ submitted**, because it is still only on your machine.
 single commit of everything an hour before class shows less about your work than five commits over
 two days. Write messages that say what changed, not "update."
 
-**Submissions are collected the evening before each class meeting.** Anything pushed after that is
-not in the set that gets reviewed together in class.
+**Work is due at 8:00 pm Eastern on the evening before the class meeting at which it is assessed.**
+That is an absolute time, the same for both sections, and it is when submissions are collected and
+reviewed together to prepare the next morning's class. Anything pushed later is not in that set.
 
 You can ask Claude Code to run these commands for you, and it will. **You are answerable for what is
 in the commit either way**, which is the same standard the rest of the course uses: the tool does the
