@@ -148,7 +148,9 @@ like a push that worked until you look.
 ## When something goes wrong
 
 **`git push` is rejected.** Someone, most likely the instructor leaving feedback, has added a commit
-you do not have. Run `git pull`, then push again.
+you do not have. Run `git pull --no-rebase`, then push again. The flag matters: without it, git on
+macOS stops with "Need to specify how to reconcile divergent branches" instead of merging, and the
+push stays rejected.
 
 **A push or pull fails days after a clone that worked, and the message sounds like a permission
 problem.** The single-sign-on session has almost certainly expired rather than access having been
