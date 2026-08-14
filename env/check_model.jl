@@ -30,9 +30,56 @@ end
 const KW_RE   = r"^\s*(?:\*\*)?([a-z][a-z ]*?):(?:\*\*)?\s*(.*?)\s*\\?$"
 const ITEM_RE = r"^\s*\(([a-z])\)\s*(.*)$"
 
+# --- Quarto lecture support -----------------------------------------------
+# The same rules have to hold for the models printed in the lectures, so this
+# script is the single implementation and the lecture linter calls it rather
+# than restating the rules. In a .qmd, a model is a fenced div carrying an
+# #mdl- identifier. A `model-skeleton` block is NOT a model: it is the template
+# that teaches the shape, written with ... placeholders, so it is skipped.
+const DIV_CLOSE = r"^(:{3,})[ \t]*$"
+const DIV_OPEN  = r"^(:{3,})[ \t]*(\S.*)$"
+
+"Line ranges of the model callouts in a .qmd, skipping skeleton templates."
+function model_ranges(lines::Vector{String})
+    ranges = Tuple{Int,Int}[]
+    stack = Tuple{Int,String,Int}[]        # (colon count, attrs, start line)
+    for (i, raw) in enumerate(lines)
+        if match(DIV_CLOSE, raw) !== nothing
+            isempty(stack) && continue
+            n, attrs, start = pop!(stack)
+            if occursin("#mdl-", attrs) &&
+               !any(occursin("model-skeleton", a) for (_, a, _) in stack)
+                push!(ranges, (start, i))
+            end
+        else
+            m = match(DIV_OPEN, raw)
+            m === nothing && continue
+            push!(stack, (length(m[1]), String(m[2]), i))
+        end
+    end
+    return ranges
+end
+
 function findings(path::AbstractString)
+    all_lines = readlines(path)
+    if endswith(lowercase(path), ".qmd")
+        out = Finding[]
+        for (a, b) in model_ranges(all_lines)
+            append!(out, check_slice(all_lines[a:b], a - 1))
+        end
+        return out                          # no callouts means nothing to say
+    end
+    return check_slice(all_lines, 0)
+end
+
+function check_slice(lines::Vector{String}, offset::Int)
     out = Finding[]
-    lines = readlines(path)
+    # Findings are collected against slice-relative line numbers and shifted to
+    # absolute ones on the way out. A model-level finding (line 0) is reported
+    # against the model's opening line when this is a slice of a lecture.
+    shift(fs) = [Finding(f.line == 0 ? (offset == 0 ? 0 : offset + 1)
+                                     : f.line + offset,
+                         f.severity, f.message) for f in fs]
     slots = Tuple{Int,String,String}[]     # (lineno, keyword, inline content)
     items = Dict{Int,Vector{Tuple{Int,String}}}()   # slot lineno -> items
 
@@ -57,7 +104,7 @@ function findings(path::AbstractString)
     if isempty(slots)
         push!(out, Finding(0, "ERROR",
             "no model keywords found; a model needs at least return: and assumptions:"))
-        return out
+        return shift(out)
     end
 
     seen = String[]
@@ -154,7 +201,7 @@ function findings(path::AbstractString)
             "subject to: in a model that decides nothing; a descriptive model " *
             "has no solution to constrain"))
     end
-    return out
+    return shift(out)
 end
 
 function main(args)
