@@ -20,6 +20,18 @@ const KNOWN    = vcat(SINGULAR, LISTED, DEFLIST)
 const ORDER    = ["minimize", "maximize", "solve for", "subject to",
                   "return", "assumptions", "where"]
 
+# What each slot holds, in the words the reference uses, so a message can say
+# what to write rather than only that something is wrong.
+const WHAT = Dict(
+    "minimize"    => "what is being optimized",
+    "maximize"    => "what is being optimized",
+    "solve for"   => "each unknown, and what values it may take",
+    "subject to"  => "what restricts the solutions",
+    "return"      => "what comes back",
+    "assumptions" => "what must be true about the world",
+    "where"       => "the given data and symbol meanings",
+)
+
 struct Finding
     line::Int
     severity::String   # "ERROR" or "warn"
@@ -119,7 +131,9 @@ function check_slice(lines::Vector{String}, offset::Int)
 
         if kw in SINGULAR
             if isempty(inline) && isempty(its)
-                push!(out, Finding(ln, "ERROR", "$kw: is empty"))
+                push!(out, Finding(ln, "ERROR",
+                    "$kw: is empty; it holds $(WHAT[kw]), written on the same " *
+                    "line as the keyword and as one thing, not a list"))
             elseif !isempty(its)
                 push!(out, Finding(ln, "ERROR",
                     "$kw: takes exactly one entity but has a lettered list; " *
@@ -133,7 +147,11 @@ function check_slice(lines::Vector{String}, offset::Int)
                     "$kw: is written inline; it takes a lettered list (a) (b) (c), " *
                     "one per line, even at a single item"))
             elseif isempty(its)
-                push!(out, Finding(ln, "ERROR", "$kw: has no items"))
+                push!(out, Finding(ln, "ERROR",
+                    "$kw: has nothing under it. Either list $(WHAT[kw]) as " *
+                    "\"(a) ...\" one item per line, or write \"$kw: none\" if " *
+                    "there genuinely are none, which is a real finding about " *
+                    "the problem rather than an omission"))
             else
                 for (k, (iln, _)) in enumerate(its)
                     want = 'a' + k - 1
@@ -176,7 +194,10 @@ function check_slice(lines::Vector{String}, offset::Int)
     # coherence between slots
     has(k) = k in seen
     if !has("return")
-        push!(out, Finding(0, "ERROR", "no return: -- every model returns something"))
+        push!(out, Finding(0, "ERROR",
+            "no return:. Every model returns something, so add a \"return:\" line " *
+            "naming the one thing handed back; if it seems to need several, name " *
+            "the one composite thing they make up"))
     end
     if !has("assumptions")
         push!(out, Finding(0, "warn",
@@ -188,8 +209,9 @@ function check_slice(lines::Vector{String}, offset::Int)
     end
     if objective && !has("solve for")
         push!(out, Finding(0, "ERROR",
-            "an objective with no solve for: -- if something is optimized, " *
-            "something is being decided"))
+            "an objective but no solve for:. If something is being optimized then " *
+            "something is being decided, so add a \"solve for:\" list naming each " *
+            "unknown and what values it may take"))
     end
     if has("solve for") && !has("subject to")
         push!(out, Finding(0, "warn",
@@ -222,10 +244,18 @@ function main(args)
         return 0
     end
     nerr = 0
+    src = readlines(path)
     for f in sort(fs, by = x -> (x.line, x.severity))
         nerr += f.severity == "ERROR" ? 1 : 0
         where_ = f.line == 0 ? "  --  " : lpad(string(f.line), 4) * ": "
         println("$(rpad(f.severity, 5)) $where_$(f.message)")
+        # Echo the offending line, so the message does not have to be matched up
+        # against the file by hand. Kept on its own line so a caller parsing the
+        # findings sees only the lines that begin with a severity.
+        if 1 <= f.line <= length(src)
+            text = strip(src[f.line])
+            !isempty(text) && println("           > $text")
+        end
     end
     println()
     println("$(length(fs)) finding(s), $nerr error(s), in $path")
