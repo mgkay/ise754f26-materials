@@ -68,8 +68,9 @@ That is all to do in advance. **You do not need to install Git, Julia, or VS Cod
 claude --version
 ```
 
-If that prints a version such as `2.1.224 (Claude Code)`, you are done with this step — **go to
-step 2.**
+If that prints a version number followed by `(Claude Code)`, you are done with this step — **go to
+step 2.** The number itself does not matter and will not match any example here, since Claude Code
+updates often.
 
 > **Having the Claude desktop app is not the same thing.** The desktop app and the command line
 > tool are separate installs.<sup>[1]</sup> They share one login, so if you have the app you are
@@ -186,7 +187,9 @@ numbered list of what needs attention. It invokes each tool rather than looking 
 so when it cannot determine something instead of guessing, and installs nothing, so it is safe to
 run as often as you like.
 
-It then writes **`ISE754\bootstrap-report.txt`**, which has two parts:
+The check writes its own output to **`ISE754\bootstrap-output.txt`**. Claude Code then assembles
+**`ISE754\bootstrap-report.txt`** from that file and its own account of the run, so the report has two
+parts:
 
 | Section | What it is |
 |---|---|
