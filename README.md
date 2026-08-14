@@ -16,7 +16,7 @@ The rest of this page is reference: what is here and where it goes.
 
 | Folder | Holds |
 |---|---|
-| `env/` | The Julia environment: `Project.toml`, `Manifest.toml`, and `bootstrap_check.jl`. Set up first; nothing else runs without it |
+| `env/` | The Julia environment: `Project.toml`, `Manifest.toml`, and `bootstrap_check.jl`. Set up first; nothing else runs without it. Also holds `check_model.jl`, which checks a model statement against the [model format](https://mgkay.github.io/ise754f26/model-reference.html) |
 | `lectures/` | The companion script for each lecture, with any data it reads in a `data/` folder beside it |
 | `homework/` | Homework statements and starter scripts, each with its own `data/` |
 | `projects/` | Project briefs |
