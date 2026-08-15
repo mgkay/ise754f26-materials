@@ -118,9 +118,9 @@ git commit -m "HW 2: minisum for the eight demand points"
 git push
 ```
 
-`add` stages what changed, `commit` records it with a message, and `push` sends it to GitHub, which
-is the point at which it counts as submitted. **Work that is committed but not pushed has not been
-submitted**, because it is still only on your machine.
+**Work that is committed but not pushed has not been submitted.** `add` stages what changed,
+`commit` records it with a message, and `push` sends it to GitHub, which is the point at which it
+counts as submitted; until that last step it is still only on your machine.
 
 **Commit as you go rather than once at the end.** The history is part of what is looked at, and a
 single commit of everything an hour before class shows less about your work than five commits over
@@ -138,7 +138,8 @@ work, and you check it before it goes out.
 
 ## Confirming a submission landed
 
-Two checks, and the second is the one that matters:
+**A push that failed silently looks exactly like a push that worked until you look.** Two checks,
+and the second is the one that matters:
 
 ```bash
 git status
@@ -146,8 +147,7 @@ git status
 
 should report nothing left to commit and that your branch is up to date with `origin`. Then **open
 your repository in a browser** and look at it. The files you expect should be there, with the commit
-message you wrote and a timestamp before the deadline. A push that failed silently looks exactly
-like a push that worked until you look.
+message you wrote and a timestamp before the deadline.
 
 ---
 
