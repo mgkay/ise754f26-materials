@@ -8,8 +8,8 @@ Set this up **before 8:00 pm Eastern on Monday, August 24**, when the first subm
 the class meeting the next morning. Everything here assumes
 the toolchain from [SETUP.md](SETUP.md) is working and the check reported `READY`.
 
-Every command, menu name, and link below was taken from official documentation on **2026-08-13** and
-is cited at the end.
+The GitHub and single sign-on behaviour described below was taken from official documentation on
+**2026-08-13** and is cited at the end.
 
 ---
 
