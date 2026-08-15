@@ -60,11 +60,12 @@ cd ~/Documents/ISE754
 git clone https://github.com/ncstate-engr-ise/ise754-f26-<unityid> work
 ```
 
-You should end with the two folders side by side, neither inside the other:
+You should end with the three folders side by side, none inside another:
 
 ```
 ISE754/
 ├── materials/     the course repository, you read it
+├── handouts/      homework, projects, and study guides
 └── work/          your repository, you write it
 ```
 

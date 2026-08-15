@@ -83,11 +83,12 @@ an error.
 **Windows:** `$env:USERPROFILE\Documents\ISE754`
 **macOS:** `~/Documents/ISE754`
 
-Create it if it is absent, then work from inside it. It ends up holding two folders side by side:
+Create it if it is absent, then work from inside it. It ends up holding three folders side by side:
 
 ```
 ISE754/
 ├── materials/     the course repository, read
+├── handouts/      homework, projects, and study guides, added once the student has an account
 └── work/          the student's own repository, added later in the semester
 ```
 

@@ -31,11 +31,12 @@ material later, ask Claude Code to update the materials, or run `git pull` from 
 
 ## Where this sits on your computer
 
-Two folders side by side, neither inside the other:
+Three folders side by side, none inside another:
 
 ```
 ISE754/
 ├── materials/     this repository, you read it
+├── handouts/      homework, projects, and study guides, added once you have an account
 └── work/          your own repository, you write it
 ```
 
