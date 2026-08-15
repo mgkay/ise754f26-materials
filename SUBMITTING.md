@@ -30,8 +30,8 @@ Unity ID:
 https://github.com/ncstate-engr-ise/ise754-f26-<unityid>
 ```
 
-Replace `<unityid>` with yours, in lower case. Only you, the instructor, and the teaching assistant
-can see it.
+Replace `<unityid>` with yours, in lower case. Only you, the instructor, the teaching assistant, and
+NC State IT administrators can read it.
 
 > ⚠ **If the address gives "not found" or "repository does not exist," the repository is not ready
 > yet rather than lost.** Getting you access takes two steps and the first can only be done by an
