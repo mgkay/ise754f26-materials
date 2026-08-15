@@ -36,3 +36,12 @@ command is not recognized, the skill is not where Claude Code can see it: check 
 
 Running `/review` on a lecture with no brief will say so and stop. That is correct
 behavior, not a fault, and it means the review for that lecture has not been written yet.
+
+## Where each skill reads from
+
+The skills live here, in the public repository, because they are machinery rather than
+course content: they contain no problems and no answers, and they need to be installable
+from the repository the setup already cloned. What they *read* is a different matter.
+`/review` reads its per-lecture brief from `ISE754/handouts/`, the private repository, since
+a brief carries the planted error and its answer. So a skill can be installed before you
+have handouts access, and will simply tell you when the thing it needs is not there yet.

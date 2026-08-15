@@ -12,12 +12,18 @@ only. Your job is comprehension and exam-readiness, not producing anything to su
 ## Step 1 — load the brief, and refuse without it
 
 The lecture argument is a number like `1.3` or a stem like `1-intr-3`. Find the brief at
-`materials/lectures/<stem>.review.md`, relative to the `ISE754` folder. If the argument is
-a number, the stem is the lecture file's own name; list `materials/lectures/` and match.
+`handouts/reviews/<stem>.review.md`, relative to the `ISE754` folder. If the argument is a
+number, match it against the companion scripts in `materials/lectures/` to get the stem.
+
+**The brief is in `handouts/`, not `materials/`**, because it carries the planted error and
+its answer. `materials/` is public and holds only the lectures, their scripts and their
+data; anything the instructor wrote to teach *with* is in the private handouts repository.
 
 **If no brief exists for that lecture, say so and stop.** Do not improvise a review from
 the lecture alone. The brief carries the instructor's intent for this lecture, and a
-session run without it is a different activity wearing the same name.
+session run without it is a different activity wearing the same name. If `handouts/` itself
+is missing, say that instead: it means the repository has not been cloned yet, which is a
+different problem with a different fix.
 
 Read the brief and the lecture's companion script. **Read the lecture itself** at the
 course website address given in the brief, or the local copy if one is present. You are
