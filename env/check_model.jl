@@ -39,8 +39,14 @@ struct Finding
 end
 
 # a keyword line: optional markdown bold, the keyword, a colon, then the rest
-const KW_RE   = r"^\s*(?:\*\*)?([a-z][a-z ]*?):(?:\*\*)?\s*(.*?)\s*\\?$"
-const ITEM_RE = r"^\s*\(([a-z])\)\s*(.*)$"
+# A keyword line, tolerating a Quarto span wrapper. In a lecture, a model that
+# is presented as a change from a previous one marks the changed slots with
+# [ ... ]{.model-add} / {.model-del}, so the keyword can arrive bracketed:
+#   [**subject to:**]{.model-add}
+# Without the optional bracket and attribute below, such a slot is invisible and
+# the model is reported as missing a keyword it plainly has.
+const KW_RE   = r"^\s*\[?\s*(?:\*\*)?([a-z][a-z ]*?):(?:\*\*)?\]?(?:\{[^}]*\})?\s*(.*?)\s*\\?$"
+const ITEM_RE = r"^\s*\[?\s*\(([a-z])\)\s*(.*)$"   # tolerates [ ... ]{.model-add}
 
 # --- Quarto lecture support -----------------------------------------------
 # The same rules have to hold for the models printed in the lectures, so this
@@ -140,8 +146,10 @@ function check_slice(lines::Vector{String}, offset::Int)
                     "if it needs several, name the one composite thing they make up"))
             end
         elseif kw in LISTED
-            if lowercase(inline) == "none"
-                # legitimate and informative
+            if startswith(lowercase(inline), "none")
+                # Legitimate and informative. A trailing clause is allowed, since
+                # "none, because ..." says more than a bare "none" and an empty
+                # slot is a finding about the problem that is worth explaining.
             elseif !isempty(inline) && isempty(its)
                 push!(out, Finding(ln, "ERROR",
                     "$kw: is written inline; it takes a lettered list (a) (b) (c), " *
