@@ -34,8 +34,12 @@ Replace `<unityid>` with yours, in lower case. Only you, the instructor, the tea
 NC State IT administrators can read it.
 
 > ⚠ **If the address gives "not found" or "repository does not exist," the repository is not ready
-> yet rather than lost.** Getting you access takes two steps and the first can only be done by an
-> organization owner at NC State IT, so a student who added the course late may wait a day or two.
+> yet rather than lost.** Try one thing first: if your credential has not been through NC State
+> single sign-on, GitHub hides a private repository rather than reporting a permissions error, so an
+> account that *does* have access still sees "not found." Sign in at github.com, complete single
+> sign-on, and reload the address before assuming anything is missing. If it still does not appear,
+> getting you access takes two steps and the first can only be done by an organization owner at NC
+> State IT, so a student who added the course late may wait a day or two.
 > **Email me rather than working around it.** Do not create a repository of your own to submit
 > from; it cannot be graded, because the tooling that collects submissions only reads the
 > organization's repositories.
