@@ -33,6 +33,7 @@ Two folders side by side, neither inside the other:
 ```
 ISE754/
 ├── materials/     this repository, you read it
+├── handouts/      what is assigned to you, you read it
 └── work/          your own repository, you write it
 ```
 

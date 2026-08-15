@@ -370,6 +370,7 @@ the other:
 ```
 ISE754/
 ├── materials/     this repository, read only
+├── handouts/      homework, projects and study guides, read only, filled later
 └── work/          your own repository, added before the first submission
 ```
 

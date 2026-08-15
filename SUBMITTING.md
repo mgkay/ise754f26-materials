@@ -65,6 +65,7 @@ You should end with the two folders side by side, neither inside the other:
 ```
 ISE754/
 ├── materials/     the course repository, you read it
+├── handouts/      homework, projects and study guides, you read it
 └── work/          your repository, you write it
 ```
 
@@ -144,6 +145,38 @@ should report nothing left to commit and that your branch is up to date with `or
 your repository in a browser** and look at it. The files you expect should be there, with the commit
 message you wrote and a timestamp before the deadline. A push that failed silently looks exactly
 like a push that worked until you look.
+
+---
+
+## Getting feedback back
+
+Feedback is written into this same repository, as commits by the instructor or the teaching
+assistant. Nothing is emailed to you separately and nothing appears in Moodle, so there are two
+things to set up once, now that the repository exists.
+
+**Turn on notifications for it.** GitHub does not tell you when someone commits to a repository
+you own. Open your repository in a browser and, in the upper-right corner, select the **Watch**
+dropdown, then choose the level that notifies you of all activity rather than only the things you
+are participating in; a **Custom** option is there if you would rather pick event types
+yourself.<sup>[1]</sup> Without this, feedback can sit unread for a week.
+
+**Then pull before you next work.** Feedback arrives as commits on the remote, so it is not on
+your computer until you fetch it:
+
+```bash
+git pull --no-rebase
+```
+
+Run it at the start of any session. It is also what prevents the rejected-push problem below,
+which happens when the remote has feedback commits your local copy has not seen.
+
+You can read feedback either way: in the browser, where a commit shows exactly what changed, or in
+your own editor after pulling. The browser is usually quicker for a comment, and pulling matters
+when the feedback edits a file you are going to keep working in.
+
+[1]: "Configuring notifications," GitHub Docs,
+<https://docs.github.com/en/account-and-profile/managing-subscriptions-and-notifications-on-github/setting-up-notifications/configuring-notifications>
+(accessed August 2026).
 
 ---
 

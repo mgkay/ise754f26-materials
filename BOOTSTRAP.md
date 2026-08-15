@@ -83,13 +83,24 @@ an error.
 **Windows:** `$env:USERPROFILE\Documents\ISE754`
 **macOS:** `~/Documents/ISE754`
 
-Create it if it is absent, then work from inside it. It ends up holding two folders side by side:
+Create it if it is absent, then work from inside it. It ends up holding three folders side by side:
 
 ```
 ISE754/
-├── materials/     the course repository, read
+├── materials/     the public course repository, read
+├── handouts/      homework, projects and study guides, read, filled later
 └── work/          the student's own repository, added later in the semester
 ```
+
+**Create `handouts/` now, empty**, in the same call that creates the course folder. It cannot be
+cloned yet: it is a private NC State repository, and access is granted once the student is in the
+course organization, which happens after the first class. Creating it empty here means the folder
+layout the student is shown in the lecture and the syllabus is the layout they actually have, from
+the first day, rather than one that acquires a third folder without explanation a week later.
+
+**Leave it genuinely empty. Do not put a README or any placeholder in it**, because `git clone`
+refuses to clone into a directory that is not empty, and the later clone of the handouts repository
+lands exactly there.
 
 ---
 
