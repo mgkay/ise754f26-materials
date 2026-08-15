@@ -1,8 +1,8 @@
 # ISE 754 — Logistics Engineering, Fall 2026 materials
 
-Everything you are **given** for the course: the Julia environment, companion scripts, homework,
-projects, and study guides. Your own work lives in a separate, private repository; see the syllabus
-under *Submitting Work*.
+The Julia environment and the companion script for each lecture. Homework, projects, and study
+guides are handed out separately, in a private repository you are given access to; your own work
+lives in a third, also private. See the syllabus under *Submitting Work*.
 
 > ## Start here: **[SETUP.md](SETUP.md)**
 >
@@ -18,14 +18,11 @@ The rest of this page is reference: what is here and where it goes.
 |---|---|
 | `env/` | The Julia environment: `Project.toml`, `Manifest.toml`, and `bootstrap_check.jl`. Set up first; nothing else runs without it. Also holds `check_model.jl`, which checks a model statement against the [model format](https://mgkay.github.io/ise754f26/model-reference.html) |
 | `lectures/` | The companion script for each lecture, with any data it reads in a `data/` folder beside it |
-| `homework/` | Homework statements and starter scripts, each with its own `data/` |
-| `projects/` | Project briefs |
-| `study-guides/` | Study guides for the examinations |
 
-Data files are never stored on their own. Each sits beside the script or statement that uses it, so
-"which data?" is answered by where you are standing.
+Data files are never stored on their own. Each sits beside the script that uses it, so "which
+data?" is answered by where you are standing.
 
-Most folders are empty at the start of the semester and fill as the course goes. To pick up new
+`lectures/` is empty at the start of the semester and fills as the course goes. To pick up new
 material later, ask Claude Code to update the materials, or run `git pull` from inside the
 `materials` folder.
 
