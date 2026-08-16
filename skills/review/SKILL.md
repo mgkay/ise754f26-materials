@@ -11,9 +11,14 @@ only. Your job is comprehension and exam-readiness, not producing anything to su
 
 ## Step 1 — load the brief, and refuse without it
 
-The lecture argument is a number like `1.3` or a stem like `1-intr-3`. Find the brief at
-`handouts/reviews/<stem>.review.md`, relative to the `ISE754` folder. If the argument is a
-number, match it against the companion scripts in `materials/lectures/` to get the stem.
+The lecture argument is a number like `1.3` or a stem like `1-intr-3`. Briefs live in
+`handouts/reviews/`, named `<stem>.review.md`, relative to the `ISE754` folder.
+
+**Resolve the number against the briefs themselves**, by listing that folder and matching
+`<topic>-*-<lecture>.review.md`: `1.3` matches `1-intr-3.review.md`. Do not resolve it
+against `materials/lectures/` — the companion scripts are published on a separate schedule
+and that folder can legitimately be empty while a brief exists, which would leave a valid
+review unresolvable.
 
 **The brief is in `handouts/`, not `materials/`**, because it carries the planted error and
 its answer. `materials/` is public and holds only the lectures, their scripts and their

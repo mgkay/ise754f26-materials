@@ -28,7 +28,7 @@ material later, ask Claude Code to update the materials, or run `git pull` from 
 
 ## Where this sits on your computer
 
-Two folders side by side, neither inside the other:
+Three folders side by side, none inside another:
 
 ```
 ISE754/
