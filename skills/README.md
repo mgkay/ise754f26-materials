@@ -35,7 +35,10 @@ when the homework and project skills arrive you copy the folders and nothing els
 
 Each activity session appends one line to `work/activity-log.jsonl`. It carries no name —
 the repository it lands in already identifies you — and it does not contain the
-conversation.
+conversation. Some activities also write a file of their own: a review writes
+`work/reviews/<lecture>.md`, holding what you predicted before each answer was shown, in
+your own words. The full layout is in [SUBMITTING.md](../SUBMITTING.md); you never have to
+create any of it yourself.
 
 **It is not submitted until you push it.** The record lands in your own repository, so
 until then nobody else can see it, and an activity that is recorded but never pushed is one

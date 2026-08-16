@@ -43,6 +43,10 @@ teaches the student that this activity is housekeeping.
    planted error or its equivalent — it is the memorable part, and cutting it would leave a
    first session that felt like a form to fill in.
 
+   **Do not cut the activity's own artifact**, where it has one. Doing fewer items writes a
+   shorter file; skipping the file entirely means the first session is the one that left no
+   evidence, which is the opposite of the point.
+
 4. **Close on committing and pushing, and be concrete.** This is the mechanical step that
    otherwise silently fails, and it is the one thing in this file that must not be skipped:
 

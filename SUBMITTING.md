@@ -89,7 +89,7 @@ your GitHub account settings under **Applications**.<sup>[2]</sup>
 
 ---
 
-## Step 2 — What goes in it
+## Step 2 — What goes in it, and where
 
 Each assignment says what it expects. In general:
 
@@ -102,6 +102,43 @@ Two things do **not** belong in it:
   update and are not part of your submission. Work in `work/`.
 - **Large data files you did not create.** If an assignment supplies data, it is already in
   `materials/` and does not need copying.
+
+### The layout
+
+`work/` starts empty. It fills in this shape, and the paths matter — the course tooling reads
+some of them, so a file in the wrong place is a file nobody finds:
+
+```
+work/
+├── activity-log.jsonl      one line per activity session, written for you
+├── activity-log.error      why a record could not be written, if one could not
+├── reviews/                one file per review, e.g. reviews/1-intr-3.md
+├── hw1/  hw2/  …           one folder per homework
+└── project-1/  project-2/  …   one folder per project
+    ├── questions.md            what you ask the client
+    └── release-1.md  release-2.md  …   what the client sends back
+```
+
+**You do not have to create any of this.** Each activity makes its own folder the first time
+you run it, and each assignment says what to put where. It is written out here so that when
+you look in your repository and find `reviews/` or `activity-log.jsonl`, you know what put
+them there and that they belong to you.
+
+**`activity-log.jsonl` is a record of *that* you did an activity, not of what you said.** One
+line per session: which activity, when it started and ended, and a few counts. It carries no
+name — the repository it is in already identifies you — and it does not contain the
+conversation.
+
+**The `reviews/` files are your own words.** During a review you are asked what you expect
+*before* you are shown the answer, and what you type is written down verbatim next to what
+the answer turned out to be. That file is the point of the activity: it is a record of your
+own first instincts, which is the thing being trained, and it is worth reading back before an
+examination.
+
+**In a project, `questions.md` is what you commit and `release-N.md` is what comes back.**
+The client answers what you thought to ask and nothing else, so the question set is part of
+the work rather than a preliminary to it. Releases are numbered and never overwritten, so the
+whole correspondence stays readable in order.
 
 ---
 
