@@ -28,7 +28,13 @@
 # recorder that derails a study session to complain about its own schema has its priorities
 # backwards.
 
-const REQUIRED = ["lecture_id", "questions", "big_idea_reached", "planted_error_caught"]
+# `examples_verified` is required because verifying the lecture's examples IS the activity,
+# so a block without it is not a record of this session -- and an absent field would be
+# indistinguishable, in the roll-up, from a session that covered no examples. A block that
+# omits any of these is dropped with the field named in review-log.error, which is
+# diagnosable; a record that quietly under-reports is not.
+const REQUIRED = ["lecture_id", "questions", "examples_verified",
+                  "big_idea_reached", "planted_error_caught"]
 const OUT_NAME = "review-log.jsonl"
 
 "The student's work repository, or the working directory if the layout is not standard."
