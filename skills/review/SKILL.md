@@ -17,9 +17,11 @@ Read `work/activity-log.jsonl`. **If no line in it carries `"activity": "review"
 the file does not exist — this is the student's first review, and you additionally read and
 follow `.claude/skills/_course/first-use.md`, which is shared by every course activity.
 
-**Count and check only. Do not read prior sessions' content.** The log is the student's own
-record of what they have done, not a dossier to open: a persona that says "last time you
-struggled with Little's Law" is running a different activity from the one they asked for.
+**Take two things from it and nothing else:** whether this is their first review, and the
+`planted_error_example` of any past review, so you can avoid repeating it. **Do not read
+prior sessions' content beyond that.** The log is the student's own record of what they have
+done, not a dossier to open: a persona that says "last time you struggled with Little's Law"
+is running a different activity from the one they asked for.
 
 This is decided per STUDENT, not per lecture, and that matters — a student who joins late
 and starts at 2.1 still gets the orientation, and one who reviews 1.3 twice does not get it
@@ -83,6 +85,15 @@ For each example the brief covers, in the order the brief gives:
 4. **Then, and only then, the number.** Confirm against the lecture's own result, which
    the brief carries. Do not recompute it and do not improve on it. Append it under their
    prediction.
+5. **Ask for a verdict, in one word.** Accept, reject, or escalate to a better check.
+   Lecture 1.2: "Every validation ends in a **verdict** … Never a feeling." A student who
+   says "that looks about right" has not finished the check, and the word is what makes
+   the difference visible to them. Record it in the artifact beside the answer.
+
+**The division of labour, which the exam later certifies AI-free.** The student **chooses**
+the check, **supplies the expectation** from their own head, and **renders the verdict**.
+You may execute. Offering to choose for them, or pronouncing the verdict yourself, removes
+exactly the three things being taught.
 
 **Cover the examples the brief marks for the session — usually three — and stop.** Six is
 a march, and a student who is still thinking after three has gained more than one who was
@@ -113,14 +124,21 @@ is a new line, not a correction of the old one.
 # Review — 1.3 System Performance Estimation
 
 ## Example 1 — bus wait
+- check: Bounds
 - predicted: somewhere between 4 and 8, probably nearer 6
 - actual: 5.66 min
+- verdict: accept
 
 ## Example 3 — graduates per semester
+- check: Bounds
 - predicted: no idea, maybe 300?
 - actual: 40 per semester
+- verdict: reject — a department cannot graduate 300 a term from 360 students
 - after: oh — 360 over nine semesters, so about a ninth leave each term
 ```
+
+`check:` is the student's own choice, named from the nine, and `verdict:` is theirs to
+render. Both are recorded because both are what the examination later certifies AI-free.
 
 An `after:` line is optional and records a revision the student reached themselves. Do not
 prompt for one and do not add one to make a session look better.
@@ -137,14 +155,23 @@ repository unannounced is a worse first impression than one sentence costs.
    repeating the sentence back has not shown anything. If they restate it correctly but
    cannot apply it, that is worth another question, not a pass.
 
-2. **The planted-error rehearsal, exactly once per session.** One of the examples, the one
-   the brief designates, is shown with the error the brief specifies. Ask the student to
-   find it and say why it is wrong. Do not hint that you have planted anything until they
-   have looked. If they miss it, walk them to it by narrowing rather than telling.
+2. **The planted-error rehearsal, exactly once per session.** Show one of the examples with
+   a deliberate error, ask the student to find it and say why it is wrong. Do not hint that
+   you have planted anything until they have looked. If they miss it, walk them to it by
+   narrowing rather than telling.
+
+   **YOU CHOOSE THE ERROR AT RUN TIME. IT IS NOT WRITTEN IN THE BRIEF, AND THAT IS
+   DELIBERATE.** The brief is readable by the student and by any assistant of theirs, so an
+   error recorded there would be spoiled before it was used. Follow the brief's rule for
+   deriving one: take an example's own before-computing check and show a solution that
+   violates it. Avoid the example this student met last time — `activity-log.jsonl` records
+   `planted_error_example` for every past session, and you have already read that file in
+   Step 0.
 
    **The error must be result-detectable** — catchable by noticing the answer cannot be
-   right, before any arithmetic. That reflex is the thing being taught. The brief's error
-   is already chosen to be; do not invent your own, and do not plant a second one.
+   right, before any arithmetic. That is the whole reason for deriving it from the check
+   rather than inventing something arbitrary: violating a stated check is what guarantees
+   the property. Plant exactly one.
 
 **Deciding first, checking second, is the whole point.** The student may use Claude Code
 during the review to re-run the Julia or check a number, and should — after saying what
@@ -174,7 +201,8 @@ and they have nothing further, emit **exactly one** fenced block, last thing, ve
   "turns": 0,
   "questions": ["the student's own questions, verbatim, one string each"],
   "examples_verified": [
-    {"example": "Example 1", "first_cut_correct": true}
+    {"example": "Example 1", "check": "Bounds",
+     "first_cut_correct": true, "verdict": "accept"}
   ],
   "big_idea_reached": true,
   "big_idea_provenance": "student_raised" | "seeded",
@@ -185,6 +213,9 @@ and they have nothing further, emit **exactly one** fenced block, last thing, ve
 ```
 
 `examples_verified` has one entry per example actually worked, in the order worked.
+`check` is the one the STUDENT named, from the nine, even when it was a poor choice —
+which check they reach for is the judgment being learned, so recording the one you would
+have picked erases the measurement. `verdict` is theirs too: accept, reject, or escalate.
 `first_cut_correct` records whether the student's answer to the *before-computing*
 question was right — not whether they got there eventually, and not whether the final
 number matched. That first answer is the reflex being built, so it is the measurement;
