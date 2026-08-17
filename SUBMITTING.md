@@ -8,8 +8,8 @@ Set this up **before 8:00 pm Eastern on Monday, August 24**, when the first subm
 the class meeting the next morning. Everything here assumes
 the toolchain from [SETUP.md](SETUP.md) is working and the check reported `READY`.
 
-Every command, menu name, and link below was taken from official documentation on **2026-08-13** and
-is cited at the end.
+The GitHub and single sign-on behaviour described below was taken from official documentation on
+**2026-08-13** and is cited at the end.
 
 ---
 
@@ -30,12 +30,16 @@ Unity ID:
 https://github.com/ncstate-engr-ise/ise754-f26-<unityid>
 ```
 
-Replace `<unityid>` with yours, in lower case. Only you, the instructor, and the teaching assistant
-can see it.
+Replace `<unityid>` with yours, in lower case. Only you, the instructor, the teaching assistant, and
+NC State IT administrators can read it.
 
 > ⚠ **If the address gives "not found" or "repository does not exist," the repository is not ready
-> yet rather than lost.** Getting you access takes two steps and the first can only be done by an
-> organization owner at NC State IT, so a student who added the course late may wait a day or two.
+> yet rather than lost.** Try one thing first: if your credential has not been through NC State
+> single sign-on, GitHub hides a private repository rather than reporting a permissions error, so an
+> account that *does* have access still sees "not found." Sign in at github.com, complete single
+> sign-on, and reload the address before assuming anything is missing. If it still does not appear,
+> getting you access takes two steps and the first can only be done by an organization owner at NC
+> State IT, so a student who added the course late may wait a day or two.
 > **Email me rather than working around it.** Do not create a repository of your own to submit
 > from; it cannot be graded, because the tooling that collects submissions only reads the
 > organization's repositories.
@@ -152,9 +156,9 @@ git commit -m "HW 2: minisum for the eight demand points"
 git push
 ```
 
-`add` stages what changed, `commit` records it with a message, and `push` sends it to GitHub, which
-is the point at which it counts as submitted. **Work that is committed but not pushed has not been
-submitted**, because it is still only on your machine.
+**Work that is committed but not pushed has not been submitted.** `add` stages what changed,
+`commit` records it with a message, and `push` sends it to GitHub, which is the point at which it
+counts as submitted; until that last step it is still only on your machine.
 
 **Commit as you go rather than once at the end.** The history is part of what is looked at, and a
 single commit of everything an hour before class shows less about your work than five commits over
@@ -172,7 +176,8 @@ work, and you check it before it goes out.
 
 ## Confirming a submission landed
 
-Two checks, and the second is the one that matters:
+**A push that failed silently looks exactly like a push that worked until you look.** Two checks,
+and the second is the one that matters:
 
 ```bash
 git status
@@ -180,8 +185,7 @@ git status
 
 should report nothing left to commit and that your branch is up to date with `origin`. Then **open
 your repository in a browser** and look at it. The files you expect should be there, with the commit
-message you wrote and a timestamp before the deadline. A push that failed silently looks exactly
-like a push that worked until you look.
+message you wrote and a timestamp before the deadline.
 
 ---
 
