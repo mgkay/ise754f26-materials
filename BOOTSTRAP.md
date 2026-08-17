@@ -92,15 +92,29 @@ ISE754/
 └── work/          the student's own repository, added later in the semester
 ```
 
-**Create `handouts/` now, empty**, in the same call that creates the course folder. It cannot be
-cloned yet: it is a private NC State repository, and access is granted once the student is in the
-course organization, which happens after the first class. Creating it empty here means the folder
-layout the student is shown in the lecture and the syllabus is the layout they actually have, from
-the first day, rather than one that acquires a third folder without explanation a week later.
+**Create `handouts/` now, empty**, in the same call that creates the course folder. It is cloned in
+Step 5a, once Git is present. Creating it here means the folder layout the student is shown in the
+lecture and the syllabus is the layout they actually have, from the first step, rather than one
+that acquires a third folder without explanation a week later.
 
 **Leave it genuinely empty. Do not put a README or any placeholder in it**, because `git clone`
-refuses to clone into a directory that is not empty, and the later clone of the handouts repository
-lands exactly there.
+refuses to clone into a directory that is not empty, and Step 5a clones exactly there.
+
+**Also create `ISE754/CLAUDE.md`, with exactly these two lines:**
+
+```markdown
+# ISE 754
+
+@materials/course-instructions.md
+```
+
+That is the whole file, and it never changes. It is what gives every Claude Code session started
+in this folder the course's own instructions: where the four folders are, which of them are never
+written to, that analysis is a Julia script rather than Python, and that the student is not
+expected to run the mechanics. The instructions themselves live in `materials/`, so they can be
+improved during the semester by a `git pull` rather than by asking every student to edit a file.
+
+If the file already exists, leave it alone and report that it is present.
 
 ---
 
@@ -295,6 +309,35 @@ This comes before the pin because **the pin's source file lives inside this repo
 
 ---
 
+## Step 5a — The handouts repository
+
+Homework, project briefs, study guides and the pre-class review briefs are delivered in a
+**private** NC State repository, separate from the public materials. It is read-only to students,
+and it is the second of the two folders that are received rather than written.
+
+**Detect:** does `ISE754/handouts/.git` exist?
+
+- **It does** — do not re-clone. Update it instead, from inside that folder:
+  ```
+  git pull
+  ```
+- **It does not** — clone it into the empty folder Step 1 created, from inside `ISE754`:
+  ```
+  git clone https://github.com/ncstate-engr-ise/ise754-f26-handouts handouts
+  ```
+
+**This is the first command that needs an NC State sign-in.** A browser window opens; sign in with
+the university account and approve the authorization if asked. It is worth doing here rather than
+the first time it is needed under a deadline.
+
+**If it fails with a permission error**, the account is not yet in the course organization. Do not
+work around it: report it plainly, and tell the student to raise it in class or by email. Everything
+else in this setup completes without it, and the folder simply stays empty until it is resolved.
+
+*Success:* `handouts/README.md` exists.
+
+---
+
 ## Step 6 — Pin Julia for this folder only
 
 This is what lets a student keep a different Julia for their other work.
@@ -338,6 +381,56 @@ That is normal, not a hang.** Say so before starting it, so the silence is expec
 `Pkg.instantiate()` installs exactly the versions recorded in `Manifest.toml`. **Do not run
 `Pkg.update()`, `Pkg.add()`, or `Pkg.resolve()`** — any of them would move the student off the
 pinned versions and their results would stop matching the lectures.
+
+---
+
+## Step 7a — The course skills
+
+The course ships the activities the student runs in Claude Code: `/review` first, with homework and
+project skills arriving later in the semester. They travel in `materials/skills/` and have to sit in
+`ISE754/.claude/skills/`, because Claude Code looks for skills relative to where work happens and
+one left in `materials/` is never found.
+
+**Detect:** does `.claude/skills/review/SKILL.md` exist? If it does, compare it with the copy in
+`materials/skills/` and re-copy only if they differ. Re-copying is always safe: it overwrites with
+the current version, and nothing is kept anywhere else.
+
+**Part 1 — the skills.** Copy every *folder* in `materials/skills/` into `.claude/skills/`,
+creating that folder if it is absent. Copy the folders only: `materials/skills/README.md` is
+documentation for the student and does not belong in `.claude/skills/`.
+
+**Part 2 — the hooks.** `ISE754/.claude/settings.json` already exists from Step 1 and carries the
+permission allowlist, so **add to it rather than replacing it.** It needs a `hooks` key alongside
+the `permissions` key it already has:
+
+```json
+"hooks": {
+  "Stop": [
+    { "matcher": "",
+      "hooks": [ { "type": "command",
+                   "command": "julia .claude/skills/_course/record_activity.jl" } ] }
+  ],
+  "SessionStart": [
+    { "matcher": "",
+      "hooks": [ { "type": "command",
+                   "command": "julia .claude/skills/_course/check_sync.jl" } ] }
+  ]
+}
+```
+
+One records each course activity into `work/`; the other reports, at the start of a session,
+whether feedback has arrived unpulled or work is sitting unpushed. Neither is a gate: if Julia is
+missing or a file has moved, the activity still works and only the record is lost.
+
+`materials/skills/_course/HOOK.md` is the authority for both. If it disagrees with the block above,
+follow the file and say so.
+
+**Re-run this step after any `git pull` in `materials/` that reports a change under `skills/`.** It
+is the one step in this guide that recurs.
+
+*Success:* `.claude/skills/review/SKILL.md` and `.claude/skills/_course/record_activity.jl` both
+exist, and `.claude/settings.json` still parses as JSON and now has both a `permissions` and a
+`hooks` key.
 
 ---
 
