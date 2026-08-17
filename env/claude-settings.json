@@ -59,6 +59,12 @@
       "Bash(curl -fsSL https://raw.githubusercontent.com/mgkay/ise754f26-materials/*)",
       "PowerShell(Invoke-WebRequest -Uri https://raw.githubusercontent.com/mgkay/ise754f26-materials/*)",
       "WebFetch(domain:raw.githubusercontent.com)"
+    ],
+    "deny": [
+      "Edit(./materials/**)",
+      "Write(./materials/**)",
+      "Edit(./handouts/**)",
+      "Write(./handouts/**)"
     ]
   }
 }

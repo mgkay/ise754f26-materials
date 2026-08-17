@@ -132,6 +132,12 @@ pinned Julia. It is
 [readable here](https://github.com/mgkay/ise754f26-materials/blob/main/env/claude-settings.json),
 and it applies only inside the `ISE754` folder.
 
+**It also carries four refusals.** Claude Code will not write into `materials/` or `handouts/`,
+because both are folders you receive: an edit there is lost the next time they update, and it makes
+that update fail. It can still *read* everything in them, which is all it needs. To try something
+out in a lecture's script, ask for it and the script is copied into `work/lectures/` first, where
+your changes are yours and get submitted with everything else.
+
 **Expect several prompts anyway.** The list does not cover everything, deliberately, and **anything
 it does not cover stops and asks you.** When one appears, that is the design working. Read it rather
 than reflexively approving, because that habit is the one this course is actually about.
