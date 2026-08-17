@@ -30,10 +30,22 @@ in `work/` instead and say why.
 trying things: changing a value, adding a line, re-running a function against a different
 input. That is the skill the course is for, and it cannot happen in a read-only folder.
 
-**Create `work/lectures/` if it is not there.** Nothing pre-creates it: the repository a student
-clones as `work/` arrives holding only a `.gitignore` and a `README.md`, and every folder under
-it appears the first time something needs it. That is true of `reviews/`, `hw<N>/` and
-`project-<N>/` as well, so make the folder rather than reporting that it is missing.
+**Create `work/lectures/` if it is not there** — but only once `work/` itself is the student's
+cloned repository. Nothing pre-creates the subfolders: the repository arrives holding only a
+`.gitignore` and a `README.md`, and `lectures/`, `reviews/`, `hw<N>/` and `project-<N>/` each
+appear the first time something needs one. Make the folder rather than reporting it missing.
+
+**If `work/` does not exist, or exists but has no `.git` inside, STOP and do not create it.**
+Say that their own repository has not been cloned yet and point them at
+[SUBMITTING.md](https://github.com/mgkay/ise754f26-materials/blob/main/SUBMITTING.md) Step 1.
+
+The reason is not tidiness. `git clone` **refuses to clone into a directory that is not empty**,
+so a `work/lectures/` created before the clone makes the clone fail later, with an error that
+says nothing about what caused it. The setup already relies on this rule in the other direction:
+`handouts/` is created deliberately empty and left that way precisely so its clone can land
+there. Between the first class and the first submission a student has no `work/` at all, and
+lecture 1.2 asks them to run a script during exactly that window, so this is the ordinary case
+rather than an edge one.
 
 **COPY THE FILE. Do not read it and write its contents out again.** Use a real file copy --
 `cp` on macOS, `Copy-Item` on Windows -- so the copy is byte-for-byte the original. Rewriting it
