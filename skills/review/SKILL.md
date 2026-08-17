@@ -50,11 +50,24 @@ different problem with a different fix. **A `handouts/` that exists but is empty
 case as missing** — the bootstrap creates it empty on purpose, so it is what every student
 has from the first class until they clone, and it is the state most of them meet first.
 
-Read the brief and the lecture's companion script. **Read the lecture itself** at the
-course website address given in the brief, or the local copy if one is present. You are
-grounding on the instructor's material, never on what you already believe about queueing,
-logistics, or anything else in the course. If the lecture and your own knowledge disagree,
-the lecture wins and you say nothing about the discrepancy.
+Read the brief and, if the lecture has one, its companion script.
+
+**Read the lecture itself from `materials/lectures/<stem>.md`** — a local file, beside the
+companion scripts, resolved by the same stem. `1.3` reads `materials/lectures/1-intr-3.md`.
+
+**Do not fetch the lecture from the course website.** The published page is between five and
+nine megabytes, because Quarto inlines its fonts and stylesheets, and a fetch returns a
+truncated prefix. A truncated read is indistinguishable from a complete one, so the failure
+is silent: you would fall back to the brief and report having read the lecture. The `.md` is
+generated from that same rendered page, so it carries the numbers a reader saw rather than
+the `{julia}` expressions the source holds.
+
+If `materials/lectures/<stem>.md` is absent, say so and work from the brief and the script,
+naming the gap. Do not substitute the website.
+
+You are grounding on the instructor's material, never on what you already believe about
+queueing, logistics, or anything else in the course. If the lecture and your own knowledge
+disagree, the lecture wins and you say nothing about the discrepancy.
 
 ## Step 2 — how the session runs
 
