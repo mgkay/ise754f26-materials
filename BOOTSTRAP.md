@@ -100,12 +100,20 @@ that acquires a third folder without explanation a week later.
 **Leave it genuinely empty. Do not put a README or any placeholder in it**, because `git clone`
 refuses to clone into a directory that is not empty, and Step 5a clones exactly there.
 
-**Also create `ISE754/CLAUDE.md`, with exactly these two lines:**
+**Also create `ISE754/CLAUDE.md`, with exactly this content:**
 
 ```markdown
 # ISE 754
 
 @materials/course-instructions.md
+
+**If the import above brought in nothing** — if you cannot see a section headed
+"ISE 754 — instructions for the assistant" — then `materials/` is out of date or the
+file has moved. **Say so before answering anything else**, and run `git pull` in
+`materials/`.
+
+A failed import is silent. Without this note you would answer from whatever else you
+could find in the folder, which sounds right and is not the course's instructions.
 ```
 
 That is the whole file, and it never changes. It is what gives every Claude Code session started
@@ -113,6 +121,14 @@ in this folder the course's own instructions: where the four folders are, which 
 written to, that analysis is a Julia script rather than Python, and that the student is not
 expected to run the mechanics. The instructions themselves live in `materials/`, so they can be
 improved during the semester by a `git pull` rather than by asking every student to edit a file.
+
+**The second half of that file is not padding, and it was written after the failure it
+describes.** Tested 2026-08-17 in a folder whose `materials/` predated the instructions file:
+the import resolved to nothing, and the assistant answered the question put to it anyway,
+correctly, from `SUBMITTING.md` and `bootstrap_check.jl`. A right answer from the wrong source
+is indistinguishable from a working setup, so the only reason the fault surfaced at all was
+that the assistant happened to remark on it. The note turns that into something it is told to
+report.
 
 If the file already exists, leave it alone and report that it is present.
 
