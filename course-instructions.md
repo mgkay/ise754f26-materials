@@ -35,6 +35,13 @@ clones as `work/` arrives holding only a `.gitignore` and a `README.md`, and eve
 it appears the first time something needs it. That is true of `reviews/`, `hw<N>/` and
 `project-<N>/` as well, so make the folder rather than reporting that it is missing.
 
+**COPY THE FILE. Do not read it and write its contents out again.** Use a real file copy --
+`cp` on macOS, `Copy-Item` on Windows -- so the copy is byte-for-byte the original. Rewriting it
+produces a file whose text matches but whose line endings do not: on Windows the checkout is
+CRLF and a fresh write is LF, so `diff` then reports every line changed. That destroys the one
+thing the copy is for, which is that comparing it with the original shows exactly what the
+student changed to convince themselves a result was right.
+
 Do the copy when the student asks to run, try, or change a lecture's script; do not copy
 lecture scripts in advance, and do not copy anything they have not asked about. Say once that
 you made a copy and where it went, so they know which file they are running. If the copy
