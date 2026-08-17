@@ -127,6 +127,16 @@ function main()
         text = try read(path, String) catch; stdin_text end
     end
 
+    # THE TRANSCRIPT IS JSON LINES, so the assistant's text is stored JSON-ESCAPED: a
+    # fenced block's newlines are the two characters \n and its quotes are \". Both
+    # regexes below need real characters -- last_block requires a real newline after
+    # ```course-log, and the field check requires unescaped quotes -- so without this
+    # every match silently returns nothing and the hook takes its "not a course
+    # activity" path. That failure is indistinguishable from a session that never
+    # happened, which is the one outcome this file's header says it must never produce.
+    # Stdlib only, no JSON parser, consistent with the rest of this script.
+    text = replace(text, "\\r\\n" => "\n", "\\n" => "\n", "\\\"" => "\"")
+
     work = find_work_dir()
     block = last_block(text)
 
