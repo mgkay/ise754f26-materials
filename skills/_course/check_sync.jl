@@ -51,7 +51,10 @@ end
 "Count from `git rev-list`, or nothing when there is no upstream to compare against."
 function count_commits(work, range)
     try
-        out = read(Cmd(`git rev-list --count $range`; dir = work), String)
+        # stderr to devnull: see the note in record_activity.jl. A repository with no
+        # upstream otherwise prints git's "fatal:" twice at session start, once per check.
+        cmd = pipeline(Cmd(`git rev-list --count $range`; dir = work), stderr = devnull)
+        out = read(cmd, String)
         return tryparse(Int, strip(out))
     catch
         return nothing   # no upstream configured yet, or not a repository
