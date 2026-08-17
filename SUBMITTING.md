@@ -105,7 +105,7 @@ Two things do **not** belong in it:
 - **Anything under `materials/`.** That folder is a clone you pull; edits there are lost on the next
   update and are not part of your submission. Work in `work/`.
 - **Large data files you did not create.** If an assignment supplies data, it is already in
-  `materials/` and does not need copying.
+  `handouts/` and does not need copying.
 
 ### The layout
 

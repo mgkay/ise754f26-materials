@@ -53,8 +53,9 @@ access."*<sup>[1]</sup> Sign up or upgrade at <https://claude.com/pricing>.
 You will not know for certain until you sign in. If the plan does not include Claude Code, it says so
 at that point rather than failing obscurely, so do step 1 early enough to fix it before class.
 
-**2. About 15 GB of free disk space.** Most of it is Julia's package cache, which is larger than it
-sounds because it stores precompiled code and native graphics libraries.
+**2. About 15 GB of free disk space.** Most of it is the tools themselves. Julia's package cache is
+the smallest part, around 1.5 GB, though larger than it sounds because it stores precompiled code
+and native graphics libraries.
 
 That is all to do in advance. **You do not need to install Git, Julia, or VS Code yourself.**
 

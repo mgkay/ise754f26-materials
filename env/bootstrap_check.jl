@@ -15,7 +15,8 @@
 # is edited:
 #
 #   1. It INSTALLS NOTHING and CHANGES NOTHING. It is safe to run at any time,
-#      as often as wanted. Nothing here writes outside stdout.
+#      as often as wanted. Its only write is bootstrap-output.txt, the report
+#      it is asked to leave behind.
 #   2. It INVOKES each tool rather than looking for that tool's files. A file
 #      on disk does not prove a working command; running it does.
 #   3. It reports UNKNOWN rather than guessing. A check that cannot determine
