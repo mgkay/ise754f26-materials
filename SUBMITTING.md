@@ -102,8 +102,12 @@ Each assignment says what it expects. In general:
 
 Two things do **not** belong in it:
 
-- **Anything under `materials/`.** That folder is a clone you pull; edits there are lost on the next
-  update and are not part of your submission. Work in `work/`.
+- **Anything under `materials/` or `handouts/`.** Both are clones you pull; edits there are lost on
+  the next update, they make the next `git pull` refuse, and they are not part of your submission.
+  VS Code marks both read-only so you cannot do it by accident. To try something out in a lecture's
+  script, ask Claude Code to copy it into `work/lectures/` and work on the copy: that way your
+  experiments are submitted with everything else, and `git diff` against the original shows exactly
+  what you changed to satisfy yourself it was right.
 - **Large data files you did not create.** If an assignment supplies data, it is already in
   `handouts/` and does not need copying.
 
@@ -116,6 +120,7 @@ some of them, so a file in the wrong place is a file nobody finds:
 work/
 ├── activity-log.jsonl      one line per activity session, written for you
 ├── activity-log.error      why a record could not be written, if one could not
+├── lectures/               your copy of a lecture's script, once you run one
 ├── reviews/                one file per review, e.g. reviews/1-intr-3.md
 ├── hw1/  hw2/  …           one folder per homework
 └── project-1/  project-2/  …   one folder per project

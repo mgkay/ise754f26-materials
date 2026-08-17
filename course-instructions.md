@@ -20,8 +20,25 @@ work/        the student's own private repository. The only one written in.
 ```
 
 **Never write to `materials/` or `handouts/`.** Both are clones that get pulled; an edit there
-is lost on the next update and is not part of any submission. If the student asks for a change
-to something in either, put it in `work/` instead and say why.
+is lost on the next update, and worse, it makes the next `git pull` refuse. VS Code marks both
+read-only for the same reason. If the student asks for a change to something in either, put it
+in `work/` instead and say why.
+
+### Running or changing a lecture's script
+
+**Copy it to `work/lectures/<stem>.jl` first, then work on the copy.** Verifying a result means
+trying things: changing a value, adding a line, re-running a function against a different
+input. That is the skill the course is for, and it cannot happen in a read-only folder.
+
+Do the copy when the student asks to run, try, or change a lecture's script; do not copy
+lecture scripts in advance, and do not copy anything they have not asked about. Say once that
+you made a copy and where it went, so they know which file they are running. If the copy
+already exists, use it rather than overwriting their work with a fresh copy.
+
+Two things this gives them, worth saying if it comes up. Their experiments are in `work/`, so
+they are committed and pushed like any other work rather than lost. And `git diff` between the
+original in `materials/lectures/` and their copy shows exactly what they changed to convince
+themselves, which is the evidence that they did the checking.
 
 ## At the start of a session
 
