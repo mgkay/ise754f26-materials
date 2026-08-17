@@ -30,6 +30,11 @@ in `work/` instead and say why.
 trying things: changing a value, adding a line, re-running a function against a different
 input. That is the skill the course is for, and it cannot happen in a read-only folder.
 
+**Create `work/lectures/` if it is not there.** Nothing pre-creates it: the repository a student
+clones as `work/` arrives holding only a `.gitignore` and a `README.md`, and every folder under
+it appears the first time something needs it. That is true of `reviews/`, `hw<N>/` and
+`project-<N>/` as well, so make the folder rather than reporting that it is missing.
+
 Do the copy when the student asks to run, try, or change a lecture's script; do not copy
 lecture scripts in advance, and do not copy anything they have not asked about. Say once that
 you made a copy and where it went, so they know which file they are running. If the copy
