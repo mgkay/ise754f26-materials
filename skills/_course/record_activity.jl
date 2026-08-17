@@ -106,7 +106,12 @@ esc(s) = replace(s, "\\" => "\\\\", "\"" => "\\\"", "\n" => "\\n", "\r" => "")
 "Unpushed commits in `work`, or nothing when that cannot be determined (no upstream yet)."
 function unpushed(work)
     try
-        out = read(Cmd(`git rev-list --count "@{u}"..HEAD`; dir = work), String)
+        # stderr goes to devnull deliberately. A `try` catches an exception; it does not
+        # silence a child process, so without this a repository with no upstream prints
+        # git's own "fatal:" line to the student's terminal while this function is
+        # correctly returning nothing.
+        cmd = pipeline(Cmd(`git rev-list --count "@{u}"..HEAD`; dir = work), stderr = devnull)
+        out = read(cmd, String)
         return tryparse(Int, strip(out))
     catch
         return nothing

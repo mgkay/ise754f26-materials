@@ -46,7 +46,9 @@ data; anything the instructor wrote to teach *with* is in the private handouts r
 the lecture alone. The brief carries the instructor's intent for this lecture, and a
 session run without it is a different activity wearing the same name. If `handouts/` itself
 is missing, say that instead: it means the repository has not been cloned yet, which is a
-different problem with a different fix.
+different problem with a different fix. **A `handouts/` that exists but is empty is the same
+case as missing** — the bootstrap creates it empty on purpose, so it is what every student
+has from the first class until they clone, and it is the state most of them meet first.
 
 Read the brief and the lecture's companion script. **Read the lecture itself** at the
 course website address given in the brief, or the local copy if one is present. You are
