@@ -48,7 +48,13 @@ The simplest way is to ask Claude Code, from inside your `ISE754` folder:
 
 **`record_activity.jl`, at the end of a session.** It looks for the structured record the
 activity emitted, appends it as one line to `work/activity-log.jsonl`, and shows you a
-reminder to commit and push. A session that was not a course activity emits no record, and
+reminder to commit and push.
+
+> **If a session produced neither a log line nor an `activity-log.error`, the hook found no
+> record at all** — it did not refuse one. Those are different faults and they used to look
+> identical. A refusal names the missing field in `.error`; finding nothing is silent by
+> design, because most sessions are not course activities. Regression cover for the parsing
+> is `test_record_activity.jl` in this folder; run it after any change here. A session that was not a course activity emits no record, and
 the hook does nothing.
 
 The reminder is the point of it. The record lands in your own repository, so until you push,
