@@ -364,8 +364,8 @@ missing: `code --install-extension julialang.language-julia` and
 
 **The materials.** From inside `ISE754`:
 `git clone https://github.com/mgkay/ise754f26-materials materials`. No GitHub account needed. If the
-folder already exists, `git pull` inside it instead. Two folders end up side by side, neither inside
-the other:
+folder already exists, `git pull` inside it instead. Three folders end up side by side, none inside
+another:
 
 ```
 ISE754/
