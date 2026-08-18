@@ -64,7 +64,7 @@ function model_ranges(lines::Vector{String})
     for (i, raw) in enumerate(lines)
         if match(DIV_CLOSE, raw) !== nothing
             isempty(stack) && continue
-            n, attrs, start = pop!(stack)
+            _, attrs, start = pop!(stack)
             if occursin("#mdl-", attrs) &&
                !any(occursin("model-skeleton", a) for (_, a, _) in stack)
                 push!(ranges, (start, i))
@@ -192,9 +192,9 @@ function check_slice(lines::Vector{String}, offset::Int)
     # order
     ranks = [(ln, findfirst(==(kw), ORDER)) for (ln, kw, _) in slots
              if kw in KNOWN]
-    for k in 2:length(ranks)
-        if ranks[k][2] < ranks[k-1][2]
-            push!(out, Finding(ranks[k][1], "warn",
+    for (prev, cur) in zip(ranks, Iterators.drop(ranks, 1))
+        if cur[2] < prev[2]
+            push!(out, Finding(cur[1], "warn",
                 "keyword is out of order; the order is " * join(ORDER, ", ")))
         end
     end
