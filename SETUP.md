@@ -138,6 +138,13 @@ that update fail. It can still *read* everything in them, which is all it needs.
 out in a lecture's script, ask for it and the script is copied into `work/lectures/` first, where
 your changes are yours and get submitted with everything else.
 
+**The first time you run `claude` in this folder it asks whether you trust it. Say yes.** Until
+you do, Claude Code reads the file you just downloaded but does not apply it, so the setup asks
+about every command and the allowlist does nothing. The four refusals above hold either way, so
+nothing is at risk while you decide. Trusting a folder you made yourself, holding one file you
+were given a link to and could read, is the safe case. Reading what is in a folder before
+trusting it is the habit worth keeping.
+
 **Expect several prompts anyway.** The list does not cover everything, deliberately, and **anything
 it does not cover stops and asks you.** When one appears, that is the design working. Read it rather
 than reflexively approving, because that habit is the one this course is actually about.
