@@ -89,16 +89,17 @@ Create it if it is absent, then work from inside it. It ends up holding three fo
 ISE754/
 ├── materials/     the public course repository, read
 ├── handouts/      homework, projects and study guides, read, filled later
-└── work/          the student's own repository, added later in the semester
+└── work/          the student's own repository, written
 ```
 
-**Create `handouts/` now, empty**, in the same call that creates the course folder. It is cloned in
-Step 5a, once Git is present. Creating it here means the folder layout the student is shown in the
-lecture and the syllabus is the layout they actually have, from the first step, rather than one
-that acquires a third folder without explanation a week later.
+**Create `handouts/` and `work/` now, both empty**, in the same call that creates the course
+folder. They are cloned in Steps 5a and 5b, once Git is present. Creating them here means the
+folder layout the student is shown in the lecture and the syllabus is the layout they actually
+have, from the first step, rather than one that acquires folders without explanation later.
 
-**Leave it genuinely empty. Do not put a README or any placeholder in it**, because `git clone`
-refuses to clone into a directory that is not empty, and Step 5a clones exactly there.
+**Leave them genuinely empty. Do not put a README or any placeholder in either**, because
+`git clone` refuses to clone into a directory that is not empty, and Steps 5a and 5b clone
+exactly there.
 
 **Also create `ISE754/CLAUDE.md`, with exactly this content:**
 
@@ -351,6 +352,46 @@ work around it: report it plainly, and tell the student to raise it in class or 
 else in this setup completes without it, and the folder simply stays empty until it is resolved.
 
 *Success:* `handouts/README.md` exists.
+
+---
+
+## Step 5b — The student's own repository
+
+Coursework is submitted from a private repository that belongs to the student, one per student,
+created by the teaching staff and named after the unity ID. It is the third of the three folders,
+and the only one written in.
+
+**It is cloned here rather than later in the semester.** Lecture 1.2 asks the student to run a
+lecture's companion script, and the way that is done is to copy the script into `work/lectures/`
+first, because `materials/` is read-only. That copy has to land in the cloned repository: a
+`work/` created by hand ahead of the clone makes the clone fail afterwards, since `git clone`
+refuses a directory that is not empty. Cloning now also puts the sign-in problems in front of
+the class, where they can be fixed, instead of in front of one student before a deadline.
+
+**Ask for the unity ID.** The repository address is built from it, and it cannot be guessed:
+`git config user.email` is whatever the student happened to set and is often not an NC State
+address, and a wrong guess produces the same "not found" as an unfinished sign-in, which makes
+the real cause undiagnosable. So ask, in one question, and use the answer verbatim in lower case.
+
+**Detect:** does `ISE754/work/.git` exist?
+
+- **It does** — do not re-clone. Leave it alone; the student's own commits are in there.
+- **It does not** — clone it into the empty folder Step 1 created, from inside `ISE754`:
+  ```
+  git clone https://github.com/ncstate-engr-ise/ise754-f26-<unityid> work
+  ```
+
+**If it fails saying the repository does not exist**, that is most often the NC State single
+sign-on rather than a missing repository: GitHub hides a private repository from a credential
+that has not passed SSO rather than reporting a permission error. Tell the student to open
+`https://github.com/ncstate-engr-ise` in a browser, sign in, complete the single sign-on if
+prompted, and run the clone again.
+
+**If it still fails**, do not work around it and do not create the folder by hand. Report it
+plainly and tell the student to raise it in class or by email. Everything else in this setup
+completes without it, and `work/` simply stays empty until it is resolved.
+
+*Success:* `work/.git` exists.
 
 ---
 

@@ -48,7 +48,15 @@ NC State IT administrators can read it.
 
 ## Step 1 — Clone it, once
 
-From inside your `ISE754` folder, so that `work` lands beside `materials`:
+**The machine setup already did this**, at Step 5b, so `work/` is almost certainly a clone
+already. Check before running anything here: if `ISE754/work/.git` exists, you are done with this
+step, and you should skip to Step 2. Do NOT run the clone below on a `work/` that already has
+files in it, because `git clone` refuses a directory that is not empty and the error will not
+explain why.
+
+Run this only if the setup could not reach the repository, most often because the NC State single
+sign-on had not been completed yet. From inside your `ISE754` folder, so that `work` lands beside
+`materials`:
 
 **Windows:**
 
