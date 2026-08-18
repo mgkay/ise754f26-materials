@@ -7,6 +7,14 @@
 // Pinning it here means VS Code runs the course on Julia 1.12.6 even if your
 // default Julia is a different version for other work.
 //
+// "julia.useCodeLens" turns off the Run | Above | Below | Debug buttons the Julia
+// extension floats above every ## cell marker. In julialang.language-julia 1.219.2
+// those buttons throw away the cell that was clicked and run whichever cell the
+// text cursor happens to sit in, and clicking a button does not move the cursor --
+// so the Run above one cell silently runs another, with no error to say so. Run a
+// cell by clicking inside it and pressing Alt+Enter; the current cell stays
+// outlined, so what will run is always visible.
+//
 // "files.readonlyInclude" marks the two received folders read-only IN THE EDITOR:
 // you can open and read anything in them, and VS Code refuses to save a change.
 // That is what they are -- materials/ and handouts/ are clones you pull, so an
@@ -16,6 +24,8 @@
 // The globs are relative to the ISE754 folder.
 {
   "julia.executablePath": "+1.12.6",
+
+  "julia.useCodeLens": false,
 
   "files.readonlyInclude": {
     "materials/**": true,

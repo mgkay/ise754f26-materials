@@ -46,7 +46,7 @@ Figure 1: The VS Code Julia workspace: the script on the left, split into ## cel
 
 Start a session. Open the .jl, then open the Command Palette from the menu bar (View ▸ Command Palette) and pick Julia: Start REPL. A julia> prompt opens in a panel below the editor. That panel is the live session for the whole file, and it stays warm throughout.
 
-Run a cell at a time. A line beginning with ## marks the start of a cell, and the companion scripts put one example in each. To run one, click the Run Cell link that appears just above its ## line, or use the Run menu. The result shows up right next to the code and in the session below, and any plot opens in the plot pane on the right. That is the Jupyter feel, now inside a real editor.
+Run a cell at a time. A line beginning with ## marks the start of a cell, and the companion scripts put one example in each. To run one, click anywhere inside it and press Alt+Enter. The result shows up right next to the code and in the session below, and any plot opens in the plot pane on the right. That is the Jupyter feel, now inside a real editor.
 
 NotePrefer the keyboard? The run shortcuts
 
@@ -411,11 +411,13 @@ The companion script’s opening ## Get class-ready cell does the install. It fi
 import Pkg
 let dir = @__DIR__
 isproj = d -> isfile(joinpath(d, "Project.toml"))
-while !isproj(dir) && !isproj(joinpath(dir, "env")) &&
+env = d -> isproj(joinpath(d, "env")) ? joinpath(d, "env") :
+joinpath(d, "materials", "env")
+while !isproj(dir) && !isproj(env(dir)) &&
 dir != dirname(dir)
 dir = dirname(dir)
 end
-isproj(joinpath(dir, "env")) && (dir = joinpath(dir, "env"))
+isproj(env(dir)) && (dir = env(dir))
 isproj(dir) ||
 error("no course project above $(@__DIR__)")
 Pkg.activate(dir)                  # use the course project
@@ -426,7 +428,7 @@ end
 
 1
 
-Walk up from the script’s own folder until a Project.toml turns up, either in that folder or in an env/ beside it; that folder is the course project. Two places, because the course keeps it in two: at the top of the repository these pages are built from, and under env/ in the materials repository a student clones.
+Walk up from the script’s own folder until a Project.toml turns up, either in that folder, in an env/ beside it, or in a materials/env/ beside it; that folder is the course project. Three places, because the course keeps it in three: at the top of the repository these pages are built from, under env/ in the materials repository a student clones, and off to the side in materials/env/ as seen from a script copied into work/.
 
 2
 

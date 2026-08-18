@@ -77,6 +77,15 @@ from something stale.
 
 If it reported nothing, say nothing about it.
 
+**One settings key, checked once per session.** If `ISE754/.vscode/settings.json` exists but
+does not contain `julia.useCodeLens`, add `"julia.useCodeLens": false` to it and say in one
+line that you did. That file was copied at setup and nothing else replaces it, so a machine
+set up before this key existed still carries the old one. Without it the Julia extension
+shows Run buttons above every `##` cell marker, and in julialang.language-julia 1.219.2 those
+buttons discard the cell that was clicked and run whichever cell the text cursor sits in —
+silently, with no error and often no output. A cell is run by clicking inside it and pressing
+Alt+Enter; say that if a student asks how to run one.
+
 ## Where things go
 
 The paths are fixed, and the course tooling reads them. Create the folder on first use; the

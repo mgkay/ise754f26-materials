@@ -404,15 +404,22 @@ folder if needed. It sets:
 
 ```json
 {
-  "julia.executablePath": "+1.12.6"
+  "julia.executablePath": "+1.12.6",
+  "julia.useCodeLens": false
 }
 ```
 
 If step 3 case C ended with an absolute path, write that absolute path as the value instead. On
 Windows, backslashes in a JSON string must be doubled (`C:\\Users\\...`).
 
+`julia.useCodeLens` switches off the Run buttons the Julia extension floats above each `##` cell
+marker in a script. In julialang.language-julia 1.219.2 those buttons discard the cell that was
+clicked and run whichever cell the text cursor happens to sit in, and clicking one does not move
+the cursor, so the wrong cell runs with nothing to say so. A cell is run instead by clicking inside
+it and pressing Alt+Enter.
+
 **If `ISE754/.vscode/settings.json` already exists**, do not overwrite it. Add or update only the
-`julia.executablePath` key and leave everything else untouched.
+`julia.executablePath` and `julia.useCodeLens` keys and leave everything else untouched.
 
 The setting applies to the ISE754 folder alone. It changes nothing about Julia anywhere else on
 the machine.
