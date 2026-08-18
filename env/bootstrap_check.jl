@@ -199,16 +199,16 @@ end
 function check_workspace_pin()
     t = "Workspace Julia pin"
     settings = joinpath(ROOT, ".vscode", "settings.json")
-    # "Copy it" was not an instruction anyone could carry out. The deny rules
-    # cover materials/ on the READ side, so a shell copy whose source is under
-    # materials/ is refused outright -- not prompted, so not approvable
-    # (measured on macOS and Windows, 2026-08-18). Reading and writing works:
+    # A shell copy out of materials/ is refused in some permission modes and
+    # allowed in others (2026-08-18: plain `cp` refused and `cp -n` allowed on
+    # the same file in the same session), so the remedy names the fallback
+    # rather than assuming either. Reading and writing always works here:
     # Bash(cat *) and Write(/.vscode/settings.json) are both allow-listed.
-    remedy = "write materials/env/vscode-settings.json to it -- read the file " *
-             "and write the destination; a shell copy out of materials/ is refused."
+    remedy = "copy materials/env/vscode-settings.json over it, or read that " *
+             "file and write this one if the copy is refused."
     isfile(settings) || return fail(t, "no $settings",
         "This file is what makes VS Code use Julia $PIN for the course " *
-        "without changing your global default. Ask Claude Code to " * remedy)
+        "without changing your global default. " * uppercasefirst(remedy))
     text = read(settings, String)
     # The settings themselves, not the words: the shipped file explains every
     # key in a comment, so a substring test passes on a file that merely
