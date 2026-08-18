@@ -399,8 +399,12 @@ completes without it, and `work/` simply stays empty until it is resolved.
 
 This is what lets a student keep a different Julia for their other work.
 
-Copy `materials/env/vscode-settings.json` to `ISE754/.vscode/settings.json`, creating the `.vscode`
-folder if needed. It sets:
+Put `materials/env/vscode-settings.json` at `ISE754/.vscode/settings.json`, creating the `.vscode`
+folder if needed. **Read the file and write it out; do not `cp` it.** The deny rules downloaded in
+Step 3 cover `materials/` on the read side as well, so a shell copy whose *source* is under
+`materials/` is refused — measured on both macOS and Windows, and the refusal is not a prompt that
+can be approved. `Bash(cat *)` and `Write(/.vscode/settings.json)` are both on the allowlist, so
+reading the file and writing the destination lands it without a prompt. It sets:
 
 ```json
 {

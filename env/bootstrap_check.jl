@@ -199,10 +199,16 @@ end
 function check_workspace_pin()
     t = "Workspace Julia pin"
     settings = joinpath(ROOT, ".vscode", "settings.json")
+    # "Copy it" was not an instruction anyone could carry out. The deny rules
+    # cover materials/ on the READ side, so a shell copy whose source is under
+    # materials/ is refused outright -- not prompted, so not approvable
+    # (measured on macOS and Windows, 2026-08-18). Reading and writing works:
+    # Bash(cat *) and Write(/.vscode/settings.json) are both allow-listed.
+    remedy = "write materials/env/vscode-settings.json to it -- read the file " *
+             "and write the destination; a shell copy out of materials/ is refused."
     isfile(settings) || return fail(t, "no $settings",
         "This file is what makes VS Code use Julia $PIN for the course " *
-        "without changing your global default. Copy it from " *
-        "materials/env/vscode-settings.json.")
+        "without changing your global default. Ask Claude Code to " * remedy)
     text = read(settings, String)
     # The settings themselves, not the words: the shipped file explains every
     # key in a comment, so a substring test passes on a file that merely
@@ -211,7 +217,7 @@ function check_workspace_pin()
     exe = match(r"\"julia\.executablePath\"\s*:\s*\"([^\"]*)\"", text)
     exe === nothing && return fail(t,
         "$settings does not set julia.executablePath",
-        "Copy materials/env/vscode-settings.json over it.")
+        uppercasefirst(remedy))
     # JSON doubles the backslashes in a Windows path; the messages below are
     # read by a student and one names a command to run, so show it unescaped.
     juliapath = replace(exe.captures[1], "\\\\" => "\\")
@@ -221,17 +227,17 @@ function check_workspace_pin()
         # so that one is reported as undetermined rather than wrong.
         startswith(juliapath, "+") && return fail(t,
             "$settings pins julia.executablePath to $juliapath, not +$PIN",
-            "The course pin is $PIN. Copy materials/env/vscode-settings.json over it.")
+            "The course pin is $PIN. " * uppercasefirst(remedy))
         return unknown(t,
             "$settings points julia.executablePath at $juliapath, which does not name $PIN",
             "That is fine if the path really is $PIN -- check it with " *
-            "`\"$juliapath\" --version`. Otherwise copy " *
-            "materials/env/vscode-settings.json over it for the +$PIN channel.")
+            "`\"$juliapath\" --version`. Otherwise " * remedy *
+            " That gives the +$PIN channel.")
     end
     occursin(r"\"julia\.useCodeLens\"\s*:\s*false", text) || return fail(t,
         "$settings does not set julia.useCodeLens to false",
         "Without it, the Run button above a cell runs whichever cell the " *
-        "cursor is in. Copy materials/env/vscode-settings.json over it.")
+        "cursor is in. Add \"julia.useCodeLens\": false to it, or " * remedy)
     return ok(t, "VS Code is pinned to Julia $PIN for this folder")
 end
 

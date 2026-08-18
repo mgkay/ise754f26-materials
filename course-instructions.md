@@ -37,7 +37,9 @@ appear the first time something needs one. Make the folder rather than reporting
 
 **If `work/` does not exist, or exists but has no `.git` inside, STOP and do not create it.**
 Say that their own repository has not been cloned yet and point them at
-[SUBMITTING.md](https://github.com/mgkay/ise754f26-materials/blob/main/SUBMITTING.md) Step 1.
+[BOOTSTRAP.md](https://github.com/mgkay/ise754f26-materials/blob/main/BOOTSTRAP.md) Step 5b.
+That is where the clone happens now. SUBMITTING.md Step 1 opens by saying the setup already did
+it, so sending a student whose clone failed there tells them it has already happened.
 
 The reason is not tidiness. `git clone` **refuses to clone into a directory that is not empty**,
 so a `work/lectures/` created before the clone makes the clone fail later, with an error that
