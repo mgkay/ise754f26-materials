@@ -204,14 +204,28 @@ function check_workspace_pin()
         "without changing your global default. Copy it from " *
         "materials/env/vscode-settings.json.")
     text = read(settings, String)
-    occursin("julia.executablePath", text) || return fail(t,
+    # The settings themselves, not the words: the shipped file explains every
+    # key in a comment, so a substring test passes on a file that merely
+    # mentions one. Match each key's own value, and read the pin from there
+    # rather than from anywhere in the file.
+    exe = match(r"\"julia\.executablePath\"\s*:\s*\"([^\"]*)\"", text)
+    exe === nothing && return fail(t,
         "$settings does not set julia.executablePath",
         "Copy materials/env/vscode-settings.json over it.")
-    occursin(string(PIN), text) || return fail(t,
-        "$settings sets julia.executablePath, but does not name $PIN",
-        "The course pin is $PIN. Copy materials/env/vscode-settings.json over it.")
-    # The setting itself, not the word: the shipped file explains the key in a
-    # comment, so a substring test passes on a file that only mentions it.
+    juliapath = exe.captures[1]
+    if !occursin(string(PIN), juliapath)
+        # A channel is ours to judge; an absolute path (SETUP step 3 case C)
+        # may be the right Julia under a name that does not carry the version,
+        # so that one is reported as undetermined rather than wrong.
+        startswith(juliapath, "+") && return fail(t,
+            "$settings pins julia.executablePath to $juliapath, not +$PIN",
+            "The course pin is $PIN. Copy materials/env/vscode-settings.json over it.")
+        return unknown(t,
+            "$settings points julia.executablePath at $juliapath, which does not name $PIN",
+            "That is fine if the path really is $PIN -- check it with " *
+            "`\"$juliapath\" --version`. Otherwise copy " *
+            "materials/env/vscode-settings.json over it for the +$PIN channel.")
+    end
     occursin(r"\"julia\.useCodeLens\"\s*:\s*false", text) || return fail(t,
         "$settings does not set julia.useCodeLens to false",
         "Without it, the Run button above a cell runs whichever cell the " *
