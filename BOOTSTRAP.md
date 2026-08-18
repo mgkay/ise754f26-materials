@@ -461,6 +461,17 @@ it and pressing Alt+Enter.
 The setting applies to the ISE754 folder alone. It changes nothing about Julia anywhere else on
 the machine.
 
+**It is honored only when `ISE754` is the one folder open in the window.** VS Code reads a
+window-scoped setting from user settings or from a `.code-workspace` file, and from a folder's
+`.vscode/settings.json` only when that folder is the window's single root. `julia.useCodeLens`
+declares no scope, so it takes the window default and is silently ignored in a window with
+several root folders, or one opened on a parent of `ISE754`. Tell the student to open `ISE754`
+itself, with *File ▸ Open Folder*, rather than adding it to an existing workspace. Two things
+make this easy to miss: `julia.executablePath` is declared `machine-overridable`, so the Julia
+pin still applies where the code-lens key does not, and check 9 reads the file's text rather
+than asking VS Code, so it reports PASS either way. If several folders must be open at once,
+put `"julia.useCodeLens": false` in user settings instead.
+
 ---
 
 ## Step 7 — The Julia environment

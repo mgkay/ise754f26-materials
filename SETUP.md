@@ -375,6 +375,9 @@ missing: `code --install-extension julialang.language-julia` and
 `code --install-extension anthropic.claude-code`.<sup>[7]</sup>
 
 **The folder pin.** Copy `materials/env/vscode-settings.json` to `ISE754/.vscode/settings.json`.
+Open `ISE754` as the only folder in the VS Code window, with *File ▸ Open Folder*: part of that
+file is read only when it is the window's single root, so adding `ISE754` to a workspace that
+already holds other folders quietly drops it.
 
 **The materials.** From inside `ISE754`:
 `git clone https://github.com/mgkay/ise754f26-materials materials`. No GitHub account needed. If the
