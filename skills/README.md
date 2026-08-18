@@ -14,14 +14,14 @@ left here is never found.
 The simplest way is to ask Claude Code to do it, from inside your `ISE754` folder:
 
 > Copy every folder in `materials/skills/` into `.claude/skills/`, creating that folder if
-> it does not exist, and add the Stop hook to `.claude/settings.json` as described in
-> `materials/skills/_course/HOOK.md`.
+> it does not exist, and add both hooks from `materials/skills/_course/HOOK.md` to
+> `.claude/settings.json`, preserving anything already there.
 
 Do it once now, and again after any `git pull` in `materials` that reports a change under
 `skills/`. Reinstalling is safe: it overwrites with the current version and nothing is
 kept anywhere else.
 
-**The hook is registered once and never again.** It is shared by every course skill, so
+**The hooks are registered once and never again.** They are shared by every course skill, so
 when the homework and project skills arrive you copy the folders and nothing else changes.
 
 ## What is here
@@ -29,7 +29,7 @@ when the homework and project skills arrive you copy the folders and nothing els
 | Folder | What it does | Run it |
 |---|---|---|
 | `review/` | Pre-class review of one lecture: rehearses that lecture's worked examples as verification practice and answers your questions against the lecture. Ungraded, records completion. | `/review 1.3` |
-| `_course/` | Shared machinery, not a skill you run: the one Stop hook that records any activity, and what every activity says the first time you use it. | — |
+| `_course/` | Shared machinery, not a skill you run: the Stop hook that records any activity, the SessionStart hook that reports unpushed work and unpulled feedback, and what every activity says the first time you use it. | — |
 
 ## What gets recorded, and submitting it
 

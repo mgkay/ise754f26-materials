@@ -344,12 +344,45 @@ and it is the second of the two folders that are received rather than written.
   ```
 
 **This is the first command that needs an NC State sign-in.** A browser window opens; sign in with
-the university account and approve the authorization if asked. It is worth doing here rather than
-the first time it is needed under a deadline.
+the **university-managed** GitHub account and approve the authorization if asked. It is worth doing
+here rather than the first time it is needed under a deadline. Have the student sign in from a
+**private or incognito window**: Git Credential Manager opens the default browser, and a browser
+already signed in to a personal GitHub account completes the sign-in without prompting and stores
+the wrong identity.
 
-**If it fails with a permission error**, the account is not yet in the course organization. Do not
-work around it: report it plainly, and tell the student to raise it in class or by email. Everything
-else in this setup completes without it, and the folder simply stays empty until it is resolved.
+**If the clone fails, it prints this, whatever the cause:**
+
+```
+remote: Repository not found.
+fatal: Authentication failed
+```
+
+Git cannot tell the causes apart from that message, so work through them in this order. The same
+branch serves Step 5b, which adds one cause of its own.
+
+1. **The wrong identity: the common case, and the only one that presents as a completed sign-in.**
+   NC State's GitHub is an enterprise with *managed* accounts, so the course identity is a separate
+   account named for the unity ID with `_ncstate` appended — `kay_ncstate`, not a personal `mgkay` —
+   and a personal account is refused outright rather than merely lacking access. Confirmed
+   2026-08-18: three clone attempts returned `HTTP/1.1 401 Unauthorized` carrying
+   `www-authenticate: Basic realm="GitHub" enterprise_hint="ncstate-university" domain_hint="ncstate"`
+   *after* the credential was sent, erasing the stored credential produced an identical 401, and an
+   organization request from a personal account returns `404 Not Found`.
+   **The test:** open a private window, sign in as the `_ncstate` account, and open the repository
+   URL. If it loads there but not from the ordinary browser, the stored credential is the personal
+   account. Erase the stored credential, then clone again and sign in as the managed account.
+2. **No membership in the organization.** Git's output cannot distinguish this from the above, which
+   is why it comes second. Report it plainly and tell the student to raise it in class or by email.
+3. **Unfinished single sign-on.** Have the student open `https://github.com/ncstate-engr-ise` in a
+   browser, signed in as the managed account, complete the sign-on if prompted, and clone again.
+
+**One command settles which it is**, and it is worth running before working through the list rather
+than guessing: re-run the clone with `GIT_CURL_VERBOSE=1` set (`$env:GIT_CURL_VERBOSE=1` in
+PowerShell) and read the headers. A 401 *after* an `Authorization` header was sent is the wrong
+identity; a 404 on the repository with no 401 is membership or single sign-on.
+
+Do not work around any of them. Everything else in this setup completes without `handouts/`, and the
+folder simply stays empty until it is resolved.
 
 *Success:* `handouts/README.md` exists.
 
@@ -381,11 +414,11 @@ the real cause undiagnosable. So ask, in one question, and use the answer verbat
   git clone https://github.com/ncstate-engr-ise/ise754-f26-<unityid> work
   ```
 
-**If it fails saying the repository does not exist**, that is most often the NC State single
-sign-on rather than a missing repository: GitHub hides a private repository from a credential
-that has not passed SSO rather than reporting a permission error. Tell the student to open
-`https://github.com/ncstate-engr-ise` in a browser, sign in, complete the single sign-on if
-prompted, and run the clone again.
+**If it fails saying the repository does not exist**, check the spelling of the unity ID in the
+address first, since a mistyped one produces exactly this message and is the one cause peculiar to
+this step. Then work through Step 5a's three causes in the order given there, starting with the
+wrong identity rather than with single sign-on: a personal GitHub account is refused by the managed
+enterprise, and its sign-in completes without prompting, so it looks like it worked.
 
 **If it still fails**, do not work around it and do not create the folder by hand. Report it
 plainly and tell the student to raise it in class or by email. Everything else in this setup

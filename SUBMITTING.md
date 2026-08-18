@@ -34,10 +34,13 @@ Replace `<unityid>` with yours, in lower case. Only you, the instructor, the tea
 NC State IT administrators can read it.
 
 > ⚠ **If the address gives "not found" or "repository does not exist," the repository is not ready
-> yet rather than lost.** Try one thing first: if your credential has not been through NC State
-> single sign-on, GitHub hides a private repository rather than reporting a permissions error, so an
-> account that *does* have access still sees "not found." Sign in at github.com, complete single
-> sign-on, and reload the address before assuming anything is missing. If it still does not appear,
+> yet rather than lost.** Try two things first, in this order. Open the address in a **private
+> window** signed in as your `_ncstate` account: a personal GitHub account is refused by NC State's
+> managed enterprise, and an ordinary window silently reuses whichever account is already signed in,
+> so a wrong identity looks exactly like a missing repository. Then, if that account still does not
+> see it, complete **NC State single sign-on** and reload, since GitHub hides a private repository
+> from a credential that has not passed sign-on rather than reporting a permissions error. If it
+> still does not appear,
 > getting you access takes two steps and the first can only be done by an organization owner at NC
 > State IT, so a student who added the course late may wait a day or two.
 > **Email me rather than working around it.** Do not create a repository of your own to submit
@@ -83,11 +86,19 @@ ISE754/
 
 ### What happens the first time, and why the email is not a breach
 
-The repository is private and it sits inside an NC State organization, so git has to establish who
-you are twice over. On the first clone a browser window opens: sign in to GitHub, and then pass
-**NC State single sign-on**, the same login used for other university services.<sup>[1]</sup><sup>[3]</sup>
-Both are needed, because access to a repository in this organization is granted only to a credential
-that has been through single sign-on.
+The repository is private, it sits inside an NC State organization, and the account that reaches it
+is **not your personal GitHub account**. NC State's GitHub is an enterprise with *managed* accounts,
+so your course identity is a separate account named for your unity ID with `_ncstate` appended, of
+the form `abc123_ncstate`. A personal account is refused outright, so signing in to one does not
+reach these repositories however many times it passes single sign-on.
+
+**Sign in from a private or incognito window.** On the first clone a browser window opens, and Git
+Credential Manager uses your default browser: if that browser is already signed in to a personal
+GitHub account, the sign-in finishes without asking you anything and stores the wrong identity. The
+clone then fails with "Repository not found," which looks nothing like a sign-in problem and is the
+single most common way this step goes wrong. In the private window, sign in as the `_ncstate`
+account and pass **NC State single sign-on** if prompted, the same login used for other university
+services.<sup>[1]</sup><sup>[3]</sup>
 
 **GitHub will then email you** to say that "a first-party GitHub OAuth application has been added to
 your account," listing permissions including `repo`.<sup>[2]</sup> **That email is expected and is

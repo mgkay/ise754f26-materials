@@ -8,7 +8,10 @@ lives in a third, also private. See the syllabus under *Submitting Work*.
 >
 > It walks through installing everything in order and ends with a script that checks the whole
 > installation and prints `READY`. **You do not need to clone this repository yourself** — the setup
-> does it for you, in the right place. No GitHub account is needed at any point.
+> does it for you, in the right place. No GitHub account is needed for *this* repository, which is
+> public. The other two folders are private: `handouts/` and your own `work/` sit in an NC State
+> organization, reached with a university-managed GitHub account rather than a personal one, and
+> [SUBMITTING.md](SUBMITTING.md) covers that sign-in.
 
 The rest of this page is reference: what is here and where it goes.
 
