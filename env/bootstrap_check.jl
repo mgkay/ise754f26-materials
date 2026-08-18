@@ -210,10 +210,12 @@ function check_workspace_pin()
     occursin(string(PIN), text) || return fail(t,
         "$settings sets julia.executablePath, but does not name $PIN",
         "The course pin is $PIN. Copy materials/env/vscode-settings.json over it.")
-    occursin("julia.useCodeLens", text) || return fail(t,
-        "$settings predates the cell-execution fix",
-        "Without julia.useCodeLens, the Run button above a cell runs whichever " *
-        "cell the cursor is in. Copy materials/env/vscode-settings.json over it.")
+    # The setting itself, not the word: the shipped file explains the key in a
+    # comment, so a substring test passes on a file that only mentions it.
+    occursin(r"\"julia\.useCodeLens\"\s*:\s*false", text) || return fail(t,
+        "$settings does not set julia.useCodeLens to false",
+        "Without it, the Run button above a cell runs whichever cell the " *
+        "cursor is in. Copy materials/env/vscode-settings.json over it.")
     return ok(t, "VS Code is pinned to Julia $PIN for this folder")
 end
 
