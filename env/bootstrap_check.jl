@@ -212,7 +212,9 @@ function check_workspace_pin()
     exe === nothing && return fail(t,
         "$settings does not set julia.executablePath",
         "Copy materials/env/vscode-settings.json over it.")
-    juliapath = exe.captures[1]
+    # JSON doubles the backslashes in a Windows path; the messages below are
+    # read by a student and one names a command to run, so show it unescaped.
+    juliapath = replace(exe.captures[1], "\\\\" => "\\")
     if !occursin(string(PIN), juliapath)
         # A channel is ours to judge; an absolute path (SETUP step 3 case C)
         # may be the right Julia under a name that does not carry the version,
