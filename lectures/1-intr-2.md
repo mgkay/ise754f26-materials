@@ -402,9 +402,9 @@ A * x              # verify: should return b
 
 ### 1.9 Installing and loading packages
 
-Everything so far has used only base Julia, which is always available. The next two sections are the first to need a package: DataFrames for the table and CairoMakie for the plot. A package is installed once per machine, then loaded with using wherever it is first needed.
+Everything so far has used only base Julia, which is always available. The next two sections are the first to need a package: DataFrames for the table and CairoMakie for the plot. A package is installed once per machine, then loaded with using wherever it is first needed. Every package this course uses is installed together by the cell below, so a package that is new to a lecture is already on the machine, and Pkg.add is never the answer.
 
-The companion script’s opening ## Get class-ready cell does the install. It finds the course project, activates it, and instantiates it, downloading every package at the version pinned for the course. It is safe to run repeatedly, so it need only run once when a lecture is opened. Unlike the rest of the lecture’s code, this cell is plumbing to run, not read: the walk-up loop and @__DIR__ are not course material, and there is nothing here to trace by hand.
+The companion script’s opening ## Get class-ready cell does the install. It finds the course project, activates it, and instantiates it, downloading every package at the version pinned for the course. It is safe to run repeatedly, so it need only run once per Julia session: activation lives in the running session, not in the file, so closing and reopening a script changes nothing, and only restarting the REPL or VS Code makes it necessary again. Unlike the rest of the lecture’s code, this cell is plumbing to run, not read: the walk-up loop and @__DIR__ are not course material, and there is nothing here to trace by hand.
 
 ```
 ## Get class-ready — install packages
