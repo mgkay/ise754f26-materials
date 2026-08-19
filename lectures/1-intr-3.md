@@ -471,7 +471,7 @@ ct[i] = wq + s             # cycle time = wait + service
 a = -log(rand()) / rₐ      # gap to the next arrival
 wq = max(0.0, wq + s - a)  # Lindley recursion
 end
-ct
+return ct
 end
 ```
 
@@ -546,7 +546,7 @@ filter!(k -> k ≠ j, pend)
 t += st[j]                 # serve job j to completion
 ct[j] = t - at[j]          # cycle time = finish - arrival
 end
-ct
+return ct
 end
 ```
 
