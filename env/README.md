@@ -43,7 +43,15 @@ the one you were taught in.
 **These two files are copied verbatim from the `ISE754-dev` project root, which is the single
 canonical pair.** That root environment is what `quarto render` executes every lecture
 against, so shipping anything else here would let a student's run disagree with the published
-numbers. Do not hand-edit them here. Regenerate by copying from the canonical pair.
+numbers. Do not hand-edit them here: they are **derived**, and an edit made here is
+overwritten on the next publish.
+
+**Since 2026-08-19 that is enforced rather than remembered.** `tools/publish_scripts.py`
+owns both files and copies them as a pair, on the same deny-by-default footing as the
+lecture scripts, and `tools/check_deploy_ready.py` refuses when the pair here differs from
+the canonical one. The enforcement exists because the divergence is invisible from both
+sides: the lecture still renders, the scripts still run, `bootstrap_check.jl` still prints
+`READY`, and only the numbers quietly disagree.
 
 ✓ **Pin settled 2026-08-07: Julia 1.12.6.** It was resolved the correct way, by moving the
 canonical environment and re-rendering every lecture against it, not by editing a printed
