@@ -120,6 +120,23 @@ Every package is pinned in `materials/env/Manifest.toml`. Julia is pinned to 1.1
 first cell of any companion script activates the course environment. Do not add packages or
 change versions.
 
+**Every package the course uses is already installed by that first cell, so `Pkg.add` is
+never the answer.** `Pkg.instantiate()` installs all of them at their pinned versions in one
+go, which is why a lecture can introduce `using CairoMakie` at the point a plot is first
+needed without anything being added. A package that looks new to the reader is new only to
+the reader. If `using` fails on a package the course pins, the session was never activated:
+run the top cell. Never `Pkg.add`, `Pkg.update` or `Pkg.resolve` — each installs or resolves
+outside the pinned pair, and the student's results then stop matching the lecture's.
+
+**The top cell is run once per Julia session, not once per file.** Activation is state in the
+running Julia process, so it lasts as long as the `julia>` prompt does: closing and reopening
+a script changes nothing, and switching to another lecture's script needs nothing either. It
+is needed again after `Julia: Restart REPL`, after closing VS Code, and in a second window
+with its own REPL. Say that plainly if a student asks, and say the same after any pull that
+changed `materials/env/`: **restart the REPL**, because instantiate updates files on disk and
+not code already loaded, so a student can pull a fix, run the top cell, and still be running
+the old version.
+
 ## Validation
 
 The course teaches **nine named checks**, set out in lecture 1.2. Use those names. Inventing a
