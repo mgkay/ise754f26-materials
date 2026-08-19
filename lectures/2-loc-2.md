@@ -446,7 +446,7 @@ Great circle, or geodesic, distances on the surface of a sphere, such as the ear
 
 The great circle distance d_{GC} between points 1 and 2 on the surface of the earth, specified by their longitude (lon) and latitude (lat) angles in radians, is d_{GC} = R\,d_{rad}, where R is the radius of the earth and the central angle d_{rad} (in radians) is
 
-d_{rad} = 2 \sin^{-1} \min\left\{1,\ \sqrt{\sin^2\!\left(\frac{y_1 - y_2}{2}\right) + \cos(y_1)\cos(y_2)\,\sin^2\!\left(\frac{x_1 - x_2}{2}\right)}\right\} \tag{6}
+d_{rad} = 2 \sin^{-1} \min\left\{1,\ \sqrt{\sin^2\!\left(\tfrac{y_1 - y_2}{2}\right) + \cos(y_1)\cos(y_2)\,\sin^2\!\left(\tfrac{x_1 - x_2}{2}\right)}\right\} \tag{6}
 
 with x and y the longitude and latitude. To convert between decimal degrees and radians:
 

@@ -147,7 +147,7 @@ Given those three, the average time a unit spends inside is the stock divided by
 
 The squared coefficient of variation (SCV) provides a normalized measure used to estimate the variance of a process (demand, production, etc.):
 
-c = \frac{\sigma}{t} = \text{coefficient of variation (CV)}, \qquad c^2 = \frac{\sigma^2}{t^2} = \text{squared coefficient of variation (SCV)}, \tag{2}
+\begin{aligned} c &= \frac{\sigma}{t} = \text{coefficient of variation (CV)}, \\ c^2 &= \frac{\sigma^2}{t^2} = \text{squared coefficient of variation (SCV)}, \end{aligned} \tag{2}
 
 where \sigma is the standard deviation of the process, t its mean, and \sigma^2 its variance. The SCV places a process on a scale of variability:
 - c^2 = 0: deterministic / exactly spaced (best case, lower bound);
@@ -198,7 +198,7 @@ Increasing the departure rate to account for yield loss results in the required 
 
 The throughput-feasible minimum number of identical machines at the workstation is the fewest whose combined effective capacity (service rate) strictly exceeds that arrival rate. It is found by a machine-hours accounting, a general method of determining resource requirements (the resources can be machines, people, etc.) that can also be used to determine operating costs for economic justification. Over H hours of operation, the available machine hours mH split into processing, repair, and idle hours, and the minimum number of machines is the machine hours needed to meet demand divided by the productive hours per machine:
 
-m_{\min} = \left\lfloor \frac{\text{machine hours needed to meet demand}}{\text{productive hours per machine}} + 1 \right\rfloor = \left\lfloor \frac{r_a t_0 H}{AH} + 1 \right\rfloor = \left\lfloor r_a \frac{t_0}{A} + 1 \right\rfloor = \lfloor r_a t_e + 1 \rfloor , \tag{4}
+\begin{aligned} m_{\min} &= \left\lfloor \frac{\text{machine hours needed to meet demand}}{\text{productive hours per machine}} + 1 \right\rfloor \\ &= \left\lfloor \frac{r_a t_0 H}{AH} + 1 \right\rfloor = \left\lfloor r_a \frac{t_0}{A} + 1 \right\rfloor = \lfloor r_a t_e + 1 \rfloor , \end{aligned} \tag{4}
 
 where
 
