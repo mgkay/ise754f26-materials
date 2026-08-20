@@ -28,10 +28,24 @@
 # and never explains itself otherwise. A hook that greets every session teaches people to
 # ignore it, and it would be ignored precisely when it finally mattered.
 #
-# NEVER FETCHES. It compares against the last-known remote state, which is whatever the
-# student's most recent pull or push left behind. Reaching the network at session start
+# WORK/ NEVER FETCHES. The two counts above compare against the last-known remote state,
+# whatever the student's most recent pull or push left behind. Reaching the network for them
 # would add latency to every session and fail on a train; a stale "behind" reading is worth
 # more than a hook that hangs. The student's own `git pull` refreshes it.
+#
+# MATERIALS/ IS THE ONE EXCEPTION, AND IT IS DELIBERATE. Nothing a student does updates their
+# knowledge of the materials remote, so a purely local check cannot tell that the instructor
+# published anything. That is not hypothetical: on 2026-08-20 the reference student tree held
+# zero of the six lecture .md twins on main, and an older _course/check_sync.jl, because
+# nothing had ever prompted a pull. The review activity reads materials/lectures/<stem>.md,
+# so the student meets a degraded activity and no one is told.
+#
+# The cost is bounded three ways rather than by a promise. `git ls-remote` mutates no ref and
+# fetches no object; it asks for one sha. `http.lowSpeedLimit`/`http.lowSpeedTime` abort a
+# stalled transfer in about five seconds, which is git's own mechanism and needs no timeout(1)
+# (macOS ships none). And every failure path returns `nothing` and prints, so offline, slow,
+# and no-remote are all silent rather than noisy. A student on a train sees exactly what they
+# see today.
 
 const WORK_HINT = "work"
 
@@ -61,6 +75,66 @@ function count_commits(work, range)
     end
 end
 
+"The ISE754 folder that holds `work`, or nothing."
+find_root(work) = (r = dirname(work); isdir(joinpath(r, "materials")) ? r : nothing)
+
+"""
+Do the installed skills differ from the ones shipped in `materials/skills/`?
+
+Network-free and cheap. This is the second half of the delivery path: BOOTSTRAP Step 7a says
+to re-run the copy "after any `git pull` in materials/ that reports a change under skills/",
+and that instruction is correct, but nothing checks it afterwards. A student who pulls and
+forgets keeps running the old skill, and the tree looks healthy.
+
+`true` if any shipped skill folder is missing from `.claude/skills/` or differs byte for byte.
+"""
+function skills_stale(root)
+    src = joinpath(root, "materials", "skills")
+    dst = joinpath(root, ".claude", "skills")
+    (isdir(src) && isdir(dst)) || return nothing
+    for entry in readdir(src)
+        sdir = joinpath(src, entry)
+        isdir(sdir) || continue                      # README.md is not a skill
+        ddir = joinpath(dst, entry)
+        isdir(ddir) || return true                   # shipped but never installed
+        for f in readdir(sdir)
+            sf = joinpath(sdir, f)
+            isfile(sf) || continue
+            df = joinpath(ddir, f)
+            (isfile(df) && read(sf) == read(df)) || return true
+        end
+    end
+    return false
+end
+
+"""
+Has `materials` moved on the remote since this clone last pulled?
+
+One `ls-remote`: no ref is written, no object is fetched. Bounded by git's own low-speed abort
+so it cannot hang. Returns `nothing` whenever the answer is unknown for any reason, which is
+the offline case and is silent by design.
+"""
+function materials_behind(root)
+    mats = joinpath(root, "materials")
+    isdir(joinpath(mats, ".git")) || return nothing
+    remote = try
+        cmd = pipeline(Cmd(`git -c http.lowSpeedLimit=1000 -c http.lowSpeedTime=5 ls-remote --heads origin main`; dir = mats),
+                       stderr = devnull)
+        out = read(cmd, String)
+        isempty(strip(out)) ? nothing : first(split(strip(out)))
+    catch
+        nothing
+    end
+    remote === nothing && return nothing
+    here = try
+        strip(read(pipeline(Cmd(`git rev-parse HEAD`; dir = mats), stderr = devnull), String))
+    catch
+        nothing
+    end
+    here === nothing && return nothing
+    return remote != here
+end
+
 function main()
     work = find_work_dir()
     work === nothing && return 0
@@ -81,6 +155,27 @@ function main()
             "$ahead commit(s) in the student's work repository have NOT been pushed. " *
             "Work that is committed but not pushed has not been submitted, because it is " *
             "still only on their machine. Tell them to run `git push` from ISE754/work.")
+    end
+
+    root = find_root(work)
+    if root !== nothing
+        moved = materials_behind(root)
+        if moved === true
+            push!(lines,
+                "The course `materials` repository has commits this clone does not have. That " *
+                "is how new lectures, their companion scripts and the course skills arrive, " *
+                "and an activity that reads one of them will quietly work from something older " *
+                "or report it missing. Tell them to run `git pull` in ISE754/materials.")
+        end
+        if skills_stale(root) === true
+            push!(lines,
+                "The course skills in `.claude/skills/` no longer match the ones in " *
+                "`materials/skills/`, so this session is running an older copy than the one " *
+                "shipped. Re-run BOOTSTRAP Step 7a: copy every FOLDER in `materials/skills/` " *
+                "into `.claude/skills/`. Copying the folders' contents instead leaves no " *
+                "loadable skill at all, so check that `.claude/skills/review/SKILL.md` exists " *
+                "afterwards.")
+        end
     end
 
     isempty(lines) && return 0
