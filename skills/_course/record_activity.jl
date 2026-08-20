@@ -100,6 +100,36 @@ function field(block, key)
     m === nothing ? nothing : m.captures[1]
 end
 
+"""
+Does this block look like the SKILL's own TEMPLATE rather than a real record?
+
+WHY THIS IS NECESSARY. `last_block` scans the whole transcript, and the skill file is IN
+the transcript -- the assistant read it to run the activity. Its Step 4 shows a filled-in
+example inside a ```course-log fence. So a session that ends WITHOUT the assistant emitting
+a real block still has exactly one block available, the template, and the hook recorded it.
+
+Measured 2026-08-20 on a real /review 1.3 session that stopped after the first question:
+activity-log.jsonl received the template verbatim, "started": "<ISO 8601>", together with
+first_cut_correct true, big_idea_reached true and planted_error_caught true. An abandoned
+session therefore wrote a record indistinguishable from a flawless one, which is worse than
+writing nothing: it is silent, plausible, and wrong in the direction that flatters.
+
+Presence-of-field checking cannot see this, because the template HAS every field. What
+separates them is the SHAPE of the values, so that is what is checked.
+"""
+function looks_like_template(block)
+    # `started` and `ended` are the tell: a real record carries a timestamp, the template
+    # carries the words describing one.
+    for key in ("started", "ended")
+        v = field(block, key)
+        v === nothing && return true
+        occursin(r"^\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}", v) || return true
+    end
+    # The template also offers alternatives with a bare `|`, which is not JSON at all.
+    occursin(r"\"\s*\|\s*\"", block) && return true
+    return false
+end
+
 "Minimal JSON string escaping, for text this script composes."
 esc(s) = replace(s, "\\" => "\\\\", "\"" => "\\\"", "\n" => "\\n", "\r" => "")
 
@@ -208,6 +238,12 @@ function main()
 
     # Collapsed to one line, since the file is one record per line. The block is already
     # JSON as the persona emitted it; this only reshapes whitespace.
+    if looks_like_template(block)
+        note_error(work, "$activity block looks like the skill's template, not a session " *
+                         "record (no real timestamps); nothing recorded")
+        return 0
+    end
+
     oneline = replace(strip(block), r"\s*\n\s*" => " ")
     try
         open(joinpath(work, OUT_NAME), "a") do io

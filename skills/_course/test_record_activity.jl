@@ -161,6 +161,47 @@ end
         end
     end
 
+    # ------------------------------------------------------------------------
+    # Added 2026-08-20, from a real /review 1.3 session that stopped after the
+    # first question.
+    #
+    # last_block scans the WHOLE transcript, and the skill file is in it. Step 4
+    # of SKILL.md shows a filled-in example inside a ```course-log fence, so a
+    # session that never emits a real block still leaves exactly one block for
+    # the hook to find: the template. It was recorded verbatim, "<ISO 8601>"
+    # timestamps and all, with first_cut_correct, big_idea_reached and
+    # planted_error_caught every one of them true.
+    #
+    # An abandoned session therefore produced a record indistinguishable from a
+    # flawless one. That is worse than recording nothing: it is silent,
+    # plausible, and wrong in the flattering direction, and it lands in the
+    # dataset the instructor reads across twelve students all semester.
+    #
+    # The fixture is READ FROM SKILL.md rather than retyped, so this test cannot
+    # drift away from the template it exists to reject.
+    # ------------------------------------------------------------------------
+    @testset "the skill's own template is never recorded as a session" begin
+        skillmd = joinpath(@__DIR__, "..", "review", "SKILL.md")
+        @test isfile(skillmd)
+        text = read(skillmd, String)
+        m = match(r"```course-log\s*\n(.*?)\n```"s, text)
+        @test m !== nothing                       # the template is still in SKILL.md
+        template = m.captures[1]
+        @test occursin("<ISO 8601>", template)    # and still carries placeholders
+
+        mktempdir() do dir
+            work = joinpath(dir, "work"); mkpath(joinpath(work, ".git"))
+            block = "```course-log\n" * template * "\n```"
+            out = run_hook(dir, escaped_transcript(dir, block))
+
+            @test !isfile(joinpath(work, "activity-log.jsonl"))   # THE regression
+            err = joinpath(work, "activity-log.error")
+            @test isfile(err)                                     # and it says why
+            @test occursin("template", read(err, String))
+            @test !occursin("systemMessage", out)                 # no false "recorded" nudge
+        end
+    end
+
     @testset "the last block wins when a template is quoted earlier in the session" begin
         # SKILL.md's own template is echoed into the transcript when the skill is read,
         # so a real session contains more than one fenced course-log block. The record
