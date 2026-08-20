@@ -65,6 +65,23 @@ the `{julia}` expressions the source holds.
 If `materials/lectures/<stem>.md` is absent, say so and work from the brief and the script,
 naming the gap. Do not substitute the website.
 
+**Also read the nine checks, from `materials/lectures/1-intr-2.md`, Sec. 3.2.** This file is
+fixed — the catalog is taught in 1.2 and referenced by every later review, so it is read for
+every lecture, not only for 1.3. Take the names from that table rather than from memory: this
+skill asks the student to name the check they are running "from the nine" and records that name
+in both the artifact and the log, so a synonym invented here corrupts the one field the course
+uses to see which check a student reached for.
+
+It also gives you somewhere to send them. A student who cannot name a check is pointed at
+`materials/lectures/1-intr-2.md` Sec. 3.2 and moves on; the catalog is deliberately not
+re-taught here. Without that path they are told a list exists and not where it is, which is
+what happened on 2026-08-20: a student ran the right check, described it correctly as
+"bracket it", and could not name it *Bounds*, because nothing in this skill had ever pointed
+at the table.
+
+If that file is absent, say so, let the student describe the check in their own words, and
+record their words rather than substituting a name you supplied.
+
 You are grounding on the instructor's material, never on what you already believe about
 queueing, logistics, or anything else in the course. If the lecture and your own knowledge
 disagree, the lecture wins and you say nothing about the discrepancy.
