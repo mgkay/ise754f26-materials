@@ -511,6 +511,27 @@ the current version, and nothing is kept anywhere else.
 creating that folder if it is absent. Copy the folders only: `materials/skills/README.md` is
 documentation for the student and does not belong in `.claude/skills/`.
 
+From inside `ISE754`:
+
+```
+mkdir -p .claude/skills
+cp -R materials/skills/review .claude/skills
+cp -R materials/skills/_course .claude/skills
+```
+
+```powershell
+New-Item -ItemType Directory -Force .claude\skills
+Copy-Item -Recurse -Force materials\skills\review .claude\skills
+Copy-Item -Recurse -Force materials\skills\_course .claude\skills
+```
+
+**No trailing slash on the source, and this is not a style point.** On macOS,
+`cp -R materials/skills/review/ .claude/skills` copies the folder's *contents* rather than
+the folder, landing `SKILL.md` loose in `.claude/skills/` with no `review/` folder around
+it. Claude Code then finds no skill at all, and the failure is quiet: `/review` simply does
+not exist, which looks like the skill was never written rather than like a bad copy. The
+success check below catches it, so run that check rather than trusting the copy.
+
 **Part 2 — the hooks.** `ISE754/.claude/settings.json` already exists from Step 1 and carries the
 permission allowlist, so **add to it rather than replacing it.** It needs a `hooks` key alongside
 the `permissions` key it already has:
