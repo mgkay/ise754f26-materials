@@ -135,6 +135,44 @@ function materials_behind(root)
     return remote != here
 end
 
+"""
+Has anything been pushed into the student's OWN repository that they do not have?
+
+WHY `@{u}` IS NOT ENOUGH, and why this file's own BEHIND check could not do its job. The
+BEHIND check compares HEAD against `@{u}`, the remote-tracking ref, and that ref only moves
+on a fetch or a pull. So the instant a TA pushes feedback, the student's `HEAD..@{u}` is
+still 0 and stays 0 until the student pulls -- which is the very thing the warning exists to
+prompt. The check could only ever fire AFTER the student had already done the thing it was
+telling them to do.
+
+Measured 2026-08-20 with two feedback commits sitting on the remote: `HEAD..@{u}` returned
+0, `ls-remote` returned a sha the clone had never seen, and the session-start check said
+nothing at all about feedback.
+
+This file's header calls the BEHIND case the worse of the two, because a student working
+from a stale brief is not merely late. So this asks the remote, the same way
+`materials_behind` does: one sha, no ref written, no object fetched. Every failure path
+returns nothing and stays silent.
+"""
+function work_behind(work)
+    remote = try
+        cmd = pipeline(Cmd(`git -c http.lowSpeedLimit=1000 -c http.lowSpeedTime=5 ls-remote --heads origin main`; dir = work),
+                       stderr = devnull)
+        out = read(cmd, String)
+        isempty(strip(out)) ? nothing : first(split(strip(out)))
+    catch
+        nothing
+    end
+    remote === nothing && return nothing
+    # Reachable from HEAD means we already have it; not reachable means it is new to us.
+    try
+        run(pipeline(Cmd(`git merge-base --is-ancestor $remote HEAD`; dir = work), stderr = devnull))
+        return false
+    catch
+        return true
+    end
+end
+
 function main()
     work = find_work_dir()
     work === nothing && return 0
@@ -143,7 +181,16 @@ function main()
     behind = count_commits(work, "HEAD..@{u}")
 
     lines = String[]
-    if behind !== nothing && behind > 0
+    # Ask the remote first. `behind` (from @{u}) cannot see a push that has just happened,
+    # so it is kept only as the offline fallback.
+    remote_has_new = work_behind(work)
+    if remote_has_new === true
+        push!(lines,
+            "The student's work repository has commits on GitHub that this clone does NOT " *
+            "have. This is how instructor feedback and project data releases arrive, so " *
+            "they may be working from something stale. Tell them to run " *
+            "`git pull --no-rebase` from their ISE754/work folder before going further.")
+    elseif behind !== nothing && behind > 0
         push!(lines,
             "$behind commit(s) have been pushed to the student's work repository that they " *
             "have NOT pulled. This is how instructor feedback and project data releases " *
