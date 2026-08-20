@@ -118,6 +118,50 @@ function unpushed(work)
     end
 end
 
+"""
+Undo one level of JSON string escaping, in ONE left-to-right pass.
+
+WHY A PASS AND NOT THREE `replace` CALLS. This was three independent replacements
+(\\r\\n, \\n, then \\") and that is wrong on any text containing a BACKSLASH, because
+a later pass cannot see where an earlier escape ended. A quote inside the student's
+own words reaches the transcript as the four characters \\ \\ \\ " -- an escaped
+backslash followed by an escaped quote. Replacing the two-character \" anywhere it
+appears consumes the SECOND and THIRD characters, leaving \\ " : a literal backslash
+and a bare quote, which closes the JSON string early. The recorded line is then
+unparseable, and it is unparseable in the one field the skill calls the richest
+signal in the log, `questions`, which it instructs be recorded verbatim.
+
+Measured 2026-08-20 on a real /review 1.3 session whose student said: You've
+referred to a "Prior check" by name. The line written to activity-log.jsonl failed
+json.loads at column 279. A single pass consumes \\ as a unit before it can be
+mistaken for the start of \", so the same input round-trips correctly.
+
+Only the escapes the transcript actually produces are handled; anything else is
+passed through unchanged rather than guessed at.
+"""
+function json_unescape(s::AbstractString)
+    out = IOBuffer()
+    i = firstindex(s)
+    stop = lastindex(s)
+    while i <= stop
+        c = s[i]
+        j = i < stop ? nextind(s, i) : nothing
+        if c == '\\' && j !== nothing
+            n = s[j]
+            k = nextind(s, j)
+            if     n == 'n';  write(out, '\n'); i = k; continue
+            elseif n == 'r';                     i = k; continue   # \r\n collapses to \n
+            elseif n == 't';  write(out, '\t'); i = k; continue
+            elseif n == '"';  write(out, '"');  i = k; continue
+            elseif n == '\\'; write(out, '\\'); i = k; continue
+            end
+        end
+        write(out, c)
+        i = i < stop ? nextind(s, i) : stop + 1
+    end
+    return String(take!(out))
+end
+
 function main()
     stdin_text = try read(stdin, String) catch; "" end
 
@@ -140,7 +184,7 @@ function main()
     # activity" path. That failure is indistinguishable from a session that never
     # happened, which is the one outcome this file's header says it must never produce.
     # Stdlib only, no JSON parser, consistent with the rest of this script.
-    text = replace(text, "\\r\\n" => "\n", "\\n" => "\n", "\\\"" => "\"")
+    text = json_unescape(text)
 
     work = find_work_dir()
     block = last_block(text)

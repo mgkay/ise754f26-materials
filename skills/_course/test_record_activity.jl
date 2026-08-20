@@ -111,6 +111,56 @@ end
         end
     end
 
+    # ------------------------------------------------------------------------
+    # Added 2026-08-20, from a real cold /review 1.3 run.
+    #
+    # The student said:  You've referred to a "Prior check" by name.
+    #
+    # The skill instructs that `questions` be recorded VERBATIM and calls it the
+    # richest signal in the log, so a quote inside a student's own words is not an
+    # exotic input, it is the expected one. The old unescape was three independent
+    # `replace` passes, and a later pass cannot see where an earlier escape ended:
+    # the transcript's four characters  \ \ \ "  came out as three,  \ \ "  -- a
+    # literal backslash followed by a BARE quote, which closes the JSON string
+    # early. The line was still written and still looked plausible to the eye, and
+    # json.loads failed on it at column 279.
+    #
+    # Nothing in this suite caught that, because no fixture had ever put a quote
+    # inside a value. Asserting a substring of the student's words would ALSO have
+    # passed on the broken output -- the words survive, the escaping does not -- so
+    # what is asserted here is the escaping itself.
+    # ------------------------------------------------------------------------
+    @testset "a quote in the student's own words survives as valid JSON" begin
+        mktempdir() do dir
+            work = joinpath(dir, "work"); mkpath(joinpath(work, ".git"))
+            block = """```course-log
+{
+  "activity": "review",
+  "lecture_id": "1.3",
+  "started": "2026-08-20T15:27:41Z",
+  "ended": "2026-08-20T15:52:03Z",
+  "turns": 7,
+  "questions": ["You've referred to a \\\"Prior check\\\" by name."],
+  "examples_verified": [{"example": "Example 1", "check": "Bounds"}],
+  "big_idea_reached": true,
+  "planted_error_caught": true
+}
+```"""
+            out = run_hook(dir, escaped_transcript(dir, block))
+            log = joinpath(work, "activity-log.jsonl")
+            @test isfile(log)
+            line = strip(read(log, String))
+
+            # MUST be an escaped quote:            \"Prior check\"
+            @test occursin("\\\"Prior check\\\"", line)
+            # MUST NOT be backslash + bare quote:  \\"Prior check\\"
+            @test !occursin("\\\\\"Prior check", line)
+            # the push reminder still fires, and nothing was refused
+            @test occursin("systemMessage", out)
+            @test !isfile(joinpath(work, "activity-log.error"))
+        end
+    end
+
     @testset "the last block wins when a template is quoted earlier in the session" begin
         # SKILL.md's own template is echoed into the transcript when the skill is read,
         # so a real session contains more than one fenced course-log block. The record
