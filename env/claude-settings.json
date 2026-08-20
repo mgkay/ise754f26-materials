@@ -63,9 +63,7 @@
     ],
     "deny": [
       "Edit(./materials/**)",
-      "Write(./materials/**)",
-      "Edit(./handouts/**)",
-      "Write(./handouts/**)"
+      "Edit(./handouts/**)"
     ]
   }
 }
