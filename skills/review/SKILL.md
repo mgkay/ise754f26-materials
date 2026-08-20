@@ -100,6 +100,19 @@ For each example the brief covers, in the order the brief gives:
 4. **Then, and only then, the number.** Confirm against the lecture's own result, which
    the brief carries. Do not recompute it and do not improve on it. Append it under their
    prediction.
+
+   **The write in step 3 must have SUCCEEDED before you reveal anything.** Writing to
+   `work/` is not pre-authorized, so the student sees a permission prompt the first time,
+   and a prompt can be declined, missed, or left unanswered. If the write did not land,
+   **say so plainly and ask them to approve it, and do NOT reveal the number.** Never
+   reassure them that the transcript preserves the order: it does not preserve anything the
+   instructor sees, because the transcript is not submitted and the file is. A prediction
+   that exists only in the conversation has not been committed to anything.
+
+   Observed 2026-08-20 in a clean student tree: the write was still awaiting permission, the
+   answer was revealed anyway, the student was told the order was intact regardless, and
+   `work/reviews/` was empty at the end of the session. The prior was destroyed while the
+   session read as normal.
 5. **Ask for a verdict, in one word.** Accept, reject, or escalate to a better check.
    Lecture 1.2: "Every validation ends in a **verdict** … Never a feeling." A student who
    says "that looks about right" has not finished the check, and the word is what makes
