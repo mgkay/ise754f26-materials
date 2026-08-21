@@ -245,8 +245,39 @@ function main()
     end
 
     oneline = replace(strip(block), r"\s*\n\s*" => " ")
+
+    # DO NOT RECORD THE SAME SESSION TWICE.
+    #
+    # This hook reads the LAST course-log block in the transcript, and Stop fires every time
+    # the assistant finishes a turn. So once a session has emitted its block, every later
+    # stop in that same session finds the same block and appends it again. Measured
+    # 2026-08-21 in the first interactive dry run: one review produced two byte-identical
+    # records, sha 66943cfb4d9e, in a log that also held twelve template lines.
+    #
+    # Duplicates are worse than they look. They do not corrupt a record, they inflate the
+    # COUNT -- so "how many reviews has this student completed" becomes unreliable, and it is
+    # unreliable in the flattering direction, which is the hard kind to notice.
+    #
+    # The guard is a comparison against what is already the last line, not a full scan: the
+    # duplicate always lands adjacent, because it comes from a later stop in the same session.
+    # A genuine second review of the same lecture differs in `ended` at minimum, so it is not
+    # suppressed.
+    out_path = joinpath(work, OUT_NAME)
+    if isfile(out_path)
+        last = ""
+        try
+            for ln in eachline(out_path)
+                isempty(strip(ln)) || (last = strip(ln))
+            end
+        catch
+        end
+        if last == strip(oneline)
+            return 0   # already recorded this session; say nothing, change nothing
+        end
+    end
+
     try
-        open(joinpath(work, OUT_NAME), "a") do io
+        open(out_path, "a") do io
             println(io, oneline)
         end
     catch err

@@ -202,6 +202,72 @@ end
         end
     end
 
+    # ------------------------------------------------------------------------
+    # Added 2026-08-21, from the first interactive dry run.
+    #
+    # Stop fires every time the assistant finishes a turn, and this hook reads
+    # the LAST course-log block in the transcript. So once a session has emitted
+    # its block, every later stop in that session finds the same block and
+    # appends it again. One real review produced two byte-identical records
+    # (sha 66943cfb4d9e) in a log that also held twelve template lines.
+    #
+    # Duplicates do not corrupt a record; they inflate the COUNT, in the
+    # flattering direction, which is the hard kind to notice.
+    # ------------------------------------------------------------------------
+    @testset "the same session is not recorded twice" begin
+        mktempdir() do dir
+            work = joinpath(dir, "work"); mkpath(joinpath(work, ".git"))
+            block = """```course-log
+{
+  "activity": "review",
+  "lecture_id": "1.3",
+  "started": "2026-08-21T02:28:53Z",
+  "ended": "2026-08-21T02:41:00Z",
+  "turns": 12,
+  "questions": [],
+  "examples_verified": [{"example": "Example 1", "check": "Bounds"}],
+  "big_idea_reached": false,
+  "planted_error_caught": false
+}
+```"""
+            tr = escaped_transcript(dir, block)
+            log = joinpath(work, "activity-log.jsonl")
+
+            run_hook(dir, tr)
+            @test isfile(log)
+            @test countlines(log) == 1
+
+            run_hook(dir, tr)                      # a second Stop, same session
+            @test countlines(log) == 1             # THE regression: still one
+
+            run_hook(dir, tr)                      # and a third
+            @test countlines(log) == 1
+        end
+    end
+
+    @testset "a genuinely different session IS still recorded" begin
+        mktempdir() do dir
+            work = joinpath(dir, "work"); mkpath(joinpath(work, ".git"))
+            mk(ended) = """```course-log
+{
+  "activity": "review",
+  "lecture_id": "1.3",
+  "started": "2026-08-21T02:28:53Z",
+  "ended": "$ended",
+  "turns": 12,
+  "questions": [],
+  "examples_verified": [],
+  "big_idea_reached": false,
+  "planted_error_caught": false
+}
+```"""
+            log = joinpath(work, "activity-log.jsonl")
+            run_hook(dir, escaped_transcript(dir, mk("2026-08-21T02:41:00Z")))
+            run_hook(dir, escaped_transcript(dir, mk("2026-08-21T03:15:00Z")))
+            @test countlines(log) == 2             # the guard must not over-suppress
+        end
+    end
+
     @testset "the last block wins when a template is quoted earlier in the session" begin
         # SKILL.md's own template is echoed into the transcript when the skill is read,
         # so a real session contains more than one fenced course-log block. The record
