@@ -19,7 +19,7 @@ these entries to it rather than replacing it:
         "hooks": [
           {
             "type": "command",
-            "command": "julia .claude/skills/_course/record_activity.jl"
+            "command": "julia \"${CLAUDE_PROJECT_DIR}/.claude/skills/_course/record_activity.jl\""
           }
         ]
       }
@@ -30,7 +30,7 @@ these entries to it rather than replacing it:
         "hooks": [
           {
             "type": "command",
-            "command": "julia .claude/skills/_course/check_sync.jl"
+            "command": "julia \"${CLAUDE_PROJECT_DIR}/.claude/skills/_course/check_sync.jl\""
           }
         ]
       }
@@ -43,6 +43,19 @@ The simplest way is to ask Claude Code, from inside your `ISE754` folder:
 
 > Add both hooks from `materials/skills/_course/HOOK.md` to `.claude/settings.json`,
 > preserving anything already there.
+
+**Do not shorten the path.** Hook handlers run in whatever the current directory happens
+to be, which in this course moves into `work/` and `materials/` many times a session, so
+`julia .claude/skills/_course/record_activity.jl` fails with a Julia stack trace and no
+record as soon as it does. `${CLAUDE_PROJECT_DIR}` is the project root the session started
+in and is documented for exactly this purpose. Two consequences worth stating plainly:
+**start Claude Code in `ISE754`, never in `work`** — a session started in `work/` has a
+different project root and these hooks are not the ones in force — and **restart Claude
+Code after adding them**, since edits to a settings file are only *normally* picked up by
+the file watcher.
+
+Checked against [the hooks documentation](https://code.claude.com/docs/en/hooks) on
+2026-08-21.
 
 ## What they do
 

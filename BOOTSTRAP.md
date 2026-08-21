@@ -541,12 +541,12 @@ the `permissions` key it already has:
   "Stop": [
     { "matcher": "",
       "hooks": [ { "type": "command",
-                   "command": "julia .claude/skills/_course/record_activity.jl" } ] }
+                   "command": "julia \"${CLAUDE_PROJECT_DIR}/.claude/skills/_course/record_activity.jl\"" } ] }
   ],
   "SessionStart": [
     { "matcher": "",
       "hooks": [ { "type": "command",
-                   "command": "julia .claude/skills/_course/check_sync.jl" } ] }
+                   "command": "julia \"${CLAUDE_PROJECT_DIR}/.claude/skills/_course/check_sync.jl\"" } ] }
   ]
 }
 ```
@@ -554,6 +554,31 @@ the `permissions` key it already has:
 One records each course activity into `work/`; the other reports, at the start of a session,
 whether feedback has arrived unpulled or work is sitting unpushed. Neither is a gate: if Julia is
 missing or a file has moved, the activity still works and only the record is lost.
+
+**`${CLAUDE_PROJECT_DIR}` is load-bearing here, and a bare relative path is not equivalent.** Hook
+handlers "run in the current directory with Claude Code's environment," and in this course the
+current directory moves constantly: the moment work happens inside `work/` or `materials/`, a
+command written `julia .claude/skills/_course/record_activity.jl` resolves against that subfolder,
+finds nothing, and the session ends with a Julia stack trace and no record of the activity.
+`${CLAUDE_PROJECT_DIR}` is documented as "the project root where the session started" and exists to
+"reference hook scripts relative to the project or plugin root, regardless of the working directory
+when the hook runs." The double quotes around the path are there because a course folder can sit
+under a user name containing a space.
+
+The two scripts are not fragile in this way — each walks up from wherever it is run until it finds
+`work/` — so it was only ever the path *to* the script that needed fixing.
+
+**Start Claude Code in `ISE754`, never in `work`.** The project root is the folder the session
+started in, so a session started inside `work/` has `work/` as its root and the hooks registered in
+`ISE754/.claude/settings.json` are not the ones in force. This is the natural mistake, since `work/`
+is the student's own repository and where their code lives, and it was made on the first real run of
+the student path, 2026-08-20. Open `ISE754` itself with *File ▸ Open Folder*, as Step 6 already
+requires for the Julia pin, and start Claude Code there; `work/` is reached from inside it.
+
+**Restart Claude Code once the hooks are in the file.** Direct edits to hooks "are normally picked
+up automatically by the file watcher," but *normally* is not *certainly*, and the cost of being
+wrong is a review that runs perfectly and records nothing. Restart, then confirm the *Success* line
+below in the restarted session.
 
 `materials/skills/_course/HOOK.md` is the authority for both. If it disagrees with the block above,
 follow the file and say so.
@@ -648,3 +673,11 @@ Commands and identifiers here were taken from official documentation on **2026-0
   `Git.Git` and `Microsoft.VisualStudioCode` package identifiers.
 - [VS Code on macOS](https://code.visualstudio.com/docs/setup/mac) — **Shell Command: Install 'code'
   command in PATH**.
+
+Step 7a's hook block was checked against official documentation again on **2026-08-21**:
+
+- [Claude Code hooks](https://code.claude.com/docs/en/hooks) — that handlers *"run in the current
+  directory with Claude Code's environment"*; that `${CLAUDE_PROJECT_DIR}` is *"the project root
+  where the session started"* and is provided to *"reference hook scripts relative to the project or
+  plugin root, regardless of the working directory when the hook runs"*; and that direct edits to
+  hooks in settings files are *"normally picked up automatically by the file watcher."*
