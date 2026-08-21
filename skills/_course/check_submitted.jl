@@ -95,13 +95,22 @@ end
 "The sha of the last commit that touched `path`, or nothing if it was never committed."
 last_commit_for(work, path) = git(work, "log", "-1", "--format=%H", "--", path)
 
-"Files the student has produced that the course actually collects."
+"""
+Files the student has produced that the course actually collects.
+
+Paths are built with a FORWARD SLASH, not `joinpath`. These strings are compared against
+the output of `git diff --name-only`, and git emits forward slashes on every platform. On
+Windows `joinpath` would produce `reviews\\1-intr-3.md`, which matches nothing in that set,
+so the "you have edited this since that commit" note would never fire -- the exact
+confident-but-wrong "we can see this" the porcelain comment below was written to prevent.
+Found on Windows 2026-08-21; `test_check_submitted.jl` asserts the forward-slash form.
+"""
 function collected_files(work)
     found = String[]
     revdir = joinpath(work, "reviews")
     if isdir(revdir)
         for f in sort(readdir(revdir))
-            endswith(f, ".md") && push!(found, joinpath("reviews", f))
+            endswith(f, ".md") && push!(found, "reviews/" * f)
         end
     end
     isfile(joinpath(work, "activity-log.jsonl")) && push!(found, "activity-log.jsonl")
