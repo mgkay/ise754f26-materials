@@ -110,6 +110,13 @@ mktempdir() do tmp
     advance_remote(r, "work")
     git(joinpath(r, "work"), "fetch", "-q", "origin")
     out, code = run_hook(joinpath(r, "work"))
+    # "NOT pulled" is asserted on purpose, and BOTH branches must use it. This case fetches
+    # first, so @{u} is current and the offline comparison sees nothing -- yet work_behind()
+    # asks the remote, returns true, and takes the remote-first branch. So the phrase has to
+    # be identical in both, or this passes or fails depending on which mechanism noticed,
+    # which is not a property worth testing. Dr. Kay found this as a 20/21 on 2026-08-21:
+    # the remote-first branch said "does NOT have" and only the fallback still said
+    # "NOT pulled". One vocabulary is worth more than precision about the mechanism.
     check("C  work behind: reported",           occursin("NOT pulled", out))
     check("C  work behind: exit 0",             code == 0)
 

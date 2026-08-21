@@ -186,8 +186,8 @@ function main()
     remote_has_new = work_behind(work)
     if remote_has_new === true
         push!(lines,
-            "The student's work repository has commits on GitHub that this clone does NOT " *
-            "have. This is how instructor feedback and project data releases arrive, so " *
+            "commit(s) have been pushed to the student's work repository that they have " *
+            "NOT pulled. This is how instructor feedback and project data releases arrive, so " *
             "they may be working from something stale. Tell them to run " *
             "`git pull --no-rebase` from their ISE754/work folder before going further.")
     elseif behind !== nothing && behind > 0
