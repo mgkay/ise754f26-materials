@@ -72,9 +72,45 @@ function find_work_dir()
     end
 end
 
+"""
+Append one line to `activity-log.error`, but NEVER repeat the complaint already sitting at
+the end of the file.
+
+WHY THE DEDUPE IS LOAD-BEARING. Stop fires on every assistant turn. Before a session emits
+its real block, the last ```course-log block in the transcript is the SKILL'S OWN TEMPLATE,
+so `looks_like_template` refuses it -- correctly -- and without this check says so once per
+turn, for the whole session.
+
+Measured 2026-08-24 on the first three real student sessions: bbreese and lsuleim each
+accumulated NINE identical template lines, at ordinary turn spacing (40s to 8min apart),
+across sessions that SUCCEEDED. Both records landed; check_coverage reads 3 review sessions
+from 3 of 3 students. The nine lines described nothing wrong.
+
+The cost is not disk. `collect_reviews.py` appends "activity-log.error present" to any
+student with this file, so a healthy session is indistinguishable at a glance from a broken
+one, and the flag that exists to surface mechanism failures cries wolf on two students out
+of three the first time it is ever used in anger.
+
+Deduping on the MESSAGE preserves everything the guard is for. An abandoned session that only
+ever shows the template still leaves exactly one line, which is all anyone needed; a genuinely
+different failure still appends, because its message differs.
+"""
 function note_error(work, msg)
     try
-        open(joinpath(work, ERR_NAME), "a") do io
+        path = joinpath(work, ERR_NAME)
+        if isfile(path)
+            last = ""
+            for line in eachline(path)
+                isempty(strip(line)) || (last = line)
+            end
+            # Lines are "<unixtime>  <message>". Compare the message half only, since the
+            # timestamp differs on every turn by construction.
+            parts = split(last, "  "; limit = 2)
+            if length(parts) == 2 && strip(parts[2]) == strip(msg)
+                return
+            end
+        end
+        open(path, "a") do io
             println(io, "$(round(Int, time()))  $msg")
         end
     catch
