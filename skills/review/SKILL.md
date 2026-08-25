@@ -147,6 +147,43 @@ walked through all of them. If they are fast and want more, the brief lists the 
 **Order matters and the brief sets it.** The sequence builds a reflex: bracket the answer,
 then check its magnitude, then check the system is even stable. Do not reorder.
 
+**READ EVERY EXAMPLE IN THE BRIEF BEFORE THE SESSION STARTS, AND NAME WHAT YOU ARE DROPPING.**
+
+Read the whole per-example section first, not the ones you are about to run. Then, before the
+first example, tell the student in one sentence which examples this session covers, which it
+does not, and why. Not as an apology, as orientation: they should know the session is a cut of
+something larger, and that the rest is there.
+
+**Then record the same thing in the artifact**, under the heading, before any example:
+
+```markdown
+- session covers: Examples 1, 5
+- not covered: Example 3 — first review, so cut to the first and last of the three the brief marks
+```
+
+**Why this is a rule rather than a nicety.** Measured 2026-08-24, on the first five real
+sessions of the semester. The brief marks Examples 1, 3 and 5. `_course/first-use.md` cuts a
+first session to "the first and the last" of three marked items. Every one of those five
+students was on their first review, so every session dropped Example 3, **five out of five.**
+
+Nothing noticed. Not the artifact, which simply had no Example 3 section; not the activity
+log; not any staff tool. The absence was indistinguishable from an example the brief never
+marked, and it took a person reading the brief beside the artifacts to see it at all.
+
+Example 3 is also the one the brief says to *contrast* with Example 1 — the case where a
+magnitude check works, against one where it cannot. So the cut removed the comparison that
+makes Example 1 legible, and a student who would have accepted a wrong answer had nothing to
+compare against.
+
+**None of that was the student's doing, and it was not a defect in this skill either.** Two
+rules written separately collided, and the collision was invisible because nothing wrote down
+what had been skipped. Naming the drop out loud, and recording it, is what makes the next
+collision visible on the first session rather than the fifth.
+
+**If dropping an example would remove a contrast the brief explicitly asks you to draw**, say
+so in that same sentence and make the contrast anyway, in a line, inside the example you did
+keep. The brief tells you when: it says "contrast it with Example N deliberately".
+
 ### The artifact — `work/reviews/<stem>.md`
 
 **Why it exists.** A review is a conversation and produces no work product, so unlike a
