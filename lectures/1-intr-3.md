@@ -435,6 +435,7 @@ simulate (generic function with 1 method)
 Drawing the times and reading back their mean and SCV recovers the analytic values of Sec. 4:
 
 ```
+# Code block 1: arrivals simulated, mean and SCV
 using Random
 Random.seed!(1)                             # reproducible draws
 tₐ  = simulate(5, 100_000)                  # inter-arrival times
@@ -449,7 +450,7 @@ c²ₐ = sum((tₐ .- μ).^2) / length(tₐ) / μ^2  # SCV ≈ 1
 
 A production system needs more than samples: in discrete-event simulation the state of the system updates event by event, and performance is read off the simulated history the way it would be measured on the real system. A short single-server simulation confirms the G/G/1 form. Model 2 plays a first-in-first-out queue out job by job with the Lindley recursion (each job waits behind whatever work is left when it arrives), and its simulated mean cycle time matches Eq. 6. For this M/M/1 station that estimate is exact: t_{CT} = \frac{u}{1-u}t_e + t_e = \frac{0.8}{0.2}(0.1)+0.1 = 0.5 hr, equivalently 1/(r_e - r_a) = 1/(10-8) = 0.5 hr, so the run below has a known target of 0.5 to reproduce. The recursion is the single line wq = max(0, wq + s - a): the work wq a job finds waiting is its queue delay, and after its service s is added and the gap a to the next arrival subtracted, the floor at zero empties the queue whenever an arrival finds the server free.
 
-return: the cycle time of each job through a single-server FIFO queue
+return: cycle time of each job through a single-server FIFO queue
 
 assumptions:
 (a) exponential inter-arrivals at rate r_a and exponential service at mean t_e, so c_a^2 = c_e^2 = 1;
@@ -480,6 +481,7 @@ queue (generic function with 1 method)
 ```
 
 ```
+# Code block 2: simulated cycle time against the VUT formula
 Random.seed!(1)
 ct  = queue(8, 0.1, 10_000)    # rₐ = 8/hr, tₑ = 0.1 hr, so u = 0.8
 sim = sum(ct) / length(ct)     # simulated mean cycle time
@@ -497,6 +499,7 @@ Figure 6: Running average of the simulated cycle time over 10,000 jobs through a
 One run is one draw. The convergence in Fig. 6 is a single run: one seed, one stream of random draws, one simulated history. A different seed produces a different history whose average lands somewhere else, so a single run, however long, is one noisy estimate of the long-run mean. The remedy is a simulation experiment: several independent replications, averaged. The spread across replications shows how much any single run can be trusted, and the grand mean, reported with a 95% confidence interval, brackets the known analytic value of 0.5:
 
 ```
+# Code block 3: twenty replications and a confidence interval
 Random.seed!(2)
 nrep = 20                      # independent replications
 njob = 1_000_000               # jobs per replication
@@ -515,7 +518,7 @@ The trade. The two levels complement each other. The level-2 formula delivers th
 
 Beyond the formula: queue discipline. Both Eq. 6 and Model 2 assume first-in-first-out service. Nothing in a real queue requires that. A workstation might instead serve the shortest waiting job first (shortest processing time, SPT), expediting quick jobs at the expense of long ones. The VUT equation has no term for queue discipline, and extending the level-2 analysis to one is hard to impossible; in the simulation, the discipline is just the rule for choosing which waiting job goes next. Model 3 replays the same station with that one rule changed.
 
-return: the cycle time of each job through a single-server queue that serves the shortest waiting job first
+return: cycle time of each job through a single-server queue that serves the shortest waiting job first
 
 assumptions:
 (a) exponential inter-arrivals at rate r_a and exponential service at mean t_e, so c_a^2 = c_e^2 = 1;
@@ -555,6 +558,7 @@ queue_spt (generic function with 1 method)
 ```
 
 ```
+# Code block 4: FIFO against SPT at the same station
 Random.seed!(1)
 fifo = queue(8, 0.1, 100_000)      # FIFO baseline
 spt  = queue_spt(8, 0.1, 100_000)  # same station, SPT
@@ -569,7 +573,7 @@ The loop keeps an explicit clock t and a list pend of jobs that have arrived but
 
 ## 8. Stationarity
 
-The cycle-time estimate also assumes the demand process is stationary: its statistics do not drift over the horizon, so the estimate is a long-run average. Trend, seasonality, or a one-time structural change all break this, the same conditions under which the mean stops being scalable (mean-value analysis, Lecture 1.1). A non-stationary series must first be made stationary.
+The cycle-time estimate also assumes the demand process is stationary: its statistics do not drift over the horizon, so the estimate is a long-run average. Trend, seasonality, or a one-time structural change all break this, the same conditions under which the mean stops being scalable (mean-value analysis, Lecture 1.1). A non-stationary series must first be made stationary. Fig. 7 takes each of those violations out in turn, and the series to carry forward is the one left at the end: the estimate is entitled to that series, not to the one first observed.
 
 Figure 7: Making a series stationary: trim the one-time structural shift, then remove trend and seasonality.
 
@@ -602,6 +606,7 @@ Example 6: Where should the variable station go?
 Three single-machine stations run in series, each at utilization u = 0.9 and the same mean process time t_e = 0.1 hr, but with process-time variabilities c_e^2 = 0.25, 1, and 4; work enters the first at c_a^2 = 1. Compare the line’s total cycle time when the most variable station is run last versus first.
 
 ```
+# Code block 5: station order and its effect on cycle time
 u  = 0.9  # utilization at each station
 tₑ = 0.1  # hr, same mean process time
 for order in ([0.25, 1, 4], [4, 1, 0.25])

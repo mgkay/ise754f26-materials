@@ -5,7 +5,7 @@
 
 ISE 754: Logistics Engineering, Fall 2026
 
-TK: epigraph to be supplied.
+You can know where before you know what it costs.
 
 New Julia packages used
 - Optim is a pure-Julia library for numerical optimization: it minimizes a user-supplied objective function, with both derivative-free methods (Nelder-Mead) and gradient-based methods (quasi-Newton such as BFGS). It is the general-purpose optimizer of the Julia ecosystem, not specific to logistics.
@@ -114,6 +114,7 @@ The outbound side comes first, because the customers’ demands are given direct
 Figure 6: Per ton of finished product, the plant consumes two tons of raw material from Asheville and half a ton from Durham.
 
 ```
+# Code block 1: monetary weights from flows and rates
 fout = [10, 20, 30]      # ton/yr to the three customers
 rout = 1.00              # $/ton-mi outbound
 wout = fout .* rout      # customer monetary weights
@@ -138,6 +139,7 @@ Order the facilities along I-40 and apply the median procedure of Model 8 in Lec
 With every weight known, the corridor is one-dimensional and the median procedure applies unchanged: sweep west to east, accumulate weight, and stop at the first facility where the running total reaches half the grand total.
 
 ```
+# Code block 2: west-to-east order and the weighted median
 city = ["Asheville", "Statesville", "Winston-Salem",
 "Durham", "Wilmington"]          # west-to-east order
 w = [win[1], wout[1], wout[2], win[2], wout[3]]  # $/mi, W to E
@@ -169,7 +171,7 @@ Example 1(c): Weight-gaining or weight-losing
 Classify the plant by comparing its inbound and outbound weights, physical and monetary.
 
 ```
-@show sum(fin) sum(fout) sum(win) sum(wout);
+@show sum(fin) sum(fout) sum(win) sum(wout);  # Code block 3: totals agree
 ```
 
 ```
@@ -187,7 +189,7 @@ A plant can lose physical weight and gain monetary weight at the same time. The 
 
 Setting the supply-chain framing aside, the minisum location problem is at heart a pure optimization problem. Take three existing facilities, as before. For a plain distance objective the goal is to minimize the total distance from the new facility to them; for a location problem each distance is first multiplied by its weight and the total weighted distance is minimized. The optimization logic is the same either way, and from an arbitrary starting point the total is generally not yet at its minimum.
 
-Because that logic does not depend on the distance, one procedure serves every metric the course uses, a straight-line distance in the plane here and the great-circle distance of Sec. 5 on the globe; only the distance function changes. By hand the weighted objective yields only in special cases: the Majority Theorem of Model 8 in Lecture 2.1, where a single facility holding at least half the weight takes the location, and the two-dimensional rectilinear problem, solved by the median along each axis. Otherwise the location is found numerically.
+Because that logic does not depend on the distance, one procedure serves every metric the course uses, a straight-line distance in the plane here and the great-circle distance of Sec. 6 on the globe; only the distance function changes. By hand the weighted objective yields only in special cases: the Majority Theorem of Model 8 in Lecture 2.1, where a single facility holding at least half the weight takes the location, and the two-dimensional rectilinear problem, solved by the median along each axis. Otherwise the location is found numerically.
 
 This problem was solved in 1629 by Fermat. For three points, the location that minimizes the total distance to them is a fourth point, the Steiner point, characterized by the three lines from it to the points meeting at equal angles of 120° (Fig. 8), the angle soap bubbles meet at as they settle into a natural minimum-energy state. Seen another way, if roads run from a first city to a second and from the second to a third, adding one intersection point and running three road segments to it covers less total distance than the two direct segments, which is why the major intersections of an interstate network typically sit at these minimizing points.
 
@@ -199,17 +201,17 @@ Figure 9: The Varignon frame: a string runs from a common ring through a hole at
 
 The single-facility minisum is stated as a model carried from words to runnable code (Model 1). Its formulation is a math program in a generic distance; its implementation is a function given the weights, the facilities, and a distance function, returning the location, so the one model serves every metric the course uses.
 
-minimize: the total weighted distance from the new facility to the m existing facilities
+minimize: total weighted distance from the new facility to the m existing facilities
 
 solve for:
-(a) the location X of the new facility, any point in the plane.
+(a) location X of the new facility, any point in the plane.
 
 subject to: none
 
-return: the location X^\star of the new facility
+return: location X^\star of the new facility
 
 assumptions:
-(a) distance is a metric, for example the straight-line distance used below or the great-circle distance of Sec. 5;
+(a) distance is a metric, for example the straight-line distance used below or the great-circle distance of Sec. 6;
 (b) the cost of each flow is proportional to distance, so each monetary weight w_i is a constant.
 
 Model 1: Single-facility minisum
@@ -222,23 +224,23 @@ where:
 
 X
 
-the new-facility location (decision variable)
+new-facility location (decision variable)
 
 P_i
 
-the location of existing facility i
+location of existing facility i
 
 w_i
 
-the monetary weight of existing facility i ($/mi)
+monetary weight of existing facility i ($/mi)
 
 d(X, P_i)
 
-the distance between two points, in any chosen metric
+distance between two points, in any chosen metric
 
 m
 
-the number of existing facilities.
+number of existing facilities.
 
 Model 1 implementation: Single-facility minisum
 
@@ -264,7 +266,7 @@ Determine the minisum location for three facilities of equal weight at (1, 1), (
 Binding the data and a straight-line distance to Model 1 and calling its implementation gives the location directly.
 
 ```
-# d2 from 2-Loc-2.ipynb cell 3 (straight-line = Logjam.d2)
+# Code block 4: straight-line distance, the same as Logjam.d2
 d2(x1, x2) = length(x1) == length(x2) ?
 sqrt(sum((x1 .- x2).^2)) :
 error("Inputs not same length.")
@@ -286,7 +288,7 @@ The search reached that point without any care about where it started, and the r
 Show the code that generates this figure
 
 ```
-# From 2-Loc-2.ipynb cells 20–26 (tuples → matrix P)
+# Code block 5: the total-cost surface over the plane
 using CairoMakie
 xrng = 0:0.1:7
 yrng = 0:0.1:6
@@ -300,14 +302,14 @@ axis = (type = Axis3, azimuth = pi / 4))
 fig
 ```
 
-Figure 10: The objective for Example 2 is a convex bowl, drawn as contour lines (left, existing facilities in red) and as a surface (right). A single basin means a single minimum, reached from any start. From 2-Loc-2.ipynb cells 20–26.
+Figure 10: The objective for Example 2 is a convex bowl, drawn as contour lines (left, existing facilities in red) and as a surface (right). A single basin means a single minimum, reached from any start.
 
 The optimizer steps downhill by one of two kinds of method. A gradient method, such as a quasi-Newton method, uses the objective’s derivatives; but since even simple location objectives rarely have an analytical gradient, it estimates one by finite differencing, which works well only on smooth objectives. A direct method, chiefly Nelder-Mead, never computes derivatives at all, reading only values of the objective, so it copes with the kinked or discontinuous objectives a gradient method cannot, less efficiently but far more robustly. Nelder-Mead is the basic method behind a spreadsheet’s Solver and the default in most optimization packages, and it is the default used here (Fig. 11).
 
 Show the code that generates this figure
 
 ```
-# From 2-Loc-2.ipynb cell 12 (fargplot NM path; tuples → matrix P)
+# Code block 6: the path Nelder-Mead takes
 TC(X) = sum(d2(X, P[i, :]) for i in axes(P, 1))
 fargplot(f, x, kw) = (scatter!(x...; kw...); f(x))
 scatter(P[:, 1], P[:, 2]; color = :firebrick, markersize = 11)
@@ -318,13 +320,13 @@ markersize = 14)
 current_figure()
 ```
 
-Figure 11: Nelder-Mead in action from (0,0): each blue dot is one evaluation of the objective; the search sweeps toward the optimum (red star), the existing facilities in firebrick. From 2-Loc-2.ipynb cell 12.
+Figure 11: Nelder-Mead in action from (0,0): each blue dot is one evaluation of the objective; the search sweeps toward the optimum (red star), the existing facilities in firebrick.
 
 Nelder-Mead is also called the amoeba method, for the way it moves. It works a triangle of points across the plane, evaluating the objective at each: from the current triangle it tries a new point, and when that point improves on the worst corner it moves the triangle that way, creeping downhill by function evaluations alone. The step rules that decide each move are collected in the callout below; the working point is that the method needs nothing but the objective’s values.
 
 NoteHow Nelder-Mead searches
 
-Each iteration orders the simplex’s corners from best to worst and tries to replace the worst. It first reflects that corner through the opposite edge: the reflected point is accepted if it is merely middling, stretched further by an expansion if it is the new best, and, if it is worse than the second-worst corner, pulled back by a contraction, taken outside the edge when the reflection still beats the current worst corner and inside when it does not. When even the contraction fails to improve, the whole simplex shrinks toward the best corner and the iteration restarts. The search reads only values of the objective, never its derivatives, which is what lets it handle kinked or discontinuous objectives a gradient method cannot.2
+Each iteration orders the simplex’s corners from best to worst and tries to replace the worst. It first reflects that corner through the opposite edge: the reflected point is accepted if it is merely middling, stretched further by an expansion if it is the new best, and, if it is worse than the second-worst corner, pulled back by a contraction, taken outside the edge when the reflection still beats the current worst corner and inside when it does not. When even the contraction fails to improve, the whole simplex shrinks toward the best corner and the iteration restarts. The search reads only values of the objective, never its derivatives, which is what lets it handle kinked or discontinuous objectives a gradient method cannot.2 Fig. 12 shows why the four moves are fewer decisions than they look: reflection, expansion and both contractions all step along the same ray through the worst corner and the centroid, differing only in how far, and shrink is the only one that leaves it.
 
 Figure 12: The four moves on a two-dimensional simplex, with v_1 the best vertex and v_3 the worst. The centroid c of the remaining vertices sets the direction: reflection, expansion, and the two contractions all step along the same ray through v_3 and c, differing only in how far. Shrink is the exception, pulling every vertex halfway toward v_1 rather than replacing the worst.
 
@@ -360,9 +362,197 @@ end;
 { shrink: replace each vᵢ, i = 2 … n+1, by v₁ + ½(vᵢ − v₁) }
 ```
 
+## 4. Other types of location objectives
+
+Lecture 2.1 set six objectives side by side in Table 1 in Lecture 2.1 without solving any. Three more of them can be solved here, on the same three facilities, by changing one line.
+
+Minimax. The distances from the centroid to the three facilities are not equal, and the largest of them is what a minimax objective answers to.
+
+```
+# Code block 7: the centroid as a starting point
+using Statistics
+x0 = mean.(eachcol(P))              # centroid start
+d2.([x0], eachrow(P))
+```
+
+```
+3-element Vector{Float64}:
+3.5901098714230026
+2.13437474581095
+3.1446603773522015
+```
+
+```
+maximum(d2.([x0], eachrow(P)))  # Code block 8: farthest from centroid
+```
+
+```
+3.5901098714230026
+```
+
+Minimizing that maximum is the whole change: sum becomes maximum.
+
+```
+# Code block 9: minimax, the smallest largest distance
+TC(x) = maximum(d2.([x], eachrow(P)))
+res = optimize(TC, x0)
+@show TCᵒ = res.minimum
+xᵒ = res.minimizer
+```
+
+```
+TCᵒ = res.minimum = 3.2015621668925127
+```
+
+```
+2-element Vector{Float64}:
+3.5002844051451856
+2.9996444682714216
+```
+
+At the optimum the three distances are nearly equal, which is what minimizing the largest of them does.
+
+```
+d2.([xᵒ], eachrow(P))  # Code block 10: distances at the minimax point
+```
+
+```
+3-element Vector{Float64}:
+3.2015621352865713
+3.2011179382598285
+3.2015621668925127
+```
+
+Maximin. The mirror image, for a facility everyone wants to be far from. Optim only minimizes, so the objective is negated.
+
+```
+# Code block 11: maximin, pushing the facility away
+TC(x) = -minimum(d2.([x], eachrow(P)))  # minus converts min to max
+res = optimize(TC, x0)
+@show TCᵒ = res.minimum
+xᵒ = res.minimizer
+```
+
+```
+TCᵒ = res.minimum = -Inf
+```
+
+```
+2-element Vector{Float64}:
+-1.517615888912572e154
+6.956743000806962e153
+```
+
+The answer is nonsense, and loudly so: the facility has run off to 10^{154} and the objective to -\infty. Nothing was wrong with the code. On its own the maximin problem has no finite answer, since there is always somewhere further away.
+
+A feasible region. Confining the facility to a rectangle makes the problem well posed. Outside the rectangle the objective is \infty, which the optimizer will not accept.
+
+```
+# Code block 12: a feasible region for the maximin
+r = [(0, 0), (7, 6)]   # SW and NE corners of feasible region
+isinrect(x, r) = r[1][1] <= x[1] <= r[2][1] &&
+r[1][2] <= x[2] <= r[2][2]
+TC(x) = isinrect(x, r) ? -minimum(d2.([x], eachrow(P))) : Inf
+TC([4, 4]), TC([8, 8])
+```
+
+```
+(-2.23606797749979, Inf)
+```
+
+```
+# Code block 13: the bounded maximin solution
+res = optimize(TC, x0)
+@show TCᵒ = res.minimum
+xᵒ = res.minimizer
+```
+
+```
+TCᵒ = res.minimum = -5.000215777483092
+```
+
+```
+2-element Vector{Float64}:
+0.9535476404731719
+5.999999999968523
+```
+
+Center of gravity. One more, and the gentlest: squaring each distance before summing gives the objective of Model 5 in Lecture 2.1. sum stays, and .^ 2 is the whole change.
+
+```
+# Code block 14: center of gravity, minimizing squared distance
+TC(x) = sum(d2.([x], eachrow(P)) .^ 2)
+res = optimize(TC, x0)
+@show TCᵒ = res.minimum
+xᵒ = res.minimizer
+```
+
+```
+TCᵒ = res.minimum = 27.333333333333336
+```
+
+```
+2-element Vector{Float64}:
+4.333333333333333
+2.3333333333333335
+```
+
+The search returns its own starting point, because it began at the answer. Lecture 2.1 derived the closed form at Eq. 3 in Lecture 2.1: with equal weights the minimizer of squared distance is the plain centroid, which is exactly the x0 used throughout this section. Starting somewhere else and arriving at the same place is the check worth making.
+
+```
+optimize(TC, [0.0, 0.0]).minimizer  # Code block 15: a different start
+```
+
+```
+2-element Vector{Float64}:
+4.333362652381471
+2.333293810470193
+```
+
+Putting the four answers on one set of axes with the minisum of Ex. 2 shows what changing the objective does to the location (Fig. 13).
+
+Show the code that generates this figure
+
+```
+# Code block 16: every objective's solution on one plot
+sols = ["minisum" => Xᵒ,
+"center of gravity" =>
+optimize(x -> sum(d2.([x], eachrow(P)) .^ 2),
+x0).minimizer,
+"minimax" => optimize(x -> maximum(d2.([x], eachrow(P))),
+x0).minimizer,
+"maximin, bounded" =>
+optimize(x -> isinrect(x, r) ?
+-minimum(d2.([x], eachrow(P))) : Inf,
+x0).minimizer]
+fig = Figure(size = (760, 430))
+ax = Axis(fig[1, 1]; xlabel = "x", ylabel = "y",
+aspect = DataAspect())
+lines!(ax, [0, 7, 7, 0, 0], [0, 0, 6, 6, 0]; color = (:gray, 0.7),
+linestyle = :dash, label = "feasible region")
+scatter!(ax, P[:, 1], P[:, 2]; color = :firebrick, markersize = 13,
+label = "existing facilities")
+for ((nm, X), col, mk) in zip(sols,
+[:dodgerblue, :seagreen, :darkorange, :purple],
+[:circle, :rect, :utriangle, :diamond])
+scatter!(ax, [X[1]], [X[2]]; color = col, marker = mk,
+markersize = 14, label = nm)
+end
+arrows2d!(ax, [3.2], [4.1], [-1.6], [0.8]; color = :purple)
+text!(ax, 3.35, 4.05; color = :purple, fontsize = 11,
+align = (:left, :top),
+text = "maximin, unbounded:\nruns off to infinity")
+Legend(fig[1, 2], ax; framevisible = false, labelsize = 11)
+fig
+```
+
+Figure 13: The same three existing facilities under four objectives. The bounded maximin sits on the edge of the region, which is what pins it; without the region it leaves the picture entirely.
+
+Logjam doesn’t have to implement all of these. Just using the Optim package alone does most of the work. Logjam just needs to supply any supporting infrastructure. In the case of maximin, it only becomes feasible when the region is bounded.
+
 Optim and the plotting used here are general-purpose Julia. The logistics-specific layer that the rest of the topic relies on, place names and distances over real geography, is introduced next.
 
-## 4. Logjam: the course’s logistics toolkit
+## 5. Logjam: the course’s logistics toolkit
 
 The single-facility minisum of Sec. 3 was solved with optimize from Optim, a general-purpose optimizer taken from the Julia ecosystem. Logistics problems, though, are rarely posed in the language a solver expects: their data are place names, distances over real roads, and freight rates, not coordinate vectors and objective functions. Logjam is the Julia package written for this course to supply that missing layer. It does not reimplement what the ecosystem already does well, such as the optimization in Optim or the plotting in CairoMakie; it adds the logistics domain on top, turning place names into coordinates and measuring distance over real geography.
 
@@ -373,13 +563,14 @@ Logjam collects tools across the logistics topics of the course: facility locati
 The package cell in Lecture 1.2 adds Logjam by URL:
 
 ```
+# Code block 17: adding Logjam by URL
 using Pkg
 Pkg.add(url="https://github.com/mgkay/Logjam")
 ```
 
-Its features activate through package extensions, so its capabilities grow as more packages are loaded: using Logjam alone provides the core location, costing, distance, and geocoding tools; adding CairoMakie enables plotting; adding GeoMakie as well enables the mapping functions, such as makemap and aligntext, used in Sec. 5. The facility-location and routing maps introduced in Lecture 1.1 were drawn with these same mapping tools, and the package’s README is the reference for its full function set. The remainder of this lecture puts Logjam to work computing the distances that the minisum objective needs.
+Its features activate through package extensions, so its capabilities grow as more packages are loaded: using Logjam alone provides the core location, costing, distance, and geocoding tools; adding CairoMakie enables plotting; adding GeoMakie as well enables the mapping functions, such as makemap and aligntext, used in Sec. 6. The facility-location and routing maps introduced in Lecture 1.1 were drawn with these same mapping tools, and the package’s README is the reference for its full function set. The remainder of this lecture puts Logjam to work computing the distances that the minisum objective needs.
 
-## 5. Computing distances with Logjam
+## 6. Computing distances with Logjam
 
 The minisum objective needs a distance d(X, P_i) between the facility and each existing point. In the plane, that distance belongs to a family of metrics selected by a single parameter; over the curved surface of the earth, it is the great-circle distance. Logjam supplies both, together with the geocoding that turns place names into the coordinates they require. The planar metrics come first.
 
@@ -397,13 +588,14 @@ d_\infty(P_1, P_2) = \max\{\,|x_1 - x_2|,\; |y_1 - y_2|\,\} \tag{5}
 
 The above distances are defined for two-dimensional points, but they can be extended for points of any dimension. For 0 < p < 1, the l_p distance is not defined since the triangle inequality does not hold; for 1 < p < 2, the l_p distance lies between the rectilinear and the Euclidean distances; and for 2 < p < \infty, the l_p distance lies below the Euclidean distance and decreases as p increases.
 
-Each value of p has a characteristic contour of points at equal distance from the center (Fig. 13): a diamond for the rectilinear distance, the familiar circle for the Euclidean, and a square for the Chebychev, with the intermediate values filling the range between them.
+Each value of p has a characteristic contour of points at equal distance from the center (Fig. 14): a diamond for the rectilinear distance, the familiar circle for the Euclidean, and a square for the Chebychev, with the intermediate values filling the range between them.
 
-Figure 13: Contours of equal l_p distance from the center for p = 1, 1.5, 2, 4, \infty: the rectilinear diamond, the Euclidean circle, and the Chebychev square.
+Figure 14: Contours of equal l_p distance from the center for p = 1, 1.5, 2, 4, \infty: the rectilinear diamond, the Euclidean circle, and the Chebychev square.
 
 Logjam computes each of these directly. d1 and d2 take two points; the unified dists takes point sets and a metric parameter, so a single call covers the whole family, down to the Chebychev limit at Inf.
 
 ```
+# Code block 18: rectilinear and Euclidean distance
 P1 = [0, 0]                 # two points in the plane
 P2 = [4, 3]
 d1(P1, P2), d2(P1, P2)      # rectilinear, Euclidean
@@ -414,6 +606,7 @@ d1(P1, P2), d2(P1, P2)      # rectilinear, Euclidean
 ```
 
 ```
+# Code block 19: the l1, l2 and l-infinity metrics
 X1 = [0 0]                  # point sets, one row per point
 X2 = [4 3]
 [dists(X1, X2, p)[1] for p in (1, 2, Inf)]   # l₁, l₂, l∞
@@ -436,9 +629,9 @@ If x < y, then  \lim_{p \to \infty}(x^p + y^p)^{1/p} = \lim_{p \to \infty}\!\lef
 
 A similar argument can be made if x > y. ∎
 
-The Chebychev distance is the natural one when two motions run at once, so the longer of the two sets the total: a lift truck drives down the aisle while raising its forks, and an overhead crane bridges and trolleys at the same time. For a move with |\Delta x| = 6 and |\Delta y| = 3 (Fig. 14), the rectilinear distance adds the two (9) and the Euclidean takes the hypotenuse (\approx 6.71), but the time is set by the longer move alone, \max\{6, 3\} = 6.
+The Chebychev distance is the natural one when two motions run at once, so the longer of the two sets the total: a lift truck drives down the aisle while raising its forks, and an overhead crane bridges and trolleys at the same time. For a move with |\Delta x| = 6 and |\Delta y| = 3 (Fig. 15), the rectilinear distance adds the two (9) and the Euclidean takes the hypotenuse (\approx 6.71), but the time is set by the longer move alone, \max\{6, 3\} = 6.
 
-Figure 14: One move from A to B under the three metrics: rectilinear d_1 = 9, Euclidean d_2 \approx 6.71, and Chebychev d_\infty = \max\{6, 3\} = 6, the longer of the two displacements.
+Figure 15: One move from A to B under the three metrics: rectilinear d_1 = 9, Euclidean d_2 \approx 6.71, and Chebychev d_\infty = \max\{6, 3\} = 6, the longer of the two displacements.
 
 The great circle distance is an exercise in spherical trigonometry. A compact formula gives the separation of two points as an angle in radians, as though on a sphere of unit radius; that angle becomes a distance by multiplying it by the radius of the earth.
 
@@ -454,9 +647,9 @@ x_{rad} = \frac{x_{deg}}{180}\,\pi \qquad \text{and} \qquad x_{deg} = \frac{x_{r
 
 NoteDerivation of the great circle distance
 
-In Fig. 15, a, b, and c are the sides of a spherical triangle and A, B, and C are the corresponding angles. The great circle distance between points 1 and 2 in radians (d_{rad}) corresponds to side c of the triangle.
+In Fig. 16, a, b, and c are the sides of a spherical triangle and A, B, and C are the corresponding angles. The great circle distance between points 1 and 2 in radians (d_{rad}) corresponds to side c of the triangle.
 
-Figure 15: Great circle distance derivation.
+Figure 16: Great circle distance derivation.
 
 Given
 
@@ -472,9 +665,10 @@ d_{rad} = c = \cos^{-1}\!\left[\sin(y_2)\sin(y_1) + \cos(y_2)\cos(y_1)\cos(x_1 -
 
 The above formula can result in round off error if the two points are located at exactly opposite sides of a sphere. Instead, the Haversine formula can be used (Eq. 6). The Haversine formula does not need to be used if the great circle distance is being calculated by hand and the two points are known to not be on opposite sides of the sphere.
 
-The formula applied to a few points shows how far apart the distances can be. The chapter’s worked example measures three cities from Raleigh, each given as a (longitude, latitude) pair in decimal degrees; dists with the :mi unit (or :rad) returns the great-circle distance to each.
+The formula applied to a few points shows how far apart the distances can be. The chapter’s worked example measures three cities from Raleigh, each given as a (longitude, latitude) pair in decimal degrees; dists with the :mi unit (or :rad) returns the great-circle distance to each. Fig. 17 draws the same three distances on the globe. Each arc is the shortest path there is between its two points, and none of them is the straight line a flat map would draw between the same pair.
 
 ```
+# Code block 20: great-circle distance to three cities
 Raleigh = [-78.659 35.8219]        # one point, as a row
 XY = [-82.336  29.6742             # Gainesville, FL
 44.3667 33.2333             # Baghdad
@@ -493,12 +687,12 @@ Baghdad     1.62  6,412.00
 Rio de Janeiro     1.18  4,675.44
 ```
 
-Figure 16: Great-circle distances from Raleigh, drawn as arcs on the globe: 475 miles to Gainesville, 4675 miles to Rio de Janeiro, and 6412 miles to Baghdad, the values computed above.
+Figure 17: Great-circle distances from Raleigh, drawn as arcs on the globe: 475 miles to Gainesville, 4675 miles to Rio de Janeiro, and 6412 miles to Baghdad, the values computed above.
 
 A great-circle distance needs coordinates, and Logjam carries a built-in gazetteer of U.S. places to supply them. usplace() returns every city, town, and census-designated place as a table of names, coordinates, and populations; filter with st2fips, the state’s numeric code, narrows it to the places of interest, here the ten North Carolina cities above one hundred thousand people.
 
 ```
-# NC cities over 100k (2-Loc-3 cells 17-18, Logjam gazetteer)
+# Code block 21: NC cities over 100k, from the Logjam gazetteer
 df = filter(r -> r.STFIP == st2fips(:NC) &&
 r.POP > 100_000, usplace())
 select!(df, :NAME, :LON, :LAT, :POP)
@@ -523,6 +717,7 @@ Winston-Salem  -80.26  36.10  249,545
 Each row’s longitude and latitude are one point P_i, and dgc returns the great-circle distance between two of them. Raleigh to Charlotte is about one hundred thirty miles, as the crow flies.
 
 ```
+# Code block 22: Raleigh to Charlotte
 ll(nm) = collect(filter(r -> r.NAME == nm,
 df)[1, [:LON, :LAT]])
 xyR = ll("Raleigh")           # (lon, lat) in degrees
@@ -536,6 +731,7 @@ dgc(xyR, ll("Charlotte"))     # great-circle miles
 Broadcasting dgc over the whole set gives Raleigh’s distance to every city at once, and the standard index queries answer the natural questions: the farthest city, and the three nearest.
 
 ```
+# Code block 23: the farthest city from Raleigh
 pt = collect.(zip(df.LON, df.LAT))   # one [lon,lat] per city
 d  = dgc.([xyR], pt)                 # Raleigh to each city
 df[argmax(d), :NAME]                 # farthest city
@@ -546,7 +742,7 @@ df[argmax(d), :NAME]                 # farthest city
 ```
 
 ```
-df[sortperm(d)[2:4], :NAME]          # three nearest (skip Raleigh)
+df[sortperm(d)[2:4], :NAME]  # Code block 24: three nearest, skip Raleigh
 ```
 
 ```
@@ -558,9 +754,9 @@ df[sortperm(d)[2:4], :NAME]          # three nearest (skip Raleigh)
 
 Plotting longitude and latitude directly on flat axes distorts the map, so the geography is shown through a projection. The most convenient here is the Mercator projection, which has the useful property that a straight line between two points is a constant compass bearing, the line a navigator would steer.
 
-The projection leaves longitude unchanged and stretches the latitude axis toward the poles, placing a point at latitude \varphi at ordinate \sinh^{-1}(\tan\varphi), so equal steps of latitude spread apart with distance from the equator. Logjam’s makemap applies the projection through GeoMakie, so the maps in this section are already Mercator-projected; Fig. 17 shows the effect on a world coastline.
+The projection leaves longitude unchanged and stretches the latitude axis toward the poles, placing a point at latitude \varphi at ordinate \sinh^{-1}(\tan\varphi), so equal steps of latitude spread apart with distance from the equator. Logjam’s makemap applies the projection through GeoMakie, so the maps in this section are already Mercator-projected; Fig. 18 shows the effect on a world coastline.
 
-Figure 17: The same world coastline drawn with latitude plotted directly (left) and under the Mercator projection (right). Both carry the same latitude labels, but on the right they sit at their projected positions, so equal steps of latitude spread apart toward the poles.
+Figure 18: The same world coastline drawn with latitude plotted directly (left) and under the Mercator projection (right). Both carry the same latitude labels, but on the right they sit at their projected positions, so equal steps of latitude spread apart toward the poles.
 
 These distances feed straight back into the single-facility minisum. The model of Model 1 never depended on the metric, so the same objective, now with the great-circle distance in place of the straight-line one, locates a facility over real geography. Taking each place’s population as its weight w_i turns the objective into total population-weighted travel, and its minimizer into the location that is, on average, closest to everyone.
 
@@ -571,7 +767,7 @@ Locate a single facility to minimize the total population-weighted great-circle 
 Every place enters, not just the large cities: usplace filtered to the state, each place weighted by its population, with the weighted centroid wcentroid as the starting point for the search.
 
 ```
-# every NC place, population-weighted (2-Loc-3 cells 40-41)
+# Code block 25: every NC place, population-weighted
 df = filter(r -> r.STFIP == st2fips(:NC), usplace())
 select!(df, :NAME, :LON, :LAT, :POP)
 pt = collect.(zip(df.LON, df.LAT))       # [lon,lat] per place
@@ -586,9 +782,10 @@ xyᵒ = optimize(TC, [w.LON, w.LAT]).minimizer
 35.64959801955728
 ```
 
-The nearest place names the answer.
+The nearest place names the answer. Fig. 19 sets that optimum against every place in the state, which is what makes the result readable: the ten largest cities are labeled, and the population-weighted optimum sits near none of them.
 
 ```
+# Code block 26: the place nearest that optimum
 d = dgc.([xyᵒ], pt)                      # optimum to each place
 df[argmin(d), :NAME], round(minimum(d))  # nearest place, miles
 ```
@@ -599,15 +796,179 @@ df[argmin(d), :NAME], round(minimum(d))  # nearest place, miles
 
 The optimum lies about six miles from Franklinville, near the geographic center of the state.
 
-Figure 18: The population-weighted minisum over every place in North Carolina (the ten largest cities labeled). The optimum x^\star (star) sits in the central Piedmont, within a few miles of the North Carolina Zoo near Asheboro.
+Figure 19: The population-weighted minisum over every place in North Carolina (the ten largest cities labeled). The optimum x^\star (star) sits in the central Piedmont, within a few miles of the North Carolina Zoo near Asheboro.
 
 The proximity of the population-weighted minisum location to the location chosen for the North Carolina Zoo near Asheboro seems most likely to just be coincidental. The minisum location is the one that, on average, minimizes the distance everyone in the state must travel, which would be a natural criterion for a facility the whole public visits. A zoo is such a facility. Accounts of the site’s selection do mention its central position in the state, but none gives evidence that centrality was a principal factor in the decision.3 Given what computing could routinely support in the early 1970s, it is also unlikely that a decision of that period rested on an analysis of the kind carried out here.
 
-The population-weighted minisum location is a continuous answer, free to fall anywhere. A real single-facility decision usually chooses among a handful of actual sites, and one such choice played out in North Carolina. When FedEx was siting its Mid-Atlantic ground hub, the state weighed offering incentives to draw it to the North Carolina Global TransPark at Kinston, in the east. Kinston is a weak ground-hub site: it lies east of I-95, the easternmost interstate, and is served by no interstate of its own. Greensboro, by contrast, sits at the crossing of I-40 and I-85, central to Charlotte, the Triangle, and the Triad (Fig. 19).
+## 7. Circuity factors
+
+The great-circle distance was used in Ex. 3 to determine the location that minimized the total population-weighted distance from all of the places in North Carolina. The total person-miles corresponding to the optimal location actually understates the total miles people would travel to this location: the great-circle distance was used, and real people travel on actual roads, so they cover slightly longer distances than that. With respect to determining the location, using the actual road distances traveled by people from all of the thousands of places in North Carolina would not significantly change the location found. The only time knowing the actual road distance is helpful in a location problem like this is when there is some cost associated with the distances actually traveled; for example, if people actually paid by the mile to reach the location. Since it would be quite time-consuming to determine thousands of actual road distances, a convenient approximation to them can be obtained using the circuity factor.
+
+A straight line between two points is not a distance anyone travels. The great-circle distance from Goldsboro to High Point, North Carolina is 121 miles; the shortest-travel-time road route between them, traced through the road network in Fig. 20, is 137.7 miles. The ratio of the two is the circuity factor,
+
+g = \frac{\text{road distance}}{\text{great-circle distance}}, \tag{8}
+
+which for this pair is 137.7/121.0 = 1.14.
+
+Figure 20: Road route against great-circle distance, Goldsboro to High Point, North Carolina. The dashed line is the great circle; the solid line is the shortest-travel-time path through the road network.
+
+A single origin-destination pair gives a single ratio, which on its own is not useful. What makes the factor useful is a small sample. Great-circle distance is cheap to compute for any pair of coordinates, and the corresponding road distance can be read off a mapping service. Such a service usually returns several routes rather than one, and the right choice is the shortest travel time, which may be slightly longer in miles, because that is the route a truck would actually take.
+
+### Estimating a circuity factor
+
+The circuity factor depends on both the trip density and the directness of the travel network. A good default value for road travel is 1.2. The factor in high-density areas is usually lower, because there are more direct roads between two large cities. Circuity factors for rail travel are higher than for road travel, because the rail network is far less dense. In sparse country, where the roads are few, they also run less directly, so the factor there is higher than in a dense region.
+
+Just 5 to 10 sampled road pairs give a reasonable estimate, as long as the samples are independent and do not overlap, because the overestimates tend to cancel the underestimates. The sample can be smaller than that rule of thumb suggests, since three pairs are already serviceable. Where a factor is to be used extensively, the samples can be weighted toward the higher trip densities, but in practice that refinement is rarely needed.
+
+The procedure is short enough to run in full. Take the three cities of Fig. 21, sample the three pairs among them, and average the ratios. The great-circle distances are computed; the road distances are looked up once and taken as data, which is what a handful of samples means in practice.
+
+```
+# Code block 27: three cities, road against great-circle
+Detroit     = [-83.1022, 42.3830]   # (lon, lat), degrees
+Gainesville = [-82.3492, 29.6807]
+Memphis     = [-89.9666, 35.1090]
+
+gc = [dgc(Detroit, Gainesville),    # great circle, mi
+dgc(Detroit, Memphis),
+dgc(Gainesville, Memphis)]
+
+road = [1024.2, 710.8, 632.8]       # road network, mi
+
+g = road ./ gc
+
+ḡ = sum(g) / length(g)              # the region's factor
+```
+
+```
+1.1314763826552756
+```
+
+```
+# Code block 28: circuity for each pair
+prt(DataFrame(
+Pair = ["Detroit-Gainesville", "Detroit-Memphis",
+"Gainesville-Memphis"],
+GreatCircle = round.(gc, digits = 1),
+Road = road,
+g = round.(g, digits = 3)))
+```
+
+```
+Pair  GreatCircle      Road     g
+──────────────────────────────────────────────────
+Detroit-Gainesville       878.60  1,024.20  1.17
+Detroit-Memphis       623.60    710.80  1.14
+Gainesville-Memphis       581.20    632.80  1.09
+```
+
+The three factors differ, and averaging them is the whole method: the pair that overstates the region is offset by the pair that understates it.
+
+\bar g = 1.13
+
+An average of three ratios is a claim, and it can be checked. The pair this section opened with, Goldsboro to High Point, took no part in the calibration: different state, shorter trip, and a road distance measured over the network rather than looked up. Applying the estimate to it and comparing against what that pair actually gives is the test.
+
+```
+# Code block 29: the estimate against a held-out pair
+gGH = 137.7 / 121.0                 # @fig-circuity-road, held out
+(held_out = round(gGH, digits = 3),
+estimate = round(ḡ, digits = 3),
+error_pct = round(100 * (gGH - ḡ) / gGH, digits = 1))
+```
+
+```
+(held_out = 1.138, estimate = 1.131, error_pct = 0.6)
+```
+
+Under one percent, from three samples in another part of the country. That is what “three pairs are already serviceable” means, and it is worth doing rather than assuming: a held-out pair is the only thing that distinguishes a factor that generalizes from three ratios that happen to average out.
+
+An estimated factor is the wrong tool in three cases, and the actual road network should be used instead:
+- Few distances are needed, in which case a mapping service answers directly.
+- Distances are short, since short trips have fewer direct roads available and so scatter more widely around any average.
+- Obstacles, such as water or mountains, limit direct road travel and make the local factor unlike the regional one.
+
+Across most of the eastern United States the factor stays in the neighborhood of 1.15 to 1.25, which is why 1.2 serves as a default at all.
+
+In general, estimated circuity factors can vary quite extensively depending on the particular road network, with typical values ranging from 1.05 all the way to 1.35. This matters in particular later, when actual road networks are being used. It is often necessary to connect an isolated location to the road network because small residential connector roads may not be part of the road network. In such cases, what is being estimated is a short distance, and there may not be an actual road that’s convenient. Since the distance is short, the value is not going to impact things too much, so a reasonable estimate to use can be as high as 1.4 to 1.5.
+
+### What circuity changes, and what it does not
+
+A circuity factor multiplies every distance by the same constant. That single observation settles how it enters a location decision, and the answer has two halves that are easy to run together and should not be.
+
+A circuity factor does not change the optimal location, because scaling every distance by a constant leaves the minimizing point unchanged. It does change total cost, because the transport rate r is in dollars per ton-mile, so the miles it multiplies must be the miles actually driven.
+
+The consequence is that circuity matters exactly where cost, not position, is the question being asked, and the most common such question is what an alternative site would cost. Fig. 21 is that comparison: the optimum falls inside the triangle of the three existing facilities, and Cary, the site the firm would prefer on other grounds, falls outside it.
+
+Figure 21: Locating for existing facilities at Detroit, Gainesville and Memphis, with Cary as the alternative site. The optimum falls inside the triangle formed by the three cities; Cary lies outside it.
+
+Example 4. Pricing an alternative location
+
+Determine the new-facility location serving existing facilities at Detroit, Gainesville and Memphis, receiving 40, 25 and 35 truckloads per year, and determine the increase in annual transport cost at $2.00 per loaded mile if the facility is instead placed at Cary, North Carolina.
+
+The framing is a consulting one. A company whose owners are already in Cary would prefer to stay there, everything else being equal. Transport cost is not the whole of their decision: for a distribution company it is close to everything, but for a company that has to hire engineers and technical staff it might be half, with the rest going to who is willing to live in the location, the cost of energy, tax policy, and a long list besides. So the question put to the logistics engineer is not where to locate. It is what staying in Cary costs per year against the transport-optimal site. If the answer is a few hundred dollars a month the company stays; if it is millions, it moves. Producing that differential is the whole of the engineer’s task, and the trade against wages, taxes and energy is management’s.
+
+In order to determine the differential, the transport rate is needed and is the piece of information a firm usually does have: say $2 per mile for a truck on the road. Priced against great-circle distance, the resulting estimate of transport cost is too low, because those are not the miles the truck drives. Where that rate comes from is taken up in Transport.
+
+The three customers and their truckloads are the data; the factor \bar g just estimated turns great-circle miles into road miles, and the rate turns road miles into dollars.
+
+```
+# Code block 30: truckload weights and the annual cost
+P = permutedims(hcat(Detroit, Gainesville, Memphis))
+wTL = [40.0, 25.0, 35.0]           # truckloads per year
+rate = 2.00                        # $ per loaded mile
+
+TCyr(xy) = rate * ḡ *
+sum(wTL[i] * dgc(xy, P[i, :]) for i in 1:3)
+```
+
+```
+TCyr (generic function with 1 method)
+```
+
+The optimum is found the way 2.2 found one, a downhill search from the weighted centroid.
+
+```
+# Code block 31: the optimum site
+c0 = wcentroid(P[:, 1], P[:, 2], wTL)
+xᵒ = Optim.minimizer(optimize(TCyr, [c0.LON, c0.LAT]))
+lonlat2loc(xᵒ, usplace()).desc
+```
+
+```
+"3.8 mi E of Charlotte, TN"
+```
+
+Pricing the two sites is then one call each.
+
+```
+# Code block 32: what an alternative site would cost
+Cary = [-78.8190, 35.7814]
+Δ = TCyr(Cary) - TCyr(xᵒ)
+prt(DataFrame(
+Site = ["optimum", "Cary, NC", "increase"],
+Cost = round.([TCyr(xᵒ), TCyr(Cary), Δ], digits = 0)))
+```
+
+```
+Site     Cost
+───────────────────
+optimum   87,149
+Cary, NC  122,536
+increase   35,386
+```
+
+Staying in Cary costs about $35.4k per year more than the transport optimum, an increase of 40.6%.
+
+That is the number the engineer hands over. Whether it is worth paying is not a transport question.
+
+→ Circuity is the correction that turns a geometric answer into a priced one. The location survives the correction; the number attached to it does not.
+
+## 8. FedEx hub choice
+
+The population-weighted minisum location is a continuous answer, free to fall anywhere. A real single-facility decision usually chooses among a handful of actual sites, and one such choice played out in North Carolina. When FedEx was siting its Mid-Atlantic ground hub, the state weighed offering incentives to draw it to the North Carolina Global TransPark at Kinston, in the east. Kinston is a weak ground-hub site: it lies east of I-95, the easternmost interstate, and is served by no interstate of its own. Greensboro, by contrast, sits at the crossing of I-40 and I-85, central to Charlotte, the Triangle, and the Triad (Fig. 22).
 
 An analysis carried out for the state, without access to FedEx’s own figures, used the guesstimation methods of Lecture 1.1 to put the annual cost penalty of the Kinston site over Greensboro at roughly $12 million a year, the size of the subsidy it would take to offset it. Years later a FedEx analyst who had run the company’s own internal study put the figure within a million or two of that estimate, a striking check on guesstimation for a quantity no outsider could measure directly. FedEx built its hub at Piedmont Triad International in Greensboro; the TransPark, long criticized for its distance from major highways, did not win it.4
 
-Figure 19: The Mid-Atlantic hub choice: Greensboro (star) at the I-40/I-85 crossroads versus Kinston (✕), east of I-95 with no interstate service. Context cities and the interstate network are drawn from Logjam’s gazetteer and highway data.
+Figure 22: FedEx hub choice: Greensboro (star) at the I-40/I-85 crossroads versus Kinston (✕), east of I-95 with no interstate service.
 
 The population-weighted center and the FedEx decision point the same way, to the central Piedmont, and together they close the loop opened in Lecture 2.1: where a facility sits is a long-lived, costly commitment, and the tools of this lecture, distances over real geography and a minisum solved numerically, are what turn that commitment into a computation. Choosing among discrete candidate sites, rather than a free point in the plane, is the subject the next lectures take up.
 

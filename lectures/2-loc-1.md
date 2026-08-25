@@ -45,17 +45,17 @@ Harold Hotelling, the economist behind this eponymous law, left Columbia for the
 
 Figure 3: Hotelling’s law on a beach (top to bottom): a single stand, here at the three-quarter mark, captures the whole beach; a competitor enters on the busier side, taking the larger share; each stand keeps moving to reclaim share until both sit at the center.
 
-maximize: the share of the market a stand captures
+maximize: share of the market a stand captures
 
 solve for:
 (a) where each stand locates, any point along the beach.
 
 subject to: none
 
-return: the pair of stand locations
+return: pair of stand locations
 
 assumptions:
-(a) the two stands are owned independently, so each competes for customers;
+(a) two stands are owned independently, so each competes for customers;
 (b) customers are spread uniformly along the beach;
 (c) both stands sell an identical product at the same price;
 (d) each customer buys from the nearer stand.
@@ -71,7 +71,7 @@ solve for:
 
 subject to: none
 
-return: the pair of stand locations
+return: pair of stand locations
 
 assumptions:
 (a) the two stands are owned independently, so each competes for customers a single owner controls both stands;
@@ -102,10 +102,10 @@ solve for:
 
 subject to: none
 
-return: the beach chosen
+return: beach chosen
 
 assumptions:
-(a) the two beaches operate side by side: on the competitive beach both stands sit at the center and competition holds the price down; on the cooperative beach the stands sit at the quarter marks and the single owner charges more;
+(a) two beaches operate side by side: on the competitive beach both stands sit at the center and competition holds the price down; on the cooperative beach the stands sit at the quarter marks and the single owner charges more;
 (b) customers are spread uniformly along each beach;
 (c) each customer values a mile of walking at their own rate c;
 (d) on either beach, a customer buys from the nearer stand;
@@ -119,19 +119,19 @@ The modeling idea to carry forward is the weight itself, the per-mile cost c. Co
 
 ## 3. “Nonlinear” vs minisum objectives
 
-In this section, two types of modeling objectives are examined in relation to their impact on a couple’s location decision when looking for an apartment after moving to the Triangle area in North Carolina. The couple is hypothetical; the choice they face is not. The couple is choosing an apartment somewhere along the roughly thirty-mile US-70 corridor between Durham and Raleigh. One partner makes a single trip a day to work in Durham; the other both works and attends school in Raleigh, making two trips a day. Taking the number of daily trips as the weight of each destination, Durham has weight 1 and Raleigh has weight 2. Placing Durham at mile 0 and Raleigh at mile 30, at what location x (in miles along US-70) should they look for an apartment? One location turns out to be fair and another cheap, and they are not the same place.
+In this section, two types of modeling objectives are examined in relation to their impact on a couple’s location decision when looking for an apartment after moving to the Triangle area in North Carolina. The couple is hypothetical; the choice they face is not. The couple is choosing an apartment somewhere along the roughly thirty-mile US-70 corridor between Durham and Raleigh. One partner makes a single trip a day to work in Durham; the other both works and attends school in Raleigh, making two trips a day. Taking the number of daily trips as the weight of each destination, Durham has weight 1 and Raleigh has weight 2. Placing Durham at mile 0 and Raleigh at mile 30, at what location x (in miles along US-70) should they look for an apartment? One location turns out to be fair and another cheap, and they are not the same place. Fig. 5 is worth a moment for how little it contains: the whole decision is a single number on a line, and the two objectives that follow disagree only about which number.
 
 Figure 5: The US-70 (Glenwood Ave.) corridor. Durham sits at mile 0 with weight 1, one daily trip; Raleigh at mile 30 with weight 2, two daily trips. The apartment may be located anywhere along the line.
 
 Start with fairness. Where can the couple live so that neither partner is stuck driving more than the other? Equalizing the two partners’ weighted travel means  w_1\,x = w_2\,(30 - x), \qquad 1\cdot x = 2\,(30 - x) \;\Rightarrow\; x = 20,  the point two-thirds of the way from Durham to Raleigh. For two points this fair location is x = w_2 a_2/(w_1 + w_2), the weighted mean.
 
 solve for:
-(a) the location x of the apartment, any point along the corridor.
+(a) location x of the apartment, any point along the corridor.
 
 subject to:
 (a) equity: the two partners’ weighted travel is equal, so neither is stuck driving more than the other.
 
-return: the location x of the apartment along the corridor
+return: location x of the apartment along the corridor
 
 assumptions:
 (a) an apartment can be located anywhere along the corridor;
@@ -160,11 +160,11 @@ Changing the fairness condition into a quantity to minimize is a genuine change 
 minimize: the total weighted squared distance from the apartment to the two workplaces
 
 solve for:
-(a) the location x of the apartment, any point along the corridor.
+(a) location x of the apartment, any point along the corridor.
 
 subject to: none, the equity condition having been replaced by the objective above
 
-return: the location x of the apartment along the corridor
+return: location x of the apartment along the corridor
 
 assumptions:
 (a) an apartment can be located anywhere along the corridor;
@@ -174,14 +174,14 @@ Model 5: Equitable location, refined as least squares
 
 The fair location fixes how the driving is shared, but not how much driving there is in total. A couple that cares more about the total mileage, rather than about who bears the driving burden, would pose the question the other way around: they might instead minimize the total distance driven, adding the mileage up rather than balancing it. The new objective simply drops the square.
 
-minimize: the total weighted squared distance from the apartment to the two workplaces
+minimize: total weighted squared distance from the apartment to the two workplaces
 
 solve for:
-(a) the location x of the apartment, any point along the corridor.
+(a) location x of the apartment, any point along the corridor.
 
 subject to: none
 
-return: the location x of the apartment along the corridor
+return: location x of the apartment along the corridor
 
 assumptions:
 (a) an apartment can be located anywhere along the corridor;
@@ -206,13 +206,13 @@ Locating in Raleigh can in fact be the best of both worlds, but only once the ob
 minimize: the total weighted distance from the apartment to the two workplaces total couple cost: both partners’ travel valued at the couple’s single shared rate, plus the cost of the vehicles the couple keeps
 
 solve for:
-(a) the location x of the apartment, any point along the corridor;
+(a) location x of the apartment, any point along the corridor;
 (b) whether the second car is kept, yes or no.
 
 subject to:
 (a) one-car: the second car can be given up only if the apartment is located in Raleigh, where the partner who works and studies there can walk
 
-return: the location x of the apartmentcouple’s plan: where to live, and whether to keep the second car
+return: location x of the apartmentcouple’s plan: where to live, and whether to keep the second car
 
 assumptions:
 (a) an apartment can be located anywhere along the corridor;
@@ -291,17 +291,17 @@ One caution balances all of this. Every widening in the section, and the compens
 
 Choosing the objective was the hard part of Sections 2 and 3; solving the one that results can be surprisingly easy. For the couple, the efficient (minisum) location was read straight off the corridor because there were only two destinations. This section finds the minisum location for any number of destinations, using nothing more than a sorted list and a running total: no computer, no calculus, and, remarkably, not even the distances between the facilities. It is the one class of location problem in this course that is genuinely solved by hand, which is why it is worth doing carefully; the Julia methods for the harder cases wait for the next lecture. The method is stated as Model 8; the rest of the section works it by hand.
 
-minimize: the total weighted distance from a new facility (NF) to the m existing facilities (EFs) along a line
+minimize: total weighted distance from a new facility (NF) to the m existing facilities (EFs) along a line
 
 solve for:
-(a) the location x of the NF, any point along the line.
+(a) location x of the NF, any point along the line.
 
 subject to: none
 
-return: the location x^\star of the NF
+return: location x^\star of the NF
 
 assumptions:
-(a) the facilities lie on a single line, so distance is one-dimensional; a two-dimensional problem with rectilinear distance is solved by applying the model once along each axis;
+(a) facilities lie on a single line, so distance is one-dimensional; a two-dimensional problem with rectilinear distance is solved by applying the model once along each axis;
 (b) each EF’s weight w_i is known, and the EFs can be placed in order along the line, but their actual coordinates are not needed.
 
 Model 8: Minisum location, one dimension
@@ -396,28 +396,28 @@ The couple of Section 3 was already an instance of this. Their fair location, th
 
 Two further nonlinear objectives change not how distance is valued but how the individual facilities’ costs are aggregated: instead of summing them, take the largest, or the smallest.
 
-minimize: the largest distance from the new facility to any existing facility
+minimize: largest distance from the new facility to any existing facility
 
 solve for:
-(a) the location of the new facility, any point in the plane.
+(a) location of the new facility, any point in the plane.
 
 subject to: none
 
-return: the location of the new facility
+return: location of the new facility
 
 assumptions:
 (a) what matters is the worst case, not the total or the average.
 
 Model 9: Minimax location
 
-maximize: the smallest distance from the new facility to any existing facility
+maximize: smallest distance from the new facility to any existing facility
 
 solve for:
-(a) the location of the new facility, any point in the plane.
+(a) location of the new facility, any point in the plane.
 
 subject to: none
 
-return: the location of the new facility
+return: location of the new facility
 
 assumptions:
 (a) the facility is undesirable, so the aim is to stay as far as possible from the nearest existing facility;
@@ -439,13 +439,13 @@ Table 1: The linear minisum objective and its five nonlinear relatives.
 
 | Type  | Name  | Objective  | Where treated
 
-| Linear  | minisum  | \min \sum_i w_i d_i  | Sec. 1, 4
+| Linear  | minisum  | \min \sum_i w_i d_i  | Sec. 1, 4; 2.2 Sec. 3
 
 | Nonlinear  | center of gravity  | \min \sum_i w_i d_i^2  | Sec. 3
 
-| minimax  | \min\{\max_i d_i\}  | Sec. 5
+| minimax  | \min\{\max_i d_i\}  | Sec. 5; 2.2 Sec. 4
 
-| maximin  | \max\{\min_i d_i\}  | Sec. 5
+| maximin  | \max\{\min_i d_i\}  | Sec. 5; 2.2 Sec. 4
 
 | fixed cost (affine)  | \min \sum_i (k_i + w_i d_i)  | later lecture
 
