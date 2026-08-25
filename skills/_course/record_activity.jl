@@ -56,7 +56,29 @@ const ERR_NAME = "activity-log.error"
 const SHARED = ["activity", "started", "ended"]
 const PER_ACTIVITY = Dict(
     "review" => ["lecture_id", "questions", "examples_verified",
-                 "big_idea_reached", "planted_error_caught"],
+                 "big_idea_reached", "planted_error_caught",
+                 # The two closing questions. Required, not optional, because the whole point
+                 # of the activity is that a student says what they do not understand and the
+                 # instructor plans the next meeting from it. An empty list is a fine answer;
+                 # a MISSING field means the session never asked, and those must not look
+                 # alike in the log. Absent them, the one signal the class is planned from is
+                 # silently optional, which is how it comes to be skipped.
+                 "not_understood", "wants_covered"],
+    "homework" => ["homework_id", "questions",
+                 # WHY checks_named IS REQUIRED. It is what the course is actually collecting
+                 # from a homework: which of the nine each student reached for, per question,
+                 # in their own words. /homework Step 5 item 6 calls it the only signal that
+                 # field carries, and /homeworkteacher rolls it up.
+                 #
+                 # Measured 2026-08-25, first dry run driven as a student: with no "homework"
+                 # key in this table, the session read this file, worked out the format for
+                 # itself, invented its own field names, and the record validated on the shared
+                 # three alone. Naming the fields here is what makes a wrong guess loud.
+                 #
+                 # An EMPTY object is a fine answer and is what a delivery session records. A
+                 # MISSING field means the session never collected it, and the two must not
+                 # look alike in the log.
+                 "checks_named"],
 )
 
 "The student's work repository, or the working directory if the layout is not standard."

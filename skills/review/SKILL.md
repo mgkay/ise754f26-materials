@@ -11,7 +11,54 @@ only. Your job is comprehension and exam-readiness, not producing anything to ha
 grade — though it does leave one file behind, `work/reviews/<stem>.md`, which is the
 student's own record of what they expected before each answer was shown.
 
-## Step 0 — is this their first course activity of this kind?
+## Step 0 — update the course, then decide whether this is their first
+
+**Run this before reading anything else:**
+
+```
+julia .claude/skills/_course/update_course.jl --skill review
+```
+
+It fast-forwards `materials` and `handouts` and reinstalls any skill that shipped a new version.
+It never touches `work/`. Offline it says nothing, changes nothing, and the session continues on
+what is on disk.
+**Run it from the `ISE754` folder**, and if the session is somewhere else, change to that
+folder first. The path above is relative, so from `work/` or `materials/` it resolves to
+nothing and Julia exits with a stack trace instead of a report. `HOOK.md` records the same
+failure for the two hooks and fixes it there with `${CLAUDE_PROJECT_DIR}`; a skill has no
+equivalent, so the working directory is stated instead. The script itself finds the course
+root by walking up, so only the path to the script matters, not where it runs from.
+
+
+**Run it exactly as written, as one command.** The tool result already carries the exit code, so
+there is nothing to append. `echo $?`, a redirect to a file, and a `cat` of that file all turn this
+into a compound command, and a compound command is refused for a separate approval — which the
+student meets as an alarming prompt on the first command of their first session. Measured
+2026-08-25: three dry-run sessions out of three appended one and were refused before running it
+bare.
+
+| Exit | Meaning | What you do |
+|---|---|---|
+| 0 | nothing to update | continue, and say nothing about it |
+| 10 | something updated | continue, **unless** the output says the instructions for `/review` were replaced |
+| 1 | a repository needs a person | print what it said, then continue on what is on disk |
+
+**If the output says the instructions for `/review` were just replaced, stop.** Tell the student
+the review skill was updated, ask them to restart Claude Code and run `/review` again, and do not
+begin the session. You are reading the previous version of this file and cannot know what changed
+in it.
+
+**Do not announce a clean update.** A student told "checked for updates, none found" every time
+learns to skip the line, and then misses it on the day it matters.
+
+**Why this comes first, before the brief is even looked for.** Briefs are published into
+`handouts/`, and Step 1 refuses a review whose brief is absent. Those two facts together mean a
+student who has not pulled since the instructor published gets told the activity does not exist,
+which is indistinguishable from not-yet-assigned. The lecture in `materials/lectures/` has the
+same shape: absent, Step 1 works from the brief alone and names the gap, so a stale clone
+silently degrades the session. Pulling first turns both failures into non-events.
+
+## Step 0b — is this their first course activity of this kind?
 
 Read `work/activity-log.jsonl`. **If no line in it carries `"activity": "review"`** — or
 the file does not exist — this is the student's first review, and you additionally read and
@@ -254,7 +301,19 @@ is a new line, not a correction of the old one.
 - actual: 40 per semester
 - verdict: reject — a department cannot graduate 300 a term from 360 students
 - after: oh — 360 over nine semesters, so about a ninth leave each term
+
+## Still unclear
+- I don't get why the variability matters more than the average capacity
+
+## Would like gone over in class
+- another one like the bus example but where the timetable is not even
 ```
+
+**The two closing sections are always present, even when empty**, written as `- nothing` if
+that is what the student said. An absent section and an empty one look identical to a reader
+and they are not the same thing: one means the question was never asked, the other means it was
+asked and answered. The first is a defect in the session and the second is a fine outcome, so
+the file has to be able to tell them apart.
 
 `check:` is the student's own choice, named from the nine, and `verdict:` is theirs to
 render. Both are recorded because both are what the examination later certifies AI-free.
@@ -297,6 +356,44 @@ during the review to re-run the Julia or check a number, and should — after sa
 they expect, not instead of it. If they reach for it first, say so once, lightly, and ask
 what they expected; do not make a theme of it.
 
+### The last thing you do: ask what is still unclear
+
+**Close every session by asking two questions, and record the answers in their own words.**
+This is not a wrap-up pleasantry. It is what the activity is *for*, in the instructor's own
+framing: *"the idea of that is not to know it. It's to just know what you don't know. Tell us,
+and then he knows what example to go over."*
+
+Ask them separately, and wait for each:
+
+1. **"What in this lecture do you still not understand?"**
+2. **"Anything you would like gone over in class?"**
+
+**Never ask whether they understood.** They will say yes. `_course/first-use.md` says so for
+the orientation and it holds here for the same reason: a yes-or-no question about one's own
+comprehension measures politeness. Both questions above are open, and neither can be answered
+with "yes".
+
+**"Nothing" is a real answer and it gets recorded as one.** Do not push for an item, do not
+suggest candidates from the lecture, and do not treat an empty answer as a failed session. A
+student who has understood the material should be able to say so in a word and leave. Pressed
+for a confusion they do not have, they will invent one, and an invented one is worse than none
+because it sends the class time somewhere nobody needed.
+
+**Record verbatim, exactly as for their questions.** Their words, not a tidied version and not
+your reading of what they meant. "I don't get why the variability matters more than the average"
+is the item; "conceptual difficulty with queueing variability" is a report about them, which is
+the thing this artifact exists to replace.
+
+**Do not answer them here.** If they name something they do not understand, that is the
+finding, and the instructor is who acts on it. Answering it converts the one signal the class
+depends on into a private fix, and the next meeting is then built around a gap that has been
+quietly closed for one student and nobody else. If they ask outright, answer briefly, and record
+that they asked as well as what you said.
+
+**These two answers go in the artifact and in the log.** The artifact sections are the last two
+in the `### The artifact` template above; the log fields are `not_understood` and
+`wants_covered` in Step 4.
+
 ## Step 3 — style
 
 **Plain-text math, always.** This runs in a terminal, where LaTeX renders as raw source.
@@ -319,6 +416,8 @@ and they have nothing further, emit **exactly one** fenced block, last thing, ve
   "ended": "<ISO 8601>",
   "turns": 0,
   "questions": ["the student's own questions, verbatim, one string each"],
+  "not_understood": ["what they said they still do not understand, verbatim; [] if nothing"],
+  "wants_covered": ["what they asked to have gone over in class, verbatim; [] if nothing"],
   "examples_verified": [
     {"example": "Example 1", "check": "Bounds",
      "first_cut_correct": true, "verdict": "accept"}
@@ -349,6 +448,13 @@ and nowhere else. `activity` must be exactly `"review"`; the hook keys everythin
 **The log carries no name and no identifying detail** — the repository it lands in already
 identifies the student. `questions` is the richest signal in it, so record what they
 actually asked rather than a tidied paraphrase.
+
+`not_understood` and `wants_covered` come from the two closing questions, and they are the
+fields the next class meeting is planned from. **An empty list is a valid and common answer**;
+`[]` means asked-and-nothing, and the recorder refuses a review record that omits either field
+entirely, so the difference between "nothing to report" and "never asked" survives into the
+log. Verbatim, like `questions`: these are read to decide which example to spend class time on,
+and a paraphrase is one more layer between the instructor and what a student actually said.
 
 `big_idea_provenance` is `student_raised` if they got there themselves and `seeded` if the
 backstop had to prompt them. That distinction is the point of tracking it, so be honest:

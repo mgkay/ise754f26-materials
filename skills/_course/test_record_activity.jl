@@ -58,6 +58,8 @@ end
   "turns": 5,
   "questions": [],
   "examples_verified": [],
+  "not_understood": [],
+  "wants_covered": [],
   "big_idea_reached": true,
   "planted_error_caught": true
 }
@@ -82,6 +84,8 @@ end
   "started": "2026-01-01T00:00:00Z",
   "ended": "2026-01-01T00:10:00Z",
   "questions": [],
+  "not_understood": [],
+  "wants_covered": [],
   "big_idea_reached": true,
   "planted_error_caught": true
 }
@@ -94,6 +98,117 @@ end
             # indistinguishable and the diagnosis was impossible.
             @test isfile(err)
             @test occursin("examples_verified", read(err, String))
+            @test !isfile(joinpath(work, "activity-log.jsonl"))
+        end
+    end
+
+    # The two closing questions are the signal the next class meeting is planned from, so a
+    # session that never asked them must not produce a record that looks complete. An EMPTY
+    # list is a fine answer and is covered by the first testset above, which now carries [] for
+    # both; these two cover the field being absent entirely, which means it was never asked.
+    for field in ("not_understood", "wants_covered")
+        @testset "a review record with no $field is refused BY NAME" begin
+            mktempdir() do dir
+                work = joinpath(dir, "work"); mkpath(joinpath(work, ".git"))
+                lines = ["\"activity\": \"review\"",
+                         "\"lecture_id\": \"9.9\"",
+                         "\"started\": \"2026-01-01T00:00:00Z\"",
+                         "\"ended\": \"2026-01-01T00:10:00Z\"",
+                         "\"questions\": []",
+                         "\"examples_verified\": []",
+                         "\"not_understood\": []",
+                         "\"wants_covered\": []",
+                         "\"big_idea_reached\": true",
+                         "\"planted_error_caught\": true"]
+                kept = filter(l -> !occursin("\"$field\"", l), lines)
+                block = "```course-log\n{\n  " * join(kept, ",\n  ") * "\n}\n```"
+
+                run_hook(dir, escaped_transcript(dir, block))
+                err = joinpath(work, "activity-log.error")
+
+                @test isfile(err)
+                @test occursin(field, read(err, String))
+                @test !isfile(joinpath(work, "activity-log.jsonl"))
+            end
+        end
+    end
+
+    # HOMEWORK. Added 2026-08-25 after the first dry run driven as a student. Before this,
+    # PER_ACTIVITY named "review" and nothing else, so a homework record validated on the
+    # shared three fields alone and whatever else the session had invented went in unchecked.
+    # These three cases are what makes the schema real: a delivery records with the collecting
+    # fields EMPTY, a submission records what the student named, and a session that never
+    # collected them is refused by name rather than accepted as an empty one.
+
+    @testset "a homework DELIVERY records, with the collecting fields empty" begin
+        mktempdir() do dir
+            work = joinpath(dir, "work"); mkpath(joinpath(work, ".git"))
+            block = """```course-log
+{
+  "activity": "homework",
+  "homework_id": "hw1",
+  "started": "2026-01-01T00:00:00Z",
+  "ended": "2026-01-01T00:04:00Z",
+  "questions": [],
+  "checks_named": {}
+}
+```"""
+            run_hook(dir, escaped_transcript(dir, block))
+            log = joinpath(work, "activity-log.jsonl")
+
+            # Empty is a fine answer. If this ever refuses, Step 2 of /homework can never see
+            # a homework line after a delivery, and every later homework looks like the
+            # student's first one.
+            @test isfile(log)
+            @test occursin("\"activity\": \"homework\"", read(log, String))
+            @test !isfile(joinpath(work, "activity-log.error"))
+        end
+    end
+
+    @testset "a homework SUBMISSION keeps the names the student actually wrote" begin
+        mktempdir() do dir
+            work = joinpath(dir, "work"); mkpath(joinpath(work, ".git"))
+            block = """```course-log
+{
+  "activity": "homework",
+  "homework_id": "hw1",
+  "started": "2026-01-01T00:00:00Z",
+  "ended": "2026-01-01T00:20:00Z",
+  "questions": ["do both checks have to be different from each other?"],
+  "checks_named": {"1": ["Sanity"], "3": ["Bounds", "Units"]}
+}
+```"""
+            run_hook(dir, escaped_transcript(dir, block))
+            log = joinpath(work, "activity-log.jsonl")
+            text = read(log, String)
+
+            @test isfile(log)
+            # "Sanity" is NOT one of the nine. /homework reports that to the student and the
+            # record keeps what they said: correcting it here would destroy the measurement
+            # the field exists to take.
+            @test occursin("Sanity", text)
+            @test occursin("Bounds", text)
+            @test !isfile(joinpath(work, "activity-log.error"))
+        end
+    end
+
+    @testset "a homework record with no checks_named is refused BY NAME" begin
+        mktempdir() do dir
+            work = joinpath(dir, "work"); mkpath(joinpath(work, ".git"))
+            block = """```course-log
+{
+  "activity": "homework",
+  "homework_id": "hw1",
+  "started": "2026-01-01T00:00:00Z",
+  "ended": "2026-01-01T00:20:00Z",
+  "questions": []
+}
+```"""
+            run_hook(dir, escaped_transcript(dir, block))
+            err = joinpath(work, "activity-log.error")
+
+            @test isfile(err)
+            @test occursin("checks_named", read(err, String))
             @test !isfile(joinpath(work, "activity-log.jsonl"))
         end
     end
@@ -142,6 +257,8 @@ end
   "turns": 7,
   "questions": ["You've referred to a \\\"Prior check\\\" by name."],
   "examples_verified": [{"example": "Example 1", "check": "Bounds"}],
+  "not_understood": [],
+  "wants_covered": [],
   "big_idea_reached": true,
   "planted_error_caught": true
 }
@@ -226,6 +343,8 @@ end
   "turns": 12,
   "questions": [],
   "examples_verified": [{"example": "Example 1", "check": "Bounds"}],
+  "not_understood": [],
+  "wants_covered": [],
   "big_idea_reached": false,
   "planted_error_caught": false
 }
@@ -257,6 +376,8 @@ end
   "turns": 12,
   "questions": [],
   "examples_verified": [],
+  "not_understood": [],
+  "wants_covered": [],
   "big_idea_reached": false,
   "planted_error_caught": false
 }
@@ -282,6 +403,8 @@ end
   "ended": "<ISO 8601>",
   "questions": [],
   "examples_verified": [],
+  "not_understood": [],
+  "wants_covered": [],
   "big_idea_reached": true,
   "planted_error_caught": true
 }
@@ -294,6 +417,8 @@ end
   "ended": "2026-01-01T00:10:00Z",
   "questions": [],
   "examples_verified": [],
+  "not_understood": [],
+  "wants_covered": [],
   "big_idea_reached": true,
   "planted_error_caught": true
 }
