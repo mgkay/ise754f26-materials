@@ -211,6 +211,32 @@ mktempdir() do tmp
     check("M  handouts ahead: silent",          !occursin("handouts", out))
     check("M  handouts ahead: exit 0",          code == 0)
 
+    # ---- O. materials AHEAD, not behind: must stay silent ---------------------------------
+    # The same case as M, for the other read-only clone, and it is the one that was live.
+    # materials_behind compared shas, and `remote != here` is true when we are AHEAD as well as
+    # when we are behind. So one stray commit in a read-only clone produced "the course
+    # materials repository has commits this clone does not have" at the start of every session
+    # from then on, for a clone that had everything. All three checks now share one ancestry
+    # test, which asks the question actually meant.
+    r = build(joinpath(tmp, "mahead"))
+    m = joinpath(r, "materials")
+    write(joinpath(m, "stray.txt"), "a student committed something in here\n")
+    git(m, "add", "-A"); git(m, "commit", "-qm", "stray")
+    out, code = run_hook(joinpath(r, "work"))
+    check("O  materials ahead: silent",          !occursin("materials", out))
+    check("O  materials ahead: exit 0",          code == 0)
+
+    # ---- P. work AHEAD of its remote must still report NOT PUSHED, not "not pulled" --------
+    # Guards the refactor: work_behind now shares the helper, and the AHEAD path in main() is a
+    # different mechanism (count_commits). This asserts the refactor did not cross them.
+    r = build(joinpath(tmp, "wahead2"))
+    w = joinpath(r, "work")
+    write(joinpath(w, "mine.txt"), "mine\n")
+    git(w, "add", "-A"); git(w, "commit", "-qm", "mine")
+    out, code = run_hook(w)
+    check("P  work ahead: says NOT been pushed", occursin("NOT been pushed", out))
+    check("P  work ahead: not called behind",    !occursin("NOT pulled", out))
+
     # ---- N. handouts has no remote: silent, and must not hang -----------------------------
     r = build(joinpath(tmp, "hnoremote"))
     git(joinpath(r, "handouts"), "remote", "remove", "origin")

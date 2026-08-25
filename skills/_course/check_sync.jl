@@ -108,17 +108,29 @@ function skills_stale(root)
 end
 
 """
-Has `materials` moved on the remote since this clone last pulled?
+Has this repository's remote moved to something this clone does not have?
 
-One `ls-remote`: no ref is written, no object is fetched. Bounded by git's own low-speed abort
-so it cannot hang. Returns `nothing` whenever the answer is unknown for any reason, which is
-the offline case and is silent by design.
+ONE IMPLEMENTATION, THREE CALLERS. `materials_behind`, `handouts_behind` and `work_behind` ask
+the identical question of three different repositories, and they were three near-identical
+bodies. Three copies of a git predicate is three chances for one of them to answer differently
+from the others, which is exactly what happened: two used ancestry and one compared shas.
+
+WHY ANCESTRY AND NOT A SHA COMPARISON. `remote != here` is true both when we are BEHIND and
+when we are AHEAD. For `work/` that hardly arises, but `materials/` and `handouts/` are
+read-only copies, and a student who has committed anything into one -- a stray edit, a note --
+makes the comparison true forever. They are then told "the course materials repository has
+commits this clone does not have" at the start of every session, for a clone that is in fact
+ahead, and the message becomes furniture. `merge-base --is-ancestor` asks the question actually
+meant: is the remote's tip something we already have?
+
+One `ls-remote`: no ref written, no object fetched, bounded by git's own low-speed abort so it
+cannot hang. Returns `nothing` whenever the answer is unknown for any reason -- offline, no
+remote, not a clone -- and every such case is silent by design.
 """
-function materials_behind(root)
-    mats = joinpath(root, "materials")
-    isdir(joinpath(mats, ".git")) || return nothing
+function remote_ahead_of(dir)
+    isdir(joinpath(dir, ".git")) || return nothing
     remote = try
-        cmd = pipeline(Cmd(`git -c http.lowSpeedLimit=1000 -c http.lowSpeedTime=5 ls-remote --heads origin main`; dir = mats),
+        cmd = pipeline(Cmd(`git -c http.lowSpeedLimit=1000 -c http.lowSpeedTime=5 ls-remote --heads origin main`; dir = dir),
                        stderr = devnull)
         out = read(cmd, String)
         isempty(strip(out)) ? nothing : first(split(strip(out)))
@@ -126,13 +138,23 @@ function materials_behind(root)
         nothing
     end
     remote === nothing && return nothing
-    here = try
-        strip(read(pipeline(Cmd(`git rev-parse HEAD`; dir = mats), stderr = devnull), String))
+    try
+        run(pipeline(Cmd(`git merge-base --is-ancestor $remote HEAD`; dir = dir), stderr = devnull))
+        return false          # the remote's tip is already reachable from HEAD
     catch
-        nothing
+        return true           # it is not: there is something here we do not have
     end
-    here === nothing && return nothing
-    return remote != here
+end
+
+"""
+Has `materials` moved on the remote since this clone last pulled?
+
+One `ls-remote`: no ref is written, no object is fetched. Bounded by git's own low-speed abort
+so it cannot hang. Returns `nothing` whenever the answer is unknown for any reason, which is
+the offline case and is silent by design.
+"""
+function materials_behind(root)
+    return remote_ahead_of(joinpath(root, "materials"))
 end
 
 """
@@ -162,23 +184,7 @@ purpose, so an empty folder is the state every student has before they clone it 
 produce a warning.
 """
 function handouts_behind(root)
-    hand = joinpath(root, "handouts")
-    isdir(joinpath(hand, ".git")) || return nothing
-    remote = try
-        cmd = pipeline(Cmd(`git -c http.lowSpeedLimit=1000 -c http.lowSpeedTime=5 ls-remote --heads origin main`; dir = hand),
-                       stderr = devnull)
-        out = read(cmd, String)
-        isempty(strip(out)) ? nothing : first(split(strip(out)))
-    catch
-        nothing
-    end
-    remote === nothing && return nothing
-    try
-        run(pipeline(Cmd(`git merge-base --is-ancestor $remote HEAD`; dir = hand), stderr = devnull))
-        return false
-    catch
-        return true
-    end
+    return remote_ahead_of(joinpath(root, "handouts"))
 end
 
 """
@@ -201,22 +207,7 @@ from a stale brief is not merely late. So this asks the remote, the same way
 returns nothing and stays silent.
 """
 function work_behind(work)
-    remote = try
-        cmd = pipeline(Cmd(`git -c http.lowSpeedLimit=1000 -c http.lowSpeedTime=5 ls-remote --heads origin main`; dir = work),
-                       stderr = devnull)
-        out = read(cmd, String)
-        isempty(strip(out)) ? nothing : first(split(strip(out)))
-    catch
-        nothing
-    end
-    remote === nothing && return nothing
-    # Reachable from HEAD means we already have it; not reachable means it is new to us.
-    try
-        run(pipeline(Cmd(`git merge-base --is-ancestor $remote HEAD`; dir = work), stderr = devnull))
-        return false
-    catch
-        return true
-    end
+    return remote_ahead_of(work)
 end
 
 function main()
