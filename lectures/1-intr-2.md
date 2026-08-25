@@ -76,6 +76,7 @@ The difference shows in practice: a simulation that runs in minutes under an int
 A further reason is visible in every lecture of this course: Julia identifiers can be the mathematical symbols themselves. A standard deviation can be named σ, an effective process time tₑ, a squared coefficient c², so the code reads like the formulas it implements. The symbols are typed as LaTeX-style abbreviations completed with Tab, in the REPL and in VS Code alike: type \sigma and press Tab to get σ; t\_e Tab for the subscript in tₑ; c\^2 Tab for the superscript in c². Operators come the same way: \div Tab gives ÷, integer division.
 
 ```
+# Code block 1: Unicode names by tab completion
 tₑ = 2.0          # t\_e Tab: subscript (assigned, silent)
 σ² = 16.0         # \sigma Tab, \^2 Tab (also silent)
 @show c² = σ² / tₑ^2   # define and inspect in one line
@@ -102,6 +103,7 @@ Julia distinguishes integer and real scalars, and treats vectors and matrices as
 - a vector is a 1-dimensional array; a matrix is 2-dimensional.
 
 ```
+# Code block 2: a vector and a matrix
 a = [1, 2, 3]          # a 3-element vector
 A = [1 2 3 4; 5 6 7 8] # a 2x4 matrix; ; ends a row
 ```
@@ -115,6 +117,7 @@ A = [1 2 3 4; 5 6 7 8] # a 2x4 matrix; ; ends a row
 The last expression in a cell is displayed; ending a line with ; suppresses that. Case matters, so a and A are different variables. Several operators and functions build structured arrays:
 
 ```
+# Code block 3: ranges collected into vectors
 a = [1:5;]           # collect the range 1..5 into a vector
 a = [1:2:5;]         # start 1, step 2: [1, 3, 5]
 a = ones(5)          # five 1.0s (Float64 by default)
@@ -137,6 +140,7 @@ A range like 1:5 is itself a compact one-element object used for iteration; the 
 Indices inside square brackets select elements. The colon : selects an entire row or column, and end is the last index:
 
 ```
+# Code block 4: indexing a vector
 a = [10:15;]
 @show a[3]         # single element
 @show a[[2, 4]]    # several elements, by an index array
@@ -150,6 +154,7 @@ a[end] = 15
 ```
 
 ```
+# Code block 5: indexing a matrix
 A = [1 2 3 4; 5 6 7 8]
 @show A[1, 2]      # row 1, column 2
 @show A[:, 1]      # all of column 1
@@ -165,6 +170,7 @@ A[1, :] = [1, 2, 3, 4]
 Ranges combine with end to slice off pieces, and reverse flips the order:
 
 ```
+# Code block 6: slicing with end
 a = [10:15;]
 @show a[2:end]      # drop the first element
 @show a[1:end-1]    # drop the last element
@@ -182,6 +188,7 @@ reverse(a) = [15, 14, 13, 12, 11, 10]
 A scalar combines with each element of an array, but the operation must be broadcast with a leading dot. Multiplication is the exception, since * is already defined as scalar-times-array in linear algebra:
 
 ```
+# Code block 7: broadcasting with the dot
 a = [1, 2, 3, 4]
 @show 2 .+ a       # add 2 to each element (the dot broadcasts)
 @show 2 * a        # scalar times array needs no dot
@@ -197,6 +204,7 @@ a = [1, 2, 3, 4]
 Broadcasting expands a value to a compatible size, so 2 .+ a is the same as [2, 2, 2, 2] + a. The same dot turns any function elementwise, which is why so much Julia reads as a name, a dot, and an operator. Elements of one array are summed with sum and accumulated with cumsum; for a matrix, the dimension says whether to sum down columns or across rows:
 
 ```
+# Code block 8: reducing a vector
 a = [1:5;]
 @show sum(a)           # add all elements
 @show cumsum(a);       # running total
@@ -208,6 +216,7 @@ cumsum(a) = [1, 3, 6, 10, 15]
 ```
 
 ```
+# Code block 9: reducing along one dimension
 A = [1 3 4; 5 7 8]
 @show sum(A, dims = 1)   # sum down each column
 @show sum(A, dims = 2);  # sum across each row
@@ -225,6 +234,7 @@ When an array operation raises an error, the cause is almost always a missing br
 Comparing an array with a dot operator returns an array of true/false values, and the logical operators .& (and), .| (or), and .! (not) combine them. any and all reduce such an array to a single value:
 
 ```
+# Code block 10: comparisons broadcast to a mask
 a = [4, 0, -2, 7, 0]
 @show a .> 0                    # which elements are positive
 @show (a .>= 0) .& (a .<= 4)    # in the range [0, 4]
@@ -240,6 +250,7 @@ any(a .> 0) = true
 A logical array selects and changes elements just like an index array, and findall converts a logical array into the index array of the true positions:
 
 ```
+# Code block 11: selecting with a mask
 a = [5, 0, -1, 9, 0]
 @show a[a .> 0]            # keep the positive elements
 @show findall(a .> 0);     # the positions of the positive elements
@@ -253,6 +264,7 @@ findall(a .> 0) = [1, 4]
 Two more tools work on order rather than a condition: sort returns the values in order, sortperm returns the index array that puts them in order, and argmin (or argmax) gives the position of the smallest (or largest) element, the lookup behind finding a least-cost option.
 
 ```
+# Code block 12: sorting and ordering
 a = [5, 0, -1, 9, 0]
 @show sort(a)         # the values in order
 @show sortperm(a)     # the indices that sort them
@@ -270,6 +282,7 @@ Example 1: Selecting the heavy shipments
 Five shipments have the weights below. Compute the line-haul charge at $50 per ton by broadcasting, then select the shipments heavier than 10 ton.
 
 ```
+# Code block 13: shipment charges from weights
 wt = [12, 5, 18, 7, 9]
 @show charge = 50 .* wt    # $/shipment at $50/ton
 @show heavy = wt[wt .> 10]; # shipments over 10 ton
@@ -287,6 +300,7 @@ The charges are [600, 250, 900, 350, 450], and two shipments exceed 10 ton: 12 a
 Arrays are mutable: elements can be added, removed, or changed. A tuple is similar but immutable, so once defined it cannot be changed; that guarantee lets Julia process it efficiently. A tuple is written with parentheses and indexed like an array:
 
 ```
+# Code block 14: a tuple and its elements
 t = (6, 1, 4)      # a 3-tuple
 @show t[2]         # access the second element
 @show typeof(t);
@@ -308,6 +322,7 @@ The rest of this section is the one place the new course parts company with the 
 When the work takes several steps, or branches, a function is written on multiple lines between function and end, and hands back a value with return:
 
 ```
+# Code block 15: a function with a body
 function fun1(a)
 b = 3a + 1
 if b % 2 == 0      # is b even
@@ -329,6 +344,7 @@ The function can be traced by hand: with a = 5, b = 16, which is even, so c = 8.
 When the body is a single expression, the same function fits on one line, with no function, return, or end:
 
 ```
+# Code block 16: a one-line function
 f(a) = 3a + 1      # a one-line function
 @show f(8);
 ```
@@ -340,6 +356,7 @@ f(8) = 25
 Some functions take another function as an argument. filter is the classic one: given a predicate, a one-line function returning true or false, it keeps the elements for which the predicate holds. A named predicate works:
 
 ```
+# Code block 17: a named test used by filter
 isheavy(w) = w > 10          # a one-line test: is w over 10?
 filter(isheavy, [12, 5, 18]) # keep those over 10 -> [12, 18]
 ```
@@ -353,7 +370,7 @@ filter(isheavy, [12, 5, 18]) # keep those over 10 -> [12, 18]
 filter calls isheavy on each weight and keeps 12 and 18, the ones for which it returned true. But isheavy is a name spent on a test used once. This is where an anonymous function fits: written with -> (read “maps to”) in place of a name, w -> w > 10 is the same test with nothing to define, dropped straight into filter:
 
 ```
-filter(w -> w > 10, [12, 5, 18])   # the same test, no name
+filter(w -> w > 10, [12, 5, 18])  # Code block 18: the same test, no name
 ```
 
 ```
@@ -375,6 +392,7 @@ Solve the system below for \boldsymbol{x} with the \ operator, then verify the s
 \begin{aligned} 2x_1 - x_2 + 3x_3 &= 6 \\ x_1 \phantom{{}- x_2} + x_3 &= 3 \\ 4x_1 + x_2 + 8x_3 &= 17 \end{aligned}
 
 ```
+# Code block 19: solving a linear system
 A = [2 -1 3; 1 0 1; 4 1 8]
 b = [6, 3, 17]
 x = A \ b          # left division solves A*x = b
@@ -388,7 +406,7 @@ x = A \ b          # left division solves A*x = b
 ```
 
 ```
-A * x              # verify: should return b
+A * x  # Code block 20: verify, should return b
 ```
 
 ```
@@ -407,7 +425,7 @@ Everything so far has used only base Julia, which is always available. The next 
 The companion script’s opening ## Get class-ready cell does the install. It finds the course project, activates it, and instantiates it, downloading every package at the version pinned for the course. It is safe to run repeatedly, so it need only run once per Julia session: activation lives in the running session, not in the file, so closing and reopening a script changes nothing, and only restarting the REPL or VS Code makes it necessary again. Unlike the rest of the lecture’s code, this cell is plumbing to run, not read: the walk-up loop and @__DIR__ are not course material, and there is nothing here to trace by hand.
 
 ```
-## Get class-ready — install packages
+# Code block 21: get class-ready, install the packages
 import Pkg
 let dir = @__DIR__
 isproj = d -> isfile(joinpath(d, "Project.toml"))
@@ -453,6 +471,7 @@ Example 3: A small shipment table
 Assemble a three-row table of shipments, each with an origin, a destination, and a weight, then read back the weight column.
 
 ```
+# Code block 22: a DataFrame of shipments
 using DataFrames   # load the package, then build the table
 ship = DataFrame(
 origin = ["RDU", "RDU", "GSO"],
@@ -473,7 +492,7 @@ ton    = [12, 5, 18])
 | 3  | GSO  | ATL  | 18
 
 ```
-ship.ton           # read the weight column
+ship.ton  # Code block 23: read the weight column
 ```
 
 ```
@@ -490,6 +509,7 @@ ship.ton is the 3-element vector [12, 5, 18], the weights pulled straight out of
 A language for engineering has to draw, and Julia draws as readily as it computes. A single command turns a function into a figure, and that same command takes keywords for a title and axis labels, so the plot is presentable without any extra setup:
 
 ```
+# Code block 24: plotting a curve
 using CairoMakie                     # load the plotting backend
 f(x) = x - x^3                       # the curve to draw
 xrng = -2:0.01:2          # x-values, fine steps
@@ -551,6 +571,7 @@ Represent a few words as points in a small space, then measure how related two o
 Each word is one column of a matrix, a point in two dimensions where a real model would use hundreds. A word’s vector is the column its key selects. Relatedness is the cosine of the angle between two vectors: near 1 when they point the same way, near 0 when unrelated, and negative when opposed.
 
 ```
+# Code block 25: tokens as points in a space
 vocab = ["truck", "freight", "shipment", "cat"]
 
 # E: one column per token, each a point in 2-D meaning space
@@ -596,12 +617,13 @@ A logit can be any size or sign, so it is not yet a probability. The softmax mak
 Now the layer outputs a probability for every possible next token, the distribution it samples from, and it is the same softmax Section 2.5 uses to place attention. In base Julia, written to act on each column so it can score many tokens at once:
 
 ```
+# Code block 26: softmax turns scores into probabilities
 softmax(Z) = exp.(Z) ./ sum(exp.(Z), dims = 1)
-@show softmax([2.0, 1.0, 0.0]);   # ~ [0.66, 0.24, 0.09]
+@show round.(softmax([2.0, 1.0, 0.0]); digits = 3);
 ```
 
 ```
-softmax([2.0, 1.0, 0.0]) = [0.6652409557748219, 0.24472847105479764, 0.09003057317038046]
+round.(softmax([2.0, 1.0, 0.0]); digits = 3) = [0.665, 0.245, 0.09]
 ```
 
 Training tunes the weights by gradient descent, minimizing a cross-entropy loss whose gradient reduces to the P .- Y in the loop below.
@@ -645,6 +667,7 @@ NoteUnder the hood: the training loop
 Each of the 4000 passes computes the predictions, measures the error P .- Y, and nudges the readout weights, the biases, and the embeddings one learning-rate (lr) step downhill.
 
 ```
+# Code block 27: training the next-token model
 vocab = ["van", "rig", "parcel", "pallet",
 "depot", "yard", "dock", "go", "wait"]
 
@@ -722,6 +745,7 @@ The hidden layer has three neurons; two is the bare minimum, but a network that 
 NoteUnder the hood: the hidden-layer training loop
 
 ```
+# Code block 28: a network with a hidden layer
 σ(z) = 1 / (1 + exp(-z))             # squashing nonlinearity
 
 # four cargo tokens as fixed points: vehicle
@@ -780,6 +804,7 @@ Give a token a query, score it against the earlier tokens by content, and blend 
 The model is about to predict after it, in a window where it refers to the rig. The token forms a query, a learned view of itself that says what it is looking for; here that query points toward the rig. Each earlier token is scored by how well it matches the query, a plain dot product, and the softmax of Section 2.3 turns those scores into weights.
 
 ```
+# Code block 29: attention weights for one query
 q = [2.0, 0.2]                   # the query "it" forms
 
 rig    = [1.0,  0.0]             # the same cross points
@@ -854,7 +879,8 @@ Hooks are set in a settings file. Claude Code reads .claude/settings.json from t
 {
 "matcher": "Edit|Write",
 "hooks": [
-{ "type": "command", "command": ".claude/hooks/protect-answers.sh" }
+{ "type": "command",
+"command": ".claude/hooks/protect-answers.sh" }
 ]
 }
 ]
@@ -1155,6 +1181,7 @@ followed by the reply: “The median shipment weight is 10.5 tons, and 50% of sh
 The same request with one sentence added, “deliver it as a Julia script,” returns instead
 
 ```
+# Code block 30: reading shipments from a CSV
 using CSV, DataFrames
 sh = CSV.read("shipments.csv", DataFrame)
 wt = sort(sh.ton)           # weights (tons), sorted
