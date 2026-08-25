@@ -50,7 +50,7 @@ Build a student tree: ISE754/{materials,work,.claude/skills}, each wired to a lo
 """
 function build(root; with_skills = true)
     mkpath(root)
-    for name in ("materials", "work")
+    for name in ("materials", "handouts", "work")
         bare = joinpath(root, "$name.git")
         mkpath(bare)
         git(bare, "init", "--bare", "-q", "--initial-branch=main")
@@ -175,6 +175,49 @@ mktempdir() do tmp
     out, code = run_hook(joinpath(r, "work"))
     check("J  no skills installed: silent",     isempty(strip(out)))
     check("J  no skills installed: exit 0",     code == 0)
+
+    # ---- K. handouts moved on the remote. A HOMEWORK IS OUT AND NOTHING ELSE NOTICES -----
+    # The gap this case exists for: on 2026-08-25 HW 1 was published and work, materials and
+    # the installed skills were all in sync, so every other check in this file was correctly
+    # silent and no student was told a homework existed.
+    r = build(joinpath(tmp, "hbehind"))
+    advance_remote(r, "handouts")
+    out, code = run_hook(joinpath(r, "work"))
+    check("K  handouts behind: reported",       occursin("handouts", out) && occursin("git pull", out))
+    check("K  handouts behind: says homework",  occursin("homework", out))
+    check("K  handouts behind: exit 0",         code == 0)
+    check("K  handouts behind: work silent",    !occursin("NOT pulled", out))
+    check("K  handouts behind: mats silent",    !occursin("materials", out))
+
+    # ---- L. no handouts clone at all: the state every student has before they clone -------
+    # The bootstrap creates the folder empty on purpose, so this must be silent. A warning
+    # here would fire for the whole class from the first class until they cloned.
+    r = build(joinpath(tmp, "hmissing"))
+    rm(joinpath(r, "handouts"); recursive = true)
+    out, code = run_hook(joinpath(r, "work"))
+    check("L  no handouts clone: silent",       isempty(strip(out)))
+    check("L  no handouts clone: exit 0",       code == 0)
+
+    # ---- M. handouts AHEAD, not behind: must stay silent ---------------------------------
+    # This is the case that decided the implementation. A student who commits anything into a
+    # read-only clone makes `remote != here` true forever, so the sha comparison that
+    # materials_behind uses would report "behind" every session from then on and the message
+    # would become furniture. Ancestry asks the question actually meant.
+    r = build(joinpath(tmp, "hahead"))
+    h = joinpath(r, "handouts")
+    write(joinpath(h, "stray.txt"), "a student committed something in here\n")
+    git(h, "add", "-A"); git(h, "commit", "-qm", "stray")
+    out, code = run_hook(joinpath(r, "work"))
+    check("M  handouts ahead: silent",          !occursin("handouts", out))
+    check("M  handouts ahead: exit 0",          code == 0)
+
+    # ---- N. handouts has no remote: silent, and must not hang -----------------------------
+    r = build(joinpath(tmp, "hnoremote"))
+    git(joinpath(r, "handouts"), "remote", "remove", "origin")
+    t0 = time()
+    out, code = run_hook(joinpath(r, "work"))
+    check("N  no handouts remote: silent",      isempty(strip(out)))
+    check("N  no handouts remote: under 20s",   time() - t0 < 20)
 
 end
 

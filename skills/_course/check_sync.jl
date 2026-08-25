@@ -136,6 +136,52 @@ function materials_behind(root)
 end
 
 """
+Has `handouts` moved on the remote since this clone last pulled?
+
+WHY A THIRD CHECK AND NOT A DUPLICATE OF THE SECOND. `materials_behind` covers lectures, their
+companion scripts and the course skills. `work_behind` covers what is pushed INTO the student's
+own repository -- feedback, and a project's data releases. Neither of them covers `handouts`,
+and `handouts` is where a homework sheet, a review brief and a study guide are published.
+
+The consequence was not hypothetical. HW 1 was published on 2026-08-25 and every mechanism in
+this file reported a healthy tree: `work` was in sync, `materials` was in sync, the skills
+matched. Measured the same day, the handouts repository had `subscribers_count=0` and
+`watchers_count=0`, and GitHub sends no notification for an ordinary push in any case, so
+nothing anywhere told a student that a homework existed. The activity that reads the sheet
+would have reported it missing, which reads to a student as "not published yet".
+
+Uses `merge-base --is-ancestor`, the form `work_behind` uses, rather than the sha comparison in
+`materials_behind`. The difference matters for a read-only clone: a student who has committed
+anything into it -- a stray edit, a note -- makes `remote != here` true forever, so a sha
+comparison reports "behind" every session from then on and the message becomes furniture.
+Ancestry asks the question actually meant: is the remote's tip something we already have?
+
+Returns `nothing` whenever the answer is unknown, which is the offline case and the
+not-yet-cloned case, and both are silent by design. The bootstrap creates `handouts/` empty on
+purpose, so an empty folder is the state every student has before they clone it and it must not
+produce a warning.
+"""
+function handouts_behind(root)
+    hand = joinpath(root, "handouts")
+    isdir(joinpath(hand, ".git")) || return nothing
+    remote = try
+        cmd = pipeline(Cmd(`git -c http.lowSpeedLimit=1000 -c http.lowSpeedTime=5 ls-remote --heads origin main`; dir = hand),
+                       stderr = devnull)
+        out = read(cmd, String)
+        isempty(strip(out)) ? nothing : first(split(strip(out)))
+    catch
+        nothing
+    end
+    remote === nothing && return nothing
+    try
+        run(pipeline(Cmd(`git merge-base --is-ancestor $remote HEAD`; dir = hand), stderr = devnull))
+        return false
+    catch
+        return true
+    end
+end
+
+"""
 Has anything been pushed into the student's OWN repository that they do not have?
 
 WHY `@{u}` IS NOT ENOUGH, and why this file's own BEHIND check could not do its job. The
@@ -222,6 +268,13 @@ function main()
                 "into `.claude/skills/`. Copying the folders' contents instead leaves no " *
                 "loadable skill at all, so check that `.claude/skills/review/SKILL.md` exists " *
                 "afterwards.")
+        end
+        if handouts_behind(root) === true
+            push!(lines,
+                "The course `handouts` repository has commits this clone does not have. That " *
+                "is how homework sheets, review briefs and study guides are published, so a " *
+                "homework may be assigned that they do not have on disk. Tell them to run " *
+                "`git pull` in ISE754/handouts.")
         end
     end
 
