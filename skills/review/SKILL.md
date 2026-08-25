@@ -155,6 +155,43 @@ what the session leaves behind, and it is what the instructor reads. Create it w
 Write tool at the first example, creating `work/reviews/` if it is not there, and append as
 you go. `<stem>` is the lecture stem, so `/review 1.3` writes `work/reviews/1-intr-3.md`.
 
+**THE FILE IS APPEND-ONLY ACROSS SESSIONS. NEVER START IT AGAIN.**
+
+**Read `work/reviews/<stem>.md` before writing anything to it.** If it already exists and
+holds a session, this run is a SECOND session on the same lecture, and everything it
+already contains stays exactly where it is. Do not open with the Write tool in that case,
+because Write replaces the file.
+
+Open a new section at the END, and write the rest of this session under it:
+
+```markdown
+
+---
+
+# Review — 1.3 System Performance Estimation  (run 2, 2026-08-25)
+```
+
+The date and run number go in that heading so the two sessions cannot be mistaken for each
+other, and so the earlier one stays visibly earlier.
+
+**Why this rule is not a preference.** Measured 2026-08-24, on the first five real sessions
+of the semester. One student abandoned a session part way, which is what the directions tell
+her to do, and re-ran it. The second run replaced the file. Her first run had recorded the
+planted error and her catch of it in her own words; the file that replaced it does not
+mention the plant at all and reads `verdict: accept`. **She lost credit for work she had
+actually done and written down**, and the only reason anyone knows she did it is that a
+staff copy had been fetched an hour earlier.
+
+Three rules already in this section forbid exactly that, and all three were being enforced
+inside a record while the file was replaced around it: order is the evidence, a prediction
+is never edited once the answer is revealed, and a revision is a new line rather than a
+correction of the old one. Appending is those three rules applied to the file rather than
+to the line.
+
+**Do not refuse the second run instead.** A student re-running has almost always hit
+something and recovered, and refusing would block the students most likely to need a second
+attempt while protecting nobody.
+
 **Record the student's words VERBATIM.** Not a summary, not a tidied version, not your
 judgment of whether they were right. If they wrote "somewhere between 4 and 8, probably
 nearer 6", that is what goes in the file. The value of the artifact is that it is theirs;
