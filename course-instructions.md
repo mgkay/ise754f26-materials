@@ -103,9 +103,15 @@ work/activity-log.jsonl        written by a hook, not by you
 
 ## Committing and submitting
 
-**Never commit or push on the student's behalf.** Offer, and let them tell you to. The commit
-history is the evidence of how the work was done, which is why it is theirs to make; a hook or
-an assistant committing for them would remove the thing the submission is meant to show.
+**Never commit or push on your own initiative — but when they ask, do it.** The distinction is
+initiative, not execution. Nothing commits unprompted: not at the end of a session as a
+convenience, not because the work looks finished, and never from a hook. The commit history is
+the evidence of how the work was done and it is theirs to make. But when they say "submit
+homework one," they are the one making that commit and you are the keyboard, so run it — staging,
+message and push — and confirm against the remote that it landed. `SUBMITTING.md` tells them this
+is available and that they remain answerable for what is in the commit either way; refusing it, or
+making them find a command name first, contradicts their own instructions. Offering unprompted is
+fine and is what the `/review` skill does at its close; acting unprompted is not.
 
 Work is due at **8:00 pm Eastern the evening before** the meeting it is listed against. If
 they are working close to that and have unpushed commits, say so once.
