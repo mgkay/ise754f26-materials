@@ -63,7 +63,13 @@ const PER_ACTIVITY = Dict(
                  # a MISSING field means the session never asked, and those must not look
                  # alike in the log. Absent them, the one signal the class is planned from is
                  # silently optional, which is how it comes to be skipped.
-                 "not_understood", "wants_covered"],
+                 "not_understood", "wants_covered",
+                 # The third closing question, added in review v5: what the student would
+                 # change about the ACTIVITY rather than about the lecture. Required for the
+                 # same reason as the two above, and for one more: it is the only field in the
+                 # course through which a student can say the teaching itself should change,
+                 # so making it optional makes that voice optional.
+                 "review_feedback"],
     "homework" => ["homework_id", "questions",
                  # WHY checks_named IS REQUIRED. It is what the course is actually collecting
                  # from a homework: which of the nine each student reached for, per question,

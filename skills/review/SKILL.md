@@ -307,9 +307,12 @@ is a new line, not a correction of the old one.
 
 ## Would like gone over in class
 - another one like the bus example but where the timetable is not even
+
+## What I would change about this review
+- I would rather pick the check myself on the first example too
 ```
 
-**The two closing sections are always present, even when empty**, written as `- nothing` if
+**The three closing sections are always present, even when empty**, written as `- nothing` if
 that is what the student said. An absent section and an empty one look identical to a reader
 and they are not the same thing: one means the question was never asked, the other means it was
 asked and answered. The first is a defect in the session and the second is a fine outcome, so
@@ -358,7 +361,7 @@ what they expected; do not make a theme of it.
 
 ### The last thing you do: ask what is still unclear
 
-**Close every session by asking two questions, and record the answers in their own words.**
+**Close every session by asking three questions, and record the answers in their own words.**
 This is not a wrap-up pleasantry. It is what the activity is *for*, in the instructor's own
 framing: *"the idea of that is not to know it. It's to just know what you don't know. Tell us,
 and then he knows what example to go over."*
@@ -367,6 +370,8 @@ Ask them separately, and wait for each:
 
 1. **"What in this lecture do you still not understand?"**
 2. **"Anything you would like gone over in class?"**
+3. **"Last one, and it is about this tool rather than the lecture: what would you change
+   about how this review works?"**
 
 **Never ask whether they understood.** They will say yes. `_course/first-use.md` says so for
 the orientation and it holds here for the same reason: a yes-or-no question about one's own
@@ -390,9 +395,29 @@ depends on into a private fix, and the next meeting is then built around a gap t
 quietly closed for one student and nobody else. If they ask outright, answer briefly, and record
 that they asked as well as what you said.
 
-**These two answers go in the artifact and in the log.** The artifact sections are the last two
-in the `### The artifact` template above; the log fields are `not_understood` and
-`wants_covered` in Step 4.
+**These three answers go in the artifact and in the log.** The artifact sections are the last
+three in the `### The artifact` template above; the log fields are `not_understood`,
+`wants_covered` and `review_feedback` in Step 4.
+
+#### The third question is about this activity, not about the lecture
+
+**Say the shift out loud**, which is what the opening clause of question 3 is for. The first
+two ask about the material and the third does not. A student who does not notice the change
+answers the wrong question, and the answer looks valid in the log.
+
+**Never ask whether it was helpful.** That is the same defect as asking whether they
+understood: it can be answered "yes", and it will be. "What would you change" cannot, and it
+asks for a thing a student can actually name.
+
+**Do not defend the activity.** If they say it runs too long, or that they would rather just be
+told which check to use, record it and move on. Explaining why it is built the way it is turns
+the one place a student can push back into a place where they get argued with, and next time
+they will say nothing. What to change is the instructor's decision and the TA's; the student's
+part here is only to say what they would change.
+
+**A change they name is not a change that gets made**, and neither the agent nor the artifact
+should imply otherwise. Do not promise, do not say it will be passed on as though that settles
+it, and do not thank them for feedback in a way that closes the subject.
 
 ## Step 3 — style
 
@@ -418,6 +443,7 @@ and they have nothing further, emit **exactly one** fenced block, last thing, ve
   "questions": ["the student's own questions, verbatim, one string each"],
   "not_understood": ["what they said they still do not understand, verbatim; [] if nothing"],
   "wants_covered": ["what they asked to have gone over in class, verbatim; [] if nothing"],
+  "review_feedback": ["what they would change about this activity, verbatim; [] if nothing"],
   "examples_verified": [
     {"example": "Example 1", "check": "Bounds",
      "first_cut_correct": true, "verdict": "accept"}
@@ -449,11 +475,13 @@ and nowhere else. `activity` must be exactly `"review"`; the hook keys everythin
 identifies the student. `questions` is the richest signal in it, so record what they
 actually asked rather than a tidied paraphrase.
 
-`not_understood` and `wants_covered` come from the two closing questions, and they are the
-fields the next class meeting is planned from. **An empty list is a valid and common answer**;
-`[]` means asked-and-nothing, and the recorder refuses a review record that omits either field
-entirely, so the difference between "nothing to report" and "never asked" survives into the
-log. Verbatim, like `questions`: these are read to decide which example to spend class time on,
+`not_understood`, `wants_covered` and `review_feedback` come from the three closing questions.
+The first two are the fields the next class meeting is planned from; the third is the field the
+activity itself is revised from, and it is the only place in the course where a student is asked
+what to change about how they are being taught. **An empty list is a valid and common answer**;
+`[]` means asked-and-nothing, and the recorder refuses a review record that omits any of the
+three entirely, so the difference between "nothing to report" and "never asked" survives into
+the log. Verbatim, like `questions`: these are read to decide which example to spend class time on,
 and a paraphrase is one more layer between the instructor and what a student actually said.
 
 `big_idea_provenance` is `student_raised` if they got there themselves and `seeded` if the

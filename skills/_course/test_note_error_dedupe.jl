@@ -35,6 +35,11 @@ const SCRIPT = joinpath(@__DIR__, "record_activity.jl")
 const ERRFILE = "activity-log.error"
 
 "The skill's own template, verbatim in shape: worded timestamps, not real ones."
+# This fixture must stay field-for-field identical to the template in review/SKILL.md.
+# When patch 5 made not_understood and wants_covered required it was not updated, so the
+# recorder rejected this block for a MISSING FIELD before it ever reached the template
+# detection these tests are about, and two of them failed for a reason unrelated to what
+# they test. Add every new required field here in the same commit that requires it.
 const TEMPLATE_BLOCK = """```course-log
 {
   "activity": "review",
@@ -43,6 +48,9 @@ const TEMPLATE_BLOCK = """```course-log
   "ended": "when it ended",
   "turns": 5,
   "questions": [],
+  "not_understood": [],
+  "wants_covered": [],
+  "review_feedback": [],
   "examples_verified": [],
   "big_idea_reached": true,
   "planted_error_caught": true

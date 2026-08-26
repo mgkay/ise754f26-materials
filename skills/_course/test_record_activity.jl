@@ -60,6 +60,7 @@ end
   "examples_verified": [],
   "not_understood": [],
   "wants_covered": [],
+  "review_feedback": [],
   "big_idea_reached": true,
   "planted_error_caught": true
 }
@@ -86,6 +87,7 @@ end
   "questions": [],
   "not_understood": [],
   "wants_covered": [],
+  "review_feedback": [],
   "big_idea_reached": true,
   "planted_error_caught": true
 }
@@ -102,11 +104,12 @@ end
         end
     end
 
-    # The two closing questions are the signal the next class meeting is planned from, so a
+    # The three closing questions are the signal the next class meeting is planned from, and
+    # the third is the only way a student can say the activity itself should change, so a
     # session that never asked them must not produce a record that looks complete. An EMPTY
     # list is a fine answer and is covered by the first testset above, which now carries [] for
     # both; these two cover the field being absent entirely, which means it was never asked.
-    for field in ("not_understood", "wants_covered")
+    for field in ("not_understood", "wants_covered", "review_feedback")
         @testset "a review record with no $field is refused BY NAME" begin
             mktempdir() do dir
                 work = joinpath(dir, "work"); mkpath(joinpath(work, ".git"))
@@ -118,6 +121,7 @@ end
                          "\"examples_verified\": []",
                          "\"not_understood\": []",
                          "\"wants_covered\": []",
+                         "\"review_feedback\": []",
                          "\"big_idea_reached\": true",
                          "\"planted_error_caught\": true"]
                 kept = filter(l -> !occursin("\"$field\"", l), lines)
@@ -259,6 +263,7 @@ end
   "examples_verified": [{"example": "Example 1", "check": "Bounds"}],
   "not_understood": [],
   "wants_covered": [],
+  "review_feedback": [],
   "big_idea_reached": true,
   "planted_error_caught": true
 }
@@ -345,6 +350,7 @@ end
   "examples_verified": [{"example": "Example 1", "check": "Bounds"}],
   "not_understood": [],
   "wants_covered": [],
+  "review_feedback": [],
   "big_idea_reached": false,
   "planted_error_caught": false
 }
@@ -378,6 +384,7 @@ end
   "examples_verified": [],
   "not_understood": [],
   "wants_covered": [],
+  "review_feedback": [],
   "big_idea_reached": false,
   "planted_error_caught": false
 }
@@ -405,6 +412,7 @@ end
   "examples_verified": [],
   "not_understood": [],
   "wants_covered": [],
+  "review_feedback": [],
   "big_idea_reached": true,
   "planted_error_caught": true
 }
@@ -419,6 +427,7 @@ end
   "examples_verified": [],
   "not_understood": [],
   "wants_covered": [],
+  "review_feedback": [],
   "big_idea_reached": true,
   "planted_error_caught": true
 }
