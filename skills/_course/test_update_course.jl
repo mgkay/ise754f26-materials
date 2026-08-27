@@ -542,6 +542,147 @@ let (ise, _, _) = seed_tree()
        (String[], String[]))
 end
 
+# ---- whats_new() and next_due(), added 2026-08-27 -------------------------------------------
+#
+# What a student is told when a skill is replaced. Before this, the report named FILES
+# ("skills reinstalled: review/SKILL.md"), and a filename does not distinguish a new
+# capability from a typo fix.
+
+mktempdir() do tmp
+    wn = joinpath(tmp, "WHATSNEW.md")
+    write(wn, """
+    # heading ignored
+
+    ## review 5
+    Ends by asking what you would change about the review itself.
+    A second line, which should be joined onto the first.
+
+    ## submit 2
+    Updates the course before it submits.
+    """)
+
+    # Calls the SHIPPED whats_new, not a copy of it. The first version of this block
+    # reimplemented the parser here and the copy omitted the isfile guard, so the
+    # absent-file case crashed the suite instead of passing. A test of a copy is
+    # not a test of the function.
+    got = whats_new("review", "5", wn)
+    oktrue("N1 whats_new finds the entry for the installed version",
+           got !== nothing && occursin("what you would change", got))
+    oktrue("N2 whats_new joins a multi-line entry into one line",
+           got !== nothing && occursin("joined onto the first", got))
+    oktrue("N3 whats_new stops at the next heading, not the end of file",
+           got !== nothing && !occursin("Updates the course", got))
+    ok("N4 a version with no entry returns nothing", whats_new("review", "4", wn), nothing)
+    ok("N5 a skill with no entry returns nothing", whats_new("preclass", "1", wn), nothing)
+    ok("N6 an absent changelog returns nothing",
+       whats_new("review", "5", joinpath(tmp, "absent.md")), nothing)
+end
+
+mktempdir() do tmp
+    hw = joinpath(tmp, "handouts", "homework"); mkpath(hw)
+    today = Dates.today()
+    soon  = today + Dates.Day(7)
+    later = today + Dates.Day(40)
+    past  = today - Dates.Day(20)
+    fmt(d) = "$(Dates.day(d)) $(Dates.monthabbr(d))"
+
+    write(joinpath(hw, "hw1.md"), "# HW 1\n\n**Due:** 8:00 pm ET, $(fmt(past))\n")
+    write(joinpath(hw, "hw2.md"), "# HW 2\n\n**Due:** 8:00 pm ET, $(fmt(later))\n")
+    write(joinpath(hw, "hw3.md"),
+          "# Homework 3: Facility Location\n\n**Due:** 8:00 pm ET, $(fmt(soon))\n")
+    write(joinpath(hw, "HOMEWORK.md"), "not a sheet, and has no Due line\n")
+
+    nd = next_due(tmp)
+    oktrue("N7 next_due picks the NEAREST future date, not the first file",
+           nd !== nothing && nd[1] == "hw3")
+    oktrue("N8 next_due skips a date that has passed",
+           nd !== nothing && nd[1] != "hw1")
+    oktrue("N9 next_due returns the sheet's own Due text",
+           nd !== nothing && occursin("8:00 pm ET", nd[3]))
+    oktrue("N13 next_due carries the assignment GOAL from the sheet title",
+           nd !== nothing && nd[2] == "Facility Location")
+
+    # Every date in the past: silence, not the most recent one.
+    mktempdir() do t2
+        h2 = joinpath(t2, "handouts", "homework"); mkpath(h2)
+        write(joinpath(h2, "hw1.md"), "**Due:** 8:00 pm ET, $(fmt(past))\n")
+        ok("N10 all dates passed returns nothing", next_due(t2), nothing)
+    end
+    # No homework folder at all.
+    mktempdir() do t3
+        ok("N11 no handouts/homework returns nothing", next_due(t3), nothing)
+    end
+    # A sheet with no Due line is skipped rather than crashing.
+    mktempdir() do t4
+        h4 = joinpath(t4, "handouts", "homework"); mkpath(h4)
+        write(joinpath(h4, "hw1.md"), "# HW 1\n\nno due line here\n")
+        ok("N12 a sheet with no Due line is skipped", next_due(t4), nothing)
+    end
+end
+
+# ---- WINDOWS FAILURE CLASS, added 2026-08-27 ------------------------------------------------
+#
+# Dr. Kay's Windows run on 2026-08-26 found test_update_course at 73/76 where macOS gave
+# 76/76, and the third failure was a real guarantee: joinpath produced `homework\SKILL.md`,
+# so startswith(..., "homework/") was false and the stale-skill STOP never printed. That is
+# the class these cases cover for the new code, because it cannot be reproduced by reading.
+
+mktempdir() do tmp
+    # A cloned repository on Windows can arrive with CRLF endings depending on core.autocrlf,
+    # so every regex capture that reaches a printed string must survive \r.
+    hw = joinpath(tmp, "handouts", "homework"); mkpath(hw)
+    soon = Dates.today() + Dates.Day(5)
+    stamp = "$(Dates.day(soon)) $(Dates.monthabbr(soon))"
+    write(joinpath(hw, "hw9.md"),
+          "# Homework 9: Network Flow\r\n\r\n**Due:** 8:00 pm ET, Mon, $stamp\r\n")
+
+    nd = next_due(tmp)
+    oktrue("N14 next_due parses a sheet with CRLF endings", nd !== nothing)
+    if nd !== nothing
+        oktrue("N15 the goal carries no trailing carriage return",
+               nd[2] == "Network Flow")
+        oktrue("N16 the due text carries no trailing carriage return",
+               !occursin("\r", nd[3]))
+    end
+end
+
+# The changelog is read line by line and compared against a heading. N14-N16 covered the sheet
+# only; these cover the file the capability line comes from.
+#
+# HONEST LABEL: these four assert a PROPERTY OF eachline, not a fix. Julia's eachline removes
+# \r\n entirely, so the strip() on that line is redundant and removing it changes nothing --
+# verified by injection, 98/98 both ways. They are kept as a contract: if anyone ever switches
+# this loop to readlines(keep = true) or splits the file by hand, these are what fail. Do not
+# read them as evidence that a carriage-return bug ever existed here.
+mktempdir() do tmp
+    wn = joinpath(tmp, "WHATSNEW.md")
+    write(wn, "## review 5\r\nEnds by asking what you would change.\r\n\r\n## submit 2\r\nOther.\r\n")
+    got = whats_new("review", "5", wn)
+    oktrue("N19 the changelog parses with CRLF endings", got !== nothing)
+    oktrue("N20 the changelog entry carries no carriage return",
+           got !== nothing && !occursin("\r", got))
+    oktrue("N21 CRLF does not defeat the stop-at-next-heading rule",
+           got !== nothing && !occursin("Other", got))
+    # A version read from a VERSION file written on Windows arrives with a carriage return.
+    oktrue("N22 a version string with CRLF still matches its heading",
+           whats_new("review", strip("5\r\n"), wn) !== nothing)
+end
+
+# The contract the new reporting depends on: install_skills returns FORWARD-slash relative
+# paths, so `first(split(p, "/"))` names the skill folder on every platform. If that ever
+# becomes joinpath, this assertion fails here instead of silently reporting no skill at all.
+mktempdir() do tmp
+    ise = joinpath(tmp, "ISE754")
+    d = joinpath(ise, "handouts", "skills", "review"); mkpath(d)
+    write(joinpath(d, "SKILL.md"), "# review\n")
+    write(joinpath(d, "VERSION"), "5\n")
+    got = install_skills(ise)
+    oktrue("N17 install_skills returns forward-slash paths, not platform separators",
+           !isempty(got) && all(p -> occursin("/", p) && !occursin("\\", p), got))
+    oktrue("N18 splitting on / recovers the skill folder name",
+           !isempty(got) && first(split(first(got), "/")) == "review")
+end
+
 println("\n$(PASS[])/$(PASS[] + FAIL[]) pass")
 exit(FAIL[] == 0 ? 0 : 1)
 
@@ -583,3 +724,20 @@ exit(FAIL[] == 0 ? 0 : 1)
 #   work, on the most common failure there is. Fixed by asking the remote with `ls-remote`
 #   instead of reading the message, so an unknown failure now falls toward silence.
 # ---------------------------------------------------------------------------------------------
+#
+# BREAK E -- the changelog. Removing the `inside && break` from whats_new() made case N3 fail:
+#   the parser ran past its own heading and returned the review entry with the submit entry
+#   glued onto it, so a student replacing /review would have been told about /submit as well.
+#
+# BREAK F -- the due date. Replacing `date < today && continue` with `continue` in next_due()
+#   made N7 and N8 fail together: it returned hw1, a homework three weeks past its deadline,
+#   as the thing the student should be working on. That is worse than printing nothing, which
+#   is why N10 asserts silence rather than a nearest-anything fallback.
+#
+# BREAK G -- the CRLF guard, and the first attempt at this break was INERT, which is the
+#   lesson worth more than the break. Removing `strip` from `title = strip(h.captures[1])`
+#   changed nothing: 94/94 both ways, because a SECOND strip on the substring after the colon
+#   removes the carriage return anyway. So N15 did not test the line it appeared to test.
+#   Removing the strip that actually guards the goal --
+#   `goal = ... strip(title[nextind(title, c):end])` -- fails N13 and N15 together, 92/94.
+#   Two strips, only one of them load-bearing, and only injection could tell which.

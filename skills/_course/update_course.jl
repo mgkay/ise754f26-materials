@@ -54,6 +54,7 @@
 #       is on disk; nothing has been broken, but something needs a person.
 #   2   usage.
 
+using Dates
 using SHA
 
 const READONLY_REPOS = ("materials", "handouts")
@@ -134,6 +135,96 @@ function ff_pull(repo)
     before == after && return (:ok, 0)
     n = tryparse(Int, strip(git(repo, "rev-list", "--count", "$before..$after").out))
     return (:ok, something(n, 0))
+end
+
+"""
+What is new in a skill, as a student-facing line, read from `_course/WHATSNEW.md`.
+
+WHY A FILE AND NOT A COMMIT MESSAGE. The student never sees the repository. A commit message
+is written for whoever merges; this is written for whoever is about to use the thing. Keyed by
+skill and version so the entry printed is the one for the version now installed, not the
+newest entry in the file.
+
+Format, and it is deliberately dull so it cannot drift:
+
+    ## review 5
+    Asks what you would change about the review itself, at the end.
+
+Absent file, absent section, or an unparseable heading: return nothing and say nothing. A
+missing changelog is not worth a warning in front of a student.
+"""
+function whats_new(skill, version, path = joinpath(@__DIR__, "WHATSNEW.md"))
+    f = path
+    isfile(f) || return nothing
+    want = "## $skill $version"
+    body = String[]
+    inside = false
+    for line in eachline(f)
+        s = strip(line)
+        if startswith(s, "## ")
+            inside && break
+            inside = (s == want)
+            continue
+        end
+        inside && !isempty(s) && push!(body, s)
+    end
+    isempty(body) && return nothing
+    return join(body, " ")
+end
+
+"""
+The nearest published homework whose due date has not passed, as (id, goal, due-string).
+
+The GOAL comes from the sheet's own title line, so a student is reminded what the
+assignment is FOR and not only when it is over. Jake, 2026-08-27. Taken from the sheet
+rather than written here, for the same reason as the date: the sheet is what they have in
+front of them, and a second description of the same homework is a second thing to keep
+in step.
+
+Read from the SHEET, never from a schedule we keep separately: the sheet is what the student
+has in front of them, so if the two ever disagree the sheet is the one they will act on. Its
+line looks like `**Due:** 8:00 pm ET, Mon, 7 Sep`.
+
+Returns nothing if no sheet is published, if none carries a parseable Due line, or if every
+date has passed. Saying nothing is correct in all three cases.
+"""
+function next_due(root)
+    src = joinpath(root, "handouts", "homework")
+    isdir(src) || return nothing
+    today = Dates.today()
+    best = nothing
+    for f in sort(readdir(src))
+        m = match(r"^(hw\d+)\.md$"i, f)
+        m === nothing && continue
+        text = try read(joinpath(src, f), String) catch; continue end
+        d = match(r"\*\*Due:\*\*\s*(.+)", text)
+        d === nothing && continue
+        due_text = strip(first(split(d.captures[1], "\n")))
+        # Parse only the day and month; the year is the course year and the time is prose.
+        dm = match(r"(\d{1,2})\s+([A-Z][a-z]{2})", due_text)
+        dm === nothing && continue
+        mon = findfirst(==(dm.captures[2]),
+                        ["Jan","Feb","Mar","Apr","May","Jun",
+                         "Jul","Aug","Sep","Oct","Nov","Dec"])
+        mon === nothing && continue
+        date = try Dates.Date(Dates.year(today), mon, parse(Int, dm.captures[1]))
+                catch; continue end
+        date < today && continue
+        # The goal: the sheet's `# Homework N: <topic>` heading, topic only. Absent or
+        # unparseable, an empty string, and the caller prints the id and date alone.
+        goal = ""
+        h = match(r"^#\s+(.+)$"m, text)
+        if h !== nothing
+            title = strip(h.captures[1])
+            c = findfirst(':', title)
+            goal = c === nothing ? title : strip(title[nextind(title, c):end])
+        end
+        if best === nothing || date < best[4]
+            best = (m.captures[1], goal, due_text, date)
+        end
+    end
+    best === nothing && return nothing
+    return (best[1], best[2], best[3])
 end
 
 """
@@ -447,6 +538,31 @@ function main(argv)
     if !isempty(installed)
         changed = true
         push!(lines, "skills reinstalled: " * join(sort(installed), ", "))
+
+        # WHAT a reinstall actually gave them. The line above names files; a student cannot
+        # tell a new capability from a typo fix by reading a filename. One line per skill
+        # whose folder was touched, and nothing at all when the changelog has no entry.
+        touched = unique([first(split(p, "/")) for p in installed])
+        for sk in sort(touched)
+            vf = joinpath(root, ".claude", "skills", sk, "VERSION")
+            isfile(vf) || continue
+            v = strip(read(vf, String))
+            note = whats_new(sk, v)
+            note === nothing && continue
+            push!(lines, "  /$sk is now version $v -- $note")
+        end
+    end
+
+    # WHAT IS DUE. Printed whenever anything changed, because that is the moment the student
+    # is looking at this output. Read from the published sheet, so it cannot disagree with
+    # what they have in front of them.
+    if changed
+        nd = next_due(root)
+        if nd !== nothing
+            goal = isempty(nd[2]) ? "" : ": $(nd[2])"
+            push!(lines, "Working on $(uppercase(nd[1]))$goal")
+            push!(lines, "  due $(nd[3])")
+        end
     end
 
     running_stale = skill !== nothing &&
