@@ -498,39 +498,40 @@ pinned versions and their results would stop matching the lectures.
 
 ## Step 7a — The course skills
 
-The course ships the activities the student runs in Claude Code: `/review` first, with homework and
-project skills arriving later in the semester. They travel in `handouts/skills/` and have to sit in
-`ISE754/.claude/skills/`, because Claude Code looks for skills relative to where work happens and
-one left in `materials/` is never found.
+The course ships the activities the student runs in Claude Code. They travel in `handouts/skills/`
+and have to sit in `ISE754/.claude/skills/`, because Claude Code looks for skills relative to where
+work happens and one left in `materials/` is never found.
 
-**Detect:** does `.claude/skills/review/SKILL.md` exist? If it does, compare it with the copy in
-`handouts/skills/` and re-copy only if they differ. Re-copying is always safe: it overwrites with
-the current version, and nothing is kept anywhere else.
+**This step deliberately does not name them.** Which activities exist changes during the semester,
+so a list written here is wrong from the first one that ships and right again only when somebody
+remembers to edit it. The command below copies whatever is in `handouts/skills/`.
 
-**Part 1 — the skills.** Copy every *folder* in `handouts/skills/` into `.claude/skills/`,
-creating that folder if it is absent. Copy the folders only: `handouts/skills/README.md` is
-documentation for the student and does not belong in `.claude/skills/`.
+**Detect:** nothing to detect. Run the command below either way. It writes a file only when the
+content actually differs, so on an already-current tree it changes nothing and prints nothing.
 
-From inside `ISE754`:
+**Part 1 — the skills.** One command, from inside `ISE754`, the same on every platform:
 
 ```
-mkdir -p .claude/skills
-cp -R handouts/skills/review .claude/skills
-cp -R handouts/skills/_course .claude/skills
+julia handouts/skills/_course/update_course.jl
 ```
 
-```powershell
-New-Item -ItemType Directory -Force .claude\skills
-Copy-Item -Recurse -Force handouts\skills\review .claude\skills
-Copy-Item -Recurse -Force handouts\skills\_course .claude\skills
-```
+It copies every *folder* in `handouts/skills/` into `.claude/skills/`, creating that folder if it is
+absent, and skips `handouts/skills/README.md`, which is documentation for the student and does not
+belong in `.claude/skills/`. It prints what it installed. On this first run expect it to name
+several skills and exit 10, which means "something updated" and is what you want to see here.
 
-**No trailing slash on the source, and this is not a style point.** On macOS,
-`cp -R handouts/skills/review/ .claude/skills` copies the folder's *contents* rather than
-the folder, landing `SKILL.md` loose in `.claude/skills/` with no `review/` folder around
-it. Claude Code then finds no skill at all, and the failure is quiet: `/review` simply does
-not exist, which looks like the skill was never written rather than like a bad copy. The
-success check below catches it, so run that check rather than trusting the copy.
+**This is the one time it is run from `handouts/`.** Every later run uses
+`.claude/skills/_course/update_course.jl`, the copy this step installs, and each activity runs that
+for you before it starts. Here it does not exist yet, so the source is used directly.
+
+**Why a script rather than the two copy commands this step used to give.** A hand-written
+`cp -R handouts/skills/review/ .claude/skills` with a trailing slash copies the folder's *contents*
+on macOS rather than the folder, landing `SKILL.md` loose in `.claude/skills/` with no `review/`
+folder around it. Claude Code then finds no skill at all, and the failure is quiet: `/review` simply
+does not exist, which looks like the skill was never written rather than like a bad copy. Two
+commands also meant two shells to keep in step with each other and a folder list to keep current,
+and neither stays right on its own. The success check below still catches a bad install, so run it
+rather than trusting the output.
 
 **Part 2 — the hooks.** `ISE754/.claude/settings.json` already exists from Step 1 and carries the
 permission allowlist, so **add to it rather than replacing it.** It needs a `hooks` key alongside
@@ -583,12 +584,14 @@ below in the restarted session.
 `handouts/skills/_course/HOOK.md` is the authority for both. If it disagrees with the block above,
 follow the file and say so.
 
-**Re-run this step after any `git pull` in `materials/` that reports a change under `skills/`.** It
-is the one step in this guide that recurs.
+**This step no longer recurs.** It used to, and the instruction was to re-run it after any pull
+that reported a change under `skills/`. Skills now ship from `handouts/` and every activity runs the
+updater before it starts, so a new version installs itself the next time you use one. Come back here
+only if `.claude/skills/` is emptied or the success check below stops passing.
 
-*Success:* `.claude/skills/review/SKILL.md` and `.claude/skills/_course/record_activity.jl` both
-exist, and `.claude/settings.json` still parses as JSON and now has both a `permissions` and a
-`hooks` key.
+*Success:* `.claude/skills/` holds one folder for each folder in `handouts/skills/` and no loose
+files at its own top level, `.claude/skills/_course/record_activity.jl` exists, and
+`.claude/settings.json` still parses as JSON and now has both a `permissions` and a `hooks` key.
 
 ---
 
