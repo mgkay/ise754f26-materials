@@ -521,8 +521,8 @@ cp -R handouts/skills/_course .claude/skills
 
 ```powershell
 New-Item -ItemType Directory -Force .claude\skills
-Copy-Item -Recurse -Force materials\skills\review .claude\skills
-Copy-Item -Recurse -Force materials\skills\_course .claude\skills
+Copy-Item -Recurse -Force handouts\skills\review .claude\skills
+Copy-Item -Recurse -Force handouts\skills\_course .claude\skills
 ```
 
 **No trailing slash on the source, and this is not a style point.** On macOS,
