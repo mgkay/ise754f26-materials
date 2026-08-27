@@ -148,7 +148,11 @@ script has no way to tell a withdrawn skill from a student's own experiment, and
 somebody's `.claude/` to save them a stale file is the wrong trade.
 """
 function install_skills(root)
-    src = joinpath(root, "materials", "skills")
+    # SKILLS SHIP FROM HANDOUTS, not from this repository. Moved 2026-08-27 so a
+    # skill revision no longer needs a merge here. handouts is already in
+    # READONLY_REPOS above and already fast-forwarded on every invocation, students
+    # already clone it, and the TA has push on it. A student's setup is unchanged.
+    src = joinpath(root, "handouts", "skills")
     dst = joinpath(root, ".claude", "skills")
     isdir(src) || return String[]
     mkpath(dst)

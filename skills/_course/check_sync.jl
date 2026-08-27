@@ -79,7 +79,7 @@ end
 find_root(work) = (r = dirname(work); isdir(joinpath(r, "materials")) ? r : nothing)
 
 """
-Do the installed skills differ from the ones shipped in `materials/skills/`?
+Do the installed skills differ from the ones shipped in `handouts/skills/`?
 
 Network-free and cheap. This is the second half of the delivery path: BOOTSTRAP Step 7a says
 to re-run the copy "after any `git pull` in materials/ that reports a change under skills/",
@@ -89,7 +89,9 @@ forgets keeps running the old skill, and the tree looks healthy.
 `true` if any shipped skill folder is missing from `.claude/skills/` or differs byte for byte.
 """
 function skills_stale(root)
-    src = joinpath(root, "materials", "skills")
+    # The SAME source update_course.jl installs from, which is the point of this
+    # check. If the two ever disagree, the check passes on a stale skill in silence.
+    src = joinpath(root, "handouts", "skills")
     dst = joinpath(root, ".claude", "skills")
     (isdir(src) && isdir(dst)) || return nothing
     for entry in readdir(src)
@@ -254,8 +256,8 @@ function main()
         if skills_stale(root) === true
             push!(lines,
                 "The course skills in `.claude/skills/` no longer match the ones in " *
-                "`materials/skills/`, so this session is running an older copy than the one " *
-                "shipped. Re-run BOOTSTRAP Step 7a: copy every FOLDER in `materials/skills/` " *
+                "`handouts/skills/`, so this session is running an older copy than the one " *
+                "shipped. Re-run BOOTSTRAP Step 7a: copy every FOLDER in `handouts/skills/` " *
                 "into `.claude/skills/`. Copying the folders' contents instead leaves no " *
                 "loadable skill at all, so check that `.claude/skills/review/SKILL.md` exists " *
                 "afterwards.")

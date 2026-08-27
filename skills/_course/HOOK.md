@@ -41,7 +41,7 @@ these entries to it rather than replacing it:
 
 The simplest way is to ask Claude Code, from inside your `ISE754` folder:
 
-> Add both hooks from `materials/skills/_course/HOOK.md` to `.claude/settings.json`,
+> Add both hooks from `handouts/skills/_course/HOOK.md` to `.claude/settings.json`,
 > preserving anything already there.
 
 **Do not shorten the path.** Hook handlers run in whatever the current directory happens

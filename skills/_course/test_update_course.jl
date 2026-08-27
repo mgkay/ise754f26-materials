@@ -90,7 +90,7 @@ end
 
 "Put a skill folder into the materials clone (as if the instructor shipped it)."
 function ship_skill(ise, name, files)
-    d = joinpath(ise, "materials", "skills", name); mkpath(d)
+    d = joinpath(ise, "handouts", "skills", name); mkpath(d)
     for (f, body) in files; write(joinpath(d, f), body); end
 end
 
@@ -115,7 +115,7 @@ end
 let (ise, _, _) = seed_tree()
     ship_skill(ise, "homework", ["SKILL.md" => "v2\n", "VERSION" => "2\n"])
     install_skills(ise)
-    write(joinpath(ise, "materials", "skills", "homework", "SKILL.md"), "v3\n")
+    write(joinpath(ise, "handouts", "skills", "homework", "SKILL.md"), "v3\n")
     w = install_skills(ise)
     ok("install: stale file replaced, alone", w, ["homework/SKILL.md"])
     ok("install: replacement content", installed(ise, "homework", "SKILL.md"), "v3\n")
@@ -139,10 +139,10 @@ let (ise, _, _) = seed_tree()
     ok("install: does not alter it", read(extra, String), "student's own\n")
 end
 
-# 5. A loose file at the top of materials/skills is not treated as a skill.
+# 5. A loose file at the top of handouts/skills is not treated as a skill.
 let (ise, _, _) = seed_tree()
-    mkpath(joinpath(ise, "materials", "skills"))
-    write(joinpath(ise, "materials", "skills", "README.md"), "not a skill\n")
+    mkpath(joinpath(ise, "handouts", "skills"))
+    write(joinpath(ise, "handouts", "skills", "README.md"), "not a skill\n")
     ok("install: top-level README is skipped", install_skills(ise), String[])
 end
 
@@ -253,7 +253,7 @@ end
 let (ise, _, _) = seed_tree()
     ship_skill(ise, "homework", ["SKILL.md" => "v1\n"])
     install_skills(ise)
-    write(joinpath(ise, "materials", "skills", "homework", "SKILL.md"), "v2\n")
+    write(joinpath(ise, "handouts", "skills", "homework", "SKILL.md"), "v2\n")
     code, out = run_main(ise, "--skill", "homework")
     ok("main: running skill replaced exits 10", code, 10)
     oktrue("main: running skill replaced says STOP",
@@ -266,7 +266,7 @@ let (ise, _, _) = seed_tree()
     ship_skill(ise, "homework", ["SKILL.md" => "v1\n"])
     ship_skill(ise, "review",   ["SKILL.md" => "r1\n"])
     install_skills(ise)
-    write(joinpath(ise, "materials", "skills", "review", "SKILL.md"), "r2\n")
+    write(joinpath(ise, "handouts", "skills", "review", "SKILL.md"), "r2\n")
     code, out = run_main(ise, "--skill", "homework")
     ok("main: another skill changed exits 10", code, 10)
     oktrue("main: another skill changed does NOT say stop", !occursin("WERE JUST REPLACED", out))

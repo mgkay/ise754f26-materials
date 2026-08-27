@@ -13,8 +13,8 @@ left here is never found.
 
 The simplest way is to ask Claude Code to do it, from inside your `ISE754` folder:
 
-> Copy every folder in `materials/skills/` into `.claude/skills/`, creating that folder if
-> it does not exist, and add both hooks from `materials/skills/_course/HOOK.md` to
+> Copy every folder in `handouts/skills/` into `.claude/skills/`, creating that folder if
+> it does not exist, and add both hooks from `handouts/skills/_course/HOOK.md` to
 > `.claude/settings.json`, preserving anything already there.
 
 Do it once now, and again after any `git pull` in `materials` that reports a change under

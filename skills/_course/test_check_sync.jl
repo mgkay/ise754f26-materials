@@ -62,10 +62,15 @@ function build(root; with_skills = true)
         git(d, "add", "-A"); git(d, "commit", "-qm", "seed"); git(d, "push", "-q", "origin", "main")
     end
     if with_skills
-        sk = joinpath(root, "materials", "skills", "review")
+        sk = joinpath(root, "handouts", "skills", "review")
         mkpath(sk)
         write(joinpath(sk, "SKILL.md"), "# review\nversion 1\n")
-        m = joinpath(root, "materials")
+        # HANDOUTS, because that is where the skill was just written four lines up.
+        # The 2026-08-27 source move renamed the skill path and left this commit
+        # pointing at materials, so nothing was staged and `git commit` exited 1.
+        # Caught by running the suite, not by the path search: this line contains
+        # neither "materials/skills" nor the Julia two-argument form.
+        m = joinpath(root, "handouts")
         git(m, "add", "-A"); git(m, "commit", "-qm", "skill"); git(m, "push", "-q", "origin", "main")
         inst = joinpath(root, ".claude", "skills", "review")
         mkpath(inst)
@@ -146,8 +151,8 @@ mktempdir() do tmp
 
     # ---- G. a shipped skill folder was never installed ------------------------------------
     r = build(joinpath(tmp, "smissing"))
-    mkpath(joinpath(r, "materials", "skills", "homework"))
-    write(joinpath(r, "materials", "skills", "homework", "SKILL.md"), "# homework\n")
+    mkpath(joinpath(r, "handouts", "skills", "homework"))
+    write(joinpath(r, "handouts", "skills", "homework", "SKILL.md"), "# homework\n")
     out, code = run_hook(joinpath(r, "work"))
     check("G  skill never installed: reported", occursin("Step 7a", out))
 

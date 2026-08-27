@@ -499,24 +499,24 @@ pinned versions and their results would stop matching the lectures.
 ## Step 7a — The course skills
 
 The course ships the activities the student runs in Claude Code: `/review` first, with homework and
-project skills arriving later in the semester. They travel in `materials/skills/` and have to sit in
+project skills arriving later in the semester. They travel in `handouts/skills/` and have to sit in
 `ISE754/.claude/skills/`, because Claude Code looks for skills relative to where work happens and
 one left in `materials/` is never found.
 
 **Detect:** does `.claude/skills/review/SKILL.md` exist? If it does, compare it with the copy in
-`materials/skills/` and re-copy only if they differ. Re-copying is always safe: it overwrites with
+`handouts/skills/` and re-copy only if they differ. Re-copying is always safe: it overwrites with
 the current version, and nothing is kept anywhere else.
 
-**Part 1 — the skills.** Copy every *folder* in `materials/skills/` into `.claude/skills/`,
-creating that folder if it is absent. Copy the folders only: `materials/skills/README.md` is
+**Part 1 — the skills.** Copy every *folder* in `handouts/skills/` into `.claude/skills/`,
+creating that folder if it is absent. Copy the folders only: `handouts/skills/README.md` is
 documentation for the student and does not belong in `.claude/skills/`.
 
 From inside `ISE754`:
 
 ```
 mkdir -p .claude/skills
-cp -R materials/skills/review .claude/skills
-cp -R materials/skills/_course .claude/skills
+cp -R handouts/skills/review .claude/skills
+cp -R handouts/skills/_course .claude/skills
 ```
 
 ```powershell
@@ -526,7 +526,7 @@ Copy-Item -Recurse -Force materials\skills\_course .claude\skills
 ```
 
 **No trailing slash on the source, and this is not a style point.** On macOS,
-`cp -R materials/skills/review/ .claude/skills` copies the folder's *contents* rather than
+`cp -R handouts/skills/review/ .claude/skills` copies the folder's *contents* rather than
 the folder, landing `SKILL.md` loose in `.claude/skills/` with no `review/` folder around
 it. Claude Code then finds no skill at all, and the failure is quiet: `/review` simply does
 not exist, which looks like the skill was never written rather than like a bad copy. The
@@ -580,7 +580,7 @@ up automatically by the file watcher," but *normally* is not *certainly*, and th
 wrong is a review that runs perfectly and records nothing. Restart, then confirm the *Success* line
 below in the restarted session.
 
-`materials/skills/_course/HOOK.md` is the authority for both. If it disagrees with the block above,
+`handouts/skills/_course/HOOK.md` is the authority for both. If it disagrees with the block above,
 follow the file and say so.
 
 **Re-run this step after any `git pull` in `materials/` that reports a change under `skills/`.** It
