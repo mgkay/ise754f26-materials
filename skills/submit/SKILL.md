@@ -20,6 +20,34 @@ it is theirs to make; an assistant committing unasked removes the thing the subm
 meant to show. Offering is fine — the `/review` skill offers at its close, which is where
 most of the forgetting happens — but the student says yes.
 
+## Step 0 — update the course, before anything else
+
+Run this first, every time, before reading anything else:
+
+```
+julia .claude/skills/_course/update_course.jl --skill submit
+```
+
+It fast-forwards `materials/` and `handouts/` and reinstalls any skill that shipped a new
+version. It never touches `work/`. Offline, it says nothing and changes nothing, and the
+submission continues on what is on disk.
+**Run it from the `ISE754` folder**, and if the session is somewhere else, change to that
+folder first. The path above is relative, so from `work/` or `materials/` it resolves to
+nothing and Julia exits with a stack trace instead of a report.
+
+**This is not the same pull as Step 2, and neither replaces the other.** Step 0 updates the
+*course* — `materials/`, `handouts/`, and the installed skills — and is documented as never
+touching `work/`. Step 2 pulls `work/`, which is the student's own repository and the only
+place their submission goes. A skill that ran only Step 2 would keep working forever on
+whatever version of itself was installed the first time.
+
+That was this skill's state until VERSION 2. `/review` and `/homework` both carried this step
+from the day they shipped; `/submit` did not, and because it is reached from `/review`'s close
+or straight after `/homework` — both of which have already updated — the gap was invisible.
+It only bites on the path this skill deliberately invites: a student typing "submit homework
+one" cold, with no other skill run first. On that path there was nothing that could ever
+replace a stale copy.
+
 ## Step 1 — work out what is being submitted, and where it goes
 
 The paths are fixed by the course and the student should never have to remember them:
