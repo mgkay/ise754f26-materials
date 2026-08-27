@@ -339,6 +339,33 @@ changes.
 """
 const MIRROR_COMPANIONS_DEFAULT = ["formulas.md"]
 
+"""
+Repoint `ISE754/CLAUDE.md` at the new home of `course-instructions.md`, once.
+
+BOOTSTRAP Step 1 has every student write `@materials/course-instructions.md` into their own
+`CLAUDE.md`, inside a block the guide calls the whole file and says never changes. When the
+instructions moved to handouts that line became an import of a copy nobody maintains. Their own
+note would tell them the import brought in nothing, which is correct and is not something a
+student should be asked to fix by hand, one at a time, to complete a move they did not make.
+
+So it is fixed for them, and it touches exactly the one token. Everything else in the file is
+left byte for byte, including anything the student added themselves, because it is their file
+and only one line of it was ever ours. Returns `true` only when something was actually
+rewritten, so an already-correct tree stays silent.
+
+It never CREATES the file. A student with no `CLAUDE.md` has a different problem, and writing
+one here would hide it behind a tree that looks healthy.
+"""
+function repoint_claude_md(root)
+    f = joinpath(root, "CLAUDE.md")
+    isfile(f) || return false
+    old = read(f, String)
+    new = replace(old, "@materials/course-instructions.md" => "@handouts/course-instructions.md")
+    new == old && return false
+    write(f, new)
+    return true
+end
+
 function mirror_companions()
     f = joinpath(@__DIR__, "mirror_companions.txt")
     isfile(f) || return MIRROR_COMPANIONS_DEFAULT
@@ -551,6 +578,15 @@ function main(argv)
     for k in kept
         push!(lines, "$k was edited, so it was left alone and NOT refreshed. The published " *
                      "sheet may have changed since. Compare it against handouts/homework/.")
+    end
+
+    if repoint_claude_md(root)
+        changed = true
+        push!(lines,
+              "CLAUDE.md now imports handouts/course-instructions.md. The course instructions " *
+              "moved there so they can be revised during the semester without a merge, and the " *
+              "import line in your own CLAUDE.md was the only thing still pointing at the old " *
+              "copy. Nothing else in that file was touched.")
     end
 
     installed = install_skills(root)

@@ -106,22 +106,28 @@ exactly there.
 ```markdown
 # ISE 754
 
-@materials/course-instructions.md
+@handouts/course-instructions.md
 
 **If the import above brought in nothing** — if you cannot see a section headed
-"ISE 754 — instructions for the assistant" — then `materials/` is out of date or the
+"ISE 754 — instructions for the assistant" — then `handouts/` is out of date or the
 file has moved. **Say so before answering anything else**, and run `git pull` in
-`materials/`.
+`handouts/`.
 
 A failed import is silent. Without this note you would answer from whatever else you
 could find in the folder, which sounds right and is not the course's instructions.
 ```
 
-That is the whole file, and it never changes. It is what gives every Claude Code session started
-in this folder the course's own instructions: where the four folders are, which of them are never
-written to, that analysis is a Julia script rather than Python, and that the student is not
-expected to run the mechanics. The instructions themselves live in `materials/`, so they can be
-improved during the semester by a `git pull` rather than by asking every student to edit a file.
+That is the whole file. It is what gives every Claude Code session started in this folder the
+course's own instructions: where the four folders are, which of them are never written to, that
+analysis is a Julia script rather than Python, and that the student is not expected to run the
+mechanics. The instructions themselves live in `handouts/`, so they can be improved during the
+semester by a `git pull` rather than by asking every student to edit a file.
+
+**One line of it is ours, and the rest is yours.** Add to this file whatever you like. If the
+course instructions ever move again, the updater rewrites that single import line, says out loud
+that it did, and leaves everything else in the file byte for byte. That is the only edit anything
+in the course will ever make here, and it is why the move does not become twelve people editing
+the same line by hand.
 
 **The second half of that file is not padding, and it was written after the failure it
 describes.** Tested 2026-08-17 in a folder whose `materials/` predated the instructions file:

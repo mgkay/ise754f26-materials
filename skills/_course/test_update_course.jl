@@ -175,6 +175,26 @@ let (ise, _, _) = seed_tree()
     ok("install: no handouts clone at all is silent", install_skills(ise), String[])
 end
 
+# 6c. The course-instructions import is repointed, once, and ONLY that token. The rest of the
+#     file is the student's, so a note they added has to survive verbatim.
+let (ise, _, _) = seed_tree()
+    f = joinpath(ise, "CLAUDE.md")
+    write(f, "# ISE 754\n\n@materials/course-instructions.md\n\nMy own note. Keep me.\n")
+    ok("repoint: rewrites the import", repoint_claude_md(ise), true)
+    ok("repoint: one token, nothing else", read(f, String),
+       "# ISE 754\n\n@handouts/course-instructions.md\n\nMy own note. Keep me.\n")
+    ok("repoint: running again does nothing", repoint_claude_md(ise), false)
+end
+
+# 6d. Absent and already-correct are both silent no-ops, and it never invents the file. A
+#     student with no CLAUDE.md has a different problem and writing one here would hide it.
+let (ise, _, _) = seed_tree()
+    ok("repoint: absent CLAUDE.md is a no-op", repoint_claude_md(ise), false)
+    oktrue("repoint: and none was created", !isfile(joinpath(ise, "CLAUDE.md")))
+    write(joinpath(ise, "CLAUDE.md"), "@handouts/course-instructions.md\n")
+    ok("repoint: already correct is a no-op", repoint_claude_md(ise), false)
+end
+
 # ---------------------------------------------------------------------------------------------
 # ff_pull
 # ---------------------------------------------------------------------------------------------
@@ -333,6 +353,21 @@ let (ise, _, _) = seed_tree()
            occursin("handouts/skills/ does not exist", out))
     oktrue("main: and says it is not the student's to fix",
            occursin("Nothing you did caused this", out))
+end
+
+# 19c. main() repoints and says where the instructions went, rather than moving them quietly.
+let (ise, _, _) = seed_tree()
+    write(joinpath(ise, "CLAUDE.md"), "# ISE 754\n\n@materials/course-instructions.md\n")
+    code, out = run_main(ise, "--skill", "review")
+    ok("main: a repoint exits 10", code, 10)
+    oktrue("main: it says where they went",
+           occursin("handouts/course-instructions.md", out))
+    oktrue("main: and the file really changed",
+           occursin("@handouts/course-instructions.md",
+                    read(joinpath(ise, "CLAUDE.md"), String)))
+    code2, out2 = run_main(ise, "--skill", "review")
+    ok("main: the next run is quiet again", code2, 0)
+    ok("main: and says nothing", strip(out2), "")
 end
 
 # 19b. No handouts clone at all: still 0, still silent, all the way through main().
@@ -773,7 +808,14 @@ exit(FAIL[] == 0 ? 0 : 1)
 #   as "nothing to update -- continue, and say nothing about it". So the tree with no skill
 #   source at all was indistinguishable from a fully current one, at the one moment a student
 #   could have been told. The two cases that must stay quiet, 6b and 19b, passed throughout,
-#   which is what makes this a fix and not just a louder script.
+#   which is what makes this a fix and not just a louder script.#
+# BREAK F -- repoint_claude_md writing unconditionally instead of guarding on isfile, i.e. the
+#   obvious spelling, `old = isfile(f) ? read(f, String) : ""` followed by an unconditional
+#   write. FAILS 1 of 94: "repoint: and none was created". A student with no CLAUDE.md would
+#   have had an empty one written for them, so the tree looks healthy and the session imports
+#   nothing -- the same silence as an absent skill source, in the one file that carries the
+#   course's instructions. The repoint itself still worked, which is why this break passes
+#   every other case and is worth pinning.
 # ---------------------------------------------------------------------------------------------
 #
 # BREAK E -- the changelog. Removing the `inside && break` from whats_new() made case N3 fail:
