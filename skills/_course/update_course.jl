@@ -234,6 +234,11 @@ This is BOOTSTRAP Step 7a, performed rather than recommended. It writes a file o
 content actually differs, so the return value is a true list of what changed and an unchanged
 tree reports nothing.
 
+Returns `nothing` rather than an empty list when the handouts clone is present but
+`handouts/skills/` is not. An empty list means "everything is current"; `nothing` means the
+source was not there to compare against. Reading the second as the first is how a student ends
+up running a superseded skill while the report says they are up to date.
+
 It does NOT delete anything. A file that exists only in the installed copy is left alone: this
 script has no way to tell a withdrawn skill from a student's own experiment, and deleting from
 somebody's `.claude/` to save them a stale file is the wrong trade.
@@ -245,7 +250,21 @@ function install_skills(root)
     # already clone it, and the TA has push on it. A student's setup is unchanged.
     src = joinpath(root, "handouts", "skills")
     dst = joinpath(root, ".claude", "skills")
-    isdir(src) || return String[]
+    if !isdir(src)
+        # AN ABSENT SOURCE IS NOT "NOTHING CHANGED". Returning String[] here made the two
+        # indistinguishable to main(), so every student would have kept whatever skill
+        # version they already had, forever, while the report told them they were current.
+        # Found 2026-08-27, before the source move shipped: "That is worse than the
+        # bottleneck it removes, because the bottleneck at least announces itself."
+        #
+        # The two absences are different, and are answered differently. No handouts clone at
+        # all is BOOTSTRAP's business and stays quiet, for the same reason ff_pull's :absent
+        # is quiet: a tree that was never set up should not be scolded on every invocation.
+        # A handouts clone that IS there with no skills/ inside it means the delivery path is
+        # broken, which nothing the student did causes and nothing they do locally fixes, so
+        # that one says so out loud.
+        return isdir(joinpath(root, "handouts")) ? nothing : String[]
+    end
     mkpath(dst)
 
     written = String[]
@@ -535,6 +554,15 @@ function main(argv)
     end
 
     installed = install_skills(root)
+    if installed === nothing
+        push!(problems,
+              "handouts/skills/ does not exist, so no course skill could be installed or " *
+              "updated. This session is running whatever is already in `.claude/skills/`, " *
+              "which may be older than the version that was published. Nothing you did " *
+              "caused this and nothing you can do locally will fix it: tell the TA or the " *
+              "instructor, then carry on with what is on disk.")
+        installed = String[]
+    end
     if !isempty(installed)
         changed = true
         push!(lines, "skills reinstalled: " * join(sort(installed), ", "))

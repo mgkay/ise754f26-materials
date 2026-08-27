@@ -85,6 +85,11 @@ function seed_tree()
     clone(hbare, joinpath(ise, "handouts"))
     mkpath(joinpath(ise, "work")); g(joinpath(ise, "work"), "init", "--quiet", "--initial-branch=main")
     mkpath(joinpath(ise, ".claude", "skills"))
+    # The published tree always has this, because skills ship from handouts. A fixture without
+    # it is not a tree any student has, and leaving it out would make every case below take the
+    # broken-delivery path by accident rather than on purpose. Cases 6a and 19a remove it
+    # deliberately, which is the only way that path should ever be reached here.
+    mkpath(joinpath(ise, "handouts", "skills"))
     return ise, mbare, hbare
 end
 
@@ -152,6 +157,22 @@ let (ise, _, _) = seed_tree()
     before = sort(readdir(joinpath(ise, "work")))
     install_skills(ise)
     ok("install: work/ untouched", sort(readdir(joinpath(ise, "work"))), before)
+end
+
+# 6a. THE CASE THIS SECTION GAINED ON 2026-08-27. handouts is cloned and has no skills/ in it.
+#     Answering String[] here is indistinguishable from "everything is current", which is how a
+#     whole class silently keeps a superseded skill while the report says they are up to date.
+let (ise, _, _) = seed_tree()
+    rm(joinpath(ise, "handouts", "skills"); recursive = true)
+    ok("install: an absent source is not silence", install_skills(ise), nothing)
+end
+
+# 6b. No handouts clone at all stays quiet, and the difference from 6a is the whole point. A
+#     tree that was never set up is BOOTSTRAP's business; ff_pull's :absent is silent for the
+#     same reason. Scolding on every invocation is how a message becomes one to ignore.
+let (ise, _, _) = seed_tree()
+    rm(joinpath(ise, "handouts"); recursive = true)
+    ok("install: no handouts clone at all is silent", install_skills(ise), String[])
 end
 
 # ---------------------------------------------------------------------------------------------
@@ -299,6 +320,27 @@ let (ise, _, hbare) = seed_tree()
     oktrue("main: the sheet is on disk",
            isfile(joinpath(ise, "handouts", "homework", "hw1.md")))
     oktrue("main: it says handouts moved", occursin("handouts: 1 new commit", out))
+end
+
+# 19a. An absent skill source reaches the student. Exit 1 is "a repository needs a person" in
+#      the table every SKILL.md carries -- print it and continue -- which is right: the session
+#      is not stopped, and the silence that hid this is gone.
+let (ise, _, _) = seed_tree()
+    rm(joinpath(ise, "handouts", "skills"); recursive = true)
+    code, out = run_main(ise, "--skill", "review")
+    ok("main: absent skill source exits 1", code, 1)
+    oktrue("main: absent skill source names the directory",
+           occursin("handouts/skills/ does not exist", out))
+    oktrue("main: and says it is not the student's to fix",
+           occursin("Nothing you did caused this", out))
+end
+
+# 19b. No handouts clone at all: still 0, still silent, all the way through main().
+let (ise, _, _) = seed_tree()
+    rm(joinpath(ise, "handouts"); recursive = true)
+    code, out = run_main(ise)
+    ok("main: no handouts clone exits 0", code, 0)
+    ok("main: no handouts clone prints nothing", strip(out), "")
 end
 
 # ---------------------------------------------------------------------------------------------
@@ -723,6 +765,15 @@ exit(FAIL[] == 0 ? 0 : 1)
 #   "something has been changed or committed inside it": a false accusation about their own
 #   work, on the most common failure there is. Fixed by asking the remote with `ls-remote`
 #   instead of reading the message, so an unknown failure now falls toward silence.
+#
+# BREAK E -- `install_skills` answering String[] for an absent source, i.e. the code exactly as
+#   it stood before 2026-08-27. FAILS 4 of 83: "an absent source is not silence", "absent skill
+#   source exits 1", and both sentences the student was supposed to read. The exit code it
+#   produced instead is the useful part of the record: **0**, which every SKILL.md's table reads
+#   as "nothing to update -- continue, and say nothing about it". So the tree with no skill
+#   source at all was indistinguishable from a fully current one, at the one moment a student
+#   could have been told. The two cases that must stay quiet, 6b and 19b, passed throughout,
+#   which is what makes this a fix and not just a louder script.
 # ---------------------------------------------------------------------------------------------
 #
 # BREAK E -- the changelog. Removing the `inside && break` from whats_new() made case N3 fail:
