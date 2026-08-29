@@ -10,6 +10,12 @@ which is the right outcome for a typo fix.
 **Keep it to what changes what they do.** "Asks a third closing question" earns a line. "Moved
 the source directory" does not: it changes nothing a student does.
 
+## review 6
+Asks why you picked the check you picked, and records your answer in your own words. Tells
+you at the start that you can stop and ask anything, with two example questions about the
+lecture so you can see the shape of one, and asks again after the first example whether
+anything is worth going deeper on.
+
 ## review 5
 Ends by asking what you would change about the review itself. Two earlier questions were added
 too: what is still unclear to you, and what you want covered in class.

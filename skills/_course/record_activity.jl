@@ -349,6 +349,27 @@ function main()
         return 0
     end
 
+    # REBUILD THE PROFILE FROM THE LOG. Added 2026-08-28.
+    #
+    # build_profile.jl's own output says "Rebuilt from `activity-log.jsonl` every time you
+    # run a review", and until now nothing called it, so that sentence was a promise the
+    # system did not keep. This is the call that makes it true. Here rather than in a skill
+    # because a hook is deterministic and an instruction to an agent can be skipped.
+    #
+    # ISOLATED ON PURPOSE. The record is already appended and safe by this point. A profile
+    # that fails to rebuild must never cost a student their record, so every failure is noted
+    # and swallowed: the student still gets the submit reminder, and the profile is stale
+    # rather than the session being lost.
+    let bp = joinpath(@__DIR__, "build_profile.jl")
+        if isfile(bp)
+            try
+                run(pipeline(`julia $bp $work`; stdout = devnull, stderr = devnull))
+            catch err
+                note_error(work, "profile rebuild failed (record is safe): $err")
+            end
+        end
+    end
+
     # Tell the student to submit it. See the header for why this is a systemMessage rather
     # than stdout or a blocking exit.
     ahead = unpushed(work)
