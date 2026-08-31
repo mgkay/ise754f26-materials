@@ -104,11 +104,36 @@ function check_slice(lines::Vector{String}, offset::Int)
     cur = 0
     for (i, raw) in enumerate(lines)
         m = match(KW_RE, raw)
-        if m !== nothing && lowercase(m[1]) in vcat(KNOWN, ["find"])
+        if m !== nothing
             kw = lowercase(m[1])
-            push!(slots, (i, kw, String(m[2])))
-            items[i] = Tuple{Int,String}[]
-            cur = i
+            if kw in vcat(KNOWN, ["find"])
+                push!(slots, (i, kw, String(m[2])))
+                items[i] = Tuple{Int,String}[]
+                cur = i
+                continue
+            end
+            # THE VOCABULARY IS CLOSED, AND AN UNRECOGNISED KEYWORD IS AN ERROR
+            # RATHER THAN A LINE TO SKIP (2026-08-31, from `settle:` in 2.3).
+            #
+            # This test used to be part of the condition above, so a keyword that
+            # was not in KNOWN simply failed to match and the line was discarded:
+            # not reported, absent from the ORDER check, and counting toward no
+            # slot, so every coherence check still passed. `settle:` sat in
+            # lecture 2.3 for a week and this script called the file conforming.
+            #
+            # `find:` was caught only because it had been re-added to the
+            # recognised list SPECIFICALLY so it could be errored on -- the
+            # retirement was mechanised as a named special case instead of as an
+            # instance of the general rule, which is why the general rule caught
+            # nothing. A whitelist parser accepts everything outside the
+            # whitelist unless the else-branch is written. This is that branch.
+            push!(out, Finding(i, "ERROR",
+                "\"$kw:\" is not a model keyword. The vocabulary is closed: " *
+                "minimize: or maximize:, solve for:, subject to:, return:, " *
+                "assumptions:, and where: once a model carries symbols. If it " *
+                "names what the model hands back that is return:; if it names " *
+                "an unknown that is solve for:"))
+            cur = 0     # its lettered items belong to no slot; do not misattribute
             continue
         end
         mi = match(ITEM_RE, raw)
@@ -234,9 +259,81 @@ function check_slice(lines::Vector{String}, offset::Int)
     return shift(out)
 end
 
+"""
+The negative control. A check that cannot be shown to FAIL is not a check, and
+this script had no way to demonstrate it: it was run only on files expected to
+pass, so the day the closed-vocabulary rule turned out to be missing entirely,
+nothing about the output looked different. Each case below states the input and
+the verdict it must produce, so a later edit that quietly stops reporting
+something fails here instead of in a lecture.
+
+    julia check_model.jl --self-test
+"""
+function self_test()
+    conforming = [
+        "minimize: total weighted distance",
+        "",
+        "solve for:",
+        "(a) the facility location, any point in the plane",
+        "",
+        "subject to: none",
+        "",
+        "return: the facility location",
+        "",
+        "assumptions:",
+        "(a) demand is at the given points",
+    ]
+    unknown_kw(fs)  = any(occursin("is not a model keyword", f.message) for f in fs)
+    retired_find(fs) = any(occursin("find: is retired", f.message) for f in fs)
+
+    cases = [
+        # (name, lines, predicate on the findings, what the predicate means)
+        ("a conforming model reports no unknown keyword",
+         conforming, fs -> !unknown_kw(fs), "must not fire"),
+        ("an invented keyword is an ERROR",
+         vcat(["settle: which facilities share a site"], conforming),
+         fs -> unknown_kw(fs) &&
+               any(f.severity == "ERROR" && occursin("settle", f.message)
+                   for f in fs),
+         "must fire, as an ERROR, naming the keyword"),
+        ("an invented keyword written in markdown bold is an ERROR",
+         vcat(["**settle:** which facilities share a site"], conforming),
+         fs -> unknown_kw(fs), "must fire on the lecture's bold slot form"),
+        ("find: keeps its own retirement message, not the generic one",
+         vcat(["find: the unknowns"], conforming),
+         fs -> retired_find(fs) && !unknown_kw(fs),
+         "must say find: is retired and point at solve for:"),
+        ("a model of nothing but an invented keyword still reports it",
+         ["settle: everything"],
+         fs -> unknown_kw(fs), "must fire even with no recognised slot"),
+    ]
+
+    nfail = 0
+    for (name, lines, pred, meant) in cases
+        fs = check_slice(lines, 0)
+        ok = pred(fs)
+        nfail += ok ? 0 : 1
+        println("$(ok ? "pass" : "FAIL")  $name")
+        if !ok
+            println("        the rule $meant, and did not. Findings:")
+            isempty(fs) && println("          (none)")
+            for f in fs
+                println("          $(f.severity) $(f.line): $(f.message)")
+            end
+        end
+    end
+    println()
+    println("$(length(cases)) case(s), $nfail failure(s)")
+    return nfail == 0 ? 0 : 1
+end
+
 function main(args)
+    if length(args) == 1 && args[1] == "--self-test"
+        return self_test()
+    end
     if length(args) != 1
         println("usage: julia check_model.jl <model file>")
+        println("       julia check_model.jl --self-test")
         return 2
     end
     path = args[1]
