@@ -10,6 +10,11 @@ which is the right outcome for a typo fix.
 **Keep it to what changes what they do.** "Asks a third closing question" earns a line. "Moved
 the source directory" does not: it changes nothing a student does.
 
+## review 7
+If a session has to be cut short, it now keeps the examples your lecture brief says to keep
+rather than just the first and the last. On some lectures those are not the same, and the
+generic rule was dropping the example the brief calls the point of the lecture.
+
 ## review 6
 Asks why you picked the check you picked, and records your answer in your own words. Tells
 you at the start that you can stop and ask anything, with two example questions about the
