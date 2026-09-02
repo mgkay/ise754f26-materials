@@ -139,7 +139,7 @@ assumptions:
 
 Model 4: Fair (equitable) apartment location
 
-The objective slot reads find rather than minimize because nothing has been optimized: the model states a fairness condition the location must satisfy, not a quantity to make small. Turning that condition into an optimization answers a question typically unasked: why is squared distance the quantity so many methods minimize? Written out, equalizing the burdens is the balance condition  \sum_i w_i(x - a_i) = 0, \tag{1}
+The callout has no objective slot at all, which is what makes it a feasibility model: it states a fairness condition the location must satisfy, not a quantity to make small. Turning that condition into an optimization answers a question typically unasked: why is squared distance the quantity so many methods minimize? Written out, equalizing the burdens is the balance condition  \sum_i w_i(x - a_i) = 0, \tag{1}
 
 the weighted pull to the left set equal to the weighted pull to the right. Nothing has been optimized here either; this is just the fairness requirement stated directly, which is the natural way to write it down.
 
@@ -170,7 +170,7 @@ assumptions:
 (a) an apartment can be located anywhere along the corridor;
 (b) the Durham trip has weight 1 and the Raleigh trips have weight 2.
 
-Model 5: Equitable location, refined as least squares
+Model 5: Equitable location by least squares
 
 The fair location fixes how the driving is shared, but not how much driving there is in total. A couple that cares more about the total mileage, rather than about who bears the driving burden, would pose the question the other way around: they might instead minimize the total distance driven, adding the mileage up rather than balancing it. The new objective simply drops the square.
 
@@ -187,7 +187,7 @@ assumptions:
 (a) an apartment can be located anywhere along the corridor;
 (b) the Durham trip has weight 1 and the Raleigh trips have weight 2.
 
-Model 6: Cheapest (efficient) apartment location
+Model 6: Efficient apartment location
 
 The total-travel objective is \sum_i w_i \lvert x - a_i \rvert. Between the two cities it equals 60 - x, which only decreases, so the minimum is at Raleigh, x = 30 (Fig. 6). Its first-order condition balances the weights rather than the distances, a majority vote that snaps the location to whichever city holds half the trips. Where the squared objective produced an interior balance point, the total-distance objective lands on a city. How to find that point in general, and why the balancing-distances derivative fails here, is the subject of Sec. 4.
 
@@ -201,7 +201,7 @@ At the fair point the two partners’ weighted travel is equal, 20 and 20, for a
 
 This coincidence, the fair point equalling the centroid, is exact only because there are two destinations, one equation in one unknown. With more destinations no single location can equalize everyone, and the two ideas separate into two problems that recur through the topic: minimizing squared distance always gives the interior centroid, taken up in the later lecture on aggregate demand, while minimizing total weighted distance gives a weighted median that sits at a demand point, taken up in Sec. 4. The couple’s apartment selection problem is the seed of both.
 
-Locating in Raleigh can in fact be the best of both worlds, but only once the objective is widened again. Concentrating the trips at Raleigh may let the couple keep one car instead of two, a saving with a clear dollar value. That saving does belong in the objective, and folding it in requires, as with the customer’s choice of beach, weighting the incommensurable together: once travel is priced at a shared rate, the miles and the cost of a car are both in dollars and can be added into a single total cost. Fairness is handled differently. Raleigh leaves the Durham partner bearing the whole commute, and rather than add that imbalance to the objective, the couple settles it outside the objective, through a compensating task such as cooking. The widened objective therefore minimizes total cost alone, with the car folded in and the even split arranged separately.
+Locating in Raleigh can in fact be the best of both worlds, but only once the objective is widened again. Concentrating the trips at Raleigh may let the couple keep one car instead of two, a saving with a clear dollar value. That saving does belong in the objective, and folding it in requires, as with the customer’s choice of beach, weighting the incommensurable together: once travel is priced at a shared rate, the miles and the cost of a car are both in dollars and can be added into a single total cost. Fairness is handled differently. Raleigh leaves the Durham partner bearing the whole commute, and rather than add that imbalance to the objective, the couple determines it outside the objective, through a compensating task such as cooking. The widened objective therefore minimizes total cost alone, with the car folded in and the even split arranged separately.
 
 minimize: the total weighted distance from the apartment to the two workplaces total couple cost: both partners’ travel valued at the couple’s single shared rate, plus the cost of the vehicles the couple keeps
 
@@ -235,39 +235,39 @@ subject to
 
 \begin{aligned} a_2\,z &\le x &\quad& \text{second car given up only if apartment in Raleigh}\\ z &\in \{0,1\} &\quad& \text{binary car choice} \end{aligned}
 
-where:
+where
 
 x
 
-apartment location along corridor (decision variable)
+= apartment location along corridor (decision variable)
 
 z
 
-\begin{cases} 1, & \text{if second car given up}\\ 0, & \text{if both cars kept}\end{cases}
+= \begin{cases} 1, & \text{if second car given up}\\ 0, & \text{if both cars kept}\end{cases}
 
 a_1
 
-Durham’s position along corridor (miles)
+= Durham’s position along corridor (miles)
 
 a_2
 
-Raleigh’s position along corridor (miles)
+= Raleigh’s position along corridor (miles)
 
 w_1
 
-Durham’s daily trip weight (assumption (b))
+= Durham’s daily trip weight (assumption (b))
 
 w_2
 
-Raleigh’s daily trip weight (assumption (b))
+= Raleigh’s daily trip weight (assumption (b))
 
 c
 
-couple’s shared value of travel, dollars per mile (assumption (c))
+= couple’s shared value of travel, dollars per mile (assumption (c))
 
 c_v
 
-daily cost of one car.
+= daily cost of one car.
 
 One feature of the objective is worth pausing on. In the pure minisum model the distance could be counted one way, since doubling every trip to a round trip only scales the objective by a constant and moves neither the optimal location nor the fair split. Adding the car’s dollar cost ends that freedom: travel and the car must be measured in the same unit, dollars per day, so the travel term has to count the miles actually driven, the round trip there and back. A constant factor that is harmless in a single-term objective becomes essential once a second, differently scaled term joins it.
 
@@ -279,7 +279,7 @@ The lesson repeats the one from the beach. A location that looks inferior under 
 
 What makes the widened objective legitimate turns on a word that has been doing quiet work all along: couple. A couple cooperates: it decides once and pays from one budget, which is what assumption (c) of Model 7 records when it prices both partners’ travel at the same rate c. The contrast is Model 3, where each customer valued a mile at a personal rate c and the market split, some customers choosing each beach; no single objective could speak for them all. One decision-maker with one rate is what allows two commutes to be added into a single objective at all.
 
-Assumption (e) enters the model here, and its absence from Model 6 is worth a word. That model minimized total weighted distance, the miles the household drives; that sum is a physical quantity, well-defined however the partners split the driving, and an outside planner counting aggregate mileage would write the same objective, so it leans on nothing about who decides. The widened model does three things the earlier one did not: it prices both partners’ travel at one rate (assumption (c)), it trades a kept car against miles driven (z), and it rebalances the leftover burden through a compensating task (assumption (d)). Each move treats the couple as a single economic unit, and assumption (e) is the license for all three, the statement that one objective may stand for both partners. Cooperation was present in the earlier apartment models too, but idle; only here does the objective rest on it, so only here is it written down.
+Assumption (e) enters the model here, and its absence from Model 6 is worth a word. That model minimized total weighted distance, the miles the household drives; that sum is a physical quantity, well-defined however the partners split the driving, and an outside planner counting aggregate mileage would write the same objective, so it leans on nothing about who decides. The widened model does three things the earlier one did not: it prices both partners’ travel at one rate (assumption (c)), it trades a kept car against miles driven (z), and it rebalances the leftover burden through a compensating task (assumption (d)). Each move treats the couple as a single economic unit, and assumption (e) is the justification for all three, the statement that one objective may stand for both partners. Cooperation was present in the earlier apartment models too, but idle; only here does the objective rest on it, so only here is it written down.
 
 Cooperation also supplies the transfer that assumption (d) names. At the fair location, evenness was bought with ten extra weighted miles of driving a day, the price of fairness; the compensating task buys the same evenness for free. Equity has not been abandoned. It has moved out of the objective and into the settlement, and that move is available only because the decision-maker is a household rather than two strangers.
 
@@ -289,7 +289,7 @@ One caution balances all of this. Every widening in the section, and the compens
 
 ## 4. Solving the minisum problem by hand
 
-Choosing the objective was the hard part of Sections 2 and 3; solving the one that results can be surprisingly easy. For the couple, the efficient (minisum) location was read straight off the corridor because there were only two destinations. This section finds the minisum location for any number of destinations, using nothing more than a sorted list and a running total: no computer, no calculus, and, remarkably, not even the distances between the facilities. It is the one class of location problem in this course that is genuinely solved by hand, which is why it is worth doing carefully; the Julia methods for the harder cases wait for the next lecture. The method is stated as Model 8; the rest of the section works it by hand.
+Choosing the objective was the hard part of Sections 2 and 3; solving the one that results can be surprisingly easy. For the couple, the efficient (minisum) location was read straight off the corridor because there were only two destinations. This section finds the minisum location for any number of destinations, using nothing more than a sorted list and a running total: no computer, no calculus, and, remarkably, not even the distances between the facilities. It is the one class of location problem in this course that is genuinely solved by hand, which is why it is worth doing carefully; the Julia methods for the harder cases wait for the next lecture. The method, which puts the facility at the weighted median of the destinations, is stated as Model 8; the rest of the section solves it by hand.
 
 minimize: total weighted distance from a new facility (NF) to the m existing facilities (EFs) along a line
 
@@ -304,9 +304,9 @@ assumptions:
 (a) facilities lie on a single line, so distance is one-dimensional; a two-dimensional problem with rectilinear distance is solved by applying the model once along each axis;
 (b) each EF’s weight w_i is known, and the EFs can be placed in order along the line, but their actual coordinates are not needed.
 
-Model 8: Minisum location, one dimension
+Model 8: Minisum in one dimension
 
-Model 8 formulation: Minisum location, one dimension
+Model 8 formulation: Minisum in one dimension
 
 ```
 algorithm minisum-1D;
@@ -326,11 +326,15 @@ end;
 
 Pseudocode, not Julia. The formulation of Model 8 is pseudocode: a step-by-step statement of the method’s logic in no particular programming language. It is deliberately not Julia; stating the algorithm language-independently shows the logic itself, which any language could then implement, rather than tying it to one.
 
-The facility the loop returns is the weighted median: the first EF at which the accumulated weight reaches half the total,  \sum_{i=1}^{j} w_i \ge \frac{W}{2}. \tag{4} In its simplest form the rule is the Majority Theorem: if any single EF holds at least half of the total weight, the NF goes there. When the running total reaches exactly W/2 at EF_j, every point from EF_j to the next facility is equally good, so the optimum is a whole interval rather than a single point.
+The facility the loop returns is the weighted median: the first EF at which the accumulated weight reaches half the total,  \sum_{i=1}^{j} w_i \ge \frac{W}{2}. \tag{4}
+
+Why does the median location correspond to the optimal location? From any EF location, take a small step of size \delta in either direction. Every EF behind the new facility becomes \delta farther away; every point ahead of it becomes \delta closer. The step is worth taking whenever more weight lies ahead than behind. Stepping toward the heavier side repeatedly, the process stops precisely when neither side holds more than half the total weight: the median location. That stopping condition is exactly the test in Eq. 4: at the first EF whose running total reaches W/2, the weight strictly behind is less than half, or an earlier EF would have been the first to reach it, and the weight strictly ahead is at most half, since the running total already accounts for the rest. Although it is unlikely, it is possible that the total reaches exactly W/2 at EF_j; in this case, a step in either direction trades equal weight against equal weight: every point from EF_j to the next unvisited facility EF_k is equally good, so the optimum is the whole interval between EF_j and EF_k rather than the single point at EF_j. In the objective function, this corresponds to a flat segment rather than a corner point.
+
+A separate and more general result is the Majority Theorem: if any single EF holds at least half of the total weight, the NF goes there. The theorem is true for all minisum problems with metric distances, whatever the number of dimensions, so it is a property neither of the line nor of the median procedure, and it is worth applying as a first check before any other means of determining the location is tried.
 
 Figure 7: Total weighted-distance cost for four facilities on a line, with the net slope marked on each segment. Each facility adds a V-shaped weighted distance, so the sum is piecewise-linear with corners at the facilities; the slope increases from left to right, and the minimum is the facility at which it first turns non-negative, here facility 2.
 
-The reason the rule works can be seen in the total-cost curve (Fig. 7). Each facility contributes a V-shaped weighted distance, and their sum is a piecewise-linear curve whose corners fall exactly at the existing facilities, so the lowest point is always one of them; there is never a reason to look between the facilities. It is also why only the order of the facilities matters, not their coordinates: the procedure never measures a distance, it only sorts the facilities and adds weights until half the total is reached. One consequence is worth pausing on. Because a coordinate is never used, the answer is completely insensitive to how far away a facility sits. Take the westernmost city in the example below and move it from the mountains all the way to Nashville, or to California; as long as its weight is unchanged and it stays the westernmost, the optimal location does not shift at all.
+The reason the median location works can be seen in the total-cost curve (Fig. 7), whose net slope on each segment is the weight behind the location less the weight ahead of it. Each facility contributes a V-shaped weighted distance, and their sum is a piecewise-linear curve whose corners fall exactly at the existing facilities, so the lowest point is always one of them; there is never a reason to look between the facilities. It is also why only the order of the facilities matters, not their coordinates: the procedure never measures a distance, it only sorts the facilities and adds weights until half the total is reached. One consequence is worth pausing on. Because a coordinate is never used, the answer is completely insensitive to how far away a facility sits. Take the westernmost city in the example below and move it from the mountains all the way to Nashville, or to California; as long as its weight is unchanged and it stays the westernmost, the optimal location does not shift at all.
 
 The procedure is easiest to see on a real corridor.
 
@@ -360,7 +364,7 @@ Durham, once the cities are in geographic order. Summing the alphabetical list a
 
 The same procedure reaches into two dimensions whenever distance is measured rectilinearly, as the sum of the horizontal and vertical displacements rather than the straight-line distance. Rectilinear distance is the natural model inside a facility, where a worker moving between departments follows the aisles and turns at right angles instead of cutting across the floor. Because a rectilinear distance is the sum of an x-distance and a y-distance, the two axes do not interact, and the two-dimensional problem separates into two independent one-dimensional problems: solve for the best x by the median procedure, solve for the best y the same way, and combine the two.
 
-Example 2: Rectilinear location in two dimensions
+Example 2: Rectilinear location in the plane
 
 A snack machine will be placed on a factory floor to serve eight departments (Fig. 9). The number of trips per shift is 19, 53, 82, 42, 9, 8, 39, and 6 for departments 1 through 8, located at (5,70), (70,95), (5,25), (15,60), (60,95), (15,25), (60,15), and (90,60). Assuming rectilinear travel, determine the minisum location.
 
@@ -374,7 +378,7 @@ x^\star = 15, a single value; y^\star anywhere from 25 to 60. Any point on that 
 
 The rectilinear method is useful even when the true distances are not rectilinear at all, but great-circle distances across the curved surface of the earth, as long as only a rough location is needed.
 
-Example 3: Rectilinear approximation to great-circle distance
+Example 3: Approximating great-circle distance
 
 A distribution center will serve six customers, shipping 25, 42, 24, 10, 24, and 11 truckloads per year to Raleigh, NC; Atlanta, GA; Louisville, KY; Greenville, SC; Richmond, VA; and Savannah, GA, at (36°N, 79°W), (34°N, 84°W), (38°N, 86°W), (35°N, 82°W), (38°N, 77°W), and (32°N, 81°W). Find an approximate minisum location by treating latitude and longitude as rectilinear coordinates.
 
@@ -423,7 +427,7 @@ assumptions:
 (a) the facility is undesirable, so the aim is to stay as far as possible from the nearest existing facility;
 (b) the facility is confined to a bounded region, without which the problem has no finite answer.
 
-Model 10: Maximin (obnoxious-facility) location
+Model 10: Maximin location
 
 Figure 11: Minimax (left) and maximin (right) location for the same six existing facilities. The minimax optimum lies at the midpoint of the two farthest facilities (4 and 5), the center of the smallest circle covering all of them; the maximin optimum, confined to a bounded region, is pushed to the corner farthest from every facility.
 
@@ -459,7 +463,7 @@ Three of the five nonlinear forms have appeared in this lecture: the center of g
 R. L. Ackoff, Redesigning the Future: A Systems Approach to Societal Problems (New York: John Wiley & Sons, 1974), 8.↩︎
 -
 
-Original figure for ISE 754. Base geography (coastline, state boundaries, Great Lakes) is from Natural Earth via GeoMakie (public domain); the Appalachian ridge, the fall line, and the river courses are drawn schematically to highlight the features named in the text.↩︎
+Base geography (coastline, state boundaries, Great Lakes) is from Natural Earth via GeoMakie (public domain); the Appalachian ridge, the fall line, and the river courses are drawn schematically to highlight the features named in the text.↩︎
 -
 
 Before Raleigh, the General Assembly had no permanent home, meeting in turn at New Bern, Hillsborough, Fayetteville, and Tarboro. In 1788 a convention resolved to fix the seat of government centrally, within ten miles of Isaac Hunter’s plantation in Wake County, with Fayetteville the chief rival; rather than adopt an existing town, commissioners laid out a new capital there on land bought from Joel Lane in 1792. “Capitals, Colonial and State,” NCpedia (State Library of North Carolina), https://www.ncpedia.org/capitals-colonial-and-state (accessed July 2026).↩︎

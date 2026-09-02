@@ -28,7 +28,7 @@ Getting through this course was once like building an airplane, with the whole s
 
 Why We Created Julia
 
-We are greedy: we want more. We want a language that’s open source, with a liberal license. We want the speed of C with the dynamism of Ruby. We want a language that’s homoiconic, with true macros like Lisp, but with obvious, familiar mathematical notation like Matlab. We want something as usable for general programming as Python, as easy for statistics as R, as natural for string processing as Perl, as powerful for linear algebra as Matlab, as good at gluing programs together as the shell. Something that is dirt simple to learn, yet keeps the most serious hackers happy. We want it interactive and we want it compiled.
+We are greedy: we want more. We want a language that is open source, with a liberal license. We want the speed of C with the dynamism of Ruby. We want a language that’s homoiconic, with true macros like Lisp, but with obvious, familiar mathematical notation like Matlab. We want something as usable for general programming as Python, as easy for statistics as R, as natural for string processing as Perl, as powerful for linear algebra as Matlab, as good at gluing programs together as the shell. Something that is dirt simple to learn, yet keeps the most serious hackers happy. We want it interactive and we want it compiled.
 
 (Did we mention it should be as fast as C?)
 
@@ -56,7 +56,7 @@ Once the menus feel familiar, these are quicker. With the cursor in the editor:
 - Alt+Enter runs the whole cell.
 - Alt+Shift+Enter runs the cell and moves to the next one.
 
-NoteThe session panel and package mode
+NoteSession panel and package mode
 
 The panel below the editor is a full Julia REPL, the same prompt a terminal would give. Toggle a plain terminal with Ctrl+** whenever one is needed. Typing **]** at thejulia>prompt switches to the package manager (the prompt turns topkg>`), and Backspace** returns to Julia. The next section uses package mode to get class-ready.
 
@@ -293,7 +293,7 @@ charge = 50 .* wt = [600, 250, 900, 350, 450]
 heavy = wt[wt .> 10] = [12, 18]
 ```
 
-The charges are [600, 250, 900, 350, 450], and two shipments exceed 10 ton: 12 and 18.
+The charges are [600, 250, 900, 350, 450], and 2 shipments exceed 10 ton: [12, 18].
 
 ### 1.6 Tuples
 
@@ -526,7 +526,7 @@ lines draws f over the range xrng; the axis = (...) keyword sets the title and a
 
 Figure 2: A line plot drawn with a single lines call.
 
-NoteThe Julia plotting ecosystem
+NoteJulia plotting ecosystem
 
 lines here comes from Makie, a full plotting system for Julia. Makie has several backends: CairoMakie renders static, publication-quality images (PNG, SVG, PDF) and is what this course uses for figures on the page; GLMakie opens fast interactive windows; WGLMakie targets the browser. A popular alternative family is Plots.jl, which wraps several plotting libraries behind one simpler syntax. For this course, CairoMakie is all that is needed.
 
@@ -542,7 +542,7 @@ Driving is not the whole of it. This course asks not only that the tool be steer
 - The engine (next-token prediction): read the tokens so far, guess the next, repeat.
 - The steering wheel (the context window): the tokens the model can see right now.
 
-### 2.1 The engine: next-token prediction
+### 2.1 Engine: next-token prediction
 
 Strip everything away and a language model does one small thing: it reads the tokens in front of it, predicts the most likely next one, adds it to the end, and does the whole thing again. A token is a chunk of text, roughly three quarters of a word, and the tokens the model can see at this moment are its context window, the whole of its working memory for the task.
 
@@ -712,13 +712,13 @@ After training, the tokens have pulled apart into a cargo cluster and a place cl
 
 It is worth seeing where the straight line in Fig. 6 comes from, since the model only ever computed scores. The model predicts go for any input whose go score beats its wait score, and wait otherwise; the border between the two verdicts, where the scores tie, is a straight line because each score is a flat weighted sum of the coordinates. Training works both ends at once: it slides the token points until the two classes pull apart, and it swings that boundary until the go words sit on one side and the wait words on the other.
 
-Figure 6: The tokens start at random points (left); training slides them into a cargo cluster and a place cluster and settles the boundary, the line where the go and wait scores tie, between them (right). Fig. 7 magnifies the cargo cluster to show its internal structure.
+Figure 6: The tokens start at random points (left); training slides them into a cargo cluster and a place cluster and determines the boundary, the line where the go and wait scores tie, between them (right). Fig. 7 magnifies the cargo cluster to show its internal structure.
 
 Notice what made one layer enough here. With the embeddings free to move, the model can place each token wherever it likes, and when a single token decides the next, that freedom is the entire solution: arrange the points, draw one line, and every case is covered, with nothing left for a deeper network to do. That is the condition Section 2.4 breaks.
 
 ### 2.4 When one line is not enough: a hidden layer
 
-The condition was that one context token settles the next on its own. It breaks the moment the next token turns on two context tokens together, on how they combine. Section 2.3 had no reason to tell the four cargo tokens apart, since each one alone called for go, so they piled into a single cluster. The harder task pulls them back apart along the two things that distinguish them: a vehicle is small (van) or big (rig), a load is small (parcel) or big (pallet), so we place the vehicle’s size on one axis and the load’s on the other and the four cargo tokens spread to the points of a cross. Each token’s neuron still computes a weighted sum (Fig. 5), so its boundary is one straight line, a hyperplane in higher dimensions, and the question is whether a single line can separate a pattern that lives only in how two tokens combine. Cast as classification, a single layer is a linear separator: its one straight boundary can divide only patterns that are linearly separable. The pattern here is not, which is what a second layer, with a nonlinearity between, is for.
+The condition was that one context token determines the next on its own. It breaks the moment the next token turns on two context tokens together, on how they combine. Section 2.3 had no reason to tell the four cargo tokens apart, since each one alone called for go, so they piled into a single cluster. The harder task pulls them back apart along the two things that distinguish them: a vehicle is small (van) or big (rig), a load is small (parcel) or big (pallet), so we place the vehicle’s size on one axis and the load’s on the other and the four cargo tokens spread to the points of a cross. Each token’s neuron still computes a weighted sum (Fig. 5), so its boundary is one straight line, a hyperplane in higher dimensions, and the question is whether a single line can separate a pattern that lives only in how two tokens combine. Cast as classification, a single layer is a linear separator: its one straight boundary can divide only patterns that are linearly separable. The pattern here is not, which is what a second layer, with a nonlinearity between, is for.
 
 The context is now a pair, a vehicle and a load, and the model sees the two together as the sum of their points. The next token is go when the sizes match, since the load fits and the vehicle is well used, and wait when they do not: van parcel and rig pallet go, while van pallet and rig parcel wait. Summing each pair lands the two matches at one diagonal pair of corners, (-1,-1) and (1,1), and the two mismatches at the other, (-1,1) and (1,-1), so no single line separates them, as the left of Fig. 7 shows. This is the exclusive-or pattern, the signature of a decision that turns on how two tokens combine rather than on either one alone.
 
@@ -734,7 +734,7 @@ an S-shaped function that squeezes any value into the range 0 to 1. Being nonlin
 
 The layer this allows in the middle is a hidden layer, and it reaches the combination by a route sliding the points cannot. Each hidden neuron makes its own cut and reports, softly, which side a case falls on, so every case is re-described by those reports. That re-description is a learned representation, the same kind the embeddings were, now built in the middle of the network instead of stored in a table. Training shapes the cuts until, in the new representation, the matches and mismatches are split by one final boundary, which is what the right of Fig. 7 shows: each case re-plotted into a layout one line can divide. The output is still a softmax with the cross-entropy of Section 2.3, so the error is still p - y. Fig. 8 draws that network: two inputs, a hidden layer of three units, and two outputs.
 
-Figure 8: The hidden-layer network of Example 6: two inputs, three sigmoid units, two outputs, with every connection a weight to be learned.
+Figure 8: The hidden-layer network: two inputs, three sigmoid units, two outputs, with every connection a weight to be learned.
 
 Example 6: A hidden layer learns the harder corpus
 
@@ -787,7 +787,7 @@ The two output rows land at \approx [1,\,1,\,0,\,0] and \approx [0,\,0,\,1,\,1]:
 
 Nothing in either network is concealed: arrays, a loop, and arithmetic that move points until they fit, then read off the most likely next token. Every line in Fig. 8 is a weight that training sets, and a real model is the same kind of machine with billions of them. What it cannot do, though, is escape the shape of what we built here: a fixed window of exactly two tokens, in fixed roles, with the rule frozen into the weights. It has to be told which token is the vehicle and which the load; what it cannot do is work out for itself which tokens belong together. That is the third rung, and the subject of Section 2.5.
 
-### 2.5 When the roles aren’t fixed: attention
+### 2.5 When the roles are not fixed: attention
 
 Attention is the operation that lets each token gather meaning from the others before the readout of Section 2.3 runs; it is the third and last rung.
 
@@ -1016,7 +1016,7 @@ One rule governs every check that follows: independent and cheap. Re-reading the
 
 The lecture’s epigraph names the stakes; meeting them means holding both ends of the workflow: understanding reasonable objectives and practical constraints in front, and verifying the results behind. The analysis and the computing do not go away.
 
-### 3.2 The nine checks
+### 3.2 Nine checks
 
 The checks come in three families of three, ordered by the effort they cost. Screens run in seconds, on every result. When a result is used, feeding a next step, one expectation is added. When a result is signed, submitted or relied on by someone else, one confirmation is added. Every validation ends in a verdict: accept, reject, or escalate to a better check. Never a feeling.
 
@@ -1104,7 +1104,7 @@ Units, on Ex. 3, commuting. One-way times arrive in minutes, the month carries t
 
 Bounds, on Ex. 1, the McDonald’s count. The estimate of about 16,017 stores rests on 18.7 orders per person per year, which is 15.4 million orders a day against a population of 300,000,000: one order per 19.5 people per day. The hard limit is one order per person per day, since nobody in the model eats more often than that, and the estimate sits a factor of about 20 inside it. Verdict: accept. A limit that is never approached still earns its keep: the same check rejects the answer outright if the bracket is misread by one word, which is worked below.
 
-Assumptions, on Ex. 1. The lecture states its own fine print: the estimate treats the chain as having reached market saturation, so the whole population counts as the customer base. That is what licenses multiplying by the whole 300,000,000 rather than by some smaller served fraction. Read against 2013 the assumption holds; read against a chain still expanding it would not, and the same formula would overstate. Verdict: accept, with the assumption named. A formula whose preconditions go unread is the spherical cow of Sec. 3.2.
+Assumptions, on Ex. 1. The lecture states its own fine print: the estimate treats the chain as having reached market saturation, so the whole population counts as the customer base. That is what justifies multiplying by the whole 300,000,000 rather than by some smaller served fraction. Read against 2013 the assumption holds; read against a chain still expanding it would not, and the same formula would overstate. Verdict: accept, with the assumption named. A formula whose preconditions go unread is the spherical cow of Sec. 3.2.
 
 ##### Expectations
 
@@ -1151,7 +1151,7 @@ Ex. 2 is the one to remember. Its reasoning was careful, its arithmetic was soun
 
 The nine checks share a limitation: they are point validations. Each passes or fails a single result, and a failure says something is wrong without saying where, or how to fix it.
 
-The remedy is a rule about the form an analysis arrives in. For an analysis that matters, the assistant is asked to deliver a script that produces the result when run: Julia in this course, though the language is not the point. Left to itself, an agent works through a chain of tool calls that scroll away as they run; a script is the entire analysis standing still in one inspectable artifact. The result alone is a number; the script is the analysis. The order matters as much as the form: the script is the path through which the work happens, and the result comes from running it. A script written after the fact, reconstructing work already done through tool calls, is a transcript dressed up as an artifact.
+The remedy is a rule about the form an analysis arrives in. For an analysis that matters, the assistant is asked to deliver a script that produces the result when run: Julia in this course, though the language is not the point. Left to itself, an agent runs a chain of tool calls that scroll away as they run; a script is the entire analysis standing still in one inspectable artifact. The result alone is a number; the script is the analysis. The order matters as much as the form: the script is the path through which the work happens, and the result comes from running it. A script written after the fact, reconstructing work already done through tool calls, is a transcript dressed up as an artifact.
 
 The difference is easiest to see side by side. Consider a small statistical task: “Here is shipments.csv. What is the median shipment weight, and what fraction of shipments exceed 10 tons?” A .csv file (comma-separated values) is plain text holding a table: one row per line, commas between the fields, and a first line naming the columns. It is the simplest and most common carrier of tabular data, and this one is small enough to print in full:
 
@@ -1228,7 +1228,7 @@ The difference shows in the request itself. A first attempt usually looks like t
 
 Find the best location for the warehouse.
 
-Nothing in it is wrong, and nothing in it is decidable. Best by what measure, among which candidate sites, serving what demand, weighted how, with distance measured how, returning what. The assistant will settle all of it, silently and plausibly, because it must produce something.
+Nothing in it is wrong, and nothing in it is decidable. Best by what measure, among which candidate sites, serving what demand, weighted how, with distance measured how, returning what. The assistant will determine all of it, silently and plausibly, because it must produce something.
 
 The remedy is not a longer sentence. It is a form, and it does not go in the chat: the model is written to a file, and the prompt points at the file.
 

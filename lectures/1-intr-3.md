@@ -17,7 +17,7 @@ Companion script
 
 1-intr-3.jl, runnable Julia extracted from the lecture’s code blocks. Run its first cell once to install the course packages at their pinned versions and get class-ready.
 
-Lecture 1.1 built models with a small vocabulary that separated two things you do with one: describe a system, or prescribe a change to it. Used descriptively, a model predicts how a given solution will perform; used prescriptively, it searches across solutions for a good one. This lecture is the descriptive side, performance estimation: given a system, real or proposed, predict how it will operate. The prescriptive side, optimization, comes later, and depends on this one, you cannot search over designs until you can evaluate a design.
+Lecture 1.1 built models with a small vocabulary that separated two things a model does: describe a system, or prescribe a change to it. Used descriptively, a model predicts how a given solution will perform; used prescriptively, it searches across solutions for a good one. This lecture is the descriptive side, performance estimation: given a system, real or proposed, predict how it will operate. The prescriptive side, optimization, comes later, and depends on this one, no search over designs is possible until a design can be evaluated.
 
 Lecture 1.1 also estimated parameters at different levels of effort: level 0, guesstimation, brackets an unknown with a quick low and high; level 1, mean-value analysis, works with averages; level 2, nonlinear models, brings in variability and more structure. Performance estimation uses the same levels, but what it estimates is now a measure of how the whole system operates: its cost, its profitability, its throughput, its cycle time, the work waiting in it, or whatever the decision at hand turns on. Any level can produce such an estimate; the level sets only how faithfully the model represents the system, and so how accurate the estimate is. A guesstimate or a linear, average-based model is often enough. But some systems are governed by their bottlenecks and their variability rather than their averages. Queues form from variation even when average capacity looks ample, and a line is paced by its tightest constraint. There, a level-2 model, nonlinear and variability-aware, represents the system far better. The cycle-time estimate developed later in this lecture is one such model. One rung higher, level 3, simulation, also makes its first appearance in this lecture (Sec. 7): where interactions grow too complex for any formula, the system is played out event by event instead.
 
@@ -27,7 +27,7 @@ Two approaches run through the lecture. When a system resists a direct model, it
 
 Bracketing is the first and most general way to estimate a system’s performance, and it needs no detailed model. For many systems that resist a direct model, two extreme cases are each easy to model. Perfect control, the most orderly the system could run, has no variability and gives the best-case (lower) bound. No control, fully random behavior, is the “totally random” case (a Poisson process, Sec. 4) and gives a practical worst-case (upper) bound. A single estimate then follows from the geometric mean of the two, the same lower-bound/upper-bound move used for a single parameter in Guesstimation (Ex. 1 in Lecture 1.1), now applied to whole-system performance. A real system sits between the extremes, and the geometric mean places the estimate there. (Genuinely bad control, which actively bunches or batches work, can be worse even than no control, so “no control” is a practical upper bound, not an absolute one.) This is a general-purpose failsafe; it has rescued many systems that would otherwise be almost impossible to model.
 
-The waiting time for a bus is the canonical instance. The headway is the time between consecutive buses. Under perfect control the buses run on an evenly spaced schedule, so a passenger arriving at a random moment waits, on average, half the headway. Under no control the buses arrive at random (a Poisson process, Sec. 4), and the average wait is the full headway, not half. The reason is the memorylessness of random arrivals: however long you have already waited, the expected time to the next bus is still a full average headway; equivalently, a passenger is more likely to arrive during a long gap than a short one, so the long gaps dominate the average wait.
+The waiting time for a bus is the canonical instance. The headway is the time between consecutive buses. Under perfect control the buses run on an evenly spaced schedule, so a passenger arriving at a random moment waits, on average, half the headway. Under no control the buses arrive at random (a Poisson process, Sec. 4), and the average wait is the full headway, not half. The reason is the memorylessness of random arrivals: however long the wait has already lasted, the expected time to the next bus is still a full average headway; equivalently, a passenger is more likely to arrive during a long gap than a short one, so the long gaps dominate the average wait.
 
 Example 1: Waiting time for a bus
 
@@ -45,7 +45,7 @@ Perfect control is not merely hypothetical. A campus trolley system developed by
 
 Another way of viewing logistics engineering is that it involves the design and operation of a logistics system, which is itself a type of production system. From this perspective, manufacturing, service, and logistics systems are all different types of production systems:
 - Manufacturing systems: produce a good; can own/control (inanimate) thing → inventory possible; provide form utility.
-- Service systems: produce a service; don’t own the person or thing → inventory not possible; provide general work utility.
+- Service systems: produce a service; do not own the person or thing → inventory not possible; provide general work utility.
 - Logistics systems: provide time/place utility; support manufacturing and service systems.
 
 Given the design of a good/service and process, production system design involves determining the production capacity and logistics needed to actually provide the good or service. What makes production-system design hard:
@@ -74,19 +74,19 @@ The production system in Fig. 1 is described by a set of rates (all in units q/t
 
 r_e
 
-effective production/service rate, the capacity of the production system
+= effective production/service rate, the capacity of the production system
 
 r_a
 
-input (arrival) rate of work \left\{\begin{array}{l}\text{raw material, for goods production}\\\text{accepted demand, for a service system}\end{array}\right.
+= input (arrival) rate of work \left\{\begin{array}{l}\text{raw material, for goods production}\\\text{accepted demand, for a service system}\end{array}\right.
 
 r_d
 
-departure rate of demand satisfied by the production system
+= departure rate of demand satisfied by the production system
 
 r_f
 
-offered demand, the rate of work presented to the system.
+= offered demand, the rate of work presented to the system.
 
 These rates satisfy r_a \ge r_d, with r_a = r_d if there is no yield loss (true for most service systems); the shortfall r_a - r_d is the yield loss, leaving the system as the scrap of Fig. 1. When the input is controlled, as in most of what follows, the system admits all offered demand and r_f = r_a; but offered demand can exceed what the system is able to admit, for example when raw material is limited, and then a decision arises over how much of it to take in (r_f \ge r_a), one left to later topics.5
 
@@ -100,15 +100,17 @@ where
 
 TH
 
-throughput = average output of a production system per time period (e.g., units per hour)
+= throughput
 
 WIP
 
-work-in-process = average number of units of product in a production system
+= work-in-process
 
 CT
 
-cycle time = average time each unit of product is in a production system.
+= cycle time.
+
+Each is an average over a production system: throughput is its output per time period, in units per hour or any other rate; work-in-process is the number of units of product it holds; and cycle time is the time each unit spends in it.
 
 For a serial production system or routing, WIP is the inventory between the start and end points of the routing and CT is the average time from release of a job at the beginning of the routing until it reaches an inventory point at the end of the routing. Fig. 2 shows a graphical depiction of Little’s Law,6 where the throughput corresponds to the slope of the lines representing the cumulative number of arrivals and departures.
 
@@ -134,7 +136,7 @@ TH = \frac{WIP}{CT} = \frac{360}{9} = 40 \text{ graduates per semester}.
 
 ≈ 40 graduates per semester
 
-Stock-vs-flow distinction. Both examples are the same statement about a stock and a flow. The work in process is a stock, the quantity accumulated inside a system’s boundary, and the throughput is a flow, the rate at which units cross that boundary. In Fig. 2 the flow is the slope of the cumulative curves and the stock is the vertical gap between them. Like water in a bathtub, a stock rises when its inflow outruns its outflow and holds steady only when the two balance, the steady state Little’s Law requires. Read this way, WIP = TH \times CT is the general identity stock = flow × time in system, and it reaches well beyond a factory floor: in Example 3 the students are the stock and the graduates per semester the flow. Little’s Law holds, in fact, for almost any system in steady state, under very weak assumptions.7
+Stock-vs-flow distinction. Both examples are the same statement about a stock and a flow. The work in process is a stock, the quantity accumulated inside a system’s boundary, and the throughput is a flow, the rate at which units cross that boundary. In Fig. 2 the flow is the slope of the cumulative curves and the stock is the vertical gap between them. Like water in a bathtub, a stock rises when its inflow outruns its outflow and holds steady only when the two balance, the steady state Little’s Law requires. Read this way, WIP = TH \times CT is the general identity stock = flow × time in system, and it reaches well beyond a factory floor: in Ex. 3 the students are the stock and the graduates per semester the flow. Little’s Law holds, in fact, for almost any system in steady state, under very weak assumptions.7
 
 To find where it applies, look for three things:
 - A boundary, a system that units enter and later leave.
@@ -153,7 +155,7 @@ where \sigma is the standard deviation of the process, t its mean, and \sigma^2 
 - c^2 = 0: deterministic / exactly spaced (best case, lower bound);
 - c^2 < 0.75: low variability;
 - 0.75 \le c^2 < 1.33: moderate variability;
-- c^2 = 1: Poisson, i.e. totally random (practical worst case, upper bound);
+- c^2 = 1: Poisson, i.e., totally random (practical worst case, upper bound);
 - c^2 \ge 1.33: high variability (bad control).
 
 All three arrival streams in Fig. 3 have the same rate of 10 per hour; they differ only in their SCV.
@@ -204,39 +206,41 @@ where
 
 r_a
 
-arrival rate to workstation
+= arrival rate to workstation
 
 t_0
 
-natural mean process time
+= natural mean process time
 
 A
 
-\text{MTTF}/(\text{MTTF}+\text{MTTR}) = availability
+= \text{MTTF}/(\text{MTTF}+\text{MTTR}), availability
 
 t_e
 
-t_0/A = effective mean process time with failures (preemptive outages, breakdowns that can strike while a job is in process, not only between jobs)
+= t_0/A, effective mean process time with failures
 
 H
 
-hours of operation
+= hours of operation
 
 m
 
-number of identical machines installed (m \ge m_{\min})
+= number of identical machines installed (m \ge m_{\min})
 
 r_e
 
-m/t_e = service rate (effective capacity) of the workstation
+= m/t_e, service rate (effective capacity)
 
 \text{MTTF}
 
-mean time to failure
+= mean time to failure
 
 \text{MTTR}
 
-mean time to repair.
+= mean time to repair.
+
+The failures folded into t_e are preemptive outages: breakdowns that can strike while a job is in process, not only between jobs.
 
 The word effective signals a deliberate device: two quantities folded into one workable number. Here the natural process time and the long-run availability are combined into a single effective process time.
 
@@ -304,23 +308,29 @@ where
 
 u
 
-r_a\,t_e / m = utilization
+= r_a\,t_e / m, utilization
 
 c_a^2
 
-\sigma_a^2 / t_a^2 = arrival SCV, with t_a = 1/r_a the mean time between arrivals (\sigma_a^2 = 0 for deterministic arrivals, \sigma_a^2 = t_a^2 for exponential)
+= \sigma_a^2 / t_a^2, arrival SCV
+
+t_a
+
+= 1/r_a, mean time between arrivals
 
 c_e^2
 
-effective process-time SCV with failures
+= effective process-time SCV with failures
 
 c_0^2
 
-\sigma_0^2 / t_0^2 = natural process-time SCV
+= \sigma_0^2 / t_0^2, natural process-time SCV
 
 c_r^2
 
-\sigma_r^2 / \text{MTTR}^2 = repair-time SCV.
+= \sigma_r^2 / \text{MTTR}^2, repair-time SCV.
+
+For the arrival SCV, \sigma_a^2 = 0 for deterministic arrivals and \sigma_a^2 = t_a^2 for exponential ones.
 
 The single-machine form Eq. 6 is Kingman’s approximation, named for this lecture’s epigraph author; the m-machine results (Eq. 7, Eq. 8, Eq. 9) are further factory-physics formulas, quoted here rather than derived. These formulas are checked against a simulation in Sec. 7, where simulation is introduced as a modeling level in its own right.
 
@@ -387,7 +397,7 @@ With only m_{\min} = 4 drivers the shop runs at u = 0.83, and a customer waits a
 
 ## 7. Level 3: Simulation
 
-The remaining rung of the Lecture 1.1 Sec. 4 ladder is level 3: simulation, and this is its first appearance in the course. A simulation model does not solve a system; it plays the system out, with random draws standing in for whatever the model treats as random. On the ladder, level 3 is the tool for complex interactions, behavior beyond the reach of any closed-form formula. It is equally the tool for behavior that never settles: the queueing formulas above are all long-run averages, and a system that never leaves its start-up transient has no closed-form estimate at all, so simulation is the only recourse (Sec. 8). It is introduced here on problems the earlier levels have already solved, deliberately: a simulation checked against a known answer can then be trusted on questions that have none.
+The remaining rung of the Lecture 1.1 Sec. 4 ladder is level 3: simulation, and this is its first appearance in the course. A simulation model does not solve a system; it plays the system out, with random draws standing in for whatever the model treats as random. On the ladder, level 3 is the tool for complex interactions, behavior beyond the reach of any closed-form formula. It is equally the tool for behavior that never settles down: the queueing formulas above are all long-run averages, and a system that never leaves its start-up transient has no closed-form estimate at all, so simulation is the only recourse (Sec. 8). It is introduced here on problems the earlier levels have already solved, deliberately: a simulation checked against a known answer can then be trusted on questions that have none.
 
 The simplest form is Monte Carlo simulation: draw random samples and read statistics off them, with no clock and no system state. Model 1 generates the totally random arrivals of Sec. 4 by drawing each inter-arrival time as -\ln(U)/r_a from a uniform U, a use of inverse-transform sampling: inverting the exponential’s cumulative distribution turns independent uniforms into exponential gaps.
 
@@ -664,7 +674,7 @@ John D. C. Little and Stephen C. Graves, “Little’s Law,” in D. Chhajed and
 John D. Sterman, Business Dynamics: Systems Thinking and Modeling for a Complex World (Irwin/McGraw-Hill, 2000).↩︎
 -
 
-In Kendall’s notation A/B/c, the three fields are the interarrival-time distribution, the service-time distribution, and the number of servers: M is Markovian (exponential, i.e. Poisson arrivals), D is deterministic (constant), and G is general (any distribution). So G/G/1 is a single server with general arrivals and service, M/M/1 has exponential arrivals and service, and M/D/1 has exponential arrivals with deterministic service.↩︎
+In Kendall’s notation A/B/c, the three fields are the interarrival-time distribution, the service-time distribution, and the number of servers: M is Markovian (exponential, i.e., Poisson arrivals), D is deterministic (constant), and G is general (any distribution). So G/G/1 is a single server with general arrivals and service, M/M/1 has exponential arrivals and service, and M/D/1 has exponential arrivals with deterministic service.↩︎
 -
 
 The full form, including how competing approaches under one concept are labelled, is in the Model Format Reference.↩︎

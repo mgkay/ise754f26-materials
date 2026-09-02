@@ -31,7 +31,7 @@ end
 using Logjam, Optim, DataFrames
 
 # Sec. 2. Procurement and distribution
-# Example 1: Plant location with procurement and distribution costs
+# Example 1: Plant location along I-40
 ## Example 1(a): From the bill of material to the monetary weights
 # Determine each existing facility's monetary weight, outbound from the
 # demands and inbound through the bill of material.
@@ -41,7 +41,8 @@ rout = 1.00              # $/ton-mi outbound
 wout = fout .* rout      # customer monetary weights
 BOM  = [2.0, 0.5]        # ton raw per ton out: Ashvl, Durham
 fin  = BOM .* sum(fout)  # inbound physical flows (ton/yr)
-win  = fin ./ 3          # supplier wts; r_in = $1/3 ($0.33)
+rin  = 1/3               # $/ton-mi inbound, stated as $0.33
+win  = fin .* rin        # supplier monetary weights
 @show wout fin win;
 
 ## Example 1(b): Locating the plant
@@ -60,7 +61,7 @@ city[findfirst(>=(W / 2), cumsum(w))]
 # physical and monetary.
 @show sum(fin) sum(fout) sum(win) sum(wout);  # Code block 3: totals agree
 
-# Sec. 3. The single-facility minisum
+# Sec. 3. Single-facility minisum
 ## Model: Single-facility minisum
 # Model: single-facility minisum
 function minisum(w, P, dist)
@@ -69,7 +70,7 @@ function minisum(w, P, dist)
     return optimize(TC, x0).minimizer
 end
 
-## Example 2
+## Example 2: Fermat's 1629 problem
 # Determine the minisum location for three facilities of equal weight at
 # $(1, 1)$, $(6, 1)$, and $(6, 5)$, under straight-line distance.
 # Code block 4: straight-line distance, the same as Logjam.d2
@@ -80,7 +81,7 @@ P = [1.0 1.0; 6.0 1.0; 6.0 5.0]     # three EFs, one per row
 w = [1.0, 1.0, 1.0]                 # equal weights
 Xᵒ = minisum(w, P, d2)              # the minisum location
 
-## Sec. 3. The single-facility minisum
+## Sec. 3. Single-facility minisum
 # Code block 5: the total-cost surface over the plane
 using CairoMakie
 xrng = 0:0.1:7
@@ -88,9 +89,10 @@ yrng = 0:0.1:6
 Z = [sum(d2([x, y], P[i, :]) for i in axes(P, 1))
      for x in xrng, y in yrng]
 fig = Figure(size = (760, 320))
-a1, _ = contour(fig[1, 1], xrng, yrng, Z; levels = 18)
+a1, _ = contour(fig[1, 1], xrng, yrng, Z;
+                levels = 18, color = :steelblue4)
 scatter!(a1, P[:, 1], P[:, 2]; color = :firebrick)
-surface(fig[1, 2], xrng, yrng, Z;
+surface(fig[1, 2], xrng, yrng, Z; colormap = Reverse(:viridis),
         axis = (type = Axis3, azimuth = pi / 4))
 fig
 # Code block 6: the path Nelder-Mead takes
@@ -149,7 +151,8 @@ sols = ["minisum" => Xᵒ,
                      x0).minimizer]
 fig = Figure(size = (760, 430))
 ax = Axis(fig[1, 1]; xlabel = "x", ylabel = "y",
-          aspect = DataAspect())
+          aspect = DataAspect(),
+          limits = (-1.3, 7.4, -0.4, 6.6))
 lines!(ax, [0, 7, 7, 0, 0], [0, 0, 6, 6, 0]; color = (:gray, 0.7),
        linestyle = :dash, label = "feasible region")
 scatter!(ax, P[:, 1], P[:, 2]; color = :firebrick, markersize = 13,
@@ -160,14 +163,14 @@ for ((nm, X), col, mk) in zip(sols,
     scatter!(ax, [X[1]], [X[2]]; color = col, marker = mk,
              markersize = 14, label = nm)
 end
-arrows2d!(ax, [3.2], [4.1], [-1.6], [0.8]; color = :purple)
+arrows2d!(ax, [3.2], [4.1], [-4.0], [2.0]; color = :purple)
 text!(ax, 3.35, 4.05; color = :purple, fontsize = 11,
       align = (:left, :top),
       text = "maximin, unbounded:\nruns off to infinity")
 Legend(fig[1, 2], ax; framevisible = false, labelsize = 11)
 fig
 
-## Sec. 5. Logjam: the course's logistics toolkit
+## Sec. 5. Logjam: the logistics toolkit
 # Code block 17: adding Logjam by URL
 using Pkg
 Pkg.add(url="https://github.com/mgkay/Logjam")
@@ -207,7 +210,7 @@ df[argmax(d), :NAME]                 # farthest city
 df[sortperm(d)[2:4], :NAME]  # Code block 24: three nearest, skip Raleigh
 
 # Sec. 6. Computing distances with Logjam
-## Example 3
+## Example 3: NC Zoo
 # Locate a single facility to minimize the total population-weighted
 # great-circle distance to every place in North Carolina.
 # Code block 25: every NC place, population-weighted
@@ -220,9 +223,45 @@ xyᵒ = optimize(TC, [w.LON, w.LAT]).minimizer
 # Code block 26: the place nearest that optimum
 d = dgc.([xyᵒ], pt)                      # optimum to each place
 df[argmin(d), :NAME], round(minimum(d))  # nearest place, miles
+# Code block 27: the optimum drawn against the ten largest cities
+using GeoMakie
+
+big  = sort(filter(r -> r.POP > 100_000, df), :POP, rev = true)
+nbig = nrow(big)
+zoo  = [-79.7645, 35.6295]           # NC Zoo, near Asheboro
+
+efc  = colorant"#d21f26"             # the cities
+optc = colorant"#b23a48"             # the optimum
+zooc = colorant"#1e8a3c"             # the zoo
+ink  = colorant"#252525"
+
+fig, ax = makemap(big.LON, big.LAT)
+scatter!(ax, big.LON, big.LAT; markersize = 11, color = efc)
+
+# labels auto-place, except Charlotte: its dot sits on the border
+ich = findfirst(==("Charlotte"), big.NAME)
+oth = setdiff(1:nbig, ich)
+text!(ax, big.LON[oth], big.LAT[oth]; text = big.NAME[oth],
+      color = ink, fontsize = 18,
+      aligntext(big.LON, big.LAT; offsetamt = 1, idx = oth)...)
+text!(ax, [big.LON[ich]], [big.LAT[ich]]; text = ["Charlotte"],
+      color = ink, fontsize = 18, align = (:right, :center),
+      offset = (-12, 4))
+
+scatter!(ax, [xyᵒ[1]], [xyᵒ[2]]; marker = :star5,
+         markersize = 20, color = optc)
+text!(ax, xyᵒ[1], xyᵒ[2]; text = L"x^*", color = optc,
+      fontsize = 20, align = (:left, :bottom), offset = (10, 6))
+
+scatter!(ax, [zoo[1]], [zoo[2]]; marker = :diamond, markersize = 13,
+         color = zooc)
+text!(ax, zoo[1], zoo[2]; text = "🦒 NC Zoo", color = zooc,
+      fontsize = 18, align = (:left, :top), offset = (8, -6),
+      font = "Segoe UI Emoji")
+fig
 
 ## Sec. 7. Circuity factors
-# Code block 27: three cities, road against great-circle
+# Code block 28: three cities, road against great-circle
 Detroit     = [-83.1022, 42.3830]   # (lon, lat), degrees
 Gainesville = [-82.3492, 29.6807]
 Memphis     = [-89.9666, 35.1090]
@@ -236,38 +275,38 @@ road = [1024.2, 710.8, 632.8]       # road network, mi
 g = road ./ gc
 
 ḡ = sum(g) / length(g)              # the region's factor
-# Code block 28: circuity for each pair
+# Code block 29: circuity for each pair
 prt(DataFrame(
     Pair = ["Detroit-Gainesville", "Detroit-Memphis",
             "Gainesville-Memphis"],
     GreatCircle = round.(gc, digits = 1),
     Road = road,
     g = round.(g, digits = 3)))
-# Code block 29: the estimate against a held-out pair
-gGH = 137.7 / 121.0                 # @fig-circuity-road, held out
+# Code block 30: the estimate against a held-out pair
+gGH = 137.7 / 121.0                 # road / great-circle, held out
 (held_out = round(gGH, digits = 3),
  estimate = round(ḡ, digits = 3),
  error_pct = round(100 * (gGH - ḡ) / gGH, digits = 1))
 
 # Sec. 7. Circuity factors
-## Example 4. Pricing an alternative location
+## Example 4: Price of staying in Cary
 # Determine the new-facility location serving existing facilities at
 # Detroit, Gainesville and Memphis, receiving 40, 25 and 35 truckloads
 # per year, and determine the increase in annual transport cost at
 # \$2.00 per loaded mile if the facility is instead placed at Cary,
 # North Carolina.
-# Code block 30: truckload weights and the annual cost
-P = permutedims(hcat(Detroit, Gainesville, Memphis))
+# Code block 31: truckload weights and the annual cost
+P = permutedims(hcat(Detroit, Gainesville, Memphis))  # lon/lat, blk 28
 wTL = [40.0, 25.0, 35.0]           # truckloads per year
 rate = 2.00                        # $ per loaded mile
 
 TCyr(xy) = rate * ḡ *
     sum(wTL[i] * dgc(xy, P[i, :]) for i in 1:3)
-# Code block 31: the optimum site
+# Code block 32: the optimum site
 c0 = wcentroid(P[:, 1], P[:, 2], wTL)
 xᵒ = Optim.minimizer(optimize(TCyr, [c0.LON, c0.LAT]))
 lonlat2loc(xᵒ, usplace()).desc
-# Code block 32: what an alternative site would cost
+# Code block 33: what an alternative site would cost
 Cary = [-78.8190, 35.7814]
 Δ = TCyr(Cary) - TCyr(xᵒ)
 prt(DataFrame(

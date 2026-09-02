@@ -40,18 +40,18 @@ A logistics study rarely stops at describing a system. The reason to build a mod
 - a model is a representation of the system, detailed enough to predict how it would perform;
 - a descriptive model computes a measure of performance with no preference about the outcome, and decides nothing (the guesstimation and mean-value models later in this lecture are of this kind, returning an estimate or an average);
 - a feasibility model determines unknowns that must satisfy stated conditions, with no preference among the answers that work;
-- an optimization model determines unknowns and adds a preference, an objective, and chooses the answer that performs best. Feasibility and optimization models both prescribe, since each settles something rather than only reporting on it; the distinction that does the daily work is the simpler one, whether a model needs an answer that works or the best one.
+- an optimization model determines unknowns and adds a preference, an objective, and chooses the answer that performs best. Feasibility and optimization models both prescribe, since each determines something rather than only reporting on it; the distinction that does the daily work is the simpler one, whether a model needs an answer that works or the best one.
 
 Whatever form a model eventually takes, it is written down with keywords, at most the five below, listed in the order they appear in the boxes that follow. A descriptive model uses only the last two. solve for: is what makes a model decide, and an objective is what makes a deciding model an optimization, so which of the first two lines appear is what tells the three kinds apart:
 - minimize (or maximize): the objective, the preference added to change the system rather than only describe it;
 - solve for: the unknowns the model determines, each with what values it may take;
 - subject to: the constraints, the conditions any acceptable solution must satisfy; a model with none writes none rather than dropping the line, since an unconstrained problem is a finding about it and not an omission;
-- return: the output of the model, as one thing: a measure of performance for a descriptive model, the settled decision for a model that decides;
+- return: the output of the model, as one thing: a measure of performance for a descriptive model, the decision determined for a model that decides;
 - assumptions: what the model takes as given about the world and its data.
 
 A constraint and an assumption are easy to confuse and do opposite work: a constraint restricts the solution (which answers the model may return), while an assumption restricts the world and its data (what the model takes as given about the setting).
 
-Building the representation is making a model; naming the unknowns and settling them is modeling. The first half is descriptive; the second half is where the decision is actually made.
+Building the representation is making a model; naming the unknowns and determining them is modeling. The first half is descriptive; the second half is where the decision is actually made.
 
 The vocabulary yields exactly three shapes. Stated with the keywords alone, they are, and the full form is set out in the Model Format Reference for when a model needs more than these five lines2:
 
@@ -169,7 +169,7 @@ Model 3: Operational vehicle routing
 
 An extra vehicle, with its driver, fuel, and capital, costs far more than the miles a tighter route would save, so the fleet is shrunk first and distance only breaks ties. This reverses the usual statement of the problem, in which distance is taken as the sole objective.
 
-These three models are stated only at the level of the decision each one makes. Later lectures attach the symbols, the data, and the Julia that turn a model into something you can run. How much detail a model needs, and how much effort solving it takes, is the subject of the next section.
+These three models are stated only at the level of the decision each one makes. Later lectures attach the symbols, the data, and the Julia that turn a model into something runnable. How much detail a model needs, and how much effort solving it takes, is the subject of the next section.
 
 ## 4. Levels of modeling
 
@@ -193,7 +193,7 @@ The first four levels are the course’s modeling toolkit, each developed where 
 
 ## 5. Level 0: Guesstimation
 
-Guesstimation can be used to estimate data or system performance for which there is no easy way to model. Rather than saying “I don’t have a clue,” It can be used to get an estimate at least within an order of magnitude of the correct answer. It is the failsafe modeling technique. An order-of-magnitude estimate is also the first check on any elaborate result. A complicated model, or an answer returned by an AI assistant, is judged plausible or suspect by comparing it against a quick, independent guess; a ballpark figure worked by hand is what reveals whether a machine-produced number is even in the right range. It is often hard to estimate a parameter X directly but easy to estimate reasonable lower and upper bounds (LB and UB). Since LB and UB are usually orders of magnitude apart, the arithmetic mean over-weights UB; the geometric mean is a logarithmic average and gives a more reasonable estimate:
+Guesstimation can be used to estimate data or system performance for which there is no easy way to model. Rather than saying “I don’t have a clue,” It can be used to get an estimate at least within an order of magnitude of the correct answer. It is the failsafe modeling technique. An order-of-magnitude estimate is also the first check on any elaborate result. A complicated model, or an answer returned by an AI assistant, is judged plausible or suspect by comparing it against a quick, independent guess; a ballpark figure solved by hand is what reveals whether a machine-produced number is even in the right range. It is often hard to estimate a parameter X directly but easy to estimate reasonable lower and upper bounds (LB and UB). Since LB and UB are usually orders of magnitude apart, the arithmetic mean over-weights UB; the geometric mean is a logarithmic average and gives a more reasonable estimate:
 
 \text{Geometric Mean} = \sqrt{\text{LB}\cdot\text{UB}}
 
@@ -297,7 +297,7 @@ For the five times 40, 40, 45, 75, 90: the average is 58 min, the median is 45 m
 
 Average 58 min, median 45 min, mode 40 min; \approx 38.67 hr/month commuting.
 
-Scalability of the mean: the mean lets you scale the total up or down for a different count n,
+Scalability of the mean: the mean scales the total up or down for a different count n,
 
 \bar{x} = \frac{\sum_{i=1}^{n} x_i}{n} \;\Rightarrow\; n\,\bar{x} = \sum_{i=1}^{n} x_i \;\Rightarrow\; n'\,\bar{x} \approx \sum_{i=1}^{n'} x_i .
 
@@ -370,7 +370,7 @@ Different objectives give different departure times, each encoding a different t
 - Leave for the worst case (90 min before): almost never late, but time is wasted on every ordinary day.
 - Leave to be on time a target fraction of days (say 95%): budget enough time to cover all but the slowest one-in-twenty mornings.
 
-Which objective is right boils down to a single question: how costly is it to be late? Being willing to run late one day a week is a very different standard from one day in twenty, and the two imply very different departure times. Settling it means weighing the cost of arriving late against the cost of arriving early and waiting, and the answer stays undecided until those costs are named.
+Which objective is right boils down to a single question: how costly is it to be late? Being willing to run late one day a week is a very different standard from one day in twenty, and the two imply very different departure times. Determining it means weighing the cost of arriving late against the cost of arriving early and waiting, and the answer stays undecided until those costs are named.
 
 Notice what the mean cannot do here. Mean value analysis knows only the average travel time; it says nothing about how often the trip runs long, which is exactly what a late-arrival objective turns on. The question needs the whole distribution of travel times and its tail, a richer stochastic model than a single average provides. That is the province of the nonlinear (level 2) and simulation (level 3) models of Lecture 1.3: mean value analysis is simply not the right tool for this problem.
 
@@ -430,7 +430,7 @@ Exact average round-trip distance = \tfrac{4}{3}R = 4 mi (vs. 3.46 mi from the g
 
 ## 7. Getting started: Claude Code and the toolchain
 
-### The course toolchain
+### Course toolchain
 
 Three open-source tools make up the course environment, each introduced in Lecture 1.2:
 - Julia, the computational language: fast like C++/Fortran, simple like Matlab/Python (Sec. 1).
@@ -457,7 +457,7 @@ Success: claude --version prints a number followed by (Claude Code). If it says 
 
 The Claude desktop app is a separate download and is not what is needed here. The two share one login, so having the app means being signed in already, but the command above is still required.10 On Windows, Git for Windows is recommended rather than required: with it Claude Code can use a Bash shell, and without it Claude Code uses PowerShell instead.11
 
-2. Let Claude Code install the rest. Everything else, Git, VS Code, its extensions, Julia at the pinned version, and the course packages, is installed by Claude Code working through a written procedure the course supplies. Follow SETUP.md, which is four short human steps; it detects what is already on the machine and installs only what is missing, so nothing is removed or reconfigured. It lives in the course materials repository, which the setup clones for you; nothing needs downloading by hand.
+2. Let Claude Code install the rest. Everything else, Git, VS Code, its extensions, Julia at the pinned version, and the course packages, is installed by Claude Code following a written procedure the course supplies. Follow SETUP.md, which is four short human steps; it detects what is already on the machine and installs only what is missing, so nothing is removed or reconfigured. It lives in the course materials repository, which the setup clones for you; nothing needs downloading by hand.
 
 Success: the last step runs a check of eleven things and prints READY, saving the output to ISE754/bootstrap-report.txt.
 

@@ -7,8 +7,7 @@ ISE 754: Logistics Engineering, Fall 2026
 
 Where to locate, whom to serve: two easy questions, one hard problem.
 
-New Julia packages used
-- GeoMakie is the geospatial extension of the Makie plotting ecosystem: it adds map projections and reference geography, such as coastlines and political boundaries from the Natural Earth dataset, so that data given in longitude and latitude is drawn on a correctly projected map rather than on a plain Cartesian axis.
+No new Julia packages used.
 
 New Logjam functions used
 -
@@ -33,70 +32,70 @@ Companion script
 
 In a multifacility location problem, the number of NFs to be located can either be specified or can be determined as part of the location procedure. When the number of NFs is specified, the allocation of EFs to NFs can either be given or determined as part of what is then termed a location–allocation problem. If the NF-to-EF allocations are given and there are no interactions between the NFs, then the multifacility problem reduces to a series of single-facility location problems. The location–allocation problem remains difficult even when there are no interactions between the NFs because of the need to determine the allocations.
 
-Locating distribution centers is the most common multifacility location problem, and in the terms just set out it is a location–allocation problem: the number of DCs is either specified or determined as part of the procedure, their allocation of customers is determined rather than given, and there are typically no interactions between the DCs themselves. Most facilities are sited against a long list of considerations, of which transport is only one, but a DC exists to move goods, so its location is close to a pure transport decision. Each customer is normally served by a single DC, and which one that is depends on where the DCs are, so the location and the allocation have to be settled together.
+Locating distribution centers is the most common multifacility location problem, and in the terms just set out it is a location–allocation problem: the number of DCs is either specified or determined as part of the procedure, their allocation of customers is determined rather than given, and there are typically no interactions between the DCs themselves. Most facilities are sited against a long list of considerations, of which transport is only one, but a DC exists to move goods, so its location is close to a pure transport decision. Each customer is normally served by a single DC, and which one that is depends on where the DCs are, so the location and the allocation have to be determined together.
 
 ## 1. Allocation
 
-Before any facility is moved, there is a smaller problem worth isolating: given where the facilities already are, which one serves each customer, and what does that cost? This is the allocation problem, and it is the inner step of everything that follows.
+Before any facility is moved, there is a smaller problem worth isolating: given where the NFs already are, which one serves each EF, and what does that cost? This is the allocation problem, and it is the inner step of everything that follows.
 
-What makes it an allocation problem is that a customer need not be served by every DC. Distribution centers carry duplicate product, so the sensible arrangement is for each to serve the customers nearest it. That is particular to distribution. Were the facilities suppliers instead, each customer would draw shipments from all of them, and no allocation would be left to decide.
+What makes it an allocation problem is that an EF need not be served by every NF. Where the NFs hold duplicate product, as distribution centers do, the sensible arrangement is for each to serve the EFs nearest it. That is a property of the application rather than of the model: were the NFs suppliers of different inputs instead, each EF would draw from all of them and no allocation would be left to decide.
 
-Figure 1: Allocation of four customers to two distribution centers. Before, every DC could reach every customer; after, each customer is served by the DC nearest it.
+Figure 1: Allocation of four EFs to two NFs. Before, every NF could reach every EF; after, each EF is served by the NF nearest it.
 
-Fig. 1 is the step itself: on the left every DC could reach every customer, and on the right each customer keeps only the link to the DC nearest it.
+Fig. 1 is the step itself: on the left every NF could reach every EF, and on the right each EF keeps only the link to the NF nearest it.
 
-minimize: total weighted distance from each customer to the distribution center that serves it
+minimize: total weighted distance from each EF to the NF that serves it
 
 solve for:
-(a) DC serving each customer, one of the n DCs for each of the m customers
+(a) NF serving each EF, one of the n NFs for each of the m EFs.
 
 subject to:
-(a) single sourcing: every customer is served by exactly one DC
+(a) single sourcing: every EF is served by exactly one NF.
 
-return: DC serving each customer, and the resulting total distance
+return: NF serving each EF, and the resulting total weighted distance
 
 assumptions:
-(a) DC locations are given and do not move;
-(b) DCs are uncapacitated, so nothing prevents a customer being served by its nearest one.
+(a) NF locations are given and do not move;
+(b) NFs are uncapacitated, so nothing prevents an EF being served by its nearest one.
 
-Model 1: Allocation to fixed distribution centers
+Model 1: Distance-based allocation
 
-Because the DCs are uncapacitated and nothing couples one customer’s choice to another’s, the model needs no search: each customer independently takes its nearest DC, and the formulation is a rule rather than an optimization.
+Because the NFs are uncapacitated and nothing couples one EF’s choice to another’s, the model needs no search: each EF independently takes its nearest NF, and the formulation is a rule rather than an optimization.
 
-Model 1 formulation: Allocation to fixed distribution centers
+Model 1 formulation: Distance-based allocation
 
-\begin{aligned} \alpha_j &= \operatorname*{arg\,min}_{i \in N} \; d_{ij}, &\quad& \forall\, j \in M\\[2pt] TD &= \sum_{j \in M} w_j \, d_{\alpha_j j} \end{aligned}
+\begin{aligned} \alpha_j &= \arg\min_{i \in N} \; d_{ij}, &\quad& \forall\, j \in M\\[2pt] TD &= \sum_{j \in M} w_j \, d_{\alpha_j j} \end{aligned}
 
-where:
+where
 
 N
 
-DCs, N = \{1, \dots, n\}
+= \{1, \dots, n\}, NFs
 
 M
 
-customers, M = \{1, \dots, m\}
+= \{1, \dots, m\}, EFs
 
 d_{ij}
 
-distance from DC i to customer j
+= distance from NF i to EF j
 
 w_j
 
-weight of customer j
+= weight of EF j
 
 \alpha_j
 
-index of DC serving customer j, allocation vector
+= index of NF serving EF j, allocation vector
 
 TD
 
-total weighted distance.
+= total weighted distance.
 
-Model 1 implementation: Allocation to fixed distribution centers
+Model 1 implementation: Distance-based allocation
 
 ```
-# Model: allocation to fixed distribution centers
+# Model: distance-based allocation
 function allocate(D, w)
 n, m = size(D)
 α = [argmin(c) for c in eachcol(D)]
@@ -109,44 +108,28 @@ end
 allocate (generic function with 1 method)
 ```
 
-The allocation is read down the columns: column j holds customer j’s distance to every DC, and the smallest entry names its server.
+The allocation is read down the columns: column j holds EF j’s distance to every NF, and the smallest entry names its server.
 
-Example 1. Two distribution centers, four customers
+Example 1: Two DCs serving four customers
 
-Determine the allocation and the total weekly distance for two DCs serving four customers with weights w = (2, 4, 6, 8).
+Determine the allocation and the total weekly distance for two DCs serving four customers with weights w = (2, 4, 6, 8), each representing the number of truckloads per week.
 
-```
-# Code block 1: two DCs and four customers, by hand
-w = [2, 4, 6, 8]                  # truckloads per week
-D = [ 10  20  30  40              # DC 1 to each customer
-45  35  25  15 ]            # DC 2 to each customer
-α = [argmin(c) for c in eachcol(D)]
-```
+w = \begin{bmatrix} 2 & 4 & 6 & 8 \end{bmatrix}, \qquad D = \begin{bmatrix} \fcolorbox{#d21f26}{#ffffff}{10} & \fcolorbox{#d21f26}{#ffffff}{20} & 30 & 40\\ 45 & 35 & \fcolorbox{#d21f26}{#ffffff}{25} & \fcolorbox{#d21f26}{#ffffff}{15} \end{bmatrix}
 
-```
-4-element Vector{Int64}:
-1
-1
-2
-2
-```
+Circling the smallest entry in each column of D makes the allocation: the row a circle sits in is the DC that serves that column’s customer. Customers 1 and 2 go to DC 1, customers 3 and 4 to DC 2. Weighting each circled distance by its customer’s truckloads and adding gives the total.
 
-Each column’s argmin returns the row index of its smallest entry, which is exactly the serving DC. Customers 1 and 2 go to DC 1, customers 3 and 4 to DC 2.
-
-```
-TD = sum(w[j] * D[α[j], j] for j in 1:length(w))  # Code block 2: the cost
-```
-
-```
-370
-```
+TD = 2(10) + 4(20) + 6(25) + 8(15) = 370
 
 TD = 370 truckload-miles per week.
 
-The implementation above is worth reading against the formulation directly above it, line for line. argmin over a column is \operatorname{arg\,min}_{i \in N} d_{ij}; the comprehension over eachcol(D) is the \forall\, j \in M; and sum(W .* D) is the sum over M. Running it on the four-customer instance reproduces the hand answer, which is the check worth making the first time an implementation is used.
+The implementation above is worth reading against the formulation directly above it, line for line. argmin over a column is \arg\min_{i \in N} d_{ij}; the comprehension over eachcol(D) is the \forall\, j \in M; and sum(W .* D) is the sum over M. Running it on the four-customer instance reproduces the hand answer, which is the check worth making the first time an implementation is used.
 
 ```
-α, TD = allocate(D, w)  # Code block 3: the same by the model
+# Code block 1: the same allocation by the model
+w = [2, 4, 6, 8]                  # truckloads per week
+D = [ 10  20  30  40              # DC 1 to each customer
+45  35  25  15 ]            # DC 2 to each customer
+α, TD = allocate(D, w)
 ```
 
 ```
@@ -163,14 +146,14 @@ Not because the matrix must be sparse. sparse is simply the clean way to place e
 
 ### At scale
 
-The same three lines run unchanged on a real instance.
+The same function runs unchanged on a real instance.
 
-Example 2. Two distribution centers for North Carolina
+Example 2: Charlotte and Raleigh DCs
 
 Determine the population-weighted total distance when the North Carolina cities above one hundred thousand people are each served by the nearer of two distribution centers at Charlotte and Raleigh, and determine the reduction from adding a third at Greensboro.
 
 ```
-# Code block 4: the Carolinas' larger cities
+# Code block 2: the Carolinas' larger cities
 df = filter(r -> r.STFIP == st2fips(:NC) &&
 r.POP > 100_000, usplace())
 select!(df, :NAME, :LON, :LAT, :POP)
@@ -197,37 +180,33 @@ Winston-Salem  -80.26  36.10  249,545
 The DCs are two rows of the same shape, so dists returns the 2 \times m great-circle distance matrix in one call.
 
 ```
-# Code block 5: two candidate DC sites
-ll(nm) = collect(filter(r -> r.NAME == nm,
+# Code block 3: two candidate DC sites
+name2lonlat(nm) = collect(filter(r -> r.NAME == nm,
 df)[1, [:LON, :LAT]])
-X = vcat(ll("Charlotte")', ll("Raleigh")')
+X = vcat(name2lonlat("Charlotte")', name2lonlat("Raleigh")')
 D = dists(X, P, :mi)
-α = [argmin(c) for c in eachcol(D)]
-n, m = size(D)
-TC2 = sum(sparse(α, 1:m, w, n, m) .* D)
+α, TC2 = allocate(D, w)
 ```
 
 ```
-8.004697649736136e7
+([2, 1, 1, 2, 2, 2, 1, 2, 2, 1], 8.004697649736136e7)
 ```
 
-Part b. Adding Greensboro
+Example 2(b): Adding Greensboro
 
 ```
-# Code block 6: adding a third DC
-X = vcat(X, ll("Greensboro")')
+# Code block 4: adding a third DC
+X = vcat(X, name2lonlat("Greensboro")')
 D = dists(X, P, :mi)
-α = [argmin(c) for c in eachcol(D)]
-n, m = size(D)
-TC3 = sum(sparse(α, 1:m, w, n, m) .* D)
+α, TC3 = allocate(D, w)
 ```
 
 ```
-4.133195732115901e7
+([2, 1, 1, 2, 2, 3, 3, 2, 2, 3], 4.133195732115901e7)
 ```
 
 ```
-# Code block 7: comparing two and three DCs
+# Code block 5: comparing two and three DCs
 prt(DataFrame(
 DCs = ["Charlotte, Raleigh",
 "Charlotte, Raleigh, Greensboro"],
@@ -243,7 +222,7 @@ Charlotte, Raleigh  80,046,976.50
 Charlotte, Raleigh, Greensboro  41,331,957.32      48.4%
 ```
 
-## 2. Types of multifacility location problems
+## 2. Types of multifacility problems
 
 The four cases set out at the start of this lecture differ in what the problem hands over and what it leaves to be found. Two of them are worth drawing, because the difference between them is the difference between a problem that is solved routinely and one that is not.
 
@@ -251,9 +230,13 @@ The four cases set out at the start of this lecture differ in what the problem h
 
 Fig. 2 is the whole network at once. Suppliers on one side and customers on the other are existing facilities at fixed locations. Between them sit new facilities of two kinds, manufacturing and distribution, and this time all of them are to be located: five unknowns rather than one. What makes it more than five separate problems is that the new facilities ship to each other.
 
-The extension from the single-facility case is mechanical. One new facility took a vector of monetary weights; n of them take a matrix W, with a row per new facility and a column per existing one. The interactions among the new facilities need a second matrix V, which is n \times n. Add a term for each and the objective is the single-facility objective with some extra baggage attached. The result is still convex, so it is still solvable; it is simply higher-dimensional, and a downhill search will work harder for it.
+The extension from the single-facility case is mechanical. One new facility took a vector of monetary weights; n of them take a matrix W, with a row per new facility and a column per existing one. The interactions among the new facilities need a second matrix V, which is n \times n. Add a term for each and the objective is the single-facility objective with some extra baggage attached. The result is still convex, so it is still solvable; it is simply higher-dimensional, which requires more computational effort.
 
 Figure 2: The general multifacility network: suppliers and customers fixed, both the manufacturing and the distribution facilities to be located, with flows running between the new facilities as well as out to the existing ones.
+
+A plus marks a flow the figure draws and a zero marks one it does not, so V and W are the figure written as two tables.
+
+V_{n \times n} = \begin{array}{c|ccccc} \text{NF-NF} & 1 & 2 & 3 & 4 & 5\\ \hline 1 & 0 & 0 & + & + & +\\ 2 & 0 & 0 & + & + & +\\ 3 & 0 & 0 & 0 & 0 & 0\\ 4 & 0 & 0 & 0 & 0 & 0\\ 5 & 0 & 0 & 0 & 0 & 0 \end{array} \qquad W_{n \times m} = \begin{array}{c|ccccccc} \text{NF-EF} & 1 & 2 & 3 & 4 & 5 & 6 & 7\\ \hline 1 & + & + & 0 & 0 & 0 & 0 & 0\\ 2 & 0 & + & + & 0 & 0 & 0 & 0\\ 3 & 0 & 0 & 0 & + & + & 0 & 0\\ 4 & 0 & 0 & 0 & 0 & + & + & 0\\ 5 & 0 & 0 & 0 & 0 & 0 & 0 & + \end{array}
 
 Writing n for the number of new facilities and m for the number of existing ones, with X the n \times d matrix of new-facility locations and P the m \times d matrix of existing ones, the objective is
 
@@ -263,17 +246,17 @@ where
 
 V_{n \times n}
 
-NF-NF weights, v_{jk} between new facilities j and k
+= NF-NF weights, v_{jk} between new facilities j and k
 
 W_{n \times m}
 
-NF-EF weights, w_{ji} between new facility j and existing facility i
+= NF-EF weights, w_{ji} between new facility j and existing facility i
 
 d
 
-number of coordinates a location carries, two for longitude and latitude.
+= number of coordinates a location carries.
 
-The first double sum is the only new thing, and it is what makes this one problem rather than n of them: move facility j and the cost of every link it has to another new facility moves with it.
+Here d = 2, for longitude and latitude. The first double sum is the only new thing, and it is what makes this one problem rather than n of them: move facility j and the cost of every link it has to another new facility moves with it.
 
 It is worth saying plainly how often this general problem gets solved. In thirty or forty years of consulting, never once. It is well developed as theory, and a graduate semester can be spent formulating it as a linear program, but no client has ever asked for manufacturing and distribution to be located together. The manufacturing sites are already there, and the distribution centers are located relative to them. Nor would anyone want them decided together: a plant costs orders of magnitude more than a distribution center, so it is sited on its own terms and the distribution follows.
 
@@ -289,78 +272,84 @@ One thing is assumed away in that figure, and it is the subject of the rest of t
 
 Figure 3: With the manufacturing sites given, they join the existing facilities and only the distribution centers remain to be located. Nothing flows between them, so the problem separates into one single-facility problem per center.
 
-Solving location and allocation together is where Sec. 4 goes. Before that, the interacting case is worth one more look. It is never solved in full, but part of it can be settled without solving anything, and that part answers a question the separable problem cannot even pose.
+Solving location and allocation together is where Sec. 4 goes. Before that, the interacting case is worth one more look. It is never solved in full, but part of it can be determined without solving anything, and that part answers a question the separable problem cannot even pose.
 
 ## 3. Co-locating operations
 
-Co-location answers the question about how it can be determined where different activities in a supply chain should be co-located, and when it is best to use transportation, when two operations and routing can be split between two locations. This is an important aspect of supply chain design that typically is not discussed in multifacility location, but the majority theorem gives a way of providing an answer.
+Co-location answers the question about how it can be determined where different activities in a supply chain should be co-located, and when it is best to use transportation, when two operations and routing can be split between two locations. The reason this is a problem is that raw materials are typically available at one set of locations, while finished goods are required at a different set of locations, and all of the intermediate processing operations between them can occur either at these locations or at other intermediate locations. This is an important aspect of supply chain design that typically is not discussed in multifacility location, but the majority theorem gives a way of providing an answer.
 
-### 3.1 The theorem
+### 3.1 Theorem
 
 The single-facility form is already familiar from 2.1. If one existing facility carries at least half of all the weight, no search is needed, because the optimum is at that facility:
 
 \text{Locate NF at EF}_j \text{ if } w_j \ge \frac{W}{2}, \quad \text{where } W = \sum_{i=1}^{m} w_i \tag{3}
 
-With several new facilities the same comparison is made row by row, against the weight in both matrices, and it does two different things. It can place a facility, as before. It can also co-locate two of them, which is the part with no single-facility analogue: it removes an unknown from the problem without locating it.
+With several new facilities the same comparison is made row by row, against the weight in both the W and the V matrices, and it does two different things. It can place a facility, as before. It can also co-locate two of them, which is the part with no single-facility analogue: it removes an unknown from the problem without locating it, because instead of having to determine locations for two facilities, only the location for the co-located facilities needs to be determined.
 
-The two rules alternate until neither fires, which is Model 2.
-
-settle: which new facilities must share a site, and which can be placed at an existing facility, without computing a single distance
+In Model 2 below, the two rules alternate until neither fires, determining which new facilities must share a site and which can be placed at an existing facility, all without computing a single distance.
 
 solve for:
-(a) the co-located groups among the n NFs;
-(b) an EF for each group the theorem can place
+(a) co-located groups among the n NFs;
+(b) an EF for each group the theorem can place.
 
 subject to:
-(a) majority: a facility is settled only when one weight reaches half of that facility’s own total
+(a) majority: co-location or placement of a facility is determined only when one weight reaches half of that facility’s own total.
 
-return: the placements and co-locations the theorem settles, together with the facilities it leaves open
+return: placements and co-locations the theorem determines, together with the facilities it leaves open
 
 assumptions:
 (a) interactions are symmetric, so the weight between two NFs is the same in either direction;
-(b) distance is any metric, since the theorem never evaluates one
+(b) distance is any metric, since the theorem never evaluates one.
 
-Model 2: The majority theorem for several new facilities
+Model 2: Multifacility majority theorem
 
-Model 2 formulation: The majority theorem for several new facilities
+Model 2 formulation: Majority condition
 
-\begin{aligned} \Sigma_i &= \sum_{j=1}^{m} w_{ij} + \sum_{k=1}^{n} v_{ik}\\[2pt] \text{co-locate } i \text{ and } k &\text{ if } v_{ik} \ge \Sigma_i / 2\\[2pt] \text{place } i \text{ at EF}_j &\text{ if } w_{ij} \ge \Sigma_i / 2 \end{aligned} \tag{4}
+\begin{aligned} \text{co-locate NF } i \text{ and NF } k &\quad \text{if } v_{ik} \ge \gamma_i / 2 \text{ for some } k\\[2pt] \text{place NF } i \text{ at EF } j &\quad \text{if } w_{ij} \ge \gamma_i / 2 \text{ for some } j \end{aligned} \tag{4}
 
-where:
+where
 
 w_{ij}
 
-weight between NF i and EF j
+= weight between NF i and EF j
 
 v_{ik}
 
-interaction weight between NF i and NF k
+= interaction weight between NF i and NF k
 
-\Sigma_i
+\gamma_i
 
-total weight on NF i, over both its customers and its interactions.
+= \sum_{j=1}^{m} w_{ij} + \sum_{k=1}^{n} v_{ik}, total weight on NF i.
 
-The procedure that applies it is stated at a high level, saying what each pass decides and nothing about how the matrices are kept. Folding one row into another, zeroing a diagonal, turning a placed facility into an existing one: all of that is real, none of it is the idea, and all of it is in the implementation below for anyone who wants it. Working the theorem by hand means working the rules, not the bookkeeping.
+That total runs over both an NF’s customers and its interactions with the other NFs. The two rules are not interchangeable in order. The co-location rule is applied to exhaustion first, each reduction folding two rows into one and so changing the totals the next comparison uses, and only then is the placement rule tried. Ex. 3(c) turns on exactly that: the co-location is what makes the placement possible, and neither facility can be placed before it.
 
-Model 2 formulation: The majority theorem for several new facilities
+The procedure that applies it is stated at a high level, saying what each pass decides and nothing about how the matrices are kept. Folding one row into another, zeroing a diagonal, turning a placed facility into an existing one: all of that is real, none of it is the idea, and all of it is in the implementation below. Solving using the theorem by hand means applying the rules, not the bookkeeping.
+
+Model 2 formulation: Majority reduction algorithm
 
 ```
-majority(W, V);
+algorithm majority;
+{ input:  NF-to-EF weights W, NF-to-NF weights V                     }
+{ output: settled placements, co-located groups, and what stays open }
 begin
-repeat
+done := false;
+while done = false do
+begin
+settled := 0;
 for each unsettled NF do
-if another NF holds at least half of its total weight then
-co-locate the two, and treat them as one facility
-else if an EF holds at least half of its total weight then
-place it there, and treat it as an existing facility
-until a pass settles nothing;
-return the placements, the co-located groups, and what is left open
-end
+if another NF holds ≥ half of its total weight then
+co-locate the two, treat them as one, settled := settled + 1
+else if an EF holds ≥ half of its total weight then
+place it there, treat it as an EF, settled := settled + 1;
+if settled = 0 then done := true;
+end;
+return the placements, the co-located groups, and what is left open;
+end;
 ```
 
-Two things about it are worth saying before the examples. It is a reduction that sometimes happens to be a solution: it may settle every facility, some of them, or none. And saying which facilities it cannot settle is as much of the answer as saying which it can.
+Two things about it are worth saying before the examples. It is a reduction that sometimes happens to be a solution: it may determine every facility, some of them, or none; and saying which facilities it cannot determine is as much of the answer as saying which it can.
 
-Model 2 implementation: The majority theorem for several new facilities
+Model 2 implementation: Multifacility majority theorem
 
 ```
 function majority(W, V)
@@ -372,9 +361,9 @@ live, done = collect(axes(W, 1)), false
 while !done
 done = true
 for i in live
-Σ = sum(W[i, :]) + sum(V[i, :])
+γ = sum(W[i, :]) + sum(V[i, :])
 k, j = argmax(V[i, :]), argmax(W[i, :])
-if V[i, k] > 0 && V[i, k] >= Σ / 2     # co-locate
+if V[i, k] > 0 && V[i, k] >= γ / 2     # co-locate
 W[i, :] .+= W[k, :]
 V[i, :] .+= V[k, :]
 V[:, i] .+= V[:, k]
@@ -382,7 +371,7 @@ V[i, i] = 0
 W[k, :] .= 0; V[k, :] .= 0; V[:, k] .= 0
 append!(group[i], group[k]); empty!(group[k])
 gone = k
-elseif W[i, j] > 0 && W[i, j] >= Σ / 2  # place
+elseif W[i, j] > 0 && W[i, j] >= γ / 2  # place
 for r in live      # a placed NF becomes an EF
 r == i && continue
 W[r, j] += V[r, i]
@@ -404,170 +393,82 @@ end
 majority (generic function with 1 method)
 ```
 
-Example 3. What the theorem can and cannot settle
+Example 3: Limits of the majority theorem
 
-Determine the locations, if any, that the majority theorem settles for two new facilities serving three existing ones, under three different sets of interaction weights.
+Determine the locations, if any, that the majority theorem determines for two new facilities serving three existing ones, with customer weights W = \begin{bmatrix} 2 & 1 & 0\\ 4 & 0 & 5\end{bmatrix} and a single interaction v between the two, taking v = 2, then v = 0.5, then v = 4.
 
-The same W throughout, and the interactions changed each time:
+The same W throughout, and the interaction changed each time. An interaction is given once, in one direction, and is symmetrized before any row is summed:
 
-W = \begin{bmatrix} 2 & 1 & 0\\ 4 & 0 & 5 \end{bmatrix}, \qquad V = \begin{bmatrix} 0 & v\\ v & 0 \end{bmatrix}
+W = \begin{bmatrix} 2 & 1 & 0\\ 4 & 0 & 5 \end{bmatrix}, \qquad V = \begin{bmatrix} 0 & v\\ 0 & 0 \end{bmatrix} \;\Longrightarrow\; V = \begin{bmatrix} 0 & v\\ v & 0 \end{bmatrix}
 
-with v = 2, then v = 0.5, then v = 4. Writing the two matrices side by side as [\,W \mid V\,] makes the row sums easy to take by hand, which is the whole method.
+Setting the two matrices side by side as [\,W\ \ V\,] turns each facility’s total weight into a single row sum, which is what makes the theorem workable by hand. The dashed rule marks where the customer weights end and the interactions begin, and every comparison below is one row of the augmented matrix against half of its own sum.
 
-With v = 2. Row 1 sums to 2+1+0+0+2 = 5, so half is 2.5 and the largest entry in the row is 2. Row 2 sums to 4+0+5+2+0 = 11, half is 5.5 and the largest entry is 5. Neither row has an entry reaching half its total, so nothing is settled: no placement and no co-location.
+Example 3(a): No reduction and no placement
 
-With v = 0.5. Row 1 now sums to 3.5, half is 1.75, and w_{11} = 2 clears it, so NF1 goes to EF1. Row 2 sums to 9.5, half is 4.75, and w_{23} = 5 clears it, so NF2 goes to EF3. Both placed, and the problem is solved outright.
+With v = 2:
 
-With v = 4. Row 1 sums to 7, half is 3.5, and the entry that clears it is v_{12} = 4, an interaction rather than a customer. So NF1 and NF2 are co-located, without either being placed. Row 2 sums to 13 and nothing reaches 6.5. Folding the two rows together leaves a single facility with W = \begin{bmatrix} 6 & 1 & 5\end{bmatrix}, which sums to 12; now w_1 = 6 \ge 6, so the pair goes to EF1. The reduction did the work the placement rule could not do on its own.
+[\,W\ \ V\,] = \left[\begin{array}{ccc:cc} 2 & 1 & 0 & 0 & 2\\ 4 & 0 & 5 & 2 & 0 \end{array}\right] \begin{array}{l} \gamma = 5\\ \gamma = 11 \end{array}
 
-The arithmetic is small enough to do by hand and small enough to get wrong, so it is worth confirming. The check is the comparison itself, one row at a time.
+Half of row 1 is 2.5 and its largest entry is 2; half of row 2 is 5.5 and its largest is 5. No entry in either row reaches half of its own row’s total, so the theorem determines nothing at all: no placement, and no co-location.
 
-```
-# Code block 8: the majority check, row by row
-W = [2 1 0
-4 0 5]
-rowcheck(V) = DataFrame(
-Σ = [sum(W[i, :]) + sum(V[i, :]) for i in 1:2],
-half = [(sum(W[i, :]) + sum(V[i, :])) / 2 for i in 1:2],
-largest = [maximum([W[i, :]; V[i, :]]) for i in 1:2])
-prt(rowcheck([0 2; 2 0]))
-```
+Example 3(b): Both facilities placed
 
-```
-Σ  half  largest
-────────────────────
-1   5  2.50        2
-2  11  5.50        5
-```
+With v = 0.5:
 
-Neither row’s largest entry reaches its half, so nothing is settled.
+[\,W\ \ V\,] = \left[\begin{array}{ccc:cc} 2 & 1 & 0 & 0 & 0.5\\ 4 & 0 & 5 & 0.5 & 0 \end{array}\right] \begin{array}{l} \gamma = 3.5 \;\Longrightarrow\; w_{11} = 2 > 1.75 \;\Longrightarrow\; \text{NF1 at EF1}\\ \gamma = 9.5 \;\Longrightarrow\; w_{23} = 5 > 4.75 \;\Longrightarrow\; \text{NF2 at EF3} \end{array}
 
-```
-prt(rowcheck([0 0.5; 0.5 0]))  # Code block 9: with v = 0.5
-```
+In both rows the entry that clears sits in W, on the customer side of the rule, so both facilities are placed and the problem is solved outright.
 
-```
-Σ  half  largest
-──────────────────────
-1  3.50  1.75        2
-2  9.50  4.75        5
-```
+Example 3(c): A reduction, and then a placement
 
-Both clear, and in both rows the entry that clears sits in W, so both facilities are placed.
+With v = 4:
 
-```
-prt(rowcheck([0 4; 4 0]))  # Code block 10: with v = 4
-```
+[\,W\ \ V\,] = \left[\begin{array}{ccc:cc} 2 & 1 & 0 & 0 & 4\\ 4 & 0 & 5 & 4 & 0 \end{array}\right] \begin{array}{l} \gamma = 7 \;\Longrightarrow\; v_{12} = 4 > 3.5 \;\Longrightarrow\; \text{NF1 and NF2 co-located}\\ \gamma = 13 \;\Longrightarrow\; \text{all } w_{ij},\, v_{ij} < 6.5 \end{array}
 
-```
-Σ  half  largest
-────────────────────
-1   7  3.50        4
-2  13  6.50        5
-```
+Row 1 clears on an interaction rather than on a customer, so the two facilities are co-located without either one being placed. Folding them into a single facility adds their customer weights and leaves no interaction behind:
 
-Row 1 clears on v_{12} = 4, an interaction, so the two are co-located. Folding the rows together gives the reduced problem, and the placement follows.
+W = \begin{bmatrix} 6 & 1 & 5 \end{bmatrix} \qquad \begin{array}{l} \gamma = 12 \;\Longrightarrow\; w_1 = 6 \ge 6 \;\Longrightarrow\; \text{NF1 (and NF2) at EF1} \end{array}
 
-```
-# Code block 11: the two facilities folded together
-Wr = vec(sum(W, dims = 1))         # NF1 and NF2 folded together
-(reduced = Wr, Σ = sum(Wr), half = sum(Wr) / 2)
-```
+The reduction did the work the placement rule could not do on its own, which is the half of the theorem with no single-facility analogue.
 
-```
-(reduced = [6, 1, 5], Σ = 12, half = 6.0)
-```
-
-Running the procedure itself over all three cases gives the same three answers, and does the folding without being told to.
-
-```
-# Code block 12: all three cases by the procedure
-vs = [2, 0.5, 4]
-prt(DataFrame(
-v = vs,
-placed_at = [string(majority(W, [0 v; v 0])[1]) for v in vs],
-groups = [string(majority(W, [0 v; v 0])[2]) for v in vs]))
-```
-
-```
-v  placed_at      groups
-─────────────────────────────
-2.00     [0, 0]  [[1], [2]]
-0.50     [1, 3]  [[1], [2]]
-4.00     [1, 1]    [[1, 2]]
-```
-
-A zero in placed_at is a facility the theorem leaves open, and a group of two is a co-location.
-
-v = 2: nothing settled. v = 0.5: NF1 at EF1, NF2 at EF3. v = 4: NF1 and NF2 co-located, and the pair at EF1.
+v = 2: nothing determined. v = 0.5: NF1 at EF1, NF2 at EF3. v = 4: NF1 and NF2 co-located, and the pair at EF1.
 
 ### 3.2 Where each operation belongs
 
-The same arithmetic answers the question the section opened with, once the facilities are read as operations rather than warehouses. A product passes through a sequence of steps; the first and last are fixed somewhere, and the steps in between could be done anywhere. What the theorem settles is which of them have to share a site.
+The same arithmetic answers the question the section opened with, once the facilities are read as operations rather than buildings. A product passes through a sequence of steps; the first and last are fixed somewhere, and the steps in between could be done anywhere. What the theorem determines is which of them have to share a site.
 
 Figure 4: Five operations from Nagoya to Detroit, with the per-mile cost of moving material between consecutive steps. Drop forge and painting are fixed at the two ends; heat treat, pressing and finishing are the three to place.
 
 The four rates along the chain in Fig. 4 are not equal, and that is worth a moment before the theorem is applied to them.
 
-The four rates differ. The reason for the difference is that the quantities and characteristics of the materials being moved into an operation in general differ from what comes out of the operation. As a result of the operation, material might be removed, and so the physical weight decreases. Alternatively, materials could be added as part of the operation, and the physical weight would increase. Also, characteristics of the materials could change, resulting in more expensive or cheaper transport alternatives. All of that nets out to differences in transport rates in terms of dollars per mile. This can be seen most clearly by referring back to Eq. 1 in Lecture 2.2, where the monetary weight w_i, in terms of dollars per mile, is the product of the physical weight q_i (tons) and the transport rate r_i ($/ton-mi), both of which can change on the input and output sides of each operation. More details of how to determine these values are discussed in Transport.
+The four rates differ. The reason for the difference is that the quantities and characteristics of the materials being moved into an operation in general differ from what comes out of the operation. As a result of the operation, material might be removed, and so the physical weight decreases. Alternatively, materials could be added as part of the operation, and the physical weight would increase. Also, characteristics of the materials could change, resulting in more expensive or cheaper transport alternatives. All of that nets out to differences in transport rates in terms of dollars per mile. This can be seen most clearly by referring back to Eq. 2 in Lecture 2.2, where the monetary weight w_i, in terms of dollars per mile, is the product of the physical weight q_i (tons) and the transport rate r_i ($/ton-mi), both of which can change on the input and output sides of each operation. More details of how to determine these values are discussed in Transport.
 
-Example 4. Locating a production chain
+Example 4: Locating a production chain
 
 Determine which of heat treat, pressing and finishing must share a site, and where each of the three operations belongs, given drop forge fixed at Nagoya and painting fixed at Detroit.
 
-Two existing facilities and three new ones. The links to the fixed ends go in W and the links between the three movable operations go in V:
+Two existing facilities and three new ones. The links to the fixed ends go in W, the links between the three movable operations go in V, and V is symmetrized before any row is summed:
 
-W = \begin{bmatrix} 4 & 0\\ 0 & 0\\ 0 & 4 \end{bmatrix}, \qquad V = \begin{bmatrix} 0 & 3 & 0\\ 3 & 0 & 5\\ 0 & 5 & 0 \end{bmatrix}
+W = \begin{bmatrix} 4 & 0\\ 0 & 0\\ 0 & 4 \end{bmatrix}, \qquad V = \begin{bmatrix} 0 & 3 & 0\\ 0 & 0 & 5\\ 0 & 0 & 0 \end{bmatrix} \;\Longrightarrow\; V = \begin{bmatrix} 0 & 3 & 0\\ 3 & 0 & 5\\ 0 & 5 & 0 \end{bmatrix}
 
-Step 1. Row 2 is heat treat’s downstream neighbor, pressing, and it sums to 0 + 0 + 3 + 0 + 5 = 8. Half is 4, and v_{23} = 5 clears it, so pressing and finishing must share a site. That is the answer to the question the section asked: the $5 link between them is expensive enough that moving material along it is not worth doing at all.
+Step 1. One row fires:
 
-Step 2. Fold finishing into pressing. The pair now carries finishing’s link to painting, so W becomes \begin{bmatrix} 4 & 0\\ 0 & 4\end{bmatrix} and V the single interaction 3. Both rows sum to 7, half is 3.5, and each row’s W entry is 4. So heat treat goes to Nagoya with the drop forge, and pressing and finishing go to Detroit with the painting.
+[\,W\ \ V\,] = \left[\begin{array}{cc:ccc} 4 & 0 & 0 & 3 & 0\\ 0 & 0 & 3 & 0 & 5\\ 0 & 4 & 0 & 5 & 0 \end{array}\right] \begin{array}{l} \\ \gamma = 8 \;\Longrightarrow\; v_{23} = 5 > 4 \;\Longrightarrow\; \text{NF2 and NF3 co-located}\\ \\ \end{array}
 
-The same row-by-row check confirms it.
+Pressing’s row sums to 8, half is 4, and the 5 it shares with finishing clears it. That is the answer the section asked for: the $5 link between pressing and finishing is expensive enough that moving material along it is not worth doing at all.
+
+Step 2. Fold finishing into pressing, which carries finishing’s link to painting with it:
+
+[\,W\ \ V\,] = \left[\begin{array}{cc:cc} 4 & 0 & 0 & 3\\ 0 & 4 & 3 & 0 \end{array}\right] \begin{array}{l} \gamma = 7 \;\Longrightarrow\; w_{11} = 4 > 3.5 \;\Longrightarrow\; \text{NF1 at EF1}\\ \gamma = 7 \;\Longrightarrow\; w_{22} = 4 > 3.5 \;\Longrightarrow\; \text{NF2 (and NF3) at EF2} \end{array}
+
+Each row’s clearing entry is now a customer weight, so heat treat goes to Nagoya with the drop forge and pressing and finishing go to Detroit with the painting.
+
+Two hand passes determine every operation. majority reaches the same answer without being told which reduction to take first, which is the check worth making once the arithmetic has been done by hand.
 
 ```
-# Code block 13: the production chain's weights
+# Code block 6: the procedure's own answer
 W7 = [4 0; 0 0; 0 4]
 V7 = [0 3 0; 3 0 5; 0 5 0]
-prt(DataFrame(
-NF = ["heat treat", "pressing", "finishing"],
-Σ = [sum(W7[i, :]) + sum(V7[i, :]) for i in 1:3],
-half = [(sum(W7[i, :]) + sum(V7[i, :])) / 2 for i in 1:3],
-largest = [maximum([W7[i, :]; V7[i, :]]) for i in 1:3]))
-```
-
-```
-NF  Σ  half  largest
-──────────────────────────────
-heat treat  7  3.50        4
-pressing  8  4.00        5
-finishing  9  4.50        5
-```
-
-All three rows clear, which the hand pass does not make obvious. Rows 2 and 3 reach the same conclusion from opposite ends of the same five-dollar link, so pressing and finishing co-locate, while row 1 clears on a customer weight instead and places heat treat at Nagoya outright. Taking the reduction first, as the procedure does, and re-checking:
-
-```
-# Code block 14: after folding finishing into pressing
-W2 = [4 0; 0 4]                    # finishing folded into pressing
-V2 = [0 3; 3 0]
-prt(DataFrame(
-NF = ["heat treat", "pressing + finishing"],
-Σ = [sum(W2[i, :]) + sum(V2[i, :]) for i in 1:2],
-half = [(sum(W2[i, :]) + sum(V2[i, :])) / 2 for i in 1:2],
-largest = [maximum([W2[i, :]; V2[i, :]]) for i in 1:2]))
-```
-
-```
-NF  Σ  half  largest
-────────────────────────────────────────
-heat treat  7  3.50        4
-pressing + finishing  7  3.50        4
-```
-
-The procedure reaches the same place on its own, and its output is the answer to the question the section opened with: which operations must share a site, and where each one goes.
-
-```
-# Code block 15: the procedure's own answer
 at7, groups7 = majority(W7, V7)
 prt(DataFrame(operation = ["heat treat", "pressing", "finishing"],
 site = ["Nagoya", "Detroit"][at7]))
@@ -583,11 +484,11 @@ finishing  Detroit
 
 Pressing and finishing share a site. Heat treat at Nagoya; pressing and finishing at Detroit.
 
-## 4. The location–allocation problem
+## 4. Location–allocation problem
 
 The location–allocation (LA) problem is to determine both the location of n new facilities (NFs) and the allocation of the flow requirements of m existing facilities (EFs) to the NFs that minimize total transportation costs.
 
-Figure 5: The location–allocation problem, with three NFs and four EFs. Every dashed line is a possible allocation, and the problem is to settle both where the NFs go and which of those lines survive.
+Figure 5: The location–allocation problem, with three NFs and four EFs. Every dashed line is a possible allocation, and the problem is to determine both where the NFs go and which of those lines survive.
 
 Fig. 5 strips away everything upstream of the NFs, so what is left is the two decisions taken together.
 
@@ -595,47 +496,47 @@ minimize: total transportation cost
 
 solve for:
 (a) location of each of the n NFs, anywhere in the plane;
-(b) share of each EF’s flow requirement carried by each NF
+(b) share of each EF’s flow requirement carried by each NF.
 
 subject to:
 (a) full allocation: every EF’s flow requirement is allocated in full;
-(b) non-negativity: no allocated flow is negative
+(b) non-negativity: no allocated flow is negative.
 
 return: located NFs together with the allocation that serves the EFs from them
 
 assumptions:
 (a) NFs are uncapacitated;
-(b) transportation cost is proportional to allocated flow times distance
+(b) transportation cost is proportional to allocated flow times distance.
 
-Model 3: The location–allocation problem
+Model 3: Location–allocation problem
 
-Model 3 formulation: The location–allocation problem
-
-Continuous:
+Model 3 formulation: Continuous formulation
 
 \begin{aligned} \text{Minimize} \quad & f(X, W) = \sum_{i=1}^{m} \sum_{j=1}^{n} w_{ji} \, d(X_j, P_i) &&\\[2pt] \text{subject to} \quad & \sum_{j=1}^{n} w_{ji} = w_i, && i = 1, \ldots, m\\[2pt] & w_{ji} \ge 0, && j = 1, \ldots, n; \ i = 1, \ldots, m \end{aligned}
 
-where:
+where
 
 X
 
-NF locations, X = [X_j] = [(x_j, y_j)], j = 1, \ldots, n
+= NF locations
+= [X_j] = [(x_j, y_j)], j = 1, \ldots, n
 
 W
 
-allocated flow requirements, W = [w_{ji}], j = 1, \ldots, n; i = 1, \ldots, m
+= allocated flow requirements
+= [w_{ji}], j = 1, \ldots, n; i = 1, \ldots, m
 
 P_i
 
-(a_i, b_i) = location of EF i
+= (a_i, b_i), location of EF i
 
 d(X_j, P_i)
 
-distance between NF j and EF i
+= distance between NF j and EF i
 
 w_i
 
-flow requirement of EF i.
+= flow requirement of EF i.
 
 Two different objects carry the letter w here. The w_{ji} are the elements of the matrix W, one NF’s allocated share of one EF’s requirement, and the w_i are the elements of the vector w, an EF’s requirement in total. The statement is read as an objective function, then a colon, then the constraints to be enforced: each EF’s allocations sum to its requirement, and no allocation is negative. Without that second constraint the problem would be unbounded, since negative weights would let a minimization run off to negative infinity.
 
@@ -645,9 +546,7 @@ Since there are no capacity constraints on the NFs, optimal solutions lie at ext
 
 resulting in a mixed continuous–combinatorial formulation:
 
-Model 3 formulation: The location–allocation problem
-
-Mixed:
+Model 3 formulation: Mixed continuous–combinatorial formulation
 
 \text{Minimize} \quad f(X, \alpha) = \sum_{i=1}^{m} w_i \, d(X_{\alpha_i}, P_i)
 
@@ -667,15 +566,13 @@ Although n^m allocations are possible, since NFs are indistinguishable, the numb
 
 For example: \left\{ {7 \atop 2} \right\} = 63, \left\{ {20 \atop 3} \right\} = 5.8 \times 10^8, and \left\{ {65 \atop 5} \right\} = 2.3 \times 10^{43}.
 
-## 5. Two formulations
+## 5. Integrated vs alternating
 
 ### Integrated
 
 If there are no capacity constraints on NFs, it is optimal to always satisfy all the flow requirements of an EF from its closest NF. Requires search of (n \times d)-dimensional TC that combines location with allocation.
 
-Model 3 formulation: The location–allocation problem
-
-Integrated:
+Model 3 formulation: Integrated location–allocation formulation
 
 \begin{aligned} \alpha_i(X) &= \arg\min_j \, d(X_j, P_i)\\[2pt] TC(X) &= \sum_{i=1}^{m} w_i \, d(X_{\alpha_i(X)}, P_i)\\[2pt] X^* &= \arg\min_X TC(X)\\[2pt] TC^* &= TC(X^*) \end{aligned}
 
@@ -685,9 +582,7 @@ Alternate between finding locations and finding allocations until no further TC 
 - Allocation with NF with capacity constraints (solved as minimum cost network flow problem)
 - Location with some NFs at fixed locations
 
-Model 3 formulation: The location–allocation problem
-
-Alternating:
+Model 3 formulation: Alternating location–allocation formulation
 
 \begin{aligned} allocate(X) &= [w_{ji}] = \begin{cases} w_i, & \text{if } \arg\min_k d(X_k, P_i) = j\\ 0, & \text{otherwise} \end{cases}\\[6pt] TC(X, W) &= \sum_{j=1}^{n} \sum_{i=1}^{m} w_{ji} \, d(X_j, P_i)\\[2pt] locate(W, X) &= \arg\min_X TC(X, W) \end{aligned}
 
@@ -695,14 +590,20 @@ Alternating:
 
 Both formulations minimize the same total cost, so before choosing between them it is worth seeing the surface either one has to search. A one-dimensional corridor makes that possible to draw: with two facilities on a line, the objective is a function of two numbers and can be contoured in full.
 
-Example 5. Two facilities along I-40
+Example 5: Two facilities along I-40
 
-Determine the two mile markers along I-40 that minimize the total weighted distance to seven cities on the corridor, and show the shape of the objective the search has to work with.
+Determine the two mile markers along I-40 that minimize the total weighted distance to the seven cities of Table 1, and show the shape of the objective the search has to work with.
+
+Table 1: Seven cities along the I-40 corridor, by mile marker and relative demand.
+
+| mile marker  | 50  | 150  | 190  | 220  | 270  | 295  | 420
+
+| relative demand  | 1  | 2  | 3  | 4  | 5  | 6  | 7
 
 Interstate 40 crosses North Carolina from the Tennessee line to Wilmington. A city sits at each of seven mile markers, and each city’s weight is its relative demand. Distance along a corridor is rectilinear, so dists is called with p = 1.
 
 ```
-# Code block 16: seven towns along I-40
+# Code block 7: seven towns along I-40
 P = [50 150 190 220 270 295 420]'   # I-40 mile markers
 m = size(P, 1)
 w = collect(1:m)                    # relative demand at each
@@ -721,7 +622,7 @@ NF 2  250  150  110   80   30    5  120
 The integrated formulation folds the allocation into the objective, so the total cost is a function of the locations alone.
 
 ```
-TCint(X) = allocate(dists(reshape(X, :, 1), P, 1), w)[2]  # Code block 17
+TCint(X) = allocate(dists(reshape(X, :, 1), P, 1), w)[2]  # Code block 8
 ```
 
 ```
@@ -733,7 +634,7 @@ With only two facilities on a line, that objective can be drawn in full (Fig. 6)
 Show the code that generates this figure
 
 ```
-# Code block 18: the objective over the corridor
+# Code block 9: the objective over the corridor
 using CairoMakie
 xrng = 0:500
 Z = [TCint([x1, x2]) for x1 in xrng, x2 in xrng]
@@ -742,12 +643,12 @@ axis = (xlabel = "NF 1 mile marker",
 ylabel = "NF 2 mile marker"))
 ```
 
-Figure 6: The integrated objective for the corridor, contoured over the two mile markers. There are two basins, not one, so which optimum the search reaches depends on where it starts. From 2-Loc-4.ipynb cell 19.
+Figure 6: The integrated objective for the corridor, contoured over the two mile markers. There are two basins, not one, so which optimum the search reaches depends on where it starts.
 
 Starting the search in each basin reaches each optimum.
 
 ```
-# Code block 19: two starts, two local optima
+# Code block 10: two starts, two local optima
 Xᵒ¹ = optimize(TCint, [0.0, 200.0]).minimizer
 Xᵒ² = optimize(TCint, [200.0, 500.0]).minimizer
 prt(DataFrame(start = ["[0, 200]", "[200, 500]"],
@@ -767,44 +668,46 @@ Each axis is one facility’s location, and both span the mile markers along I-4
 
 Markers 190 and 295 at TC = 1340, or markers 270 and 420 at TC = 1050, according to where the search starts.
 
-## 6. The ALA procedure
+## 6. ALA procedure
 
 Given initial NF locations, ALA local improvement procedure finds optimal EF allocations and then finds optimal NF locations for these allocations, continuing to alternate until no further EF allocation changes are made. Introduced by Cooper in 1963, ALA is still the best heuristic for the LA problem. Since the ALA procedure finds only a local optima, the procedure should be applied multiple times using different initial NF locations, keeping the best solution found as the final solution. This type of repeated application of a local improvement procedure is termed a multistart metaheuristic.
 
-Model 3 formulation: The location–allocation problem
+Model 3 formulation: Alternating location–allocation algorithm
 
 ```
-procedure ala(X);
+algorithm ala;
+{ input:  starting locations X, weights w, demand points P         }
+{ output: locations X, allocation W, and total cost TC             }
+{ allocate is Model 1; locate is the per-facility minisum solve    }
 begin
-TC := ∞;  done := false;
-repeat
-W′ := allocate(X);
-X′ := locate(W′, X);
+W := allocate(X);  TC := TC(X, W);  done := false;
+while done = false do
+begin
+X′ := locate(W, X);
+W′ := allocate(X′);
 TC′ := TC(X′, W′);
-if TC′ < TC then
-TC := TC′;  X := X′;  W := W′
-else
-done := true
-endif
-until done = true;
-return X, W
-end
+if TC′ < TC then TC := TC′, X := X′, W := W′
+else done := true;
+end;
+return X, W, TC;
+end;
 ```
 
 Both halves of the loop are already in hand. allocate is Model 1 from Sec. 1, one column of the distance matrix at a time. And in one dimension with rectilinear distance, locate is the median procedure of Model 8 in Lecture 2.1: sort the cities served by a facility, run a cumulative total of their weights, and stop at the city where that total first reaches half. Nothing else is new, which is why the whole procedure can be run on paper.
 
-Example 6. The ALA procedure by hand
+Example 6: ALA procedure by hand
 
 Determine the locations of two facilities on the I-40 corridor of Ex. 5 by hand, using the ALA procedure from two different pairs of starting locations.
-- Starting at mile markers 0 and 200
+
+Example 6(a): Starting at mile markers 0 and 200
 
 Allocate. Facility 1 sits at marker 0 and facility 2 at marker 200, so every city east of marker 100 is nearer facility 2. Only the city at 50 goes to facility 1; the other six go to facility 2.
 
 Locate. Facility 1 serves one city, so it moves to marker 50. Facility 2 serves the cities at 150, 190, 220, 270, 295 and 420, whose weights are 2, 3, 4, 5, 6 and 7 and total 27. Half of that is 13.5. Running west to east, the cumulative weight is 2 at marker 150, 5 at 190, 9 at 220, and 14 at 270, which is the first city at which it reaches 13.5. Facility 2 moves to marker 270.
 
-Three more passes settle it, each one repeating those two steps (Table 1).
+Three more passes determine it, each one repeating those two steps (Table 2).
 
-Table 1: The ALA procedure by hand from markers 0 and 200. Pass 4 reproduces pass 3’s allocation and neither facility moves, so the procedure stops.
+Table 2: The ALA procedure by hand from markers 0 and 200. Pass 4 reproduces pass 3’s allocation and neither facility moves, so the procedure stops.
 
 | pass  | facilities at  | facility 1 serves  | facility 2 serves  | TC  | move to
 
@@ -819,11 +722,12 @@ Table 1: The ALA procedure by hand from markers 0 and 200. Pass 4 reproduces pas
 The fourth pass changes nothing, so the procedure stops at markers 190 and 295 with a total weighted distance of
 
 TC = 1(140) + 2(40) + 3(0) + 4(30) + 5(25) + 6(0) + 7(125) = 1{,}340.
-- Starting at mile markers 200 and 500
+
+Example 6(b): Starting at mile markers 200 and 500
 
 Now facility 1 starts at marker 200 and facility 2 at marker 500, so the midpoint between them is 350 and only the city at 420 lies east of it. Facility 2 takes that city alone and moves to it. Facility 1 takes the other six, whose weights 1 through 6 total 21; half is 10.5, and the cumulative weight running east is 1, 3, 6, 10, then 15 at marker 270, so facility 1 moves there.
 
-Table 2: The same procedure from markers 200 and 500, which settles in a single move.
+Table 3: The same procedure from markers 200 and 500, which settles in a single move.
 
 | pass  | facilities at  | facility 1 serves  | facility 2 serves  | TC  | move to
 
@@ -831,7 +735,7 @@ Table 2: The same procedure from markers 200 and 500, which settles in a single 
 
 | 2  | 270, 420  | 50, 150, 190, 220, 270, 295  | 420  | 1,050  | 270, 420
 
-The second pass repeats the first pass’s allocation (Table 2), so the procedure stops at markers 270 and 420 with
+The second pass repeats the first pass’s allocation (Table 3), so the procedure stops at markers 270 and 420 with
 
 TC = 1(220) + 2(120) + 3(80) + 4(50) + 5(0) + 6(25) + 7(0) = 1{,}050.
 
@@ -842,7 +746,7 @@ The two runs apply the same procedure to the same seven cities and reach differe
 The hand work is worth checking, and the check is short because both halves are already written. allocate is Model 1, and the one-dimensional locate is one line: the cumulative weight, and the first city at which it reaches half.
 
 ```
-# Code block 20: locate in one dimension, the median of Lecture 2.1
+# Code block 11: locate in one dimension, the median of Lecture 2.1
 median1(p, wt) = p[findfirst(≥(sum(wt) / 2), cumsum(wt))]
 
 function alatrace(X₀)
@@ -877,10 +781,29 @@ at     TC      move
 270, 420  1,050  270, 420
 ```
 
-Both traces reproduce Table 1 and Table 2 pass for pass. The same answers come from Logjam.ala, which runs the procedure without any of the scaffolding above, taking the metric as an argument.
+Both traces reproduce Table 2 and Table 3 pass for pass. The same answers come from Logjam.ala, which runs the procedure without any of the scaffolding above, taking the metric as an argument.
+
+Model 3 implementation: Alternating location–allocation algorithm
 
 ```
-# Code block 21: the same two starts through ala
+# Model: Location–allocation, alternating algorithm
+# X0: n×2 matrix of initial facility locations (LON, LAT).
+# w: length-m vector of demand weights (w_j ≥ 0).
+# P: m×2 matrix of demand-point locations (LON, LAT).
+# dist: distance metric — :mi (default), :km, :rad (great-circle), or 1/2
+#    (rectilinear/Euclidean).
+# alloc: allocate handle X -> (W, TC) overriding the default
+#    nearest-facility allocation (e.g. for forced/constrained partitions).
+# locate: locate handle (W, X) -> X overriding the default per-facility
+#    minisum.
+# nruns: number of independent random restarts. Run 1 uses X0; runs
+#    2…nruns use fresh randX(P, n) starts. The best (minimum-TC) result is
+#    returned.
+ala        # (X0, w, P; dist, alloc, locate, nruns) -> (X, TC, W)
+```
+
+```
+# Code block 12: the same two starts through ala
 Xᵃ, TCᵃ, = ala([0.0; 200.0;;], float(w), float(P); dist = 1)
 Xᵇ, TCᵇ, = ala([200.0; 500.0;;], float(w), float(P); dist = 1)
 prt(DataFrame(start = ["0, 200", "200, 500"],
@@ -918,24 +841,24 @@ Integrated solving an (n \times d)-dimensional problem:
 When might integrated be better?
 - if there are no allocation (e.g., capacity) or location constraints on the NFs
 
-Running both formulations from the same random starts settles it, provided both are written the same way, from the same allocation step and the same optimizer. On that footing the integrated form is the faster of the two nearly everywhere, by two to three times on the larger instances. Quality is close and the lead changes hands: over a common set of starts each form finds the better answer about as often as the other, and the best answers they reach differ by at most a couple of percent. So the cost of the choice is in the search, not in the answer.
+Running both formulations from the same random starts determines it, provided both are written the same way, from the same allocation step and the same optimizer. On that footing the integrated form is the faster of the two nearly everywhere, by two to three times on the larger instances. Quality is close and the lead changes hands: over a common set of starts each form finds the better answer about as often as the other, and the best answers they reach differ by at most a couple of percent. So the cost of the choice is in the search, not in the answer.
 
 The advantage of the alternating form is that it provides more flexibility in being able to easily change the allocation and the location mechanisms, so it buys flexibility at the cost of increased computation.
 
 The choice matters less than it might appear, because of the size of the problems actually being solved. A useful rule of thumb is a 10-to-1 ratio: locating ten new facilities calls for a set of about a thousand existing facilities to work with. That is a typical size of problem even for the entire country. Walmart has perhaps 20 or 30 distribution centers, and most large box retailers have 10 to 20, or even around ten.
 
-## 7. Scale
+## 7. Large-scale examples
 
 Nothing in the procedure changes when the seven cities of the corridor become several hundred places in the plane. What changes is that the answer can no longer be checked by inspection, so the starts have to be generated rather than chosen and the result has to be read back out as a place name.
 
 ### Two service centers for the Carolinas
 
-Example 7. Service centers for North and South Carolina
+Example 7: Service centers for the Carolinas
 
 Determine the two locations that minimize the total population-weighted distance to every city over 10,000 people in North and South Carolina, and the territory each one serves.
 
 ```
-# Code block 22: the Carolinas' cities and their weights
+# Code block 13: the Carolinas' cities and their weights
 using GeoMakie, Random
 df = filter(r -> r.STFIP in st2fips.([:NC, :SC]) && r.POP > 10_000,
 usplace())
@@ -952,7 +875,7 @@ nef = size(P, 1)
 Starting locations are drawn at random from the box around the cities, and ala keeps the best of nruns of them.
 
 ```
-# Code block 23: two service centers by multistart
+# Code block 14: two service centers by multistart
 Random.seed!(8345)
 Xᵒ, TCᵒ, W = ala(randX(P, 2), w, P; nruns = 5)
 prt(lonlat2loc(Xᵒ, df))
@@ -970,7 +893,7 @@ Drawing a line from each city to the facility that serves it turns the allocatio
 Show the code that generates this figure
 
 ```
-# Code block 24: mapping the centers and their allocations
+# Code block 15: mapping the centers and their allocations
 Lx, Ly = alloclines(W, Xᵒ, P)
 fig, ax = makemap(df.LON, df.LAT; xexpand = 0.1)
 for i in eachindex(Lx)
@@ -978,18 +901,20 @@ lines!(ax, Lx[i], Ly[i]; linewidth = 0.5)
 end
 scatter!(ax, Xᵒ[:, 1], Xᵒ[:, 2]; marker = :dtriangle,
 markersize = 12, color = :black)
+text!(ax, Xᵒ[:, 1], Xᵒ[:, 2]; text = lonlat2loc(Xᵒ, df).NAME,
+fontsize = 12, aligntext(Xᵒ[:, 1], Xᵒ[:, 2])...)
 fig
 ```
 
-Figure 7: The two service centers and the cities each one serves. Charlotte takes all of South Carolina and the west of North Carolina; Cary takes the east. From 2-Loc-4.ipynb cells 26 to 34.
+Figure 7: The two service centers and the cities each one serves. Charlotte takes all of South Carolina and the west of North Carolina; Cary takes the east.
 
 Suppose now that a pre-existing contract forces the first three cities to be served by the first facility and the next three by the second. The only thing that changes is the allocation step, which ala accepts as an argument.
 
 ```
-# Code block 25: the allocation for a given pair
+# Code block 16: the allocation for a given pair
 function alloc36(X)
 D = dists(X, P, :mi)
-α = [argmin(c) for c in eachcol(D)]
+α, = allocate(D, w)
 α[1:3] .= 1
 α[4:6] .= 2
 Wc = sparse(α, 1:nef, w, size(X, 1), nef)
@@ -1013,64 +938,64 @@ Service centers at Charlotte and Cary, at 3.94 hundred million person-miles; 0.6
 
 ### Best retail warehouse locations
 
-Determining the best retail warehouse locations is an example of a location–allocation problem, where the EFs are population centroids (e.g., ZIP codes). Table 3 lists the best locations for a given number of warehouses. It is assumed that the warehouses serve retail customers located throughout the continental U.S. in proportion to population. Trucks traveling at 400 miles per day are used for all transport. Only outbound transport costs are used in making the location decision; it is reasonable to ignore inbound transport as long as suppliers are located uniformly throughout the country so that the inbound transport costs to each warehouse is approximately the same at any location. As can be seen in the table, the best single warehouse location (Bloomington, Indiana) is not the best location as the number of warehouses increases, while the warehouse in Palmdale, California remains in the best west coast location until a second west coast warehouse in Tacoma, Washington is added as part of the five-warehouse solution.
+Determining the best retail warehouse locations is an example of a location–allocation problem, where the EFs are population centroids (e.g., ZIP codes). Table 4 lists the best locations for a given number of warehouses. It is assumed that the warehouses serve retail customers located throughout the continental U.S. in proportion to population. Only outbound transport costs are used in making the location decision; it is reasonable to ignore inbound transport as long as suppliers are located uniformly throughout the country so that the inbound transport costs to each warehouse is approximately the same at any location. As can be seen in the table, the best single warehouse location (Bloomington, Indiana) is not the best location as the number of warehouses increases, while the warehouse in Palmdale, California remains in the best west coast location until a second west coast warehouse in Tacoma, Washington is added as part of the five-warehouse solution.
 
-Table 3: Best Retail Warehouse Locations.1
+Table 4: Best Retail Warehouse Locations.1
 
-| Number of Locations  | Average Transit Time (days)  | Warehouse Location  |  |
+| Number of Locations  | Warehouse Location  |  |
 
-| 1  | 2.20  | Bloomington, IN  |  |
+| 1  | Bloomington, IN  |  |
 
-| 2  | 1.48  | Ashland, KY  | Palmdale, CA  |
+| 2  | Ashland, KY  | Palmdale, CA  |
 
-| 3  | 1.29  | Allentown, PA  | Palmdale, CA  | McKenzie, TN
+| 3  | Allentown, PA  | Palmdale, CA  | McKenzie, TN
 
-| 4  | 1.20  | Edison, NJ  | Palmdale, CA  | Chicago, IL
+| 4  | Edison, NJ  | Palmdale, CA  | Chicago, IL
 
-|  |  | Meridian, MS  |  |
+|  | Meridian, MS  |  |
 
-| 5  | 1.13  | Madison, NJ  | Palmdale, CA  | Chicago, IL
+| 5  | Madison, NJ  | Palmdale, CA  | Chicago, IL
 
-|  |  | Dallas, TX  | Macon, GA  |
+|  | Dallas, TX  | Macon, GA  |
 
-| 6  | 1.08  | Madison, NJ  | Pasadena, CA  | Chicago, IL
+| 6  | Madison, NJ  | Pasadena, CA  | Chicago, IL
 
-|  |  | Dallas, TX  | Macon, GA  | Tacoma, WA
+|  | Dallas, TX  | Macon, GA  | Tacoma, WA
 
-| 7  | 1.07  | Madison, NJ  | Pasadena, CA  | Chicago, IL
+| 7  | Madison, NJ  | Pasadena, CA  | Chicago, IL
 
-|  |  | Dallas, TX  | Gainesville, GA  | Tacoma, WA
+|  | Dallas, TX  | Gainesville, GA  | Tacoma, WA
 
-|  |  | Lakeland, FL  |  |
+|  | Lakeland, FL  |  |
 
-| 8  | 1.05  | Madison, NJ  | Pasadena, CA  | Chicago, IL
+| 8  | Madison, NJ  | Pasadena, CA  | Chicago, IL
 
-|  |  | Dallas, TX  | Gainesville, GA  | Tacoma, WA
+|  | Dallas, TX  | Gainesville, GA  | Tacoma, WA
 
-|  |  | Lakeland, FL  | Denver, CO  |
+|  | Lakeland, FL  | Denver, CO  |
 
-| 9  | 1.04  | Madison, NJ  | Alhambra, CA  | Chicago, IL
+| 9  | Madison, NJ  | Alhambra, CA  | Chicago, IL
 
-|  |  | Dallas, TX  | Gainesville, GA  | Tacoma, WA
+|  | Dallas, TX  | Gainesville, GA  | Tacoma, WA
 
-|  |  | Lakeland, FL  | Denver, CO  | Oakland, CA
+|  | Lakeland, FL  | Denver, CO  | Oakland, CA
 
-| 10  | 1.04  | Newark, NJ  | Alhambra, CA  | Rockford, IL
+| 10  | Newark, NJ  | Alhambra, CA  | Rockford, IL
 
-|  |  | Palistine, TX  | Gainesville, GA  | Tacoma, WA
+|  | Palistine, TX  | Gainesville, GA  | Tacoma, WA
 
-|  |  | Lakeland, FL  | Denver, CO  | Oakland, CA
+|  | Lakeland, FL  | Denver, CO  | Oakland, CA
 
-|  |  | Mansfield, OH  |  |
+|  | Mansfield, OH  |  |
 
 The table is roughly twenty years old, which makes it a test of the method rather than a lookup: the same problem solved against current population data should land in much the same places, and where it does not, the population has moved.
 
-Example 8. Reproducing the warehouse table
+Example 8: Reproducing the warehouse table
 
-Determine the best locations for one, two, three and nine retail warehouses serving the continental United States in proportion to population, and compare them with Table 3.
+Determine the best locations for one, two, three and nine retail warehouses serving the continental United States in proportion to population, and compare them with Table 4.
 
 ```
-# Code block 26: every US population centroid
+# Code block 17: every US population centroid
 z = filter(r -> r.ISCUS && r.POP > 0, uszcta3())
 select!(z, :ZCTA3, :LAT, :LON, :POP)
 Pz = hcat(z.LON, z.LAT)
@@ -1085,7 +1010,7 @@ nz = size(Pz, 1)
 The three-digit ZCTA centroids are the existing facilities, about 882 of them, and their populations are the weights. A single warehouse needs no allocation at all, so it is an ordinary single-facility minisum problem. The answer is reported as the nearest city of at least 100,000 people, since a three-digit ZIP code is not a place name.
 
 ```
-# Code block 27: cities for naming the answer
+# Code block 18: cities for naming the answer
 cities = filter(r -> r.ISCUS && r.POP > 100_000, usplace())
 Random.seed!(4161)
 TC1(X) = sum(wz .* dists(reshape(X, 1, 2), Pz, :mi)')
@@ -1102,7 +1027,7 @@ idx        NAME  ST   dist  bearing  dir                         desc
 From two warehouses on, the allocation has to be determined with the locations, so ala does the work.
 
 ```
-# Code block 28: one to ten warehouses
+# Code block 19: one to ten warehouses
 named(X) = select(lonlat2loc(X, cities), :NAME, :ST, :dist)
 
 Xw = Dict{Int,Matrix{Float64}}()
@@ -1144,7 +1069,7 @@ The map of the nine-warehouse solution shows how the country divides (Fig. 8).
 Show the code that generates this figure
 
 ```
-# Code block 29: the nine-warehouse allocation
+# Code block 20: the nine-warehouse allocation
 X9 = Xw[9]
 W9 = sparse([argmin(c) for c in eachcol(dists(X9, Pz, :mi))],
 1:nz, wz, size(X9, 1), nz)
@@ -1158,7 +1083,7 @@ markersize = 10, color = :black)
 fig9
 ```
 
-Figure 8: Nine warehouses over the three-digit ZCTA population centroids, with the territory each one serves. From 2-Loc-4.ipynb cells 39 to 45.
+Figure 8: Nine warehouses over the three-digit ZCTA population centroids, with the territory each one serves.
 
 None of these points is where a warehouse would actually be built. An optimizer will happily return a swamp, and the site chosen instead is a convenient town near it, along an interstate or better yet at the intersection of two. That substitution is nearly free, because the objective is very flat near its optimum: moving twenty miles to reach a town changes it hardly at all. The town also has to be large enough to staff the place, so five to ten thousand people is a reasonable floor, and towns of that size are usually near an interstate anyway. Those are the practical aspects of it.
 
