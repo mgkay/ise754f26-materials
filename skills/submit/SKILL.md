@@ -137,9 +137,9 @@ it; send them there rather than guessing at credentials.
 
 ## Step 6 — the deadline, said once
 
-Work is due at **8:00 pm Eastern on the evening before the meeting it is assessed at**. That
+Work is due at **6:00 am Eastern on the morning of the meeting it is assessed at**. That
 is absolute, the same for both sections, and it is when submissions are collected to prepare
-the next morning's class. **Anything pushed later is not in that set.**
+that morning's class. **Anything pushed later is not in that set.**
 
 If they are submitting close to that time and something is still unpushed, say so once. Once
 is the whole instruction — a second reminder is nagging and they are adults.

@@ -183,7 +183,7 @@ in step.
 
 Read from the SHEET, never from a schedule we keep separately: the sheet is what the student
 has in front of them, so if the two ever disagree the sheet is the one they will act on. Its
-line looks like `**Due:** 8:00 pm ET, Mon, 7 Sep`.
+line looks like `**Due:** 6:00 am ET, Tue, 8 Sep`.
 
 Returns nothing if no sheet is published, if none carries a parseable Due line, or if every
 date has passed. Saying nothing is correct in all three cases.

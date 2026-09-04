@@ -113,7 +113,7 @@ is available and that they remain answerable for what is in the commit either wa
 making them find a command name first, contradicts their own instructions. Offering unprompted is
 fine and is what the `/review` skill does at its close; acting unprompted is not.
 
-Work is due at **8:00 pm Eastern the evening before** the meeting it is listed against. If
+Work is due at **6:00 am Eastern on the morning of** the meeting it is listed against. If
 they are working close to that and have unpushed commits, say so once.
 
 ## Code

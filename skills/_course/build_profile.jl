@@ -32,13 +32,13 @@
 #
 # The other two arrive on dates, and the dates set the order:
 #
-#   homework   HW 1 is due 8:00 pm Mon 7 September, so the first `homework` records land
+#   homework   HW 1 is due 6:00 am Tue 8 September, so the first `homework` records land
 #              then. record_activity already defines their shape: homework_id and
 #              checks_named, which is which of the nine a student reached for per question.
 #              That is the same signal this file already summarises for reviews, so covering
 #              it is mostly widening the filter and giving the section a heading.
 #
-#   project    PROJ 1 is assigned Thu 10 September and due 8:00 pm Mon 21 September. It is
+#   project    PROJ 1 is assigned Thu 10 September and due 6:00 am Tue 22 September. It is
 #              NOT covered here and it is not covered in record_activity's PER_ACTIVITY
 #              table either, so a project session today records on the shared three fields
 #              alone and this file would have nothing to read. Deciding what a project
