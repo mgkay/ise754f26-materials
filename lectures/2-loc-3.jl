@@ -30,6 +30,15 @@ end
 ## Setup
 using Logjam, DataFrames, SparseArrays, Optim
 
+# apparatus.jl ships beside the lectures in the materials
+# repository. Find it from the activated project rather
+# than from this file, so the script still works from a
+# copy under work/.
+let p = dirname(Base.active_project())
+    include(joinpath(basename(p) == "env" ? dirname(p) : p,
+                     "_common", "julia", "apparatus.jl"))
+end
+
 # Sec. 1. Allocation
 ## Model: Distance-based allocation
 # Model: distance-based allocation
@@ -47,11 +56,10 @@ D = [ 10  20  30  40              # DC 1 to each customer
       45  35  25  15 ]            # DC 2 to each customer
 α, TD = allocate(D, w)
 
-## Example 2: Charlotte and Raleigh DCs
-# Determine the population-weighted total distance when the North
-# Carolina cities above one hundred thousand people are each served by
-# the nearer of two distribution centers at Charlotte and Raleigh, and
-# determine the reduction from adding a third at Greensboro.
+# Example 2: Charlotte and Raleigh DCs
+## Example 2(a): Two DCs, at Charlotte and Raleigh
+# Determine the population-weighted total distance when each city is
+# served by the nearer of the two DCs.
 # Code block 2: the Carolinas' larger cities
 df = filter(r -> r.STFIP == st2fips(:NC) &&
                  r.POP > 100_000, usplace())
@@ -66,8 +74,9 @@ X = vcat(name2lonlat("Charlotte")', name2lonlat("Raleigh")')
 D = dists(X, P, :mi)
 α, TC2 = allocate(D, w)
 
-# Example 2: Charlotte and Raleigh DCs
 ## Example 2(b): Adding Greensboro
+# Determine the reduction in that total from opening a third DC at
+# Greensboro.
 # Code block 4: adding a third DC
 X = vcat(X, name2lonlat("Greensboro")')
 D = dists(X, P, :mi)
@@ -189,6 +198,46 @@ prt(DataFrame(start = ["0, 200", "200, 500"],
               NFs = [join(round.(Int, vec(Xᵃ)), ", "),
                      join(round.(Int, vec(Xᵇ)), ", ")],
               TC = round.([TCᵃ, TCᵇ])))
+# Integrated against alternating, measured rather than recalled. Derived from
+# 2-location/source/measure_int_vs_alt.jl, which is the fuller study; the two
+# formulations here are written from the SAME `allocate` and the SAME `Optim`
+# call, so what is compared is the formulation and not the implementation. The
+# numbers this cell produces are the ones the paragraph below quotes.
+using Random
+dfb = filter(r -> r.STFIP in st2fips.([:NC, :SC]) && r.POP > 10_000, usplace())
+Pb, wb = hcat(dfb.LON, dfb.LAT), float(dfb.POP)
+
+TCintb(x) = allocate(dists(reshape(x, :, 2), Pb, :mi), wb)[2]
+
+function TCaltb(X₀)
+    X, best = copy(X₀), Inf
+    while true
+        α, TC = allocate(dists(X, Pb, :mi), wb)
+        TC < best - 1e-9 || return best
+        best = TC
+        for i in axes(X, 1)
+            j = findall(==(i), α)
+            isempty(j) && continue
+            g(x) = allocate(dists(reshape(x, 1, :), Pb[j, :], :mi), wb[j])[2]
+            X[i, :] = optimize(g, X[i, :]).minimizer
+        end
+    end
+end
+
+nstarts = 20
+bench = DataFrame(n = Int[], ratio = Float64[], gap = Float64[],
+                  intwins = Int[], altwins = Int[])
+for n in (2, 3, 5, 9)
+    Random.seed!(8345)
+    S = [randX(Pb, n) for _ in 1:nstarts]
+    TCintb(vec(S[1])); TCaltb(S[1])                      # warm the compiler
+    ti = @elapsed vi = [optimize(TCintb, vec(X)).minimum for X in S]
+    ta = @elapsed va = [TCaltb(X) for X in S]
+    bi, ba = minimum(vi), minimum(va)
+    push!(bench, (n, ta / ti, 100abs(bi - ba) / min(bi, ba),
+                  count(vi .< va .- 1e-6), count(va .< vi .- 1e-6)))
+end
+small = filter(r -> r.n <= 3, bench)
 
 # Sec. 7. Large-scale examples
 ## Example 7: Service centers for the Carolinas
