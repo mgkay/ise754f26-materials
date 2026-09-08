@@ -34,6 +34,15 @@ using Logjam, DataFrames, Optim
 usd(x) = replace(string(round(Int, x)),
                  r"(?<=[0-9])(?=([0-9]{3})+$)" => ",")
 
+# apparatus.jl ships beside the lectures in the materials
+# repository. Find it from the activated project rather
+# than from this file, so the script still works from a
+# copy under work/.
+let p = dirname(Base.active_project())
+    include(joinpath(basename(p) == "env" ? dirname(p) : p,
+                     "_common", "julia", "apparatus.jl"))
+end
+
 # Sec. 5. ADD and DROP heuristics
 ## Model: Uncapacitated facility location
 logjam_rung(:ufladd, "UFL, ADD construction"; keywords = false)
@@ -41,9 +50,8 @@ logjam_rung(:ufldrop, "UFL, DROP construction"; keywords = false)
 
 # Example 1: Warehouses on the I-40 corridor
 ## Example 1(a): Adding one site at a time, by hand
-# Determine where to locate warehouses along the I-40 corridor, and how
-# many, by adding one site at a time and then by dropping one site at a
-# time, for the five cities of @tbl-i40.
+# Determine the sites ADD opens on the corridor, by hand, and the total
+# cost after each pass.
 # Code block 1: five cities on the corridor, and the cost of serving each
 P = reshape([50, 150, 220, 295, 420], :, 1)   # mile markers along I-40
 k = [150, 200, 150, 150, 200]                 # fixed cost at each site
@@ -68,11 +76,15 @@ TC3 = [sum(k[vcat(y, i)]) + sum(minimum(C[vcat(y, i), :], dims = 1))
 prt(DataFrame(site = add, TC = TC3))
 
 ## Example 1(b): The same steps as a procedure
+# Determine the same answer by running ufladd, and confirm it against
+# the hand calculation.
 # Code block 5: ADD run on the corridor
 y, TC, _ = ufladd(k, C)   # _ is the allocation, unused here
 y, TC
 
 ## Example 1(c): Dropping one site at a time
+# Determine the sites DROP leaves open on the same corridor, by hand,
+# and whether it reaches ADD's answer.
 # Code block 6: all five open, then the cheapest site to close
 y = collect(N)
 TCall = sum(k[y]) + sum(minimum(C[y, :], dims = 1))
@@ -105,9 +117,8 @@ logjam_rung(:ufl, "UFL, hybrid algorithm")
 
 # Example 2: Exchanging and combining all three
 ## Example 2(a): Exchanging one site at a time, by hand
-# Determine whether exchanging a site improves on the sets that adding
-# and dropping produced for the I-40 corridor, and what the three
-# procedures reach when they are combined.
+# Determine whether swapping one open site for one closed site improves
+# on either construction's answer.
 # Code block 10: every swap of one open site for one closed site
 fTC(y) = sum(k[y]) + sum(minimum(C[y, :], dims = 1))
 y = [3, 1]
@@ -122,24 +133,27 @@ yx, TCx, _ = uflxchg(k, C, yadd)   # third return is the allocation
 yx, TCx
 
 ## Example 2(b): The three procedures combined
+# Determine what the three procedures reach run together, and which of
+# them finds it.
 # Code block 12: the hybrid on the corridor
 yh, TCh, _ = ufl(k, C)   # _ is the allocation, unused here
 yh, TCh
 
-## Example 3: How many machines to lease and where
-# EMCA Industries, LLC is considering leasing machines that can be used
-# to manufacture a single type of product. They have identified
-# customers for the product and have estimated that they will be able to
-# sell 12 million units per year to these customers. Each unit weighs 15
-# pounds and is shipped at \$0.25 per ton-mile. @tbl-emca gives the
-# number of customers $n$ grouped by three-digit ZIP code across the
-# Carolinas. They have estimated that they will be able to lease each
-# machine for \$100,000 per year; the lease cost includes the rental
-# cost of housing it in a portion of an existing manufacturing facility.
-# EMCA would like to know how many machines are needed to best serve
-# their customers and where they should locate the machines, assuming
-# that each machine can produce up to 2 million units of product per
-# year.
+# Sec. 7. p-median facility location
+## Model: p-median location
+logjam_rung(:pmedian, "p-median location")
+
+## Sec. 7. p-median facility location
+# Code block 20: the p-median of the corridor at p = 2
+p = 2
+yp, TCp, _ = pmedian(p, C)   # _ is the allocation, unused here
+yp, TCp
+
+# Example 3: How many machines to lease and where
+## Example 3(a): What the UFL opens, capacity ignored
+# Determine how many machines uncapacitated facility location opens and
+# where, using every ZIP centroid as both a customer and a candidate
+# site.
 # Code block 13: EMCA's customers
 zip = [
     270, 271, 272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283,
@@ -168,6 +182,11 @@ prt(DataFrame(ZIP = zip[yz],
               city = lonlat2loc(Pz[yz, :],
                                 filter(r -> r.ISCUS, usplace())).NAME,
               tons = round.(vec(sum(Wz .* fz', dims = 2))[yz])))
+
+## Example 3(b): Whether that answer is feasible
+# Determine whether the machines the UFL opened are within their
+# capacity, and the smallest number of machines throughput feasibility
+# allows.
 # Code block 16: what each of the six machines is asked to make
 served = vec(sum(Wz .* units', dims = 2))[yz]
 prt(DataFrame(ZIP = zip[yz], units = round.(Int, served),
@@ -180,11 +199,17 @@ TCmin = TC7 + mmin * kz              # transport plus fixed cost
 s7 = vec(sum(W7 .* units', dims = 2))[y7]
 prt(DataFrame(machines = mmin, total = usd(TCmin),
               max_pct = round(100 * maximum(s7) / K, digits = 1)))
+
+## Example 3(c): How many machines capacity requires
+# Determine the number of machines at which no machine is over its
+# capacity, and what that feasibility costs against the
+# throughput-feasible minimum.
 # Code block 18: raise the machine count until none is over capacity
 res = DataFrame(machines = Int[], transport = Int[],
                 total = Int[], max_pct = Float64[])
 nm, over = mmin, true       # nm, not p: p is the p-median's
 while over
+    global nm, over         # a script's `while` opens a soft scope
     y, TCp, W = pmedian(nm, Cz)
     s = vec(sum(W .* units', dims = 2))[y]
     pct = 100 * maximum(s) / K
@@ -194,16 +219,6 @@ while over
     nm += 1
 end
 prt(res)   # Code block 19: the experiment's whole history
-
-# Sec. 7. p-median facility location
-## Model: p-median location
-logjam_rung(:pmedian, "p-median location")
-
-## Sec. 7. p-median facility location
-# Code block 20: the p-median of the corridor at p = 2
-p = 2
-yp, TCp, _ = pmedian(p, C)   # _ is the allocation, unused here
-yp, TCp
 
 ## Example 4: Discrete retail warehouses
 # Determine the best nine locations for retail warehouses serving the
@@ -286,7 +301,7 @@ fs = [0, maximum(f) * 1.05]
 fig = Figure(size = (620, 380))
 ax = Axis(fig[1, 1], xlabel = "production rate, molds/yr",
           ylabel = "production cost, \$/yr")
-scatter!(ax, f, tpc; color = :black, markersize = 11)
+scatter!(ax, f, tpc; color = :grey25, markersize = 11)
 lines!(ax, fs, ŷ([k, cp], fs); color = :steelblue4, label = "L2")
 lines!(ax, fs, ŷ([k₁, cp₁], fs); color = :firebrick, label = "L1")
 axislegend(ax; position = :lt)
