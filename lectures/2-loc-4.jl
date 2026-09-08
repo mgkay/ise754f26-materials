@@ -34,6 +34,9 @@ using Logjam, DataFrames, Optim
 usd(x) = replace(string(round(Int, x)),
                  r"(?<=[0-9])(?=([0-9]{3})+$)" => ",")
 
+# Sec. 5. ADD and DROP heuristics
+## Model: Uncapacitated facility location
+
 # apparatus.jl ships beside the lectures in the materials
 # repository. Find it from the activated project rather
 # than from this file, so the script still works from a
@@ -43,8 +46,6 @@ let p = dirname(Base.active_project())
                      "_common", "julia", "apparatus.jl"))
 end
 
-# Sec. 5. ADD and DROP heuristics
-## Model: Uncapacitated facility location
 logjam_rung(:ufladd, "UFL, ADD construction"; keywords = false)
 logjam_rung(:ufldrop, "UFL, DROP construction"; keywords = false)
 
@@ -209,7 +210,7 @@ res = DataFrame(machines = Int[], transport = Int[],
                 total = Int[], max_pct = Float64[])
 nm, over = mmin, true       # nm, not p: p is the p-median's
 while over
-    global nm, over         # a script's `while` opens a soft scope
+    global nm, over, y, TCp   # a script's `while` is a soft scope
     y, TCp, W = pmedian(nm, Cz)
     s = vec(sum(W .* units', dims = 2))[y]
     pct = 100 * maximum(s) / K
