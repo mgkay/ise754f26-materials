@@ -306,7 +306,35 @@ assumptions:
 
 Model 8: Minisum in one dimension
 
-Model 8 formulation: Minisum in one dimension
+Model 8 formulation: Mathematical formulation
+
+TC(x) = \sum_i w_i d_i = \sum_i \beta_i (x - a_i), \qquad \beta_i = \begin{cases} w_i, & \text{if } x \ge a_i \\ -w_i, & \text{if } x < a_i \end{cases} \tag{4}
+
+where
+
+x
+
+= location of the NF along the line
+
+a_i
+
+= location of EF i along the line
+
+w_i
+
+= weight of EF i
+
+d_i
+
+= distance from the NF to EF i, \lvert x - a_i \rvert
+
+\beta_i
+
+= signed weight of EF i.
+
+This means of finding the optimal solution only works because TC is linear; numerical optimization is needed otherwise.
+
+Model 8 formulation: Pseudocode
 
 ```
 algorithm minisum-1D;
@@ -324,11 +352,11 @@ end;
 end;
 ```
 
-Pseudocode, not Julia. The formulation of Model 8 is pseudocode: a step-by-step statement of the method’s logic in no particular programming language. It is deliberately not Julia; stating the algorithm language-independently shows the logic itself, which any language could then implement, rather than tying it to one.
+Pseudocode, not Julia. The second formulation of Model 8 is pseudocode: a step-by-step statement of the method’s logic in no particular programming language. It is deliberately not Julia; stating the algorithm language-independently shows the logic itself, which any language could then implement, rather than tying it to one.
 
-The facility the loop returns is the weighted median: the first EF at which the accumulated weight reaches half the total,  \sum_{i=1}^{j} w_i \ge \frac{W}{2}. \tag{4}
+The facility the loop returns is the weighted median: the first EF at which the accumulated weight reaches half the total,  \sum_{i=1}^{j} w_i \ge \frac{W}{2}. \tag{5}
 
-Why does the median location correspond to the optimal location? From any EF location, take a small step of size \delta in either direction. Every EF behind the new facility becomes \delta farther away; every point ahead of it becomes \delta closer. The step is worth taking whenever more weight lies ahead than behind. Stepping toward the heavier side repeatedly, the process stops precisely when neither side holds more than half the total weight: the median location. That stopping condition is exactly the test in Eq. 4: at the first EF whose running total reaches W/2, the weight strictly behind is less than half, or an earlier EF would have been the first to reach it, and the weight strictly ahead is at most half, since the running total already accounts for the rest. Although it is unlikely, it is possible that the total reaches exactly W/2 at EF_j; in this case, a step in either direction trades equal weight against equal weight: every point from EF_j to the next unvisited facility EF_k is equally good, so the optimum is the whole interval between EF_j and EF_k rather than the single point at EF_j. In the objective function, this corresponds to a flat segment rather than a corner point.
+Why does the median location correspond to the optimal location? From any EF location, take a small step of size \delta in either direction. Every EF behind the new facility becomes \delta farther away; every point ahead of it becomes \delta closer. The step is worth taking whenever more weight lies ahead than behind. Stepping toward the heavier side repeatedly, the process stops precisely when neither side holds more than half the total weight: the median location. That stopping condition is exactly the test in Eq. 5: at the first EF whose running total reaches W/2, the weight strictly behind is less than half, or an earlier EF would have been the first to reach it, and the weight strictly ahead is at most half, since the running total already accounts for the rest. Although it is unlikely, it is possible that the total reaches exactly W/2 at EF_j; in this case, a step in either direction trades equal weight against equal weight: every point from EF_j to the next unvisited facility EF_k is equally good, so the optimum is the whole interval between EF_j and EF_k rather than the single point at EF_j. In the objective function, this corresponds to a flat segment rather than a corner point.
 
 A separate and more general result is the Majority Theorem: if any single EF holds at least half of the total weight, the NF goes there. The theorem is true for all minisum problems with metric distances, whatever the number of dimensions, so it is a property neither of the line nor of the median procedure, and it is worth applying as a first check before any other means of determining the location is tried.
 

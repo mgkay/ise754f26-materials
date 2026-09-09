@@ -12,13 +12,17 @@ New Julia packages used
 - GeoMakie is the geospatial extension of the Makie plotting ecosystem: it adds map projections and reference geography, such as coastlines and political boundaries from the Natural Earth dataset, so that data given in longitude and latitude is drawn on a correctly projected map rather than on a plain Cartesian axis.
 
 New Logjam functions used
+- aligntext: Determines text alignment and offset positions for given points.
 - d1: Calculate rectilinear (Manhattan, L₁) distance between two points.
 - d2: Calculate Euclidean (L₂) distance between two points.
 - dgc: Calculate the great circle distance between two points.
 - dists: Compute distance matrix between two point sets using specified metric.
-- loc2lonlat: Geocode a single location string. Accepts addresses, city names, postal codes.
 - lonlat2loc: Find nearest place to a (lon, lat) coordinate pair (reverse geocoding).
-- wcentroid: Weighted geographic centroid of points (LON, LAT) with weights w, corrected for
+- makemap: Creates map visualization for predefined or user-defined region of interest.
+- prt: Pretty-print a matrix, vector, or DataFrame with smart formatting.
+- st2fips: Convert a two-character symbol for US states and territories to its corresponding FIPS code.
+- usplace: Returns DataFrame containing U.S. place data.
+- wcentroid: Weighted geographic centroid of points (LON, LAT) with weights w, corrected for longitude convergence toward the poles by a cos(lat) factor.
 
 Companion script
 
@@ -1086,24 +1090,6 @@ An analysis carried out for the state, without access to FedEx’s own figures, 
 Figure 27: FedEx hub choice: Greensboro (star) at the I-40/I-85 crossroads versus Kinston (✕), east of I-95 with no interstate service.
 
 The population-weighted center and the FedEx decision point the same way, to the central Piedmont, and together they close the loop opened in Lecture 2.1: where a facility sits is a long-lived, costly commitment, and the tools of this lecture, distances over real geography and a minisum solved numerically, are what turn that commitment into a computation. Choosing among discrete candidate sites, rather than a free point in the plane, is the subject the next lectures take up.
-
-## References
-
-The following sources are recommended for further study:
-
-Ahuja, R.K., Magnanti, T.L., and Orlin, J.B., 1993, Network Flows: Theory, Algorithms, and Applications, Englewood Cliffs, NJ: Prentice-Hall.
-
-Ballou, R.H., 2004, Business Logistics/Supply Chain Management, 5th Ed., Englewood Cliffs, NJ: Pearson.
-
-Daskin, M., 1995, Network and Discrete Location: Models, Algorithms, and Applications, New York: Wiley.
-
-Francis, R.L., McGinnis Jr., L.F., and White, J.A., 1992, Facility Layout and Location: An Analytical Approach, 2nd Ed., Englewood Cliffs, NJ: Prentice-Hall.
-
-Larson, R.C., and Odoni, A.R., 1981, Urban Operations Research, Englewood Cliffs, NJ: Prentice-Hall.
-
-Mirchandani, P.B., and Francis, R.L., Eds., 1990, Discrete Location Theory, New York: Wiley.
-
-Simchi-Levi, D., Kaminsky, P., and Simchi-Levi, E., 2008, Designing and Managing the Supply Chain: Concepts, Strategies, and Case Studies, 3rd Ed., Boston: McGraw-Hill.
 
 ## Endnotes
 -

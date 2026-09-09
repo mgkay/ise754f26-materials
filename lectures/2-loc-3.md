@@ -12,13 +12,13 @@ No new Julia packages used.
 New Logjam functions used
 -
 
-ala: Alternating location–allocation for locating n new facilities among m weighted
--
-
-randX: Generate n random points within the bounding box of point set P.
+ala: Alternating location–allocation for locating n new facilities among m weighted demand points.
 -
 
 alloclines: Convert allocation matrix to NaN-separated line segments for visualization.
+-
+
+randX: Generate n random points within the bounding box of point set P.
 -
 
 uszcta3: Returns DataFrame containing U.S. 3-digit ZIP Code Tabulation Area (ZCTA3) data.
@@ -152,6 +152,10 @@ Example 2: Charlotte and Raleigh DCs
 
 Determine the population-weighted total distance when the North Carolina cities above one hundred thousand people are each served by the nearer of two distribution centers at Charlotte and Raleigh, and determine the reduction from adding a third at Greensboro.
 
+Example 2(a): Two DCs, at Charlotte and Raleigh
+
+Determine the population-weighted total distance when each city is served by the nearer of the two DCs.
+
 ```
 # Code block 2: the Carolinas' larger cities
 df = filter(r -> r.STFIP == st2fips(:NC) &&
@@ -194,6 +198,8 @@ D = dists(X, P, :mi)
 
 Example 2(b): Adding Greensboro
 
+Determine the reduction in that total from opening a third DC at Greensboro.
+
 ```
 # Code block 4: adding a third DC
 X = vcat(X, name2lonlat("Greensboro")')
@@ -226,7 +232,7 @@ Charlotte, Raleigh, Greensboro  41,331,957.32      48.4%
 
 The four cases set out at the start of this lecture differ in what the problem hands over and what it leaves to be found. Two of them are worth drawing, because the difference between them is the difference between a problem that is solved routinely and one that is not.
 
-### 2.1 New facilities interact
+### New facilities interact
 
 Fig. 2 is the whole network at once. Suppliers on one side and customers on the other are existing facilities at fixed locations. Between them sit new facilities of two kinds, manufacturing and distribution, and this time all of them are to be located: five unknowns rather than one. What makes it more than five separate problems is that the new facilities ship to each other.
 
@@ -260,7 +266,7 @@ Here d = 2, for longitude and latitude. The first double sum is the only new thi
 
 It is worth saying plainly how often this general problem gets solved. In thirty or forty years of consulting, never once. It is well developed as theory, and a graduate semester can be spent formulating it as a linear program, but no client has ever asked for manufacturing and distribution to be located together. The manufacturing sites are already there, and the distribution centers are located relative to them. Nor would anyone want them decided together: a plant costs orders of magnitude more than a distribution center, so it is sited on its own terms and the distribution follows.
 
-### 2.2 No interaction between new facilities
+### No interaction between new facilities
 
 Take the manufacturing sites as given and they stop being unknowns: they become two more existing facilities, as in Fig. 3. What is left to locate is the distribution centers, and distribution centers do not ship to one another. Every v_{jk} is therefore zero, the first double sum vanishes, and the objective separates into one term per facility,
 
@@ -278,7 +284,7 @@ Solving location and allocation together is where Sec. 4 goes. Before that, the 
 
 Co-location answers the question about how it can be determined where different activities in a supply chain should be co-located, and when it is best to use transportation, when two operations and routing can be split between two locations. The reason this is a problem is that raw materials are typically available at one set of locations, while finished goods are required at a different set of locations, and all of the intermediate processing operations between them can occur either at these locations or at other intermediate locations. This is an important aspect of supply chain design that typically is not discussed in multifacility location, but the majority theorem gives a way of providing an answer.
 
-### 3.1 Theorem
+### Theorem
 
 The single-facility form is already familiar from 2.1. If one existing facility carries at least half of all the weight, no search is needed, because the optimum is at that facility:
 
@@ -405,6 +411,8 @@ Setting the two matrices side by side as [\,W\ \ V\,] turns each facility’s to
 
 Example 3(a): No reduction and no placement
 
+Determine whether the majority theorem reduces or places anything when the flow between the new facilities is v = 2.
+
 With v = 2:
 
 [\,W\ \ V\,] = \left[\begin{array}{ccc:cc} 2 & 1 & 0 & 0 & 2\\ 4 & 0 & 5 & 2 & 0 \end{array}\right] \begin{array}{l} \gamma = 5\\ \gamma = 11 \end{array}
@@ -413,6 +421,8 @@ Half of row 1 is 2.5 and its largest entry is 2; half of row 2 is 5.5 and its la
 
 Example 3(b): Both facilities placed
 
+Determine where both new facilities go when the flow between them is light, v = 0.5.
+
 With v = 0.5:
 
 [\,W\ \ V\,] = \left[\begin{array}{ccc:cc} 2 & 1 & 0 & 0 & 0.5\\ 4 & 0 & 5 & 0.5 & 0 \end{array}\right] \begin{array}{l} \gamma = 3.5 \;\Longrightarrow\; w_{11} = 2 > 1.75 \;\Longrightarrow\; \text{NF1 at EF1}\\ \gamma = 9.5 \;\Longrightarrow\; w_{23} = 5 > 4.75 \;\Longrightarrow\; \text{NF2 at EF3} \end{array}
@@ -420,6 +430,8 @@ With v = 0.5:
 In both rows the entry that clears sits in W, on the customer side of the rule, so both facilities are placed and the problem is solved outright.
 
 Example 3(c): A reduction, and then a placement
+
+Determine where the new facilities go when the flow between them is heavy, v = 4.
 
 With v = 4:
 
@@ -433,7 +445,7 @@ The reduction did the work the placement rule could not do on its own, which is 
 
 v = 2: nothing determined. v = 0.5: NF1 at EF1, NF2 at EF3. v = 4: NF1 and NF2 co-located, and the pair at EF1.
 
-### 3.2 Where each operation belongs
+### Where each operation belongs
 
 The same arithmetic answers the question the section opened with, once the facilities are read as operations rather than buildings. A product passes through a sequence of steps; the first and last are fixed somewhere, and the steps in between could be done anywhere. What the theorem determines is which of them have to share a site.
 
@@ -552,7 +564,7 @@ Model 3 formulation: Mixed continuous–combinatorial formulation
 
 If there were constraints on the maximum flow capacity of the NFs, then more than one w_{ji} could be nonzero in an optimal solution and W could not be replaced by the allocation vector \alpha.
 
-NoteSolution Space of LA Problem
+NoteSolution space of LA problem
 
 Mix of continuous and combinatorial.
 
@@ -701,6 +713,8 @@ Determine the locations of two facilities on the I-40 corridor of Ex. 5 by hand,
 
 Example 6(a): Starting at mile markers 0 and 200
 
+Determine where the procedure converges from this start, and the total cost there.
+
 Allocate. Facility 1 sits at marker 0 and facility 2 at marker 200, so every city east of marker 100 is nearer facility 2. Only the city at 50 goes to facility 1; the other six go to facility 2.
 
 Locate. Facility 1 serves one city, so it moves to marker 50. Facility 2 serves the cities at 150, 190, 220, 270, 295 and 420, whose weights are 2, 3, 4, 5, 6 and 7 and total 27. Half of that is 13.5. Running west to east, the cumulative weight is 2 at marker 150, 5 at 190, 9 at 220, and 14 at 270, which is the first city at which it reaches 13.5. Facility 2 moves to marker 270.
@@ -724,6 +738,8 @@ The fourth pass changes nothing, so the procedure stops at markers 190 and 295 w
 TC = 1(140) + 2(40) + 3(0) + 4(30) + 5(25) + 6(0) + 7(125) = 1{,}340.
 
 Example 6(b): Starting at mile markers 200 and 500
+
+Determine where the procedure converges from a second start, and whether the two starts agree.
 
 Now facility 1 starts at marker 200 and facility 2 at marker 500, so the midpoint between them is 350 and only the city at 420 lies east of it. Facility 2 takes that city alone and moves to it. Facility 1 takes the other six, whose weights 1 through 6 total 21; half is 10.5, and the cumulative weight running east is 1, 3, 6, 10, then 15 at marker 270, so facility 1 moves there.
 
@@ -821,9 +837,7 @@ start       NFs     TC
 
 ### An edge case
 
-Edge case: What if a NF is not allocated to any EFs?
-- Can happen if initial NF locations are chosen randomly
-- One way to handle: Randomly relocate unallocated NFs to EFs
+What if a NF is not allocated to any EFs? It can happen when the initial NF locations are chosen at random.
 
 North and South Carolina are the example. A bounding box drawn around the cities of those two states covers a large area of the Atlantic, so a randomly chosen starting point can land in the ocean while another lands on the beach. The one on the beach takes the whole allocation and the one at sea is left with nothing. Code could be written to catch that and pick another starting point, but the easier answer is to ignore it and rely on running the procedure from several starts, since one bad start among several does not affect the result kept. Code written for other people to use would handle it properly.
 
@@ -831,17 +845,9 @@ North and South Carolina are the example. A bounding box drawn around the cities
 
 Both only give a local optimal solution (not convex).
 
-Alternate more flexible:
-- solving n d-dimensional location problems and simple allocation
-- Nelder-Mead works well for 2-D
+The alternating form is more flexible: it solves n d-dimensional location problems with a simple allocation, and Nelder-Mead works well for 2-D. The integrated form solves an (n \times d)-dimensional problem, a larger search, though not a slower one here. Integrated may be better if there are no allocation (e.g., capacity) or location constraints on the NFs.
 
-Integrated solving an (n \times d)-dimensional problem:
-- a larger search, though not a slower one here
-
-When might integrated be better?
-- if there are no allocation (e.g., capacity) or location constraints on the NFs
-
-Running both formulations from the same random starts determines it, provided both are written the same way, from the same allocation step and the same optimizer. On that footing the integrated form is the faster of the two nearly everywhere, by two to three times on the larger instances. Quality is close and the lead changes hands: over a common set of starts each form finds the better answer about as often as the other, and the best answers they reach differ by at most a couple of percent. So the cost of the choice is in the search, not in the answer.
+Running both formulations from the same random starts determines it, provided both are written the same way, from the same allocation step and the same optimizer. On that footing the integrated form is the faster of the two while few facilities are being located, by about 1.6 times at two and three, an advantage that has gone by nine. Quality is close and the lead changes hands: over a common set of starts each form finds the better answer about as often as the other, and the best answers they reach differ by up to 6.5%. So the cost of the choice is in the search, not in the answer.
 
 The advantage of the alternating form is that it provides more flexibility in being able to easily change the allocation and the location mechanisms, so it buys flexibility at the cost of increased computation.
 

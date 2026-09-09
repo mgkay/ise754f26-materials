@@ -8,18 +8,14 @@ ISE 754: Logistics Engineering, Fall 2026
 Where anything you build is a solution, build many and keep the best.
 Where building even one is difficult, build it and make it better.
 
-```
-usd (generic function with 1 method)
-```
-
 No new Julia packages used.
 
 New Logjam functions used
+- pmedian: p-median facility location (fixed number of facilities, no fixed costs).
+- ufl: Hybrid UFL heuristic combining ADD, DROP, and EXCHANGE procedures.
 - ufladd: Greedy ADD construction heuristic for uncapacitated facility location.
 - ufldrop: Greedy DROP construction heuristic for uncapacitated facility location.
 - uflxchg: Pairwise EXCHANGE improvement heuristic for uncapacitated facility location.
-- ufl: Hybrid UFL heuristic combining ADD, DROP, and EXCHANGE procedures.
-- pmedian: p-median facility location (fixed number of facilities, no fixed costs).
 
 Companion script
 
@@ -54,6 +50,10 @@ assumptions:
 (b) new facilities are uncapacitated, so every existing facility is served by whichever open site is cheapest.
 
 Model 1: Uncapacitated facility location
+
+The box above is Model 1’s concept: the decision stated in words, with no symbols and no method, which is the rung every model opens in (see the Model Format Reference for more details). Additional formulation and implementation rungs of Model 1 are shown below. They never change what the concept said, but each rung commits detail the concept left open. Fig. 2 is a map of these rungs.
+
+Figure 2: The rungs of Model 1 described in Secs. 2, 5 and 6 below. The mathematical formulation is the only one without an implementation rung. All of the other formulations are heuristic algorithms that are then implemented as Logjam functions. Modified indicates an extension of a formulation, and hybrid is a meta-heuristic built from the implementations of three other heuristics.
 
 Model 1 formulation: Mathematical formulation
 
@@ -101,9 +101,9 @@ A heuristic’s computational effort is split between two things:
 - Construction: construct a feasible solution.
 - Improvement: find a better feasible solution.
 
-Which of the two is hard is a property of the problem rather than of the heuristic. Under easy construction, any random point or permutation is feasible and can then be improved, so the construct-then-improve cycle can be run multiple times. Under hard construction, there is almost no chance of generating a random feasible solution, because of the constraints on what a feasible solution is; randomness has to be included at the decision points as the solution is generated, in order to construct multiple different solutions, which might then be able to be improved. Fig. 2 shows one of each, built on the same six stops.
+Which of the two is hard is a property of the problem rather than of the heuristic. Under easy construction, any random point or permutation is feasible and can then be improved, so the construct-then-improve cycle can be run multiple times. Under hard construction, there is almost no chance of generating a random feasible solution, because of the constraints on what a feasible solution is; randomness has to be included at the decision points as the solution is generated, in order to construct multiple different solutions, which might then be able to be improved. Fig. 3 shows one of each, built on the same six stops.
 
-Figure 2: Two ways to construct a tour of six stops. Under easy construction any random permutation is already a tour, so one is generated and then improved. Under hard construction the tour is built one decision at a time, each step checked for feasibility, with the chosen path in red. Here both routes arrive at the same tour.
+Figure 3: Two ways to construct a tour of six stops. Under easy construction any random permutation is already a tour, so one is generated and then improved. Under hard construction the tour is built one decision at a time, each step checked for feasibility, with the chosen path in red. Here both routes arrive at the same tour.
 
 The tree is also the argument for why construction alone is not enough. Every choice eliminates everything below the branches not taken, and the choice is made on what the next step costs rather than on where it leads. That is the character of a greedy procedure: the lowest-cost next step need not belong to the lowest-cost solution. Suppose node 5 is the cheapest step from node 3 and the route through node 2 would have been far better overall. In retrospect the other choice was the right one, and there is no way of seeing that from node 3, at the moment the choice has to be made.
 
@@ -129,9 +129,9 @@ The UFL can also be solved as a MILP. It is an easy MILP, whose LP relaxation is
 
 ## 5. ADD and DROP heuristics
 
-Both construction procedures can be watched on a corridor small enough to solve by hand: five cities along I-40, at the mile markers of Fig. 3. The fixed cost differs from site to site, and that is one of the advantages of the UFL. A different k_i applies at each site, where adding a fixed cost to a solution found using the ALA procedure only works when the same fixed cost applies every time a facility is added, because the new facilities can be located in a continuum of sites that cannot be individually assigned a specific fixed cost.
+Both construction procedures can be watched on a corridor small enough to solve by hand: five cities along I-40, at the mile markers of Fig. 4. The fixed cost differs from site to site, and that is one of the advantages of the UFL. A different k_i applies at each site, where adding a fixed cost to a solution found using the ALA procedure only works when the same fixed cost applies every time a facility is added, because the new facilities can be located in a continuum of sites that cannot be individually assigned a specific fixed cost.
 
-Figure 3: The five cities of the I-40 corridor with their mile markers: Asheville at 50, Statesville at 150, Greensboro at 220, Raleigh at 295 and Wilmington at 420.
+Figure 4: The five cities of the I-40 corridor with their mile markers: Asheville at 50, Statesville at 150, Greensboro at 220, Raleigh at 295 and Wilmington at 420.
 
 Each pass of ADD does the same three things: try every site not yet open, keep the cheapest, and stop when none of them lowers the total. Written out, that is the ADD construction procedure.
 
@@ -220,6 +220,8 @@ Table 1: Mile marker and annual fixed cost of a warehouse at each of the five ci
 | Wilmington  | 420  | 200
 
 Example 1(a): Adding one site at a time, by hand
+
+Determine the sites ADD opens on the corridor, by hand, and the total cost after each pass.
 
 Taking the transport rate and the flow as one apiece makes cost equal to distance, so the cost matrix is the distances between the cities and the arithmetic stays visible.
 
@@ -369,6 +371,8 @@ Sites 3 and 1, Greensboro and Asheville, at a total cost of 645.
 
 Example 1(b): The same steps as a procedure
 
+Determine the same answer by running ufladd, and confirm it against the hand calculation.
+
 Running the procedure on the same data reproduces the hand calculation exactly.
 
 ```
@@ -384,6 +388,8 @@ y, TC
 Y = \{3, 1\} at TC = 645, the same answer as by hand.
 
 Example 1(c): Dropping one site at a time
+
+Determine the sites DROP leaves open on the same corridor, by hand, and whether it reaches ADD’s answer.
 
 Solved by hand on the same corridor, DROP opens every site first and then closes them one at a time.
 
@@ -597,6 +603,8 @@ Determine whether exchanging a site improves on the sets that adding and droppin
 
 Example 2(a): Exchanging one site at a time, by hand
 
+Determine whether swapping one open site for one closed site improves on either construction’s answer.
+
 Adding gave \{3, 1\} and dropping gave \{1, 3, 5\}, both at 645. Exchange starts from one of them and tries every swap of an open site for a closed one. Starting from ADD’s pair, that is two open sites against three closed ones, so six swaps.
 
 ```
@@ -638,6 +646,8 @@ Y = \{1, 4\}, Asheville and Raleigh, at TC = 600.
 
 Example 2(b): The three procedures combined
 
+Determine what the three procedures reach run together, and which of them finds it.
+
 Neither construction found this set. ADD opened Greensboro first because it is the cheapest single site, and having opened it never reconsidered; DROP closed Raleigh early for the same reason in reverse. Only a procedure that can move a site reaches \{1, 4\}, which is the argument for having an improvement step at all.
 
 ```
@@ -661,6 +671,74 @@ The trace shows the pattern the hybrid is built around: ADD reaches 645, exchang
 
 Y = \{1, 4\} at TC = 600, a 7% improvement on either construction alone.
 
+## 7. p-median facility location
+
+The p-median problem is the discrete analog of the ALA procedure of the previous lecture: the same location–allocation decision, with the new facilities restricted to a discrete set of candidate sites rather than free to sit anywhere. There are no fixed costs, and the number of new facilities is fixed at p rather than determined.
+
+It is a different model from the UFL, with its own objective and its own constraints, and its implementation is built out of the UFL heuristics. Both differences fall out of the modified ufladd: set every fixed cost to zero, and cap the count at p.
+
+Only the construction changes. Exchange still applies unaltered, because swapping an open site for a closed one neither adds nor removes a facility, it only moves one. So the whole procedure is ADD with k = 0 and a cap, followed by exchange.
+
+minimize: total transport cost of serving the existing facilities
+
+solve for:
+(a) sites at which to locate the new facilities, a subset of the n candidate sites
+
+subject to:
+(a) coverage: every existing facility is served by an open new facility;
+(b) count: exactly p new facilities are located
+
+return: sites chosen, and the resulting total cost
+
+assumptions:
+(a) new facilities may be located only at the given candidate sites;
+(b) new facilities are uncapacitated, so every existing facility is served by whichever open site is cheapest;
+(c) no fixed cost is charged for opening a site, so the count is a constraint rather than a decision.
+
+Model 2: p-median location
+
+Model 2 formulation: p-median location
+
+Y^\star = \arg\min_{Y \subseteq N} \left\{ \sum_{i \in Y} \sum_{j \in M_i} c_{ij} \;:\; \bigcup_{i \in Y} M_i = M, \; |Y| = p \right\} \tag{2}
+
+where
+
+p
+
+= number of new facilities to locate.
+
+The symbols it shares with Eq. 1 carry the meanings given there. Set beside it, the difference is the whole model: the fixed-cost term is gone, and the count that Eq. 1 decides is here a constraint.
+
+Model 2 implementation: p-median location
+
+```
+# Model: p-median location
+# p: Number of facilities to select.
+# C: n×m cost matrix where C[i,j] is cost of serving customer j from
+#    facility i.
+# verbose: Print iteration costs (default: true).
+pmedian    # (p, C; verbose) -> (y, TC, W)
+```
+
+```
+# Code block 20: the p-median of the corridor at p = 2
+p = 2
+yp, TCp, _ = pmedian(p, C)   # _ is the allocation, unused here
+yp, TCp
+```
+
+```
+p-median ADD: 2 facilities selected
+```
+
+```
+([2, 5], 295.0)
+```
+
+On the I-40 corridor, asking for exactly two warehouses and charging nothing for them gives a different pair than the UFL did.
+
+Sites 2 and 5, Statesville and Wilmington, rather than the UFL’s Asheville and Raleigh. With the fixed costs gone there is nothing to trade against distance, so the sites move outward to sit among the cities they serve.
+
 Example 3: How many machines to lease and where
 
 EMCA Industries, LLC is considering leasing machines that can be used to manufacture a single type of product. They have identified customers for the product and have estimated that they will be able to sell 12 million units per year to these customers. Each unit weighs 15 pounds and is shipped at $0.25 per ton-mile. Table 6 gives the number of customers n grouped by three-digit ZIP code across the Carolinas. They have estimated that they will be able to lease each machine for $100,000 per year; the lease cost includes the rental cost of housing it in a portion of an existing manufacturing facility. EMCA would like to know how many machines are needed to best serve their customers and where they should locate the machines, assuming that each machine can produce up to 2 million units of product per year.
@@ -674,6 +752,10 @@ Table 6: Number of customers n in each three-digit ZIP code.
 | zip  | 284  | 285  | 286  | 287  | 290  | 291  | 292  | 293  | 294  | 295  | 296  | 297  | 298  | 299
 
 | n  | 1  | 2  | 3  | 3  | 4  | 3  | 3  | 2  | 11  | 5  | 7  | 2  | 4  | 2
+
+Example 3(a): What the UFL opens, capacity ignored
+
+Determine how many machines uncapacitated facility location opens and where, using every ZIP centroid as both a customer and a candidate site.
 
 Five cities can be solved by hand. A real instance cannot, and it is where the heuristics earn their place. The amount of data is small enough that the arrays holding it can be created directly in Julia.
 
@@ -759,6 +841,10 @@ ZIP              city    tons
 
 The UFL opens 6 machines at a total annual cost of $1,248,233. That is the answer to the problem the UFL was given, and it is not yet the answer to the problem that was asked, because nothing in the model represents a machine’s capacity.
 
+Example 3(b): Whether that answer is feasible
+
+Determine whether the machines the UFL opened are within their capacity, and the smallest number of machines throughput feasibility allows.
+
 A machine can make two million units a year, and the UFL knows nothing about that, so the first thing to do with its answer is to check it against the constraint the model never saw.
 
 ```
@@ -783,7 +869,7 @@ The answer is infeasible. The busiest machine is asked for 135.5% of what a mach
 
 How many machines does capacity require, then? Not demand divided by capacity; the throughput-feasible minimum of Eq. 4 in Lecture 1.3,
 
-m_{\min} = \lfloor r_a\,t_e + 1 \rfloor , \tag{2}
+m_{\min} = \lfloor r_a\,t_e + 1 \rfloor , \tag{3}
 
 where
 
@@ -823,6 +909,10 @@ So the UFL opened 6, one short of the 7 that throughput feasibility requires. Op
 
 Seven is a lower bound on the count, not a feasible answer, because it counts only the total work. It says nothing about how that work is distributed, and the distribution is what a location model decides.
 
+Example 3(c): How many machines capacity requires
+
+Determine the number of machines at which no machine is over its capacity, and what that feasibility costs against the throughput-feasible minimum.
+
 The obvious engineering response is to keep adding machines until no machine is over its capacity. Setting that up is a short loop, and this is where a language like Julia earns its place in the course: an experiment that would be tedious by hand is a dozen lines, and its whole history collects in a DataFrame that can be read at a glance.
 
 ```
@@ -831,6 +921,7 @@ res = DataFrame(machines = Int[], transport = Int[],
 total = Int[], max_pct = Float64[])
 nm, over = mmin, true       # nm, not p: p is the p-median's
 while over
+global nm, over, y, TCp   # a script's `while` is a soft scope
 y, TCp, W = pmedian(nm, Cz)
 s = vec(sum(W .* units', dims = 2))[y]
 pct = 100 * maximum(s) / K
@@ -866,74 +957,6 @@ The sweep does not end where it might be expected to. The busiest machine stays 
 17 machines, at a total annual cost of $1,796,918.
 
 It took 17 machines to find a feasible solution. The throughput-feasible minimum number of machines was 7, but this number of machines would only work if each customer were able to be served from any of the machines. In this problem, each customer is allocated to only one machine, and each machine is capacity-limited. This increased the cost 44% (from $1,249,936 to $1,796,918). The reason the number of machines had to be increased so much is that the allocation did not account for capacity. In lecture 2.7, capacity constraints will be added to the UFL model, enabling a more effective solution by accounting for machine capacity.
-
-## 7. p-median facility location
-
-The p-median problem is the discrete analog of the ALA procedure of the previous lecture: the same location–allocation decision, with the new facilities restricted to a discrete set of candidate sites rather than free to sit anywhere. There are no fixed costs, and the number of new facilities is fixed at p rather than determined.
-
-It is a different model from the UFL, with its own objective and its own constraints, and its implementation is built out of the UFL heuristics. Both differences fall out of the modified ufladd: set every fixed cost to zero, and cap the count at p.
-
-Only the construction changes. Exchange still applies unaltered, because swapping an open site for a closed one neither adds nor removes a facility, it only moves one. So the whole procedure is ADD with k = 0 and a cap, followed by exchange.
-
-minimize: total transport cost of serving the existing facilities
-
-solve for:
-(a) sites at which to locate the new facilities, a subset of the n candidate sites
-
-subject to:
-(a) coverage: every existing facility is served by an open new facility;
-(b) count: exactly p new facilities are located
-
-return: sites chosen, and the resulting total cost
-
-assumptions:
-(a) new facilities may be located only at the given candidate sites;
-(b) new facilities are uncapacitated, so every existing facility is served by whichever open site is cheapest;
-(c) no fixed cost is charged for opening a site, so the count is a constraint rather than a decision.
-
-Model 2: p-median location
-
-Model 2 formulation: p-median location
-
-Y^\star = \arg\min_{Y \subseteq N} \left\{ \sum_{i \in Y} \sum_{j \in M_i} c_{ij} \;:\; \bigcup_{i \in Y} M_i = M, \; |Y| = p \right\} \tag{3}
-
-where
-
-p
-
-= number of new facilities to locate.
-
-The symbols it shares with Eq. 1 carry the meanings given there. Set beside it, the difference is the whole model: the fixed-cost term is gone, and the count that Eq. 1 decides is here a constraint.
-
-Model 2 implementation: p-median location
-
-```
-# Model: p-median location
-# p: Number of facilities to select.
-# C: n×m cost matrix where C[i,j] is cost of serving customer j from
-#    facility i.
-# verbose: Print iteration costs (default: true).
-pmedian    # (p, C; verbose) -> (y, TC, W)
-```
-
-```
-# Code block 20: the p-median of the corridor at p = 2
-p = 2
-yp, TCp, _ = pmedian(p, C)   # _ is the allocation, unused here
-yp, TCp
-```
-
-```
-p-median ADD: 2 facilities selected
-```
-
-```
-([2, 5], 295.0)
-```
-
-On the I-40 corridor, asking for exactly two warehouses and charging nothing for them gives a different pair than the UFL did.
-
-Sites 2 and 5, Statesville and Wilmington, rather than the UFL’s Asheville and Raleigh. With the fixed costs gone there is nothing to trade against distance, so the sites move outward to sit among the cities they serve.
 
 Example 4: Discrete retail warehouses
 
@@ -1092,9 +1115,9 @@ TPC_0/f_0
 
 Eq. 5 is the one the UFL needs. A straight line fitted to the same data gives TPC_\text{est} = k + c_p f, and of its two terms only k is kept. The variable part c_p f is discarded: c_p is constant, so c_p f adds the same amount per unit produced wherever the facility is put, and a term that does not vary with location cannot change which location is best. What is left, k, is the fixed cost the UFL takes, and it is combined with the variable transport cost, which does vary with location. That is what justifies the fixed-plus-transport form every UFL in this lecture has used.
 
-Production technology has economies of scale, so total production cost is a concave function of the production rate: average cost falls as a facility gets bigger. Fig. 4 shows that curve in red, with the falling average cost dashed beneath it. A concave curve is not something the UFL can use, since the model needs one number per site. The substitute is a straight line fitted through the same data, and the number taken from it is its intercept, k, which becomes the fixed production cost.
+Production technology has economies of scale, so total production cost is a concave function of the production rate: average cost falls as a facility gets bigger. Fig. 5 shows that curve in red, with the falling average cost dashed beneath it. A concave curve is not something the UFL can use, since the model needs one number per site. The substitute is a straight line fitted through the same data, and the number taken from it is its intercept, k, which becomes the fixed production cost.
 
-Figure 4: Total production cost against production rate. The actual cost curve is concave, so average cost falls with scale; the fitted straight line stands in for it over the range where facilities actually operate, and its intercept k is the fixed cost the UFL uses.
+Figure 5: Total production cost against production rate. The actual cost curve is concave, so average cost falls with scale; the fitted straight line stands in for it over the range where facilities actually operate, and its intercept k is the fixed cost the UFL uses.
 
 The fit does not have to hold everywhere, only over the range where facilities actually operate. Nothing operates below the minimum efficient scale f_\text{MES}, because at that size the economies of scale have not been captured and the facility could not compete with larger ones, and nothing operates beyond the maximum feasible scale f_\text{max}. Between those two bounds a straight line is a good enough stand-in for the curve, and that is what justifies the substitution.
 
@@ -1102,7 +1125,7 @@ NoteWhat is the minimum efficient scale?
 
 One reason a minimum efficient scale exists at all is lumpiness, which Lecture 1.3 Sec. 2 names as one of the three things that make production-system design hard: lumpy resources imply a minimum effective size below which it is too costly to operate. Below f_\text{MES} some of those resources are not being fully utilized, so their cost is spread over too little output and unit costs tend to be higher. At f_\text{MES} most of the lumpy resources are being reasonably well utilized, which is what the threshold marks: the production rate at which average cost stops falling appreciably.
 
-The effect is easiest to see in the average cost rather than the total. Reading Fig. 4 toward smaller scales, APC_\text{act} starts to increase significantly for rates below f_\text{MES}, while TPC_\text{act} is merely flattening onto its floor. And the plotted data agree with the argument: every one of the actual EF production costs in Fig. 4 falls above f_\text{MES}, which is not a property of the sample but the economic claim itself. No actual plant operates below that point for any length of time, because it would not be cost effective.
+The effect is easiest to see in the average cost rather than the total. Reading Fig. 5 toward smaller scales, APC_\text{act} starts to increase significantly for rates below f_\text{MES}, while TPC_\text{act} is merely flattening onto its floor. And the plotted data agree with the argument: every one of the actual EF production costs in Fig. 5 falls above f_\text{MES}, which is not a property of the sample but the economic claim itself. No actual plant operates below that point for any length of time, because it would not be cost effective.
 
 Fitting that line is itself an optimization problem. Regression is a method of modeling the relationships between a dependent variable and one or more independent variables. The model is expressed as a function that “best fits” the independent variables to the dependent variable. Determining the best fit involves solving a multivariate optimization problem, where the Nelder-Mead procedure of Fig. 15 in Lecture 2.2 can be used to determine the coefficients. If the coefficients of the model are linear in the function, the method is termed linear regression. Different objective functions, termed loss functions, can be used to fit the model.
 
@@ -1243,7 +1266,7 @@ total  213,656  2,706,320  2,706,320         0
 
 k = $198,570 per hub per year. The slope, c_p = $8.95 per mold, is discarded.
 
-The squared loss is what Model 3 is: it is in the objective, in Eq. 9, and in the model’s name. What the square is not is forced by anything around it. The line form and the numerical solve are indifferent to which loss is handed to them, so replacing the square with an absolute value changes one function and leaves the rest of the apparatus standing. That gives a different model, the least absolute deviations line, fitted to the same four hubs by the same means, and drawing both over the data shows what the choice between them costs (Fig. 5). Plotting a fitted functional form is the easiest thing a plotting library does: the coefficients are the whole description of the line, so it can be drawn anywhere the predictor runs.
+The squared loss is what Model 3 is: it is in the objective, in Eq. 9, and in the model’s name. What the square is not is forced by anything around it. The line form and the numerical solve are indifferent to which loss is handed to them, so replacing the square with an absolute value changes one function and leaves the rest of the apparatus standing. That gives a different model, the least absolute deviations line, fitted to the same four hubs by the same means, and drawing both over the data shows what the choice between them costs (Fig. 6). Plotting a fitted functional form is the easiest thing a plotting library does: the coefficients are the whole description of the line, so it can be drawn anywhere the predictor runs.
 
 ```
 # Code block 27: the same hubs under L1 loss, and both fits drawn
@@ -1259,7 +1282,7 @@ fs = [0, maximum(f) * 1.05]
 fig = Figure(size = (620, 380))
 ax = Axis(fig[1, 1], xlabel = "production rate, molds/yr",
 ylabel = "production cost, \$/yr")
-scatter!(ax, f, tpc; color = :black, markersize = 11)
+scatter!(ax, f, tpc; color = :grey25, markersize = 11)
 lines!(ax, fs, ŷ([k, cp], fs); color = :steelblue4, label = "L2")
 lines!(ax, fs, ŷ([k₁, cp₁], fs); color = :firebrick, label = "L1")
 axislegend(ax; position = :lt)
@@ -1271,7 +1294,7 @@ k₁ = 266543.09067848907
 cp₁ = 7.365570511209085
 ```
 
-Figure 5: SP3D’s four hubs fitted twice, under L2 and L1 loss. The lines differ because squared deviation is pulled by how far a point sits from the line, while absolute deviation counts only which side of it the point falls on.
+Figure 6: SP3D’s four hubs fitted twice, under L2 and L1 loss. The lines differ because squared deviation is pulled by how far a point sits from the line, while absolute deviation counts only which side of it the point falls on.
 
 The two intercepts are not the same number: L2 puts the fixed cost at $198,570 and L1 at $266,543. Running the L1 fit through the same table as code block 26 shows which one a UFL can use.
 
@@ -1305,7 +1328,7 @@ That is the whole argument for L2 here, and it is not a matter of taste. The UFL
 ## Endnotes
 -
 
-M. S. Daskin, Network and Discrete Location: Models, Algorithms, and Applications, 2nd ed., Wiley (2013).↩︎
+M. S. Daskin, Network and Discrete Location: Models, Algorithms, and Applications, New York: Wiley, 1995.↩︎
 -
 
 R. P. Rumelt, Note on Strategic Cost Dynamics, POL 1999-1.2, Exhibit 2, reporting a study of scale exponents across products. The general guess of b = -0.35 for manufacturing facilities is from the same page. Exhibit 2’s label column is printed one row low in the original; the bands above are aligned so that the shares sum to 100% and the general guess falls in the modal band.↩︎

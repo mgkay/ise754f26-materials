@@ -457,7 +457,7 @@ Success: claude --version prints a number followed by (Claude Code). If it says 
 
 The Claude desktop app is a separate download and is not what is needed here. The two share one login, so having the app means being signed in already, but the command above is still required.10 On Windows, Git for Windows is recommended rather than required: with it Claude Code can use a Bash shell, and without it Claude Code uses PowerShell instead.11
 
-2. Let Claude Code install the rest. Everything else, Git, VS Code, its extensions, Julia at the pinned version, and the course packages, is installed by Claude Code following a written procedure the course supplies. Follow SETUP.md, which is four short human steps; it detects what is already on the machine and installs only what is missing, so nothing is removed or reconfigured. It lives in the course materials repository, which the setup clones for you; nothing needs downloading by hand.
+2. Let Claude Code install the rest. Everything else, Git, VS Code, its extensions, Julia at the pinned version, and the course packages, is installed by Claude Code following a written procedure the course supplies. Follow SETUP.md, which is four short human steps; it detects what is already on the machine and installs only what is missing, so nothing is removed or reconfigured. It lives in the course materials repository, which the setup clones; nothing needs downloading by hand.
 
 Success: the last step runs a check of eleven things and prints READY, saving the output to ISE754/bootstrap-report.txt.
 

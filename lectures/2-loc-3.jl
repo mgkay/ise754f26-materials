@@ -30,6 +30,9 @@ end
 ## Setup
 using Logjam, DataFrames, SparseArrays, Optim
 
+# Sec. 1. Allocation
+## Model: Distance-based allocation
+
 # apparatus.jl ships beside the lectures in the materials
 # repository. Find it from the activated project rather
 # than from this file, so the script still works from a
@@ -39,8 +42,6 @@ let p = dirname(Base.active_project())
                      "_common", "julia", "apparatus.jl"))
 end
 
-# Sec. 1. Allocation
-## Model: Distance-based allocation
 # Model: distance-based allocation
 function allocate(D, w)
     n, m = size(D)

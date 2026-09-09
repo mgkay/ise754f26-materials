@@ -639,14 +639,6 @@ end
 
 The most-variable-last ordering carries about a third less total cycle time. The line carrying each station’s SCV to the next, c_a^2 \leftarrow (1-u^2)c_a^2 + u^2 c_e^2, is Eq. 8 at m = 1, where \sqrt{m} = 1 and the constant terms cancel. The rule: put low-variability operations early and the most variable operation last, and invest variability-reduction effort upstream, where it pays off across every stage that follows. Once supply chains are introduced (from Topic 2 on), the same machinery answers where in a multi-stage chain to place the most variable activity.
 
-## References
-
-The following sources are recommended for further study:
-- Askin, R.G., and Standridge, C.R., 1993, Modeling and Analysis of Manufacturing Systems, Wiley.
-- Cachon, G., and Terwiesch, C., 2006, Matching Supply with Demand: An Introduction to Operations Management, McGraw-Hill.
-- Hopp, W.J., and Spearman, M.L., 2000, Factory Physics: Foundations of Manufacturing Management, 2nd Ed., McGraw-Hill.
-- Suri, R., Sanders, J.L., and Kamath, M., 1993, “Performance evaluation of production networks,” Handbooks in OR & MS, vol. 4, S.C. Graves et al., Eds., pp. 199–286.
-
 ## Endnotes
 -
 
