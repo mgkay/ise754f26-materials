@@ -448,7 +448,8 @@ against the original. It sets:
 ```json
 {
   "julia.executablePath": "+1.12.6",
-  "julia.useCodeLens": false
+  "julia.useCodeLens": false,
+  "julia.useRevise": false
 }
 ```
 
@@ -461,8 +462,18 @@ clicked and run whichever cell the text cursor happens to sit in, and clicking o
 the cursor, so the wrong cell runs with nothing to say so. A cell is run instead by clicking inside
 it and pressing Alt+Enter.
 
+`julia.useRevise` stops the extension loading Revise.jl when the REPL starts, which it does by
+default. Revise reloads a package's code after an edit, so it matters to someone developing a
+package and to nobody else; the course environment therefore does not carry it. Left at its
+default the extension reports, on **every** REPL start, that Revise is "configured to load … but
+is not installed". Setting it false here is one of the two remedies the extension offers for that
+message, and it costs nothing, since there is no package under development to reload. Note that a
+machine with Revise in its own global environment never shows the message, so its absence on one
+machine says nothing about the next.
+
 **If `ISE754/.vscode/settings.json` already exists**, do not overwrite it. Add or update only the
-`julia.executablePath` and `julia.useCodeLens` keys and leave everything else untouched.
+`julia.executablePath`, `julia.useCodeLens` and `julia.useRevise` keys and leave everything else
+untouched.
 
 The setting applies to the ISE754 folder alone. It changes nothing about Julia anywhere else on
 the machine.

@@ -15,6 +15,17 @@
 // cell by clicking inside it and pressing Alt+Enter; the current cell stays
 // outlined, so what will run is always visible.
 //
+// "julia.useRevise" turns off an extension default that does not fit this
+// course. Revise.jl is a package-development tool: it reloads a package's code
+// after you edit it, so a long REPL session picks up your changes without a
+// restart. Nothing in this course develops a package, so Revise is not in the
+// course environment -- and the extension, which loads it on every REPL start
+// by default, then reports that Revise is "configured to load ... but is not
+// installed" every single time you start the REPL. Turning the setting off is
+// one of the two remedies the extension itself offers for that message, and it
+// is scoped to this folder like everything else here. Nothing is lost: with no
+// package under development there is nothing for Revise to revise.
+//
 // "files.readonlyInclude" marks the two received folders read-only IN THE EDITOR:
 // you can open and read anything in them, and VS Code refuses to save a change.
 // That is what they are -- materials/ and handouts/ are clones you pull, so an
@@ -26,6 +37,8 @@
   "julia.executablePath": "+1.12.6",
 
   "julia.useCodeLens": false,
+
+  "julia.useRevise": false,
 
   "files.readonlyInclude": {
     "materials/**": true,
