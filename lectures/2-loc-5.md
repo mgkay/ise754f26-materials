@@ -738,9 +738,9 @@ x_\text{agg} = \frac{10 + 40}{2} = 25, \qquad r = \frac{40 - 10}{2} = 15, \qquad
 
 A facility inside the region, at mile 20, the x_\text{in} of the figure. Here d = |20 - 25| = 5, which is less than r, so the first branch of Eq. 3 applies:
 
-d_a = \frac{15}{2} + \frac{5^{2}}{2 \cdot 15} = 7.5 + 0.8\overline{3} = 8.8\overline{3}\ \text{mi} .
+d_a = \frac{15}{2} + \frac{5^{2}}{2 \cdot 15} = 7.5 + 0.8\overline{3} = 8.3\overline{3}\ \text{mi} .
 
-The straight-line distance to the aggregate point is 5 miles. The aggregate distance is 8.83, which is the number that belongs in a transport cost.
+The straight-line distance to the aggregate point is 5 miles. The aggregate distance is 8.33, which is the number that belongs in a transport cost.
 
 A facility outside the region, at mile 0, its x_\text{out}. Here d = |0 - 25| = 25, which exceeds r, so the second branch applies and d_a = 25 mi. Far enough away, the region’s extent stops mattering and the distance to its centroid is the whole story.
 
@@ -750,7 +750,7 @@ d_a = \frac{15}{2} + 0 = 7.5\ \text{mi},
 
 which is the result the rest of the lecture rests on. Locating on a region’s centroid does not serve it for nothing; it costs 7.5 miles of average travel, and a model that records zero there has discarded the entire cost of serving that region.
 
-At mile 20, d_a = 8.83 mi; at mile 0, d_a = 25 mi; at the centroid itself, d_a = 7.5 mi and not zero.
+At mile 20, d_a = 8.33 mi; at mile 0, d_a = 25 mi; at the centroid itself, d_a = 7.5 mi and not zero.
 
 ### Two dimensions
 
@@ -1163,7 +1163,7 @@ This strategy uses the function groupby to split the data in the table, and then
 
 Ex. 2 was this pattern, before it had a name. groupby split the three-digit ZCTAs by their first two digits, combine applied a sum to each group’s population and land area and wcentroid to its coordinates, and the result came back as one row per two-digit ZIP.
 
-Joining tables: Sometimes, information is spread across multiple tables. For example, the current table may list SKUs and quantities, but not include item details like weight or cube. To bring in that additional information, a join is used to combine it with another table that contains those attributes. An inner join is used in Sec. 8 to combine only the rows with matching SKUs in both tables (this is called an “inner” join because it keeps only the overlapping part of the two tables).
+Joining tables: Sometimes, information is spread across multiple tables. For example, the current table may list SKUs and quantities, but not include item details like weight or cube. To bring in that additional information, a join is used to combine it with another table that contains those attributes. An inner join combines only the rows with matching SKUs in both tables (this is called an “inner” join because it keeps only the overlapping part of the two tables).
 
 ### Missing data: drop vs. skip vs. impute
 
