@@ -126,7 +126,7 @@ The outbound side comes first, because the customers’ demands are given direct
 
 Figure 6: Per ton of finished product, the plant consumes two tons of raw material from Asheville and half a ton from Durham.
 
-Figure 7: Computing the five monetary weights. Each row sits at its facility’s height: suppliers 1 and 2 on the left, their physical flows following from the bill of material and priced at the inbound rate; customers 3, 4 and 5 on the right, their demands priced at the outbound rate. Code block 1 below carries out exactly these calculations.
+Figure 7: Computing the five monetary weights. Each row sits at its facility’s height: suppliers 1 and 2 on the left, their physical flows following from the bill of material and evaluated at the inbound rate; customers 3, 4 and 5 on the right, their demands evaluated at the outbound rate. Code block 1 below carries out exactly these calculations.
 
 ```julia
 # Code block 1: monetary weights from flows and rates
@@ -1074,7 +1074,7 @@ Determine the new-facility location serving existing facilities at Detroit, Gain
 
 The framing is a consulting one. A company whose owners are already in Cary would prefer to stay there, everything else being equal. Transport cost is not the whole of their decision: for a distribution company it is close to everything, but for a company that has to hire engineers and technical staff it might be half, with the rest going to who is willing to live in the location, the cost of energy, tax policy, and a long list besides. So the question put to the logistics engineer is not where to locate. It is what staying in Cary costs per year against the transport-optimal site. If the answer is a few hundred dollars a month the company stays; if it is millions, it moves. Producing that differential is the whole of the engineer’s task, and the trade against wages, taxes and energy is management’s.
 
-In order to determine the differential, the transport rate is needed and is the piece of information a firm usually does have: say \$2 per mile for a truck on the road. Priced against great-circle distance, the resulting estimate of transport cost is too low, because those are not the miles the truck drives. Where that rate comes from is taken up in Transport.
+In order to determine the differential, the transport rate is needed and is the piece of information a firm usually does have: say \$2 per mile for a truck on the road. Evaluated against great-circle distance, the resulting estimate of transport cost is too low, because those are not the miles the truck drives. Where that rate comes from is taken up in Transport.
 
 The three customers are the cities sampled for circuity in code block 28, each defined there as a [longitude, latitude] pair in degrees. Those cities and their truckloads are the data; the factor $\bar g$ just estimated turns great-circle miles into road miles, and the rate turns road miles into dollars.
 
@@ -1105,7 +1105,7 @@ lonlat2loc(xᵒ, usplace()).desc
 "3.8 mi E of Charlotte, TN"
 ```
 
-Pricing the two sites is then one call each.
+Evaluating the two sites is then one call each.
 
 ```julia
 # Code block 33: what an alternative site would cost
@@ -1128,7 +1128,7 @@ Staying in Cary costs about \$35.4k per year more than the transport optimum, an
 
 That is the number the engineer hands over. Whether it is worth paying is not a transport question.
 
-→ Circuity is the correction that turns a geometric answer into a priced one. The location survives the correction; the number attached to it does not.
+→ Circuity is the correction that turns a geometric answer into a monetary one. The location survives the correction; the number attached to it does not.
 
 ## 8. FedEx hub choice
 

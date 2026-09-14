@@ -1063,7 +1063,7 @@ How much the adjustment matters depends on how coarse the aggregation is, and it
 
 That is a threshold rather than a rule, and it joins the two halves of this lecture: the resolution chosen in Sec. 3 decides how much the correction of Sec. 5 is worth. A coarse demand set needs it and a fine one nearly does not, which is another reason the resolution question is not a detail.
 
-Example 5: EMCA’s machines, on aggregate demand
+Example 5: EMCA’s machines on aggregate demand
 
 Determine how many machines EMCA should lease and where, when its demand points are recognized as aggregates rather than as customers.
 
