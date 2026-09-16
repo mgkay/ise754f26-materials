@@ -565,7 +565,7 @@ Model 1 implementation: Hybrid algorithm
 ufl        # (k, C; verbose) -> (y, TC, W)
 ```
 
-Example 2: Exchanging and combining all three
+Example 2: Exchange and hybrid on the corridor
 
 Determine whether exchanging a site improves on the sets that adding and dropping produced for the I-40 corridor, and what the three procedures reach when they are combined.
 
@@ -710,7 +710,7 @@ On the I-40 corridor, asking for exactly two warehouses and charging nothing for
 
 Sites 2 and 5, Statesville and Wilmington, rather than the UFL’s Asheville and Raleigh. With the fixed costs gone there is nothing to trade against distance, so the sites move outward to sit among the cities they serve.
 
-Example 3: How many machines to lease and where
+Example 3: EMCA machine location
 
 EMCA Industries, LLC is considering leasing machines that can be used to manufacture a single type of product. They have identified customers for the product and have estimated that they will be able to sell 12 million units per year to these customers. Each unit weighs 15 pounds and is shipped at \$0.25 per ton-mile. Table 6 gives the number of customers $n$ grouped by three-digit ZIP code across the Carolinas. They have estimated that they will be able to lease each machine for \$100,000 per year; the lease cost includes the rental cost of housing it in a portion of an existing manufacturing facility. EMCA would like to know how many machines are needed to best serve their customers and where they should locate the machines, assuming that each machine can produce up to 2 million units of product per year.
 

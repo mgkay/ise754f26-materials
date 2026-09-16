@@ -104,7 +104,7 @@ allocate (generic function with 1 method)
 
 The allocation is read down the columns: column $j$ holds EF $j$’s distance to every NF, and the smallest entry names its server.
 
-Example 1: Two DCs serving four customers
+Example 1: Two DCs and four customers
 
 Determine the allocation and the total weekly distance for two DCs serving four customers with weights $w = (2, 4, 6, 8)$, each representing the number of truckloads per week.
 
@@ -538,7 +538,7 @@ The four rates along the chain in Fig. 4 are not equal, and that is worth a mome
 
 The four rates differ. The reason for the difference is that the quantities and characteristics of the materials being moved into an operation in general differ from what comes out of the operation. As a result of the operation, material might be removed, and so the physical weight decreases. Alternatively, materials could be added as part of the operation, and the physical weight would increase. Also, characteristics of the materials could change, resulting in more expensive or cheaper transport alternatives. All of that nets out to differences in transport rates in terms of dollars per mile. This can be seen most clearly by referring back to Eq. 2 in Lecture 2.2, where the monetary weight $w_i$, in terms of dollars per mile, is the product of the physical weight $q_i$ (tons) and the transport rate $r_i$ (\$/ton-mi), both of which can change on the input and output sides of each operation. More details of how to determine these values are discussed in Transport.
 
-Example 4: Locating a production chain
+Example 4: Five-operation production chain
 
 Determine which of heat treat, pressing and finishing must share a site, and where each of the three operations belongs, given drop forge fixed at Nagoya and painting fixed at Detroit.
 
@@ -992,7 +992,7 @@ Both only give a local optimal solution (not convex).
 
 The alternating form is more flexible: it solves $n$ $d$-dimensional location problems with a simple allocation, and Nelder-Mead works well for 2-D. The integrated form solves an $(n \times d)$-dimensional problem, a larger search, though not a slower one here. Integrated may be better if there are no allocation (e.g., capacity) or location constraints on the NFs.
 
-Running both formulations from the same random starts determines it, provided both are written the same way, from the same allocation step and the same optimizer. On that footing the integrated form is the faster of the two while few facilities are being located, by about 1.6 times at two and three, an advantage that has gone by nine. Quality is close and the lead changes hands: over a common set of starts each form finds the better answer about as often as the other, and the best answers they reach differ by up to 6.5%. So the cost of the choice is in the search, not in the answer.
+Running both formulations from the same random starts determines it, provided both are written the same way, from the same allocation step and the same optimizer. On that footing the integrated form is the faster of the two while few facilities are being located, by about 1.5 times at two and three, an advantage that has gone by nine. Quality is close and the lead changes hands: over a common set of starts each form finds the better answer about as often as the other, and the best answers they reach differ by up to 6.5%. So the cost of the choice is in the search, not in the answer.
 
 The advantage of the alternating form is that it provides more flexibility in being able to easily change the allocation and the location mechanisms, so it buys flexibility at the cost of increased computation.
 
@@ -1120,7 +1120,7 @@ Table 4: Best Retail Warehouse Locations.1
 
 The table is roughly twenty years old, which makes it a test of the method rather than a lookup: the same problem solved against current population data should land in much the same places, and where it does not, the population has moved.
 
-Example 8: Reproducing the warehouse table
+Example 8: Retail warehouse table
 
 Determine the best locations for one, two, three and nine retail warehouses serving the continental United States in proportion to population, and compare them with Table 4.
 

@@ -28,7 +28,7 @@ Bracketing is the first and most general way to estimate a system’s performanc
 
 The waiting time for a bus is the canonical instance. The headway is the time between consecutive buses. Under perfect control the buses run on an evenly spaced schedule, so a passenger arriving at a random moment waits, on average, half the headway. Under no control the buses arrive at random (a Poisson process, Sec. 4), and the average wait is the full headway, not half. The reason is the memorylessness of random arrivals: however long the wait has already lasted, the expected time to the next bus is still a full average headway; equivalently, a passenger is more likely to arrive during a long gap than a short one, so the long gaps dominate the average wait.
 
-Example 1: Waiting time for a bus
+Example 1: Bus waiting time
 
 Estimate the waiting time for a bus when the headway (the average time between buses) is 8 minutes and passengers arrive at random, with no real-time bus tracking.
 
@@ -320,7 +320,7 @@ For the arrival SCV, $\sigma_a^2 = 0$ for deterministic arrivals and $\sigma_a^2
 
 The single-machine form Eq. 6 is Kingman’s approximation, named for this lecture’s epigraph author; the $m$-machine results (Eq. 7, Eq. 8, Eq. 9) are further factory-physics formulas, quoted here rather than derived. These formulas are checked against a simulation in Sec. 7, where simulation is introduced as a modeling level in its own right.
 
-Example 4: The price of utilization
+Example 4: Price of utilization
 
 How does the cycle time of a single-machine station ($t_e = 0.1$ hr, $c_a^2 = c_e^2 = 1$) behave as utilization rises toward 1?
 
@@ -592,7 +592,7 @@ Figure 8: Barber-shop mean cycle time in queue ($M/D/1$, $u = 0.833$) versus hou
 
 The departure SCV (Eq. 8) means a station’s variability does not stay put: the variability of what leaves one station becomes the variability of what arrives at the next. A highly variable station placed early inflates the queue of every station downstream, while the same station placed last corrupts nothing beyond itself. This is the corrupting influence of variability: variability early in a line is far more damaging than variability late. When the order of operations is a design choice, that choice matters.
 
-Example 6: Where should the variable station go?
+Example 6: Variable station placement
 
 Three single-machine stations run in series, each at utilization $u = 0.9$ and the same mean process time $t_e = 0.1$ hr, but with process-time variabilities $c_e^2 = 0.25$, $1$, and $4$; work enters the first at $c_a^2 = 1$. Compare the line’s total cycle time when the most variable station is run last versus first.
 

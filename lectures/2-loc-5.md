@@ -503,7 +503,7 @@ This is the fifth time the course has met one identity, and naming the earlier f
 
 That last one is the same property as this section’s, stated in the language of regression rather than of geography. An aggregate demand point has to preserve the total it stands for, or every cost computed from it is wrong; residuals summing to zero is that preservation; and the point at which it holds is the weighted centroid. Lecture 2.1 puts it in one line: equalize-the-burden, center of gravity, arithmetic mean, and least squares are four names for one balance condition.
 
-Example 2: Building a two-digit ZCTA demand set
+Example 2: Two-digit ZCTA demand set
 
 Determine an aggregate demand set for the continental United States at two-digit ZIP resolution, by grouping the three-digit ZCTAs and computing the weight, location and extent of each group.
 
@@ -995,7 +995,7 @@ Fig. 13 is what the error does to the decision rather than to a distance. Transp
 
 Figure 13: The unadjusted model prices collocation at zero, so its transport cost runs to zero as the number of new facilities approaches the number of existing ones. The interior optimum survives only because the fixed cost rises.
 
-Example 4: Locating with and without the area adjustment
+Example 4: Area adjustment on North Carolina ZIPs
 
 Determine how the solution to an uncapacitated facility location problem over North Carolina’s three-digit ZIP codes changes when the area adjustment is applied.
 
@@ -1063,7 +1063,7 @@ How much the adjustment matters depends on how coarse the aggregation is, and it
 
 That is a threshold rather than a rule, and it joins the two halves of this lecture: the resolution chosen in Sec. 3 decides how much the correction of Sec. 5 is worth. A coarse demand set needs it and a fine one nearly does not, which is another reason the resolution question is not a detail.
 
-Example 5: EMCA’s machines on aggregate demand
+Example 5: Aggregate EMCA
 
 Determine how many machines EMCA should lease and where, when its demand points are recognized as aggregates rather than as customers.
 

@@ -108,7 +108,7 @@ Read the arrows and the asymmetry is plain. Bottom-up has one input and fans out
 
 The two analyses are easiest to tell apart on one instance rather than two, and lecture 2.2 already built the instance: a company whose owners are in Cary, and three customers it ships to. What follows evaluates that firm twice, changing only what is known about it.
 
-Example 1: One firm evaluated two ways
+Example 1: Cary firm
 
 Determine the increase in annual transport cost from staying in Cary rather than at the transport optimum, first from a given rate and then from what the firm spent last year, and determine what the two answers have in common.
 

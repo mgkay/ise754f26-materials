@@ -428,7 +428,7 @@ Durham, once the cities are in geographic order. Summing the alphabetical list a
 
 The same procedure reaches into two dimensions whenever distance is measured rectilinearly, as the sum of the horizontal and vertical displacements rather than the straight-line distance. Rectilinear distance is the natural model inside a facility, where a worker moving between departments follows the aisles and turns at right angles instead of cutting across the floor. Because a rectilinear distance is the sum of an $x$-distance and a $y$-distance, the two axes do not interact, and the two-dimensional problem separates into two independent one-dimensional problems: solve for the best $x$ by the median procedure, solve for the best $y$ the same way, and combine the two.
 
-Example 2: Rectilinear location in the plane
+Example 2: Snack machine on a factory floor
 
 A snack machine will be placed on a factory floor to serve eight departments (Fig. 9). The number of trips per shift is 19, 53, 82, 42, 9, 8, 39, and 6 for departments 1 through 8, located at $(5,70)$, $(70,95)$, $(5,25)$, $(15,60)$, $(60,95)$, $(15,25)$, $(60,15)$, and $(90,60)$. Assuming rectilinear travel, determine the minisum location.
 
@@ -442,7 +442,7 @@ $x^\star = 15$, a single value; $y^\star$ anywhere from 25 to 60. Any point on t
 
 The rectilinear method is useful even when the true distances are not rectilinear at all, but great-circle distances across the curved surface of the earth, as long as only a rough location is needed.
 
-Example 3: Approximating great-circle distance
+Example 3: Great-circle approximation
 
 A distribution center will serve six customers, shipping 25, 42, 24, 10, 24, and 11 truckloads per year to Raleigh, NC; Atlanta, GA; Louisville, KY; Greenville, SC; Richmond, VA; and Savannah, GA, at (36°N, 79°W), (34°N, 84°W), (38°N, 86°W), (35°N, 82°W), (38°N, 77°W), and (32°N, 81°W). Find an approximate minisum location by treating latitude and longitude as rectilinear coordinates.
 

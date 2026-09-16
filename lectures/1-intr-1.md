@@ -212,7 +212,7 @@ Figure 6: Enrico Fermi estimating the blast’s force at the first nuclear test 
 
 At the Trinity test (see Fig. 6), Enrico Fermi estimated the blast’s yield by dropping scraps of paper as the shock wave passed and measuring how far they were carried. His figure, about 10 kilotons, landed within an order of magnitude of about 21 kilotons, the yield later established by measurement, the accuracy a guesstimate aims for.
 
-Example 1: How many McDonald’s restaurants in the U.S.?
+Example 1: McDonald’s restaurants
 
 Estimate the number of McDonald’s restaurants in the U.S. (assume no internet).
 
@@ -403,7 +403,7 @@ Which objective is right boils down to a single question: how costly is it to be
 
 Notice what the mean cannot do here. Mean value analysis knows only the average travel time; it says nothing about how often the trip runs long, which is exactly what a late-arrival objective turns on. The question needs the whole distribution of travel times and its tail, a richer stochastic model than a single average provides. That is the province of the nonlinear (level 2) and simulation (level 3) models of Lecture 1.3: mean value analysis is simply not the right tool for this problem.
 
-Example 4: Average delivery distance
+Example 4: Pizza delivery distance
 
 A pizza shop delivers to customers located within 3 miles of the shop. Estimate the average round-trip distance of a delivery, then, because the geometry here is simple enough, compute it exactly and compare.
 
