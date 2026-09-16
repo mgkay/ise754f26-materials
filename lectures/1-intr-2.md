@@ -777,7 +777,7 @@ P = softmax(W2 * σ.(W1 * X .+ b1) .+ b2)
 ```
 
 ```text
-round.(P, digits = 2) = [1.0 1.0 0.0 0.0; 0.0 0.0 1.0 1.0]
+round.(P, digits = 2) = [1.0 0.5 0.5 0.0; 0.0 0.5 0.5 1.0]
 ```
 
 The new line d1 = ... carries the output error d2 back through the hidden layer, scaled by the sigmoid’s own slope a1 .* (1 .- a1); that is how the hidden cuts learn which way to move.

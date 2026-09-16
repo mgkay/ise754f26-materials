@@ -651,7 +651,7 @@ Solving report
   Primal bound      30
   Dual bound        30
   Gap               0% (tolerance: 0.01%)
-  P-D integral      0.00015325371599
+  P-D integral      0.000136208112132
   Solution status   feasible
                     30 (objective)
                     0 (bound viol.)
@@ -1185,7 +1185,8 @@ M & = & \{1, \ldots, m\}, \quad \text{objects to be covered} \\
 M_i \subseteq M,\; i \in N & = & \{1, \ldots, n\}, \quad \text{subsets of } M \\
 c_i & = & \text{cost of using } M_i \text{ in cover} \\
 I^{\star} & = & \displaystyle\arg\min_{I}\Bigl\{ \sum_{i \in I} c_i \;:\;
-\bigcup_{i \in I} M_i = M \Bigr\}, \quad \text{min cost covering of } M
+\bigcup_{i \in I} M_i = M \Bigr\} \\
+& & \text{min cost covering of } M
 \end{array}
 \tag{8}
 $$
@@ -1539,8 +1540,8 @@ M & = & \{1, \ldots, m\}, \quad \text{objects to be packed into bins} \\
 v_j & = & \text{volume of object } j \\
 V & = & \text{volume of each bin } B_i, \quad \max_j v_j \leq V \\
 B^{\star} & = & \displaystyle\arg\min_{B}\Bigl\{ \lvert B \rvert \;:\;
-\sum_{j \in B_i} v_j \leq V, \; \bigcup_{B_i \in B} B_i = M \Bigr\},
-\quad \text{min cost bin packing of } M
+\sum_{j \in B_i} v_j \leq V, \; \bigcup_{B_i \in B} B_i = M \Bigr\} \\
+& & \text{min cost bin packing of } M
 \end{array}
 \tag{11}
 $$
@@ -1621,10 +1622,10 @@ prt(grow)
 ```text
    objects  binaries  bins  seconds
 ───────────────────────────────────
-1       20       420     6     0.00
-2       50     2,550    15     0.22
-3      100    10,100    31     1.15
-4      200    40,200    61     9.44
+1       20       420     6     0.01
+2       50     2,550    15     0.21
+3      100    10,100    31     1.16
+4      200    40,200    61     9.09
 ```
 
 Ten times the objects is a hundred times the variables and rather more than a hundred times the work. Sixty seconds covers two hundred objects several times over and three hundred comfortably, and stops somewhere past that rather than running all afternoon on an instance nobody meant to pose. A limit that is never reached costs nothing, which is the argument for always setting one.
@@ -1649,10 +1650,10 @@ prt(loose)
 ```text
     gap  bins  seconds
 ──────────────────────
-  exact    61     9.34
-     1%    61     9.39
-     2%    62     6.10
-     5%    62     6.00
+  exact    61     9.09
+     1%    61     9.04
+     2%    62     5.63
+     5%    62     5.59
 ```
 
 NoteReading a solve that stopped early
@@ -1673,11 +1674,18 @@ Random.seed!(1244)                 # the same twenty objects every build
 mB, VB = 20, 10
 vB = rand(1:5, mB)
 lbB = ceil(Int, sum(vB) / VB)      # no packing can use fewer than this
-(sizes = vB', total = sum(vB), bound = lbB)
+prt(vB')                           # the twenty sizes, one row
+(total = sum(vB), bound = lbB)
 ```
 
 ```text
-(sizes = adjoint([2, 4, 4, 5, 4, 3, 3, 3, 1, 5, 5, 4, 2, 3, 1, 4, 1, 2, 1, 3]), total = 60, bound = 6)
+   1  2  3  4  5  6  7  8  9  10  11  12  13  14  15  16  17  18  19  20
+────────────────────────────────────────────────────────────────────────
+1  2  4  4  5  4  3  3  3  1   5   5   4   2   3   1   4   1   2   1   3
+```
+
+```text
+(total = 60, bound = 6)
 ```
 
 The bound is a Bounds check and it is free: the objects have to go somewhere, so the bins used cannot be fewer than the total volume divided by the capacity of one bin, rounded up. It is worth writing down before the solve, because it is also the answer whenever the objects happen to fill the bins exactly, and the distance between it and the optimum is the only thing the model has to find.
