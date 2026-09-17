@@ -664,6 +664,8 @@ Each of the 4000 passes computes the predictions, measures the error P .- Y, and
 
 ```julia
 # Code block 27: training the next-token model
+using Random
+
 vocab = ["van", "rig", "parcel", "pallet",
          "depot", "yard", "dock", "go", "wait"]
 
@@ -681,6 +683,7 @@ for j in 1:N
 end
 
 # E: a 2-D embedding per token, learned from scratch
+Random.seed!(1)                      # same starting points every build
 E = 0.4 .* randn(2, V)
 W = zeros(V, 2);  b = zeros(V, 1);  lr = 0.5
 
@@ -759,6 +762,7 @@ X = E[:, veh] .+ E[:, load]   # summed: the XOR corners
 Y = [1.0  1   0   0
      0    0   1   1]
 
+Random.seed!(1)                       # same starting weights every build
 W1 = randn(3, 2);  b1 = zeros(3, 1)   # hidden (3 units)
 W2 = randn(2, 3);  b2 = zeros(2, 1)   # output (2 tokens)
 lr = 1.0
@@ -777,7 +781,7 @@ P = softmax(W2 * σ.(W1 * X .+ b1) .+ b2)
 ```
 
 ```text
-round.(P, digits = 2) = [1.0 0.5 0.5 0.0; 0.0 0.5 0.5 1.0]
+round.(P, digits = 2) = [1.0 1.0 0.0 0.0; 0.0 0.0 1.0 1.0]
 ```
 
 The new line d1 = ... carries the output error d2 back through the hidden layer, scaled by the sigmoid’s own slope a1 .* (1 .- a1); that is how the hidden cuts learn which way to move.
