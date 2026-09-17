@@ -10,6 +10,10 @@ New Julia packages used
 
 - JuMP is a modeling language for mathematical optimization, embedded in Julia. It lets an optimization problem be written in something close to the notation used on paper, with variables, an objective and constraints declared directly, and then hands that problem to any of a few dozen solvers through one common interface. The same model goes to a different solver by changing one line.
 - HiGHS is an open-source solver for linear programs, mixed-integer linear programs and quadratic programs, developed at the University of Edinburgh. It is among the fastest open-source solvers in independent benchmarks, and it is callable from Julia, Python, C++ and the command line.
+- Graphs is the standard Julia package for working with graphs: vertices joined by edges, directed or not. It supplies the data structures and the classical algorithms that run on them, such as shortest paths, connectivity, spanning trees and traversals, and it is the base the other graph packages in Julia build on.
+- SimpleWeightedGraphs extends Graphs with graph types that carry a weight on every edge, stored as a sparse matrix. It is the type to reach for whenever an edge means a distance, a cost or a capacity rather than merely a connection.
+- GraphMakie draws graphs with Makie. It handles the part that is genuinely hard, which is deciding where to put the vertices, and it lets the color, size and label of every vertex and edge be set from data.
+- Combinatorics generates and counts the standard combinatorial objects: permutations, combinations, partitions, powersets and their relatives. It is what to reach for when a small instance is to be determined by looking at every possibility.
 
 New Logjam functions used
 
@@ -166,15 +170,15 @@ Model 1 implementation: Linear program
 
 ```julia
 # Model: linear program
-using JuMP, HiGHS                  # the modeling language, and a solver
+using JuMP, HiGHS           # the modeling language, and a solver
 
-m = Model(HiGHS.Optimizer)         # an empty model, and who will solve it
+m = Model(HiGHS.Optimizer)  # an empty model, and who will solve it
 @variable(m, x₁ >= 0)
 @variable(m, x₂ >= 0)
 @objective(m, Max, 6x₁ + 8x₂)
 @constraint(m, 2x₁ + 3x₂ <= 11)
 @constraint(m, 2x₁ <= 7)
-set_silent(m)                      # the solver's own log is not wanted
+set_silent(m)               # the solver's own log is not wanted
 optimize!(m)
 println(termination_status(m))
 println("x₁ = ", value(x₁), ", x₂ = ", value(x₂),
@@ -278,7 +282,7 @@ node(cuts) = solve_lp((mm, x) -> for (v, s, r) in cuts
                       end)
 res = Dict(k => node(v) for (k, v) in paths)
 
-function thirds(v)           # 31.667 -> "31 2/3", for a plain string
+function thirds(v)  # 31.667 -> "31 2/3", for a plain string
     w, f = floor(Int, v + 1e-9), v - floor(v + 1e-9)
     f < 1e-6 && return string(w)
     abs(f - 1/3) < 1e-6 && return "$(w)⅓"
@@ -286,7 +290,7 @@ function thirds(v)           # 31.667 -> "31 2/3", for a plain string
     return string(round(v, digits = 2))
 end
 
-function texfrac(v)          # 31.667 -> 31\frac{2}{3}, as the slide
+function texfrac(v)  # 31.667 -> 31\frac{2}{3}, as the slide
     w, f = floor(Int, v + 1e-9), v - floor(v + 1e-9)
     f < 1e-6 && return string(w)
     abs(f - 1/3) < 1e-6 && return string(w) * raw"\frac{1}{3}"
@@ -296,7 +300,7 @@ end
 
 # The nodes are visited in order, so the lower bound at each is the best
 # integer solution seen up to and including it, and zero before the first.
-integral(r) = !isnan(r.obj) && all(r.x .== round.(r.x))   # snapped above
+integral(r) = !isnan(r.obj) && all(r.x .== round.(r.x))  # snapped above
 best(id) = [res[j].obj for j in 0:id if integral(res[j])]
 lb = Dict(id => maximum([0.0; best(id)]) for id in 0:8)
 
@@ -319,7 +323,7 @@ blab = Dict(1=>L"x_1 \leq 3", 8=>L"x_1 \geq 4", 2=>L"x_2 \leq 1",
             5=>L"x_2 \leq 2", 6=>L"x_2 \geq 3")
 side = Dict(0=>:right, 1=>:left, 8=>:right, 2=>:left, 3=>:right,
             4=>:left, 7=>:right, 5=>:left, 6=>:right)
-incumb = Set([2, 5, 6])          # where a new best integer solution lands
+incumb = Set([2, 5, 6])  # where a new best integer solution lands
 
 fig = Figure(size = (840, 650))
 ax  = Axis(fig[1, 1]; titlesize = 20,
@@ -351,7 +355,7 @@ for id in 0:8
           align = (:center, :center), fontsize = 19)
     dx = side[id] === :left ? -0.30 : 0.30
     al = side[id] === :left ? :right : :left
-    if out                       # a fathomed node has no bounds to show
+    if out  # a fathomed node has no bounds to show
         text!(ax, gx[id] + dx, gy[id]; text = "fathomed,\ninfeasible",
               align = (al, :center), color = col, fontsize = 17)
         continue
@@ -417,7 +421,7 @@ prtnode (generic function with 1 method)
 ```julia
 # Code block 2: node 0, the relaxation
 m = Model(HiGHS.Optimizer)
-@variable(m, 0 <= x₁)                        # continuous, for now
+@variable(m, 0 <= x₁)  # continuous, for now
 @variable(m, 0 <= x₂)
 @objective(m, Max, 6x₁ + 8x₂)
 @constraint(m, 2x₁ + 3x₂ <= 11)
@@ -577,14 +581,14 @@ During the solution of large MILP models, such as those used for production-inve
 ```julia
 # Code block 11: the integer program, declared and solved in one step
 m = Model(HiGHS.Optimizer)
-@variable(m, 0 <= y₁, Int)                   # integer variable
+@variable(m, 0 <= y₁, Int)       # integer variable
 @variable(m, 0 <= y₂, Int)
 @objective(m, Max, 6y₁ + 8y₂)
 @constraint(m, 2y₁ + 3y₂ <= 11)
 @constraint(m, 2y₁ <= 7)
 set_silent(m)
 optimize!(m)
-yᵒ = snapvals(value.([y₁, y₂]))    # no near-integers in the answer
+yᵒ = snapvals(value.([y₁, y₂]))  # no near-integers in the answer
 println("Obj: ", objective_value(m), ", y₁: ", yᵒ[1], ", y₂: ", yᵒ[2])
 ```
 
@@ -600,15 +604,15 @@ The same answer, and the interesting part is what it cost. A solver can be asked
 
 ```julia
 # Code block 12: make the solver branch, and show what it does
-b = Model(HiGHS.Optimizer)                   # the same model again
+b = Model(HiGHS.Optimizer)           # the same model again
 @variable(b, 0 <= z₁, Int)
 @variable(b, 0 <= z₂, Int)
 @objective(b, Max, 6z₁ + 8z₂)
 @constraint(b, 2z₁ + 3z₂ <= 11)
 @constraint(b, 2z₁ <= 7)
-set_attribute(b, "presolve", "off")          # no shortcut to the answer
+set_attribute(b, "presolve", "off")  # no shortcut to the answer
 set_attribute(b, "mip_heuristic_effort", 0.0)
-optimize!(b)                                 # not silent: print the log
+optimize!(b)                         # not silent: print the log
 ```
 
 ```text
@@ -651,7 +655,7 @@ Solving report
   Primal bound      30
   Dual bound        30
   Gap               0% (tolerance: 0.01%)
-  P-D integral      0.000164546838465
+  P-D integral      0.000142074097062
   Solution status   feasible
                     30 (objective)
                     0 (bound viol.)
@@ -715,10 +719,10 @@ A cut is the part of that worth seeing, and Fig. 3 is one. It is a constraint th
 Show the code that draws this figure
 
 ```julia
-cut_rhs = 4.0                     # x₁ + x₂ ≤ 4, through (1,3) and (3,1)
+cut_rhs = 4.0  # x₁ + x₂ ≤ 4, through (1,3) and (3,1)
 
-@assert all(i + j <= cut_rhs + 1e-9 for (i, j) in lat)   # valid
-@assert sum(lp.x) > cut_rhs + 1e-9                       # and it cuts
+@assert all(i + j <= cut_rhs + 1e-9 for (i, j) in lat)  # valid
+@assert sum(lp.x) > cut_rhs + 1e-9                      # and it cuts
 
 fig = Figure(size = (620, 430))
 ax  = region_axis(fig[1, 1],
@@ -848,9 +852,9 @@ function uflmilp(k, C)
     @variable(u, 0 <= x[N, M] <= 1)          # share of EF j served from i
     @objective(u, Min, sum(k[i] * y[i] for i in N) +
                        sum(C[i, j] * x[i, j] for i in N, j in M))
-    @constraint(u, coverage[j in M],                     # (a)
+    @constraint(u, coverage[j in M],         # (a)
                 sum(x[i, j] for i in N) == 1)
-    @constraint(u, linking[i in N, j in M],              # (b)
+    @constraint(u, linking[i in N, j in M],  # (b)
                 y[i] >= x[i, j])
     optimize!(u)
     yᵒ = snapvals(value.(y))
@@ -873,10 +877,10 @@ Determine the sites and the total cost for the five cities of lecture 2.4, which
 ```julia
 # Code block 13: the five I-40 cities of lecture 2.4, through the model
 P = [50 150 220 295 420]'          # mile markers along I-40
-r, f = 1, 1                        # rate and flow, both unit here
+r, f = 1, 1                    # rate and flow, both unit here
 w = r * f
-k = [150, 200, 150, 150, 200]      # fixed cost of a site
-C = w * dists(P, P, 1)             # variable cost, site to customer
+k = [150, 200, 150, 150, 200]  # fixed cost of a site
+C = w * dists(P, P, 1)         # variable cost, site to customer
 strg = uflmilp(k, C)
 # uflmilp returns X through snapvals, so these are exact 0s and 1s
 prt(DataFrame(Site = strg.Y,
@@ -907,7 +911,7 @@ The instance is 2.6’s. Its step 5 builds the cost matrix over 204 candidate si
 # Code block 14: Popco's cost matrix and fixed cost, from lecture 2.6
 DC = DataFrame(CSV.File("data/PopcoData.csv"))
 CP = Matrix(DataFrame(CSV.File("data/PopcoCmatrix.csv")))
-kP = ([ones(nrow(DC)) DC.DEMAND] \ DC.PROD_COST)[1]   # the intercept
+kP = ([ones(nrow(DC)) DC.DEMAND] \ DC.PROD_COST)[1]  # the intercept
 (k = round(kP), sites = size(CP, 1), customers = size(CP, 2))
 ```
 
@@ -931,7 +935,7 @@ Compare the MILP solution with the heuristic solution of lecture 2.6: which is �
 
 ```julia
 # Code block 16: the optimum against the heuristic, on the same data
-yh, TCufl, Wh = ufl(kP, CP)            # the heuristic of lecture 2.6
+yh, TCufl, Wh = ufl(kP, CP)  # the heuristic of lecture 2.6
 above = round(100 * (TCufl - popco.TC) / popco.TC, digits = 3)
 prt(DataFrame(Case = ["heuristic", "MILP"],
               Plants = [length(yh), length(popco.Y)],
@@ -1032,9 +1036,9 @@ function cflmilp(k, C, f, K)
     @variable(c, 0 <= x[N, M] <= 1)
     @objective(c, Min, sum(k[i] * y[i] for i in N) +
                        sum(C[i, j] * x[i, j] for i in N, j in M))
-    @constraint(c, coverage[j in M],                   # (a) coverage
+    @constraint(c, coverage[j in M],  # (a) coverage
                 sum(x[i, j] for i in N) == 1)
-    @constraint(c, capacity[i in N],                   # (b) capacity
+    @constraint(c, capacity[i in N],  # (b) capacity
                 K[i] * y[i] >= sum(f[j] * x[i, j] for j in M))
     optimize!(c)
     yᵒ = snapvals(value.(y))
@@ -1066,18 +1070,18 @@ zips = [
 nc = [
       7,   5,   6,   3,   5,   8,   5,   1,   3,   2,   8,   4,   9,   6,
       1,   2,   3,   3,   4,   3,   3,   2,  11,   5,   7,   2,   4,   2]
-ud, uwt = 12e6, 15 / 2000            # units/yr in total, ton/unit
-units = ud .* nc ./ sum(nc)          # units/yr by ZIP
-fz = units .* uwt                    # ton/yr by ZIP
+ud, uwt = 12e6, 15 / 2000                   # units/yr in total, ton/unit
+units = ud .* nc ./ sum(nc)                 # units/yr by ZIP
+fz = units .* uwt                           # ton/yr by ZIP
 zc = uszcta3()
 iz = [findfirst(==(zi), zc.ZCTA3) for zi in zips]
-Pz = hcat(zc.LON[iz], zc.LAT[iz])    # ZIP centroids
+Pz = hcat(zc.LON[iz], zc.LAT[iz])           # ZIP centroids
 Cz = (fz .* 0.25)' .* (1.2 .* dists(Pz, Pz, :mi))    # $/yr, circuity 1.2
-kz = fill(100_000.0, length(zips))   # $/yr per machine
-K = 2e6                              # units/yr a machine CAN make
-mmin = floor(Int, ud / K + 1)        # lecture 1.3's feasible minimum
-umax = (ud / K) / mmin               # the utilization it plans to
-Kmach = fill(umax * K * uwt, length(zips))        # ton/yr, effective
+kz = fill(100_000.0, length(zips))          # $/yr per machine
+K = 2e6                                     # units/yr a machine CAN make
+mmin = floor(Int, ud / K + 1)  # lecture 1.3's feasible minimum
+umax = (ud / K) / mmin                      # the utilization it plans to
+Kmach = fill(umax * K * uwt, length(zips))  # ton/yr, effective
 (sites = length(zips), mmin = mmin, umax = round(umax, digits = 3))
 ```
 
@@ -1091,7 +1095,7 @@ cfl = cflmilp(kz, Cz, fz, Kmach)
 cflraw = cflmilp(kz, Cz, fz, fill(K * uwt, length(zips)))  # no ceiling
 made = vec(sum(cfl.X .* fz', dims = 2))     # ton/yr at each site
 prt(DataFrame(ZIP = zips[cfl.Y], tons = round.(made[cfl.Y]),
-              util = round.(made[cfl.Y] ./ (K * uwt),   # of NAMEPLATE
+              util = round.(made[cfl.Y] ./ (K * uwt),      # of NAMEPLATE
                             digits = 3)))
 ```
 
@@ -1114,10 +1118,10 @@ Code block 19 puts that beside the four other answers this instance has, and the
 
 ```julia
 # Code block 19: four answers to the same question
-yu, TCu, Wu = ufl(kz[1], Cz; verbose = false)      # no capacity
+yu, TCu, Wu = ufl(kz[1], Cz; verbose = false)  # no capacity
 su = vec(sum(Wu .* units', dims = 2))[yu]
 nm, over, TCh, sh = mmin, true, 0.0, Float64[]
-while over                                   # lecture 2.4's sweep
+while over                                     # lecture 2.4's sweep
     global nm, over, TCh, sh
     yh, TCp, W = pmedian(nm, Cz; verbose = false)
     sh = vec(sum(W .* units', dims = 2))[yh]
@@ -1125,7 +1129,7 @@ while over                                   # lecture 2.4's sweep
     over = maximum(sh) > K
     over && (nm += 1)
 end
-busiest(s) = 100 * maximum(s) / K            # % of NAMEPLATE capacity
+busiest(s) = 100 * maximum(s) / K              # % of NAMEPLATE capacity
 ans = DataFrame(
     approach = ["floor: units / capacity", "throughput-feasible minimum",
                 "UFL, capacity ignored", "sweep on the heuristic",
@@ -1147,7 +1151,7 @@ prt(ans)
                 CFL as a MILP         8   85.70  1,346,321
 ```
 
-Two readings are worth taking from that table rather than one. The machine count is the visible saving, 9 fewer, but the cost is the one that matters: the MILP’s answer is 25% cheaper than the sweep’s, and the saving is not only the machines it does not lease. The sweep also drags the transport cost up, because forcing more machines onto the map moves them away from the demand that justified their sites.
+Two readings are worth taking from that table rather than one. The machine count is the visible saving, 9 fewer, but the cost is the one that matters: the MILP’s answer is 25% cheaper than the sweep’s, and the saving is smaller than the machine count makes it look. The 9 machines the MILP does not lease are worth \$900,000 a year on their own, but 8 machines stand further from the demand than 17 do, so \$449,402 of that goes straight back into transport cost, and the \$450,598 left over is what the percentage reports.
 
 The pct column says it a second way, and it is read against the nameplate rather than against the effective capacity the model was given. The sweep stops as soon as its busiest machine is inside the nameplate, and by then that machine is running at 73% of it, so the seventeen are not seventeen full machines. The MILP runs its busiest at 86%, which is the ceiling it was planned to and is strictly below one, as 1.3 requires.
 
@@ -1222,10 +1226,10 @@ function setcover(A)
     model = Model(HiGHS.Optimizer)
     @variable(model, x[1:length(N)], Bin)
     @objective(model, Min, sum(x[i] for i in N))
-    @constraint(model, coverage[j in M],                     # (a)
+    @constraint(model, coverage[j in M],  # (a)
                 sum(A[j, i] * x[i] for i in N) >= 1)
     set_silent(model)
-    set_time_limit_sec(model, 60.0)          # solution timeout
+    set_time_limit_sec(model, 60.0)       # solution timeout
     optimize!(model)
     println(solution_summary(model).termination_status)
     return findall(==(1.0), snapvals(value.(x)))
@@ -1282,7 +1286,7 @@ function setpack(A)
     model = Model(HiGHS.Optimizer)
     @variable(model, x[N], Bin)
     @objective(model, Max, sum(x[i] for i in N))
-    @constraint(model, disjoint[j in M],                     # (a)
+    @constraint(model, disjoint[j in M],  # (a)
                 sum(A[j, i] * x[i] for i in N) <= 1)
     set_silent(model)
     optimize!(model)
@@ -1309,9 +1313,9 @@ Fig. 5, drawn above, is this instance. Mi holds the five subsets it draws, and t
 ```julia
 # Code block 20: the five subsets as an object-by-subset matrix
 m, n = 6, 5
-A = zeros(m, n)                  # A = objects x subsets
+A = zeros(m, n)       # A = objects x subsets
 for i in 1:n
-    A[Mi[i], i] .= 1             # Mi lists the members of subset i
+    A[Mi[i], i] .= 1  # Mi lists the members of subset i
 end
 A
 ```
@@ -1327,7 +1331,7 @@ A
 ```
 
 ```julia
-Iᵒ = setcover(A)          # Code block 21: the cheapest cover
+Iᵒ = setcover(A)  # Code block 21: the cheapest cover
 ```
 
 ```text
@@ -1366,8 +1370,8 @@ D = dists(P, P, :mi)
 
 ```julia
 # Code block 23: each county as a circle of the same area
-a = df.ALAND .+ df.AWATER          # area (sq mi)
-r = sqrt.(a ./ pi)                 # radius (mi)
+a = df.ALAND .+ df.AWATER  # area (sq mi)
+r = sqrt.(a ./ pi)         # radius (mi)
 prt(DataFrame(County = df.NAME[1:4], Area = round.(a[1:4]),
               Radius = round.(r[1:4], digits = 1)))
 ```
@@ -1385,7 +1389,7 @@ The radius deserves a Landmark check before it is used, since it is the one quan
 
 ```julia
 # Code block 24: which counties each transmitter reaches, and the cover
-A = r[:] .+ D .< 100               # radius broadcasts down the rows
+A = r[:] .+ D .< 100  # radius broadcasts down the rows
 idx = setcover(A)
 df.NAME[idx]
 ```
@@ -1434,7 +1438,7 @@ Nothing in that statement is a distance, and the model needs one. Two assumption
 # Code block 25: the clinics, and the road distance between them
 DWT = DataFrame(CSV.File("data/DWTclinics.csv"))
 P = hcat(DWT.LON, DWT.LAT)
-D = 1.2 .* dists(P, P, :mi)      # road distance, circuity 1.2
+D = 1.2 .* dists(P, P, :mi)  # road distance, circuity 1.2
 (clinics = nrow(DWT), longest = round(maximum(D), digits = 1))
 ```
 
@@ -1444,8 +1448,8 @@ D = 1.2 .* dists(P, P, :mi)      # road distance, circuity 1.2
 
 ```julia
 # Code block 26: which clinics keep the equipment
-mph = 30                          # in-town driving
-reach = mph * 25 / 60             # miles in a 25-minute window
+mph = 30               # in-town driving
+reach = mph * 25 / 60  # miles in a 25-minute window
 keep = setcover(D .<= reach)
 DWT.ID[keep]
 ```
@@ -1579,14 +1583,14 @@ function binpack(v, V; tlim = 60.0, gap = 1e-4)
     M = 1:length(v)
     bp = Model(HiGHS.Optimizer)
     set_silent(bp)
-    set_time_limit_sec(bp, tlim)             # give up after this long
-    set_attribute(bp, "mip_rel_gap", gap)    # or once this close
+    set_time_limit_sec(bp, tlim)           # give up after this long
+    set_attribute(bp, "mip_rel_gap", gap)  # or once this close
     @variable(bp, y[M], Bin)
     @variable(bp, x[M, M], Bin)
     @objective(bp, Min, sum(y))
-    @constraint(bp, capacity[i in M],                        # (a)
+    @constraint(bp, capacity[i in M],      # (a)
                 V * y[i] >= sum(v[j] * x[i, j] for j in M))
-    @constraint(bp, assignment[j in M],                      # (b)
+    @constraint(bp, assignment[j in M],    # (b)
                 sum(x[i, j] for i in M) == 1)
     optimize!(bp)
     xᵒ, yᵒ = snapvals(value.(x)), snapvals(value.(y))
@@ -1612,7 +1616,7 @@ Both are the ones Sec. 1.3 named. set_time_limit_sec is what keeps a runaway fro
 grow = DataFrame(objects = Int[], binaries = Int[], bins = Int[],
                  seconds = Float64[])
 for m in (20, 50, 100, 200)
-    Random.seed!(9)                  # the same objects every build
+    Random.seed!(9)  # the same objects every build
     r = binpack(rand(1:5, m), 10)
     push!(grow, (m, m^2 + m, r.used, round(r.secs, digits = 2)))
 end
@@ -1623,9 +1627,9 @@ prt(grow)
    objects  binaries  bins  seconds
 ───────────────────────────────────
 1       20       420     6     0.00
-2       50     2,550    15     0.20
-3      100    10,100    31     1.17
-4      200    40,200    61     9.20
+2       50     2,550    15     0.21
+3      100    10,100    31     1.26
+4      200    40,200    61    10.71
 ```
 
 Ten times the objects is a hundred times the variables and rather more than a hundred times the work. Sixty seconds covers two hundred objects several times over and three hundred comfortably, and stops somewhere past that rather than running all afternoon on an instance nobody meant to pose. A limit that is never reached costs nothing, which is the argument for always setting one.
@@ -1636,7 +1640,7 @@ Bin packing makes the setting behave in a way a cost objective does not, and it 
 
 ```julia
 # Code block 29: what a looser gap buys, and what it costs
-Random.seed!(9)                      # the two hundred objects again
+Random.seed!(9)  # the two hundred objects again
 v200 = rand(1:5, 200)
 loose = DataFrame(gap = String[], bins = Int[], seconds = Float64[])
 for (label, g) in (("exact", 1e-4), ("1%", 0.01),
@@ -1650,10 +1654,10 @@ prt(loose)
 ```text
     gap  bins  seconds
 ──────────────────────
-  exact    61     9.03
-     1%    61     8.92
-     2%    62     5.62
-     5%    62     5.55
+  exact    61     9.26
+     1%    61     9.26
+     2%    62     6.02
+     5%    62     5.78
 ```
 
 NoteReading a solve that stopped early
@@ -1670,10 +1674,10 @@ Determine the fewest bins of capacity ten that hold twenty objects whose sizes a
 
 ```julia
 # Code block 30: the instance, and the bound that costs nothing
-Random.seed!(1244)                 # the same twenty objects every build
+Random.seed!(1244)             # the same twenty objects every build
 mB, VB = 20, 10
 vB = rand(1:5, mB)
-lbB = ceil(Int, sum(vB) / VB)      # no packing can use fewer than this
+lbB = ceil(Int, sum(vB) / VB)  # no packing can use fewer than this
 prt(vB')                           # the twenty sizes, one row
 (total = sum(vB), bound = lbB)
 ```
@@ -1733,6 +1737,343 @@ fig
 ```
 
 Figure 9: Twenty objects into bins of capacity ten. Every bin comes out exactly full and the free counting bound is attained, which is not true of every instance.
+
+## 5. Additional MILP examples
+
+The following are additional examples of MILP modeling. They are not assessed on any homework or exam in the course and, as a result, are provided as drop-down callouts.
+
+NoteScheduling a qualifying exam
+
+In 2019, a total of 30 PhD students took either the OR or ISE Qualifying Exam. Each student selected four areas to be tested in from eleven available areas. The portion of the exam for each area is offered on a different day, and multiple areas can be scheduled for the same day, provided that no student is taking both areas simultaneously. The objective is to determine the minimum number of days required for the exam. Want to create a graph with nodes corresponding to each different exam, and pairs of nodes are connected by an edge if a student is taking both exams. A minimal graph coloring will then correspond to the minimum number of days needed for all exams.
+
+The roster is the whole of the input and nothing in it is a graph. The modeling move is to make one vertex per exam and one edge per pair of exams some student sits, after which an exam day is a color and the question is how few colors the graph needs. Model 7 is that problem, stated before any of it is drawn or written down.
+
+minimize: number of colors used
+
+solve for:
+(a) colors to use;
+(b) color given to each vertex.
+
+subject to:
+(a) coloring: every vertex is given exactly one color;
+(b) conflict: two vertices joined by an edge are not given the same color;
+(c) linking: a vertex is given a color only if that color is used.
+
+return: colors used, and the vertices of each
+
+assumptions:
+(a) the graph is given;
+(b) a color is available for every vertex, so a coloring always exists.
+
+Model 7: Graph coloring
+
+The graph itself is the input, so it is worth seeing before the algebra. Code block 32 builds it. The roster is small enough to write down, so it is carried as a ragged array rather than read from a file. Two of the thirty rows are shorter than four: those students are retaking, and sit only the areas they have left. Read from a file instead, those two rows would arrive as missing values and would need the drop, skip or impute treatment of lecture 2.5 Sec. 7 before anything else could happen. Written down, they need none of it, which keeps this example on the model.
+
+```julia
+# Code block 32: the roster, and the conflict graph it implies
+using Graphs, SimpleWeightedGraphs
+L = [[1, 3, 4, 5], [1, 2, 4, 8], [1, 5, 7, 8], [5, 6], [4, 6, 7, 8],
+     [5, 6, 7, 8], [1, 5, 6, 8], [1, 2, 4, 6], [3, 4, 5, 6], [1, 3, 5, 6],
+     [4, 6, 7, 8], [7, 8], [4, 6, 7, 8], [1, 3, 4, 6], [1, 2, 3, 4],
+     [1, 4, 5, 6], [1, 3, 4, 6], [1, 2, 4, 5], [1, 3, 4, 6], [1, 2, 3, 4],
+     [6, 7, 8, 9], [7, 8, 9, 10], [7, 8, 9, 11], [5, 7, 8, 9],
+     [6, 7, 8, 9], [7, 10], [7, 8, 9, 10], [6, 7, 8, 9],
+     [7, 8, 9, 10], [10, 9, 8, 7]]
+m = maximum(maximum.(L))  # number of exam areas
+g = SimpleWeightedGraph(m)
+for k in L                # every pair one student sits is a conflict
+    for i = 1:length(k)-1, j = i+1:length(k)
+        add_edge!(g, k[i], k[j])
+    end
+end
+(students = length(L), exams = nv(g), conflicts = ne(g))
+```
+
+```text
+(students = 30, exams = 11, conflicts = 35)
+```
+
+Eleven vertices and thirty-five edges, out of a roster that mentions neither. Fig. 10 is what that looks like, and it is the whole of the problem: every edge is a pair of areas that cannot share a day.
+
+Show the code that draws this
+
+```julia
+using GraphMakie
+lay = GraphMakie.NetworkLayout.Spring(seed = 11)
+fig = Figure(size = (420, 380))
+ax = Axis(fig[1, 1]; title = "$(nv(g)) areas, $(ne(g)) conflicts")
+graphplot!(ax, g; layout = lay, ilabels = string.(1:nv(g)),
+           node_color = fill(RGBf(0.86, 0.88, 0.90), nv(g)),
+           node_strokecolor = lattice, node_strokewidth = 1.0,
+           node_size = 24, edge_color = (:black, 0.28))
+hidedecorations!(ax); hidespines!(ax)
+fig
+```
+
+Figure 10: The conflict graph of the qualifying exam. Each vertex is one of the eleven areas, and an edge joins two areas whenever some student sits both, so joined areas cannot share a day.
+
+With the graph in front of the reader, Eq. 13 is short.
+
+Model 7 formulation: Graph coloring
+
+$$
+\begin{array}{rlrclll}
+& \text{Minimize} & \displaystyle \sum_{k \in K} y_k & & & & \\[2pt]
+& \text{subject to} & \displaystyle \sum_{k \in K} x_{ik} & = & 1, & i \in V & (a) \\[2pt]
+& & x_{ik} + x_{jk} & \leq & 1, & (i,j) \in E;\; k \in K & (b) \\[2pt]
+& & x_{ik} & \leq & y_k, & i \in V,\; k \in K & (c) \\[2pt]
+& & y_k & \in & \{0,1\}, & k \in K & \\[2pt]
+& & x_{ik} & \in & \{0,1\}, & i \in V,\; k \in K &
+\end{array}
+\tag{13}
+$$
+
+where
+
+- $V$ = set of vertices in the graph
+- $E$ = set of edges in the graph
+- $K$ = set of potential colors
+- $y_k$ = $\begin{cases} 1, & \text{if color } k \text{ is used} \\ 0, & \text{otherwise} \end{cases}$
+- $x_{ik}$ = $\begin{cases} 1, & \text{if vertex } i \text{ is colored } k \\ 0, & \text{otherwise} \end{cases}$.
+
+Constraints (a) ensure that, for each vertex, it is assigned to one color. Constraints (b) ensure that, for each edge $(i,j)$ of the graph, if vertex $i$ is assigned to color $k$ then vertex $j$ is not assigned to $k$, that is, if X then not Y. Constraints (c) ensure that a vertex can be colored $k$ only if color $k$ is being used.
+
+Constraint (b) is the packing constraint of Eq. 10 under another name, and constraint (c) is the linking constraint of Eq. 4. Nothing in this model is new. What is new is the graph it is handed.
+
+Model 7 implementation: Graph coloring
+
+```julia
+# Model: minimum graph coloring
+function colormin(g)
+    model = Model(HiGHS.Optimizer)
+    V, K = 1:nv(g), 1:nv(g)
+    @variable(model, y[K], Bin )
+    @variable(model, X[V,V], Bin )
+    @objective(model, Min, sum(y[i] for i ∈ K ))
+    @constraint(model, [i ∈ V], sum(X[i,k] for k ∈ K) == 1 )
+    @constraint(model, [(i,j) ∈ ((src(e),dst(e)) for e ∈ edges(g)),
+                        k ∈ K], X[i,k] + X[j,k] <= 1 )
+    @constraint(model, [i ∈ V, k ∈ K], X[i,k] <= y[k] )
+    set_silent(model)
+    optimize!(model)
+    yᵒ, Xᵒ = snapvals(value.(y)), snapvals(value.(X))
+    res = (K = [findall(Xᵒ[:, i] .!= 0) for i ∈ findall(yᵒ .> 0)],
+           colors = objective_value(model))
+    return res
+end
+```
+
+```text
+colormin (generic function with 1 method)
+```
+
+```julia
+# Code block 33: the exam schedule the coloring produces
+qe = colormin(g)
+Kᵒ = qe.K
+prt(DataFrame(Day = 1:length(Kᵒ),
+              Areas = [join(k, ", ") for k in Kᵒ]))
+```
+
+```text
+  Day      Areas
+────────────────
+    1          5
+    2       2, 7
+    3       1, 9
+    4          6
+    5       3, 8
+    6  4, 10, 11
+```
+
+6 days for 11 areas
+
+Fig. 11 is Fig. 10 again, on the same layout, with each vertex carrying the day it was given.
+
+Show the code that draws this
+
+```julia
+pal = Makie.wong_colors()[1:length(Kᵒ)]
+nc = fill(pal[1], nv(g))
+for (d, grp) in enumerate(Kᵒ), v in grp
+    nc[v] = pal[d]
+end
+fig = Figure(size = (420, 380))
+ax = Axis(fig[1, 1]; title = "$(length(Kᵒ)) exam days")
+graphplot!(ax, g; layout = lay, ilabels = string.(1:nv(g)),
+           node_color = nc, node_strokecolor = lattice,
+           node_strokewidth = 1.0, node_size = 24,
+           edge_color = (:black, 0.28))
+hidedecorations!(ax); hidespines!(ax)
+fig
+```
+
+Figure 11: The same conflict graph with a minimum coloring on it. No edge joins two vertices of one color, which is what makes each color a day every student can sit.
+
+Six days rather than eleven, and no student sits two areas at once. Whether six is the best schedule is a different question, and the model was never asked it: an objective counting days used says nothing about a student who draws three areas on the last day.
+
+NoteSequencing jobs on one machine
+
+The single-machine total tardiness scheduling problem involves determining the order in which a set of jobs should be processed on a single machine to minimize the total tardiness relative to their due dates. Each job has a known processing time and due date, and only one job can be processed at a time. Since no preemption or parallelism is allowed, the key decision is the sequence in which jobs are executed. The objective function is the sum of tardiness values, where a job’s tardiness equals the amount of time its completion exceeds its due date, if any. The feasible set of schedules corresponds exactly to the set of permutations of the job set, making the problem a pure sequencing combinatorial problem.
+
+Nine jobs, then, and a sequence to choose. Job 5 is the awkward one: it takes 18 units, which is more than the four shortest jobs together, and it is due at 12.
+
+```julia
+# Code block 34: the instance, and the two rules that need no solver
+using Combinatorics
+tardiness(α, p, d) = sum(max.(0, cumsum(p[α]) .- d[α]))
+
+p = [3, 4, 6, 5, 18, 2, 3, 4, 5]
+d = [4, 6, 15, 14, 12, 3, 16, 17, 18]
+
+α_edd, α_spt = sortperm(d), sortperm(p)
+prt(DataFrame(rule = ["EDD", "SPT"],
+              tardiness = [tardiness(α_edd, p, d),
+                           tardiness(α_spt, p, d)],
+              sequence = [string(α_edd), string(α_spt)]))
+```
+
+```text
+  rule  tardiness                     sequence
+──────────────────────────────────────────────
+   EDD        145  [6, 1, 2, 5, 4, 3, 7, 8, 9]
+   SPT         77  [6, 1, 7, 2, 8, 4, 9, 3, 5]
+```
+
+Earliest Due Date sorts on $d$ and Shortest Processing Time sorts on $p$, and on this instance the second is worth nearly twice the first. Neither can say it is right. Model 8 is the same question put to a solver.
+
+minimize: total tardiness over all jobs
+
+solve for:
+(a) position each job occupies in the sequence.
+
+subject to:
+(a) assignment: every job occupies exactly one position;
+(b) occupancy: every position holds exactly one job;
+(c) accumulation: a position completes when the one before it completes plus the processing time of the job in it;
+(d) tardiness: a job’s tardiness is its completion past its due date, and is never negative.
+
+return: sequence and its total tardiness
+
+assumptions:
+(a) one machine, running one job at a time;
+(b) no preemption, so a started job runs to completion;
+(c) every job is available at time zero.
+
+Model 8: Single-machine total tardiness
+
+Model 8 formulation: Single-machine total tardiness
+
+$$
+\begin{array}{rlrclll}
+& \text{Minimize} & \displaystyle \sum_{j \in J} T_j & & & & \\[2pt]
+& \text{subject to} & \displaystyle \sum_{k \in K} y_{jk} & = & 1, & j \in J & (a) \\[2pt]
+& & \displaystyle \sum_{j \in J} y_{jk} & = & 1, & k \in K & (b) \\[2pt]
+& & t_1 & = & \displaystyle \sum_{j \in J} p_j\, y_{j1} & & (c) \\[2pt]
+& & t_k & = & \displaystyle t_{k-1} + \sum_{j \in J} p_j\, y_{jk}, & k \in K \setminus \{1\} & (d) \\[2pt]
+& & C_j & \geq & t_k - M(1 - y_{jk}), & j \in J,\; k \in K & (e) \\[2pt]
+& & T_j & \geq & C_j - d_j, & j \in J & (f) \\[2pt]
+& & y_{jk} & \in & \{0,1\}, & j \in J,\; k \in K & \\[2pt]
+& & t_k,\, C_j,\, T_j & \geq & 0 & &
+\end{array}
+\tag{14}
+$$
+
+where
+
+- $J$ = $\{1, \ldots, n\}$, set of jobs
+- $K$ = $\{1, \ldots, n\}$, set of positions, one for each job
+- $p_j$ = processing time of job $j$
+- $d_j$ = due date of job $j$
+- $y_{jk}$ = $\begin{cases} 1, & \text{if job } j \text{ is assigned to position } k \\ 0, & \text{otherwise} \end{cases}$
+- $t_k$ = completion time of position $k$
+- $C_j$ = completion time of job $j$
+- $T_j$ = tardiness of job $j$
+- $M$ = a sufficiently large constant.
+
+Constraints (a) schedule each job once and (b) fill each position once. Constraints (c) and (d) accumulate completion time by position. Constraints (e) give the completion times of the jobs themselves, and (f) is the definition of tardiness.
+
+Two lines of that are worth slowing down for, because both turn something that is not linear into something that is. Constraint (e) has to say that a job completes when the position holding it completes, and $M$ is what makes that a linear statement: where $y_{jk} = 1$ it reads $C_j \geq t_k$, and where $y_{jk} = 0$ the $M$ term drives the right side so far negative that the constraint says nothing at all. Taking $M = \sum_j p_j$ is enough, since no completion time can exceed the total work.
+
+Constraint (f) is quieter. Tardiness is $\max(0,\, C_j - d_j)$, and a maximum is not linear either, but $T_j$ is being minimized and is already bounded below by zero, so the solver drives it down to exactly that maximum without being told to. A maximum the objective pushes against needs only an inequality.
+
+Model 8 implementation: Single-machine total tardiness
+
+```julia
+# Model: single-machine total tardiness
+function tardymilp(p, d)
+    n, M = length(p), sum(p)
+    model = Model(HiGHS.Optimizer)
+    J, K = 1:n, 1:n
+    @variable(model, y[J, K], Bin)
+    @variable(model, t[K] >= 0)
+    @variable(model, C[J] >= 0)
+    @variable(model, T[J] >= 0)
+    @objective(model, Min, sum(T[j] for j in J))
+    @constraint(model, [j ∈ J], sum(y[j, k] for k ∈ K) == 1)
+    @constraint(model, [k ∈ K], sum(y[j, k] for j ∈ J) == 1)
+    @constraint(model, t[1] == sum(p[j] * y[j, 1] for j ∈ J))
+    @constraint(model, [k ∈ 2:n],
+                t[k] == t[k-1] + sum(p[j] * y[j, k] for j ∈ J))
+    @constraint(model, [j ∈ J, k ∈ K],
+                C[j] >= t[k] - M * (1 - y[j, k]))
+    @constraint(model, [j ∈ J], T[j] >= C[j] - d[j])
+    set_silent(model)
+    optimize!(model)
+    yᵒ = snapvals(value.(y))
+    res = (α = vcat(findall.(!iszero, eachcol(yᵒ))...),
+           TC = objective_value(model))
+    return res
+end
+```
+
+```text
+tardymilp (generic function with 1 method)
+```
+
+```julia
+# Code block 35: the sequence the model proves is best
+sm = tardymilp(p, d)
+αᵗ = sm.α
+(tardiness = round(Int, sm.TC), sequence = αᵗ)
+```
+
+```text
+(tardiness = 72, sequence = [6, 1, 2, 4, 7, 8, 9, 3, 5])
+```
+
+Total tardiness 72 on sequence [6, 1, 2, 4, 7, 8, 9, 3, 5]
+
+Fig. 12 is that sequence drawn against the due dates.
+
+Show the code that draws this
+
+```julia
+fin  = cumsum(p[αᵗ])
+strt = fin .- p[αᵗ]
+late = max.(0, fin .- d[αᵗ])
+fig = Figure(size = (760, 300))
+ax  = Axis(fig[1, 1]; xlabel = "time", ylabel = "job",
+           yticks = (1:length(αᵗ), string.(αᵗ)))
+for (row, j) in enumerate(αᵗ)
+    col = late[row] > 0 ? relaxed : feasible
+    poly!(ax, Rect2f(strt[row], row - 0.32, p[αᵗ][row], 0.64);
+          color = (col, 0.20), strokecolor = col, strokewidth = 1.2)
+    scatter!(ax, [d[j]], [row]; marker = :vline, markersize = 16,
+             color = lattice)
+    late[row] > 0 && text!(ax, fin[row] + 0.6, row;
+                           text = "+$(Int(late[row]))",
+                           align = (:left, :center),
+                           color = col, fontsize = 11)
+end
+hidespines!(ax, :t, :r)
+limits!(ax, -0.5, maximum(fin) + 5, 0.2, length(αᵗ) + 0.8)
+fig
+```
+
+Figure 12: The optimal sequence, one bar per job, with each job’s due date marked. Two jobs finish on time; the other seven are late, and the last two carry most of the total.
+
+The solver proves this is the best sequence there is. What is worth noticing is what it proves it against: lecture 2.4’s kind of local search, moving one job at a time, reaches the same total on this instance and the same sequence. The solve did not find a better answer. It established that there was none to find, which is what makes the search usable on the instances where no solver will finish.
 
 ## Endnotes
 
