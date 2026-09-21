@@ -33,24 +33,24 @@ What is the most significant concept in freight transport? What a shipment is ch
 
 As listed in Table 1, the different modes of transport can be distinguished by what it costs to move one ton, one mile. The feasibility of using each mode to transport a load is determined by whether the per-ton value of the load can bear that cost. Compared to other modes, air freight is the only one where load weight is a real cost.1 For the other modes, it is a capacity constraint, binding for dense freight but not for most general merchandise.
 
-Table 1: Transport modes and their cost per ton-mile.2
+Table 1: Transport modes and their cost per ton-mile.23
 
 | Mode | Cents per Ton-Mile | Relative to Water |
 |---|---|---|
 | Water | 2.11 | 1 |
 | Rail | 4.23 | 2 |
 | Road | 18.83 | 9 |
-| Air | 137.49 | 47 |
+| Air | 137.49 | 65 |
 
 Water here usually means ocean transport: a container from China to the west coast of the United States. Just over two cents moves one ton one mile that way, averaged over the whole world, and since the figure varies with the origin and destination the absolute numbers are useful but not very useful. The right column is the one to keep in mind. Taking water as 1, rail is about twice as costly, and its advantage over water is that it can go where water cannot. A standard 53-foot interstate trailer costs about nine times water and about four times rail.
 
 Everything else being equal, the ordering in the table implies a mode preference: push as much onto water as the geography allows; where there is no river and no ocean, the next best is rail; where there is no rail line, road; and last, air. What decides the matter where there is a genuine choice is how valuable the goods are and how fast they are needed. On the ratios alone, everything that could go by rail should. What kept the traffic on trucks was dependability, or rather rail’s lack of it: a railcar loaded in Raleigh went into a black box, and until it surfaced in Los Angeles nobody knew where it was, the railroad included. Sec. 6 returns to what closed that gap.
 
-The same ordering once drove a speculative boom. For about fifty years, canals were the Silicon Valley of their day and every government was building them, precisely because the economics of water transport are as cheap as Table 1 says. The first canals were cut in the good locations and did well; by the 1840s and 1850s they were being cut in locations that were not good. Railroads arrived at the same moment, and although rail is less efficient than a canal by the measure in the table, it is far cheaper to build, so a great many canal companies went bankrupt. Air, at 47 times water, is the other end of the same trade-off, and what sits on the far side of it is the value of the goods. A highly valued product is expensive simply to keep: it has to be financed, so every week it spends anywhere costs something in capital alone, and that cost can justify flying it. A cheap product sitting for weeks costs almost nothing, so nothing justifies the freight.
+The same ordering once drove a speculative boom. For about fifty years, canals were the Silicon Valley of their day and every government was building them, precisely because the economics of water transport are as cheap as Table 1 says. The first canals were cut in the good locations and did well; by the 1840s and 1850s they were being cut in locations that were not good. Railroads arrived at the same moment, and although rail is less efficient than a canal by the measure in the table, it is far cheaper to build, so a great many canal companies went bankrupt. Air, at 65 times water, is the other end of the same trade-off, and what sits on the far side of it is the value of the goods. A highly valued product is expensive simply to keep: it has to be financed, so every week it spends anywhere costs something in capital alone, and that cost can justify flying it. A cheap product sitting for weeks costs almost nothing, so nothing justifies the freight.
 
 The trade-off is not always resolved the way the ratios suggest. Two weeks of national Walmart demand for a textile item, from one Southeast Asian supplier, plausibly fits on a single cargo plane, and plausibly flies, even though the items retail for \$4.99 or \$9.99: they are small enough that the freight is a minor share of what they sell for. Where the goods are much lower in value, getting the freight right is what matters.
 
-Figure 1: Dirt-to-dirt logistics costs.3
+Figure 1: Dirt-to-dirt logistics costs.4
 
 Fig. 1 takes Table 1 and expands it twice. It adds the home, which the table does not reach, and it closes the loop: goods that reach a home eventually have to be disposed of and end at a landfill. That closing leg, from the home back to the landfill, is reverse logistics, and many of the same techniques apply to it. The upstream numbers are taken from the table: ocean at 1, rail at 2, road at 9. They come from a white paper written for the material-handling industry in the fall of 2020, which needed a cost for every mode, and dirt-to-dirt logistics cost is what that exercise produced. Raw material moves by ocean where ocean is possible, then rail, then road. The interesting part of the figure is the other end: the last mile, from the distribution center to the home.
 
@@ -68,9 +68,9 @@ In order to determine the cost to transport a shipment, a quote could just be re
 
 ## 3. U.S. logistics costs
 
-As shown in Table 2, the total U.S. logistics costs for 2021 were \$1.847 trillion, up 11% from 2020.4 This represents 8.03% of the U.S. Gross Domestic Product (GDP). In 1981, the first full year of trucking deregulation, logistics costs were 16.2% of GDP5; in 2000, they were 10.2%,6 and in 2009 they were 7.37%, a record low percentage of GDP until 2020’s 7.22%.7 In 1981, transportation and carrying costs represented 45% and 51% of total costs, respectively8; in 2016, they represented 64% and 29% of the costs, respectively. In 2016, intercity truck transport (full and LTL) alone represents 37% of the total transportation costs and over 23% of total logistics costs, parcel has surpassed rail for the first time, and total inventory carrying costs as a percentage of the \$3.202 trillion total business inventory were 15.65%.
+As shown in Table 2, the total U.S. logistics costs for 2021 were \$1.847 trillion, up 11% from 2020.5 This represents 8.03% of the U.S. Gross Domestic Product (GDP). In 1981, the first full year of trucking deregulation, logistics costs were 16.2% of GDP6; in 2000, they were 10.2%,7 and in 2009 they were 7.37%, a record low percentage of GDP until 2020’s 7.22%.8 In 1981, transportation and carrying costs represented 45% and 51% of total costs, respectively9; in 2016, they represented 64% and 29% of the costs, respectively. In 2016, intercity truck transport (full and LTL) alone represents 37% of the total transportation costs and over 23% of total logistics costs, parcel has surpassed rail for the first time, and total inventory carrying costs as a percentage of the \$3.202 trillion total business inventory were 15.65%.
 
-Table 2: Total 2021 U.S. Logistics Costs.9
+Table 2: Total 2021 U.S. Logistics Costs.10
 
 | | \$ Billion |
 |---|---|
@@ -87,7 +87,7 @@ Table 2: Total 2021 U.S. Logistics Costs.9
 | Water | 32 |
 | Pipeline | 67 |
 | Total Transportation Costs | 1,206 |
-| Inventory Carrying Costs (\$3,20210 billion total inv.) | |
+| Inventory Carrying Costs (\$3,20211 billion total inv.) | |
 | Financial cost (WACC × total inventory) | 165 |
 | Storage | 186 |
 | Other (obsolescence, shrinkage, insurance, others) | 150 |
@@ -97,9 +97,9 @@ Table 2: Total 2021 U.S. Logistics Costs.9
 | Shippers’ administrative costs | 63 |
 | Total Logistics Costs | 1,847 |
 
-That total is a significant share of the whole economy, and the first thing to take from the table is a proportion rather than the total itself. Freight transport is not all of logistics, but it is over two-thirds of what the country spends on logistics.
+That total is a significant share of the whole economy, and the first thing to take from the table is a proportion rather than the total itself. Freight transport is not all of logistics, but it is nearly two-thirds of what the country spends on logistics.
 
-The rest is the cost of holding goods rather than moving them, and the largest line in it is the one whose name says least. Financial cost is the financing needed to cover the goods sitting in storage: inventory has to be paid for before it is sold, so it is carried the way any other asset is carried.
+The rest is the cost of holding goods rather than moving them, and it divides about equally between three lines, of which the one whose name says least is the one worth explaining. Financial cost is the financing needed to cover the goods sitting in storage: inventory has to be paid for before it is sold, so it is carried the way any other asset is carried.
 
 It can run the other way too. A grocer with thirty days to pay its supplier, selling the bananas in ten, holds what it owes for the remaining twenty days and can finance other operations with it, so the delay in payment earns rather than costs. Whether inventory is a cost or a source of funds turns on how fast it moves against how long the terms are.
 
@@ -126,16 +126,16 @@ Table 3: Logistics cost as a percent of GDP.
 |---|---|---|---|
 | 1981 | 16.2% (45/51) | 2018 | 8.0% (63/30) |
 | 2000 | 10.2% | 2019 | 7.66% |
-| 2004 | 8.6% | 2020 | 7.22%11 |
+| 2004 | 8.6% | 2020 | 7.22%12 |
 | 2007 | 9.9% | 2021 | 8.03% (65/27) |
 | 2009 | 7.4% | 2022 | 9.04% |
 | 2011 | 8.6% | 2023 | 8.76% |
 | 2013 | 8.2% | 2024 | 8.8% |
-| 2016 | 7.5% (64/29) | 2025 | 7.8% (62/30)12 |
+| 2016 | 7.5% (64/29) | 2025 | 7.8% (62/30)13 |
 
-Figure 2: Logistics cost as a percent of GDP, by country.13
+Figure 2: Logistics cost as a percent of GDP, by country.14
 
-In Fig. 2, all three of the most developed economies, Europe, the United States, and Japan, have the lowest logistics cost as a percentage of GDP. What is interesting is that the United States achieves that low percentage in a different manner than Europe and Japan. The U.S. has the lowest transport cost on a per-ton-mile basis,14 but being a continental-sized country with low population density, requires about three times as many ton-miles on a per capita basis.15
+In Fig. 2, all three of the most developed economies, Europe, the United States, and Japan, have the lowest logistics cost as a percentage of GDP. What is interesting is that the United States achieves that low percentage in a different manner than Europe and Japan. The U.S. has the lowest transport cost on a per-ton-mile basis,15 but being a continental-sized country with low population density, requires about three times as many ton-miles on a per capita basis.16
 
 Geography is the principal reason U.S. per-ton-mile transport costs are low. It has many natural harbors on both coasts, long-distance navigable inland waterways, and many 500-plus-mile hauls, which make rail feasible. The 500-mile threshold is economic rather than physical, since rail is always possible. Below it the hassle decides: a truck makes a direct delivery in about a day, where rail means a day to the yard, another waiting to be loaded, a day or two moving, and a day at the far end. One day against three or four is not worth the saving. Past 500 miles the trucking cost has grown enough that it is.
 
@@ -147,11 +147,11 @@ Is driving on the right arbitrary? No, it has to do with logistics:
 - prior to this, riding and driving was on the left, which freed the right hand to grip a sword;
 - swords were obsolete by the time the U.S. was settled.
 
-Figure 3: The older convention, and its reason.16
+Figure 3: The older convention, and its reason.17
 
 Start earlier. For five or six hundred years most travel was on the left, and right-handedness is the reason for that too, reaching a different conclusion. A right-handed rider carries the sword in the right hand (Fig. 3). Passing a stranger of unknown intent, keeping to the left puts the sword hand toward him and the undefended side away; passing on the right leaves that side open. Both parties protected themselves the same way, so the left was the default nearly everywhere.
 
-Figure 4: A freight team of ten animals drawing three wagons, with the driver mounted on the rear pair rather than sitting on a seat.17
+Figure 4: A freight team of ten animals drawing three wagons, with the driver mounted on the rear pair rather than sitting on a seat.18
 
 The same handedness decides the American arrangement, and how it played out is the interesting part. Until the railroads, the mule train was the main long-haul mode wherever there was no navigable river, and Fig. 4 shows the arrangement: six mules in three rows of two, and no seat. A seat would be wasted cargo space, so the driver rides one of the mules in the back row.
 
@@ -161,7 +161,7 @@ Guns ended the sword argument. Firearms had been in use for centuries before Eur
 
 Continental Europe was on the left too, until Napoleon. Taking power in France around 1800 and interested in what was new, he saw what the Americans were doing and ordered France to the right; having conquered most of the continent, he ordered the rest of it to the right as well. The map of who drives where is therefore largely a map of whom he did not conquer. England he tried and failed; Sweden he never reached; Japan is an island and was never conquered. All three stayed on the left.
 
-Figure 5: Stockholm on the morning of 3 September 1967, the day Sweden changed sides.18
+Figure 5: Stockholm on the morning of 3 September 1967, the day Sweden changed sides.19
 
 Sweden is the exception that shows the scale of it. Months of preparation went into a single Saturday midnight: every sign was ready, the country shut down for about six hours, crews were staged across it, and in those six hours the signs were changed. Fig. 5 is the Sunday morning that followed in Stockholm, a country working out how to drive. That is recent enough to be within living memory.
 
@@ -177,7 +177,9 @@ Maxton, North Carolina.
 
 The container, patented and given away.
 
-Figure 6: Malcom McLean, of Maxton, North Carolina, and the innovation he patented and gave away.19
+Figure 6: Malcom McLean, of Maxton, North Carolina, and the innovation he patented and gave away.20
+
+Containers were the first “packetized” transport network and were developed in the 1950’s by North Carolina trucker Malcolm McLean, who started Sea-Land based in Charlotte.21 Intermodal ISO containers conform to the International Organization for Standardization (ISO) container manufacturing standards. They are used to facilitate loading and unloading at ports and to allow the container to be transported using other modes of transport like trucking and rail. The capacity of a ship is measured in TEUs (Twenty-foot Equivalent Units), an international standard.
 
 The man in Fig. 6 is Malcom McLean. What he patented was not a box but a size of box, and, more important still, the fitting by which one box locks to another. Standardizing those two things is what let everyone else build around them. Before it, containers came in every dimension, so no port could justify specialized equipment for any of them; afterwards, cranes and ships could be designed for one shape and built to handle it efficiently. He gave the standard away rather than keeping it, and the giving away is the reason it became one.
 
@@ -185,39 +187,41 @@ Figure 7: The two standard ISO containers.
 
 The ISO container is used to transport 90% of international trade. The standard box is 40 feet, with a cube capacity of about 2,400 cubic feet, and the half size is the 20-foot container that gives the TEU its name (Fig. 7). A 40 ft container counts as 2 TEU. One detail is worth noticing for what it says about how a standard spreads. The rest of the world is metric, and yet containers everywhere are 20 or 40 feet. This is one of the last places English units survive in international practice, and the reason is simply that the man who set the standard was American. Every box also carries its own identity, stamped on the door and read in Fig. 8.
 
-Figure 8: A container and its BIC code, which identifies the box and states what it may carry.20
+Figure 8: A container and its BIC code, which identifies the box and states what it may carry.22
 
 Nothing was adopted quickly. In the late 1960s only two cases had enough value at stake to justify the new technology, and both turn on the same property: a locked container is hard to steal from. The first was the U.S. Army, shipping rifles to Europe. Freight moved in boxes was easy to lose track of and easy to pilfer; a sealed container went from the United States to its destination secure. The difficulty was the return leg, since Europe was not selling arms back. The backhaul was Scotch whisky, for the same reason and worse. Cases arriving at the port of New Jersey lost one or two to pilferage every time they were unloaded, and near Christmas the loss could run to ten or fifteen percent. A container that could be sealed in Scotland and opened at the distribution center was worth paying for. Those two cargoes carried the standard until everyone else caught up.
 
-Figure 9: The Freightos Baltic Index, through 2022.21 Later readings from the same index: 12 September 2023, \$1,455; 24 September 2024, \$4,701; 7 September 2026, \$3,520.22
+Figure 9: The Freightos Baltic Index, through 2022.23 Later readings from the same index: 12 September 2023, \$1,455; 24 September 2024, \$4,701; 7 September 2026, \$3,520.24
 
 Set that against the trucking rate from Sec. 2. The \$2 per mile is a stable baseline, moving little even as fuel prices do, and it wants adjusting for current cost rather than replacing. Container rates do not behave that way at all: Fig. 9 runs from about \$2,000 to \$10,000 and back again, which makes any analysis resting on one of them hard to trust for long. That volatility, rather than the level, is the reason ocean rates are left to the specialists and this course stays with the truck.
 
-Figure 10: Corner casting, twistlocks on a ship’s deck, and one locked.23
+Figure 10: Corner casting, twistlocks on a ship’s deck, and one locked.25
 
-The fitting itself is called a twistlock, and it is as simple as it sounds. It sits in the corner casting between two stacked containers (Fig. 10); pulling the handle turns it, and the turn locks the upper box to the lower one. Unlock it and the box lifts off. That is the whole mechanism, and in some sense the twistlock is what made the global economy work: it is the piece McLean patented, and little things of that kind make a large difference to how well a system runs (a clip of a twistlock in action is worth a look24).
+The fitting itself is called a twistlock, and it is as simple as it sounds. It sits in the corner casting between two stacked containers (Fig. 10); pulling the handle turns it, and the turn locks the upper box to the lower one. Unlock it and the box lifts off. That is the whole mechanism, and in some sense the twistlock is what made the global economy work: it is the piece McLean patented, and little things of that kind make a large difference to how well a system runs (a clip of a twistlock in action is worth a look26).
 
 ## 5. Ocean and intermodal transport
 
 The cycle in Fig. 11 is the one a container runs. It reaches a port, specialized cranes load it onto a ship, and it is offloaded at a port at the far end. From there it goes by truck, or by rail, where two containers can be double-stacked on one flatcar, until it reaches its destination and is unloaded. Switching between more than one mode of transport this way is what intermodal means: ocean to rail to road, on the same box.
 
-Figure 11: The intermodal cycle, and the CenterPoint intermodal center outside Chicago where it happens at scale.25
+Most containers are either 20 foot or 40 foot (see Fig. 7), although high-cube 9.5-ft high and 45-, 48-, or 53-ft long containers are also available. In 2004, the cost of transporting a 40-ft container from China to the U.S. West Coast is around \$2,400 (plus fees and duties) and takes 16 to 18 days, and the cost from China to the U.S. East Coast is around \$4,000 (plus fees and duties) and takes 26 to 30 days. The cost of transporting a 20-ft container is 70% the cost of a 40-ft container. Containers can also be transported by rail and road. Backhaul is sometimes difficult, and the imbalance is what makes the two directions differ in cost. The number of containers traveling from the Far East to the U.S. West Coast, 11 million TEUs per year, is 2.5 times the number returning, 4.9 million TEUs.27
+
+Figure 11: The intermodal cycle, and the CenterPoint intermodal center outside Chicago where it happens at scale.28
 
 What that box costs to move is the next question, and Fig. 12 estimates it between selected ports. Shanghai to Los Angeles and Long Beach is \$2,620 in the loaded direction and \$1,400 coming back. That asymmetry is a complication peculiar to ocean transport: the cost one way is usually not the cost of the other, and the reason is an imbalance of supply and demand. Far more freight wants to move from Shanghai to the United States than the reverse, so the return leg is much the cheaper of the two.
 
-Figure 12: Maritime transportation rates for a 40-foot container between selected ports, 2010. The two figures on a lane are its two directions.26
+Figure 12: Maritime transportation rates for a 40-foot container between selected ports, 2010. The two figures on a lane are its two directions.29
 
 How long it takes is a separate question from what it costs, and Fig. 13 answers it for the same origin. Shanghai to Norfolk is about 25 days of ocean transport. Shanghai to Long Beach is 13, and Chicago is another five on top of that, by rail. The five is the interesting number, because only a day or two of it is movement: a day or two to come off the ship and onto a railcar, two days running, and another day or two to be unloaded at the far end. Most of the time a container spends in transit, it is not in motion.
 
-Figure 13: Transit times from Shanghai, and the North American routing options, in days.27
+Figure 13: Transit times from Shanghai, and the North American routing options, in days.30
 
 A long-haul trucker shown this figure caught that point immediately. He drove one of the routes on it and knew it did not take eight days, and he was right: the eight is from the ship’s arrival to the load being unloaded in New York, and the driving inside it is two or three days. The rest is port. A table of transit times is therefore not a table of travel times, and reading it as one overstates how far apart two places are.
 
-One widening of one waterway redrew where American goods enter the country. The old locks capped ships at roughly 4,000 to 5,000 TEU, the “Panamax” limit, and anything larger was “post-Panamax,” excluded outright. The new locks admit container ships of about 12,000 TEU, though some vessels remain too big regardless. A Nimitz-class carrier still cannot transit, so carriers moving between the east and west coasts of the U.S. take the long way around South America.28 Enlarging the Panama Canal let much larger ships through it, as Fig. 14 compares, and Fig. 15 shows what that did. The black line is a break-even: west of it, a load from the Far East came into Long Beach or Los Angeles and went inland by rail, and only east of it was it cheaper to run through the canal and unload at an East Coast port. Cheaper ocean capacity moved that line, and it now runs through Texas.
+One widening of one waterway redrew where American goods enter the country. The old locks capped ships at roughly 4,000 to 5,000 TEU, the “Panamax” limit, and anything larger was “post-Panamax,” excluded outright. The new locks admit container ships of about 12,000 TEU, though some vessels remain too big regardless. A Nimitz-class carrier still cannot transit, so carriers moving between the east and west coasts of the U.S. take the long way around South America.31 Enlarging the Panama Canal let much larger ships through it, as Fig. 14 compares, and Fig. 15 shows what that did. The black line is a break-even: west of it, a load from the Far East came into Long Beach or Los Angeles and went inland by rail, and only east of it was it cheaper to run through the canal and unload at an East Coast port. Cheaper ocean capacity moved that line, and it now runs through Texas.
 
-Figure 14: The third set of locks, and the ship each generation admits.29
+Figure 14: The third set of locks, and the ship each generation admits.32
 
-Figure 15: Where the cost advantage lies, for a 4,000 TEU ship and an 8,000 TEU ship. The black line is the break-even.30
+Figure 15: Where the cost advantage lies, for a 4,000 TEU ship and an 8,000 TEU ship. The black line is the break-even.33
 
 What the country did about it started long before the canal was finished, which is the part worth taking away. The expansion was known to be coming by the late 1990s and took ten or twelve years to build. Target, Walmart and the other large retailers began in 2000, building distribution centers and infrastructure against a change that had not happened yet, and new rail was laid from the East Coast ports to places that until then were served only from the West. Freight infrastructure has lead times measured in decades, and the response to it has them too.
 
@@ -225,31 +229,35 @@ It runs the other way too. Drought has since forced the canal to cut the number 
 
 ## 6. Rail and railcar tracking
 
-Doublestacking cuts the cost of moving a container by roughly half, and Fig. 16 shows why it is not simply a matter of deciding to do it. The complication was the bridges and the tunnels. Much of the American rail network’s grade crossing was built in the 1920s, 1930s and 1940s, when the container did not exist and no one had any reason to imagine a car standing eighteen feet tall; a rail car then was not much taller than its load.
+Freight can be transported by carload (CL) or less-than-carload (LCL), the rail counterpart of the truckload distinction TL (truckload) and LTL (less-than-truckload). Truck trailers can be transported on flatcars (TOFC), and ocean containers can be double-stacked on flatcars (COFC): piggyback and doublestack, the two arrangements Fig. 17 compares. Fig. 16 shows a typical boxcar. RailInc is a company located in Cary, NC that tracks the movement of railcars throughout the U.S.
 
-Figure 16: Piggyback against doublestack, and a doublestack train.31
+Figure 16: The rail boxcar, with interior dimensions in parenthesis.
+
+Doublestacking cuts the cost of moving a container by roughly half, and Fig. 17 shows why it is not simply a matter of deciding to do it. The complication was the bridges and the tunnels. Much of the American rail network’s grade crossing was built in the 1920s, 1930s and 1940s, when the container did not exist and no one had any reason to imagine a car standing eighteen feet tall; a rail car then was not much taller than its load.
+
+Figure 17: Piggyback against doublestack, and a doublestack train.34
 
 So thousands of miles of American rail carried bridges the stacked car could not pass under, and over the following twenty to forty years the railroads raised them. Not the government: private railroads, CSX among them, spending tens and perhaps hundreds of billions of dollars on work as unglamorous as lifting a bridge a few feet or lowering the track beneath it, whichever came cheaper. One such job is under way in Raleigh, a tunnel under Blue Ridge Road by the state fairgrounds, five years in so far. That is one crossing. The investment is that job repeated thousands of times.
 
-Figure 17: Major North American rail corridors improved since 2000.32
+Figure 18: Major North American rail corridors improved since 2000.35
 
-What the money bought is Fig. 17: a set of corridors on which a container can travel doublestacked from one side of the continent to the other. A box landed at Los Angeles goes on rail and stays stacked the whole way. Where it stops is notable. The eastern end of that run is Lakeland, Florida, which is the same answer given in Table 4 in Lecture 2.3 and Ex. 8 in Lecture 2.3, where Lakeland was the best location to build a warehouse in Florida; this provides confirmation of the analysis.
+What the money bought is Fig. 18: a set of corridors on which a container can travel doublestacked from one side of the continent to the other. A box landed at Los Angeles goes on rail and stays stacked the whole way. Where it stops is notable. The eastern end of that run is Lakeland, Florida, which is the same answer given in Table 4 in Lecture 2.3 and Ex. 8 in Lecture 2.3, where Lakeland was the best location to build a warehouse in Florida; this provides confirmation of the analysis.
 
-Figure 18: The Alameda Corridor: ten miles of trench between the ports and the railyards, and traffic passing over it.33
+Figure 19: The Alameda Corridor: ten miles of trench between the ports and the railyards, and traffic passing over it.36
 
-A second piece of infrastructure, finished around 2000, fixes a problem nobody had planned for. Los Angeles set its railyards about ten miles from the port. Until the Alameda Corridor was built, everything landed at the Port of Los Angeles reached those yards by truck, which meant a continuous stream of trucks through a city whose traffic was bad already. The corridor is a dedicated rail line with no grade crossings on it at all, as Fig. 18 shows: the middle ten miles run in a trench, and the surface traffic crosses over the top.
+A second piece of infrastructure, finished around 2000, fixes a problem nobody had planned for. Los Angeles set its railyards about ten miles from the port. Until the Alameda Corridor was built, everything landed at the Port of Los Angeles reached those yards by truck, which meant a continuous stream of trucks through a city whose traffic was bad already. The corridor is a dedicated rail line with no grade crossings on it at all, as Fig. 19 shows: the middle ten miles run in a trench, and the surface traffic crosses over the top.
 
-Figure 19: The Rhine–Main–Danube axis: navigable rivers and the canals that join them.34
+Figure 20: The Rhine–Main–Danube axis: navigable rivers and the canals that join them.37
 
-The third is older, and the scale of it is the point. The Rhine–Main–Danube axis in Fig. 19 runs from Constanța on the Black Sea to Rotterdam on the North Sea, so a barge can cross Europe on water the whole way. It was completed in 1992. Construction started in 793, on the order of the emperor Charlemagne. Freight infrastructure is not something that happens quickly.
+The third is older, and the scale of it is the point. The Rhine–Main–Danube axis in Fig. 20 runs from Constanța on the Black Sea to Rotterdam on the North Sea, so a barge can cross Europe on water the whole way. It was completed in 1992. Construction started in 793, on the order of the emperor Charlemagne. Freight infrastructure is not something that happens quickly.
 
-Automatic identification (Auto-ID): real-time data collection and identification. First use case that justified its development was all weather tracking of moving railcars. Kartrak was a colored bar code system developed in the mid-1960s and tested in northern Norway. The colored strips in Fig. 20 were how a railroad kept track of where its cars were. The stripes in the colored codes faded, and the technology became the first RFID (radio-frequency identification) tag, which led to the modern UPC barcode. The line from Kartrak to the supermarket is direct. The engineer who spent the winter in Norway was among the people who later developed the UPC code for the grocery industry. Automatic identification was invented to find railcars, and the checkout scanner is what it turned into.
+Automatic identification (Auto-ID): real-time data collection and identification. First use case that justified its development was all weather tracking of moving railcars. Kartrak was a colored bar code system developed in the mid-1960s and tested in northern Norway. The colored strips in Fig. 21 were how a railroad kept track of where its cars were. The stripes in the colored codes faded, and the technology became the first RFID (radio-frequency identification) tag, which led to the modern UPC barcode. The line from Kartrak to the supermarket is direct. The engineer who spent the winter in Norway was among the people who later developed the UPC code for the grocery industry. Automatic identification was invented to find railcars, and the checkout scanner is what it turned into.
 
-Figure 20: A Kartrak label: the colored stripes a trackside scanner read.35
+Figure 21: A Kartrak label: the colored stripes a trackside scanner read.38
 
-Figure 21: Automatic Equipment Identification: a tag on the car, a reader beside the track, and the readers of one corner of North Carolina.36
+Figure 22: Automatic Equipment Identification: a tag on the car, a reader beside the track, and the readers of one corner of North Carolina.39
 
-The red dots in Fig. 21 are RFID readers, and every time a railcar passes one it is recorded. A firm shipping by rail can therefore look up its own car online, see where it is at that moment, and estimate when it will reach its facility. Railinc, located in Cary, North Carolina, is a consortium supported by the railroads to run the network of RFID readers. Using Railinc, any shipper can determine the location of its shipments.
+The red dots in Fig. 22 are RFID readers, and every time a railcar passes one it is recorded. A firm shipping by rail can therefore look up its own car online, see where it is at that moment, and estimate when it will reach its facility. Railinc, located in Cary, North Carolina, is a consortium supported by the railroads to run the network of RFID readers. Using Railinc, any shipper can determine the location of its shipments.
 
 This is one of the reasons inventory costs are as low as they are, and the comparison is what makes it clear. Before about 1980, a shipper who handed a load to a railroad lost sight of it, and so did the railroad: the car was somewhere between Raleigh and Los Angeles and would arrive in one week, or two, or three. The railroad knew what happened at each yard as it happened and had no picture of the whole; the network was a black box to everyone including the people running it. Not knowing is what safety stock is for, which is Table 2’s carrying-cost line, so seeing the car is worth money long before it is worth anything else.
 
@@ -263,27 +271,27 @@ Transloading is the process of transferring a shipment from one transport vehicl
 
 The major disadvantage of transloading is the increased handling, both in terms of its cost and potential for damage.
 
-Figure 22: Transloading: receiving on one side, sorting, shipping on the other.37
+Figure 23: Transloading: receiving on one side, sorting, shipping on the other.40
 
 The reason the box changes size at the port is a mismatch between two standards. The 40-ft container suits the ship, and it suited the American trailer too while the legal maximum was 40 ft. From about the 1990s that maximum rose to 53 ft, and a 40-ft box on a 53-ft truck now gives up thirteen feet of length and everything it could have held.
 
-Hence a third kind of box. A domestic container never goes to sea; it moves on land only, and it is built to the size of the tractor-trailer. The large buildings beside a port are transloading facilities, and all they do is take the contents of the 40-ft boxes, sort them, and load them into 53-ft ones for the outbound leg. Fig. 22 is that building in one picture. The first saving is arithmetic: four trucks become three.
+Hence a third kind of box. A domestic container never goes to sea; it moves on land only, and it is built to the size of the tractor-trailer. The large buildings beside a port are transloading facilities, and all they do is take the contents of the 40-ft boxes, sort them, and load them into 53-ft ones for the outbound leg. Fig. 23 is that building in one picture. The first saving is arithmetic: four trucks become three.
 
 The second saving is less obvious and worth more. Sorting at the port is also a chance to decide, later, where the goods go. A box leaving Shanghai is about thirteen days from the American port and a couple of days more from the distribution center, so a firm that fixes the destination at the port is forecasting two days ahead where one that fixed it in China was forecasting three weeks ahead. A forecast made closer to the event is a better forecast, and transloading is what buys the delay.
 
 An example makes the point concrete. Each outbound truck is going to a different distribution center, and the split is decided after the sort. A cold spell in the Northeast has raised demand for gloves there while Texas is still warm, so most of the gloves go north and fewer go to Texas. The alternative is committing to that split in China a month earlier, against a forecast nobody could make well. So transloading buys two things at the cost of one extra handling: cheaper line-haul, and the right to decide late.
 
-Figure 23: The Savannah logistics cluster: container terminals on the river, and the transloading estates that grew inland from them.38
+Figure 24: The Savannah logistics cluster: container terminals on the river, and the transloading estates that grew inland from them.41
 
-Fig. 23 is what that looks like from the air. The container terminals sit on the Savannah River, and the large buildings spread inland from them are transloading facilities: Walmart, Home Depot, Target, IKEA. This is what grows around a port that transloads, and it is not something one sees without an aerial photograph.
+Fig. 24 is what that looks like from the air. The container terminals sit on the Savannah River, and the large buildings spread inland from them are transloading facilities: Walmart, Home Depot, Target, IKEA. This is what grows around a port that transloads, and it is not something one sees without an aerial photograph.
 
-Figure 24: Two commercial-vehicle lanes proposed in the I-75 median, north from the port toward Atlanta.39
+Figure 25: Two commercial-vehicle lanes proposed in the I-75 median, north from the port toward Atlanta.42
 
-The chain that produced Fig. 24 starts at the canal. Widening it brought more freight into Savannah, that freight has to reach destinations inland and north, and the truck share of I-75’s capacity grew accordingly. The answer proposed is a road for trucks only: two barrier-separated lanes in the I-75 median, reserved for commercial vehicles, running from just south of Atlanta down toward the port. Taking the trucks out of the general-purpose lanes is expected to reduce congestion, reduce truck-and-car accidents, and cut the maintenance those lanes need. It is to open to traffic in 2032 at an estimated \$2 billion.40 It is the kind of infrastructure worth having more of, and a corridor like I-95 north of Richmond is the obvious candidate.
+The chain that produced Fig. 25 starts at the canal. Widening it brought more freight into Savannah, that freight has to reach destinations inland and north, and the truck share of I-75’s capacity grew accordingly. The answer proposed is a road for trucks only: two barrier-separated lanes in the I-75 median, reserved for commercial vehicles, running from just south of Atlanta down toward the port. Taking the trucks out of the general-purpose lanes is expected to reduce congestion, reduce truck-and-car accidents, and cut the maintenance those lanes need. It is to open to traffic in 2032 at an estimated \$2 billion.43 It is the kind of infrastructure worth having more of, and a corridor like I-95 north of Richmond is the obvious candidate.
 
-Figure 25: The Appalachian Regional Port: 388 miles of rail from Savannah, and the terminal at the far end.41
+Figure 26: The Appalachian Regional Port: 388 miles of rail from Savannah, and the terminal at the far end.44
 
-The last of these is an inland port, and Fig. 25 shows what the term means. A direct 388-mile rail route runs from Savannah to the Appalachian Regional Port in north Georgia, bypassing Atlanta’s congestion on the way, and at the far end the facility is treated exactly as an ocean port would be: boxes come off rail and onto trucks there instead of at the coast. From that point the trucks reach all of Kentucky and as far as Chicago. What it buys at the other end is less truck congestion at the port itself, and no need to transload near the coast at all. It opened in August 2018.
+The last of these is an inland port, and Fig. 26 shows what the term means. A direct 388-mile rail route runs from Savannah to the Appalachian Regional Port in north Georgia, bypassing Atlanta’s congestion on the way, and at the far end the facility is treated exactly as an ocean port would be: boxes come off rail and onto trucks there instead of at the coast. From that point the trucks reach all of Kentucky and as far as Chicago. What it buys at the other end is less truck congestion at the port itself, and no need to transload near the coast at all. It opened in August 2018.
 
 What everything in this section has in common is that none of it is reported anywhere a person would come across it. The raised bridges, the trench, the truck lanes and the inland port all have to be looked for. They are large, slow, expensive and almost entirely below the public’s line of sight, which is a good part of why the cost of moving a ton one mile reads like a fact of nature rather than the result of somebody’s capital program.
 
@@ -313,21 +321,21 @@ Common Carrier (vs Private Carrier): carrier that serves general public, as agai
 
 3PL (third-party logistics provider): firm that specializes in providing warehousing and transportation services for hire
 
-Truck (vs. Tractor-Trailer): vehicle carrying its load on the same chassis as the cab, where a tractor-trailer is a separate power unit pulling a detachable trailer (Fig. 26)
+Truck (vs. Tractor-Trailer): vehicle carrying its load on the same chassis as the cab, where a tractor-trailer is a separate power unit pulling a detachable trailer (Fig. 27)
 
-Bobtail: tractor running with no trailer attached (Fig. 26)
+Bobtail: tractor running with no trailer attached (Fig. 27)
 
-Figure 26: A truck, a tractor-trailer, and a tractor running bobtail.42
+Figure 27: A truck, a tractor-trailer, and a tractor running bobtail.45
 
 Deadheading: truck travel without a load
 
 It is invisible from outside, because the trailer is still there whether it is full or not. The one clue from a car is acceleration: a truck pulling away from a light faster than the traffic around it is almost certainly empty. A great deal of truck travel is deadhead, and those are unproductive miles, so minimizing them is close to the objective function of running a carrier.
 
-Doubles: one tractor pulling two trailers coupled in line (Fig. 27)
+Doubles: one tractor pulling two trailers coupled in line (Fig. 28)
 
-Fifth Wheel (and Kingpin): coupling plate mounted over the tractor’s rear axles, into which the kingpin under the front of a trailer drops and locks (Fig. 27)
+Fifth Wheel (and Kingpin): coupling plate mounted over the tractor’s rear axles, into which the kingpin under the front of a trailer drops and locks (Fig. 28)
 
-Figure 27: Doubles, and the fifth wheel a trailer’s kingpin drops into.43
+Figure 28: Doubles, and the fifth wheel a trailer’s kingpin drops into.46
 
 Hours-of-Service (HOS) regulations: federal limits on a driver’s time at the wheel, allowing up to 11 hours of driving within a 14-hour on-duty window, which begins after 10 or more consecutive hours off duty
 
@@ -350,6 +358,10 @@ The air industry encodes this threshold explicitly. IATA’s volumetric divisor 
 -
 
 M. G. Kay, Challenges and Opportunities Associated with Using Autonomous Vehicles and Drones for Home Delivery, 2020, unpublished. Some of the numbers here are revised from the ones in the report; the analysis behind them is unchanged.
+
+-
+
+The air figure is not from the 2020 report, whose dirt-to-dirt framework does not extend to air cargo. It is the 2018 average freight revenue per ton-mile for domestic scheduled air carrier service, from U.S. Department of Transportation, Bureau of Transportation Statistics, National Transportation Statistics, “Table 3-21: Average Freight Revenue Per Ton-mile,” accessed 21 September 2026; the same source and year give 4.23 cents for Class I rail. Cargo revenue there covers scheduled and charter property revenue and mail revenue, and excludes carriers that did not report both financial data and a full year of traffic data, so the figure is a U.S. domestic average set against an international ocean rate. The relative column is that cost divided by the cost of water.
 
 -
 
@@ -421,6 +433,10 @@ PBS, They Made America, http://www.pbs.org/wgbh/theymadeamerica/whomade/mclean_h
 
 -
 
+Taggart, S., 1999, “The 20-Ton Packet,” Wired, Oct.
+
+-
+
 Container photograph, Wikimedia Commons, http://en.wikipedia.org/wiki/File:Container_01_KMJ.jpg; identification system, Jean-Paul Rodrigue, The Geography of Transport Systems, http://people.hofstra.edu/geotrans/eng/ch3en/conc3en/container_identification_system.html.
 
 -
@@ -438,6 +454,10 @@ Wikipedia, Twistlock, http://en.wikipedia.org/wiki/Twistlock.
 -
 
 Twistlocks explained, mdiddams, https://www.youtube.com/watch?v=wXXnEzXAip4. Linked rather than embedded: this project renders every lecture with embed-resources: true, which inlines an iframe’s source as a scriptless snapshot, so an embedded player shows a black frame and does nothing.
+
+-
+
+Economist, 2004, “Boxed in and clogged up,” Economist, Oct. 14.
 
 -
 
