@@ -504,7 +504,7 @@ Step 2, the market. Every three-digit ZIP goes to its nearest plant, and a plant
 
 Tracing it back that far is a Source check. The 200 miles is not a rule of the method and not a convention of the course: it is a fact about Popco’s own fleet, and the check is asking where the number came from before letting it decide which customers exist. A parameter that survives that question can be defended to a client and moved when the fleet changes; one that does not is a constant somebody once typed.
 
-Eq. 1 is the market of plant $i$: every ZIP code whose nearest plant is $i$, and which lies within the screen.
+Eq. 1 is the market of plant $i$: every ZIP code whose nearest plant is $i$, and which lies within the screen:
 
 $$
 M_i = \bigl\{\, j : \arg\min_h d_{hj} = i \ \text{ and } \ d_{ij} \le d_{\max} \,\bigr\},

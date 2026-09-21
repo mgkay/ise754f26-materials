@@ -219,7 +219,7 @@ Table 1: The four names, and what each restricts.
 | Integer linear program | ILP | LP + all integer variables |
 | Binary integer program | BIP | LP + all binary variables |
 
-Every one of the four is the same generic program with a different restriction laid on it, which Eq. 2 states in one place: the linear program at the top, and below it what each name adds.
+Every one of the four is the same generic program with a different restriction laid on it, which Eq. 2 states in one place: the linear program at the top, and below it what each name adds:
 
 $$
 \begin{array}{rlrclll}
@@ -655,7 +655,7 @@ Solving report
   Primal bound      30
   Dual bound        30
   Gap               0% (tolerance: 0.01%)
-  P-D integral      0.000142074097062
+  P-D integral      0.000146537327796
   Solution status   feasible
                     30 (objective)
                     0 (bound viol.)
@@ -745,7 +745,7 @@ The UFL is where a mixed-integer program is worth meeting for the first time, an
 
 One more property makes the UFL a forgiving place to start. Under the strong formulation of Eq. 4 the relaxation at node 0 is very often integral already, and then the optimum arrives with no branching at all. That is the exception Sec. 1.3 promised rather than a contradiction of it: a relaxation is usually fractional, and this one usually is not, because Eq. 4 is written tightly enough to make it so.
 
-Only part of what a facility costs bears on where it goes. Total production cost is a line in the quantity produced, an intercept plus a rate, and lecture 2.6 fits it to obtain both. The rate is charged per ton wherever the plant stands, so it is the same whatever the answer is and drops out of the comparison. What is left is the intercept, which is incurred once per facility built, and the transport cost, which is the part that depends on where the facility is. Those two together are the total logistics cost of Eq. 3, and they are what the models in this section minimize.
+Only part of what a facility costs bears on where it goes. Total production cost is a line in the quantity produced, an intercept plus a rate, and lecture 2.6 fits it to obtain both. The rate is charged per ton wherever the plant stands, so it is the same whatever the answer is and drops out of the comparison. What is left is the intercept, which is incurred once per facility built, and the transport cost, which is the part that depends on where the facility is. Those two together are the total logistics cost of Eq. 3, and they are what the models in this section minimize:
 
 $$
 \begin{array}{lrcl}
@@ -828,7 +828,7 @@ There is a looser way to say the same thing, and it is worth knowing because it 
 
 Model 2 formulation: Weak MILP formulation
 
-Constraint (b) alone is replaced, and the symbols are those above.
+Constraint (b) alone is replaced, and the symbols are those above:
 
 $$
 \begin{array}{rlrclll}
@@ -1627,9 +1627,9 @@ prt(grow)
    objects  binaries  bins  seconds
 ───────────────────────────────────
 1       20       420     6     0.00
-2       50     2,550    15     0.21
-3      100    10,100    31     1.26
-4      200    40,200    61    10.71
+2       50     2,550    15     0.20
+3      100    10,100    31     1.09
+4      200    40,200    61     9.08
 ```
 
 Ten times the objects is a hundred times the variables and rather more than a hundred times the work. Sixty seconds covers two hundred objects several times over and three hundred comfortably, and stops somewhere past that rather than running all afternoon on an instance nobody meant to pose. A limit that is never reached costs nothing, which is the argument for always setting one.
@@ -1654,10 +1654,10 @@ prt(loose)
 ```text
     gap  bins  seconds
 ──────────────────────
-  exact    61     9.26
-     1%    61     9.26
-     2%    62     6.02
-     5%    62     5.78
+  exact    61     9.07
+     1%    61     8.89
+     2%    62     5.76
+     5%    62     5.68
 ```
 
 NoteReading a solve that stopped early

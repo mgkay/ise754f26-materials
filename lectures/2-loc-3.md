@@ -118,7 +118,7 @@ D = \begin{bmatrix}
 
 $$
 
-Circling the smallest entry in each column of $D$ makes the allocation: the row a circle sits in is the DC that serves that column’s customer. Customers 1 and 2 go to DC 1, customers 3 and 4 to DC 2. Weighting each circled distance by its customer’s truckloads and adding gives the total.
+Circling the smallest entry in each column of $D$ makes the allocation: the row a circle sits in is the DC that serves that column’s customer. Customers 1 and 2 go to DC 1, customers 3 and 4 to DC 2. Weighting each circled distance by its customer’s truckloads and adding gives the total:
 
 $$
 TD = 2(10) + 4(20) + 6(25) + 8(15) = 370
@@ -246,7 +246,7 @@ The extension from the single-facility case is mechanical. One new facility took
 
 Figure 2: The general multifacility network: suppliers and customers fixed, both the manufacturing and the distribution facilities to be located, with flows running between the new facilities as well as out to the existing ones.
 
-A plus marks a flow the figure draws and a zero marks one it does not, so $V$ and $W$ are the figure written as two tables.
+A plus marks a flow the figure draws and a zero marks one it does not, so $V$ and $W$ are the figure written as two tables:
 
 $$
 V_{n \times n} =

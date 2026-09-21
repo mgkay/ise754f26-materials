@@ -47,7 +47,7 @@ The choice of FOB terms does not usually affect the location decision at all; it
 
 The conclusion that FOB terms do not affect the location rests on the market being competitive. A producer with a strict monopoly could locate for its own convenience and still make the sale. With competitors along I-40 producing the same product, a customer buys from whoever delivers at the lower price, so a plant placed far from its customers loses them to a nearer rival: Hotelling’s law from Lecture 2.1, in the market rather than on the sand.
 
-Behind the choice of terms sits a short ladder of cost definitions that lead to transport cost, which is the cost most impacted by the location decision. Procurement cost is the landed cost at the supplier plus the inbound transport cost. Adding the local resource cost, meaning labor and whatever materials are bought locally, gives the production cost; adding the outbound transport cost to that gives the total delivered cost. The transport cost, $TC$, is the sum of the inbound and the outbound transport costs alone.
+Behind the choice of terms sits a short ladder of cost definitions that lead to transport cost, which is the cost most impacted by the location decision. Procurement cost is the landed cost at the supplier plus the inbound transport cost. Adding the local resource cost, meaning labor and whatever materials are bought locally, gives the production cost; adding the outbound transport cost to that gives the total delivered cost. The transport cost, $TC$, is the sum of the inbound and the outbound transport costs alone:
 
 $$
 \begin{aligned}
@@ -591,7 +591,7 @@ Figure 16: The same three existing facilities under four objectives. The bounded
 
 Logjam does not have to implement all of these. Just using the Optim package alone does most of the work. Logjam just needs to supply any supporting infrastructure. In the case of maximin, it only becomes feasible when the region is bounded.
 
-Optim and the plotting used here are general-purpose Julia. The logistics-specific layer that the rest of the topic relies on, place names and distances over real geography, is introduced next.
+Optim and the plotting used here are general-purpose Julia. The logistics-specific layer that the rest of Location relies on, place names and distances over real geography, is introduced next.
 
 ## 5. Logjam: the logistics toolkit
 
