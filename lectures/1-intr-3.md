@@ -296,15 +296,15 @@ $$
 For $m$ identical machines the utilization factor generalizes; the departure SCV of one station becomes the arrival SCV of the next, and the effective process-time SCV folds in machine failures:
 
 $$
-\hphantom{\underset{\displaystyle \text{Eff. process time SCV:}}{\underset{\displaystyle \text{Departure SCV:}}{\text{G/G/}m:}}}\mathllap{\text{G/G/}m:}\quad \hphantom{\underset{\displaystyle c_e^2}{\underset{\displaystyle c_d^2}{t_{CT_q}}}}\mathllap{t_{CT_q}} = \left(\frac{c_a^2 + c_e^2}{2}\right)\frac{u^{\sqrt{2(m+1)}-1}}{m\,(1-u)}\,t_e , \tag{7}
+\hphantom{\underset{\displaystyle \text{Eff. process time SCV:}}{\underset{\displaystyle \text{Departure SCV:}}{\text{G/G/}m:}}}\mathllap{\text{G/G/}m:}\quad \hphantom{\underset{\displaystyle c_e^2}{\underset{\displaystyle c_d^2}{t_{CT_q}}}}\mathllap{t_{CT_q}} = \mathrlap{\left(\frac{c_a^2 + c_e^2}{2}\right)\frac{u^{\sqrt{2(m+1)}-1}}{m\,(1-u)}\,t_e ,}\hphantom{\underset{\displaystyle c_0^2 + (1 + c_r^2)\,A(1-A)\,\frac{\text{MTTR}}{t_0} ,}{\underset{\displaystyle 1 + (1-u^2)(c_a^2 - 1) + \frac{u^2}{\sqrt{m}}\,(c_e^2 - 1) ,}{\left(\frac{c_a^2 + c_e^2}{2}\right)\frac{u^{\sqrt{2(m+1)}-1}}{m\,(1-u)}\,t_e ,}}} \tag{7}
 $$
 
 $$
-\hphantom{\underset{\displaystyle \text{Eff. process time SCV:}}{\underset{\displaystyle \text{Departure SCV:}}{\text{G/G/}m:}}}\mathllap{\text{Departure SCV:}}\quad \hphantom{\underset{\displaystyle c_e^2}{\underset{\displaystyle c_d^2}{t_{CT_q}}}}\mathllap{c_d^2} = 1 + (1-u^2)(c_a^2 - 1) + \frac{u^2}{\sqrt{m}}\,(c_e^2 - 1) , \tag{8}
+\hphantom{\underset{\displaystyle \text{Eff. process time SCV:}}{\underset{\displaystyle \text{Departure SCV:}}{\text{G/G/}m:}}}\mathllap{\text{Departure SCV:}}\quad \hphantom{\underset{\displaystyle c_e^2}{\underset{\displaystyle c_d^2}{t_{CT_q}}}}\mathllap{c_d^2} = \mathrlap{1 + (1-u^2)(c_a^2 - 1) + \frac{u^2}{\sqrt{m}}\,(c_e^2 - 1) ,}\hphantom{\underset{\displaystyle c_0^2 + (1 + c_r^2)\,A(1-A)\,\frac{\text{MTTR}}{t_0} ,}{\underset{\displaystyle 1 + (1-u^2)(c_a^2 - 1) + \frac{u^2}{\sqrt{m}}\,(c_e^2 - 1) ,}{\left(\frac{c_a^2 + c_e^2}{2}\right)\frac{u^{\sqrt{2(m+1)}-1}}{m\,(1-u)}\,t_e ,}}} \tag{8}
 $$
 
 $$
-\hphantom{\underset{\displaystyle \text{Eff. process time SCV:}}{\underset{\displaystyle \text{Departure SCV:}}{\text{G/G/}m:}}}\mathllap{\text{Eff. process time SCV:}}\quad \hphantom{\underset{\displaystyle c_e^2}{\underset{\displaystyle c_d^2}{t_{CT_q}}}}\mathllap{c_e^2} = c_0^2 + (1 + c_r^2)\,A(1-A)\,\frac{\text{MTTR}}{t_0} , \tag{9}
+\hphantom{\underset{\displaystyle \text{Eff. process time SCV:}}{\underset{\displaystyle \text{Departure SCV:}}{\text{G/G/}m:}}}\mathllap{\text{Eff. process time SCV:}}\quad \hphantom{\underset{\displaystyle c_e^2}{\underset{\displaystyle c_d^2}{t_{CT_q}}}}\mathllap{c_e^2} = \mathrlap{c_0^2 + (1 + c_r^2)\,A(1-A)\,\frac{\text{MTTR}}{t_0} ,}\hphantom{\underset{\displaystyle c_0^2 + (1 + c_r^2)\,A(1-A)\,\frac{\text{MTTR}}{t_0} ,}{\underset{\displaystyle 1 + (1-u^2)(c_a^2 - 1) + \frac{u^2}{\sqrt{m}}\,(c_e^2 - 1) ,}{\left(\frac{c_a^2 + c_e^2}{2}\right)\frac{u^{\sqrt{2(m+1)}-1}}{m\,(1-u)}\,t_e ,}}} \tag{9}
 $$
 
 where

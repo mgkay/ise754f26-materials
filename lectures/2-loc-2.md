@@ -629,15 +629,15 @@ $$
 corresponding to the rectilinear ($p = 1$), Euclidean ($p = 2$), and Chebychev ($p \to \infty$) distances:
 
 $$
-\hphantom{\underset{\displaystyle d_\infty(P_1, P_2)}{\underset{\displaystyle d_2(P_1, P_2)}{d_1(P_1, P_2)}}}\mathllap{d_1(P_1, P_2)} = |x_1 - x_2| + |y_1 - y_2| \tag{7}
+\hphantom{\underset{\displaystyle d_\infty(P_1, P_2)}{\underset{\displaystyle d_2(P_1, P_2)}{d_1(P_1, P_2)}}}\mathllap{d_1(P_1, P_2)} = \mathrlap{|x_1 - x_2| + |y_1 - y_2|}\hphantom{\underset{\displaystyle \max\{\,|x_1 - x_2|,\; |y_1 - y_2|\,\}}{\underset{\displaystyle \sqrt{(x_1 - x_2)^2 + (y_1 - y_2)^2}}{|x_1 - x_2| + |y_1 - y_2|}}} \tag{7}
 $$
 
 $$
-\hphantom{\underset{\displaystyle d_\infty(P_1, P_2)}{\underset{\displaystyle d_2(P_1, P_2)}{d_1(P_1, P_2)}}}\mathllap{d_2(P_1, P_2)} = \sqrt{(x_1 - x_2)^2 + (y_1 - y_2)^2} \tag{8}
+\hphantom{\underset{\displaystyle d_\infty(P_1, P_2)}{\underset{\displaystyle d_2(P_1, P_2)}{d_1(P_1, P_2)}}}\mathllap{d_2(P_1, P_2)} = \mathrlap{\sqrt{(x_1 - x_2)^2 + (y_1 - y_2)^2}}\hphantom{\underset{\displaystyle \max\{\,|x_1 - x_2|,\; |y_1 - y_2|\,\}}{\underset{\displaystyle \sqrt{(x_1 - x_2)^2 + (y_1 - y_2)^2}}{|x_1 - x_2| + |y_1 - y_2|}}} \tag{8}
 $$
 
 $$
-\hphantom{\underset{\displaystyle d_\infty(P_1, P_2)}{\underset{\displaystyle d_2(P_1, P_2)}{d_1(P_1, P_2)}}}\mathllap{d_\infty(P_1, P_2)} = \max\{\,|x_1 - x_2|,\; |y_1 - y_2|\,\} \tag{9}
+\hphantom{\underset{\displaystyle d_\infty(P_1, P_2)}{\underset{\displaystyle d_2(P_1, P_2)}{d_1(P_1, P_2)}}}\mathllap{d_\infty(P_1, P_2)} = \mathrlap{\max\{\,|x_1 - x_2|,\; |y_1 - y_2|\,\}}\hphantom{\underset{\displaystyle \max\{\,|x_1 - x_2|,\; |y_1 - y_2|\,\}}{\underset{\displaystyle \sqrt{(x_1 - x_2)^2 + (y_1 - y_2)^2}}{|x_1 - x_2| + |y_1 - y_2|}}} \tag{9}
 $$
 
 The above distances are defined for two-dimensional points, but they can be extended for points of any dimension. For $0 < p < 1$, the $l_p$ distance is not defined since the triangle inequality does not hold; for $1 < p < 2$, the $l_p$ distance lies between the rectilinear and the Euclidean distances; and for $2 < p < \infty$, the $l_p$ distance lies below the Euclidean distance and decreases as $p$ increases.

@@ -655,7 +655,7 @@ Solving report
   Primal bound      30
   Dual bound        30
   Gap               0% (tolerance: 0.01%)
-  P-D integral      0.000138505008777
+  P-D integral      0.000143969379211
   Solution status   feasible
                     30 (objective)
                     0 (bound viol.)
@@ -1628,8 +1628,8 @@ prt(grow)
 ───────────────────────────────────
 1       20       420     6     0.00
 2       50     2,550    15     0.20
-3      100    10,100    31     1.08
-4      200    40,200    61     8.76
+3      100    10,100    31     1.12
+4      200    40,200    61     9.42
 ```
 
 Ten times the objects is a hundred times the variables and rather more than a hundred times the work. Sixty seconds covers two hundred objects several times over and three hundred comfortably, and stops somewhere past that rather than running all afternoon on an instance nobody meant to pose. A limit that is never reached costs nothing, which is the argument for always setting one.
@@ -1654,10 +1654,10 @@ prt(loose)
 ```text
     gap  bins  seconds
 ──────────────────────
-  exact    61     8.77
-     1%    61     8.79
-     2%    62     5.47
-     5%    62     5.41
+  exact    61     9.81
+     1%    61     9.91
+     2%    62     6.54
+     5%    62     6.85
 ```
 
 NoteReading a solve that stopped early

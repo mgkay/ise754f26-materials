@@ -1119,12 +1119,14 @@ Model 3: Least-squares line
 Model 3 formulation: Least-squares line
 
 $$
-\hphantom{\underset{\displaystyle (\alpha_1^\star, \alpha_2^\star)}{\widehat{y}_i(\alpha_1, \alpha_2)}}\mathllap{\widehat{y}_i(\alpha_1, \alpha_2)} = \alpha_1 + \alpha_2 x_i \tag{8}
+\hphantom{\underset{\displaystyle (\alpha_1^\star, \alpha_2^\star)}{\widehat{y}_i(\alpha_1, \alpha_2)}}\mathllap{\widehat{y}_i(\alpha_1, \alpha_2)} = \mathrlap{\alpha_1 + \alpha_2 x_i}\hphantom{\underset{\displaystyle \arg\min_{\alpha_1,\, \alpha_2}
+\; \sum_{i=1}^{n} \bigl( \widehat{y}_i - y_i \bigr)^2}{\alpha_1 + \alpha_2 x_i}} \tag{8}
 $$
 
 $$
-\hphantom{\underset{\displaystyle (\alpha_1^\star, \alpha_2^\star)}{\widehat{y}_i(\alpha_1, \alpha_2)}}\mathllap{(\alpha_1^\star, \alpha_2^\star)} = \arg\min_{\alpha_1,\, \alpha_2}
-\; \sum_{i=1}^{n} \bigl( \widehat{y}_i - y_i \bigr)^2 \tag{9}
+\hphantom{\underset{\displaystyle (\alpha_1^\star, \alpha_2^\star)}{\widehat{y}_i(\alpha_1, \alpha_2)}}\mathllap{(\alpha_1^\star, \alpha_2^\star)} = \mathrlap{\arg\min_{\alpha_1,\, \alpha_2}
+\; \sum_{i=1}^{n} \bigl( \widehat{y}_i - y_i \bigr)^2}\hphantom{\underset{\displaystyle \arg\min_{\alpha_1,\, \alpha_2}
+\; \sum_{i=1}^{n} \bigl( \widehat{y}_i - y_i \bigr)^2}{\alpha_1 + \alpha_2 x_i}} \tag{9}
 $$
 
 where
