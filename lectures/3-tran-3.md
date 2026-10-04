@@ -209,7 +209,9 @@ A three-month maximum interval sets a minimum frequency, and the transport cost 
 
 $$
 \begin{aligned}
-t_{\max} &= \frac{3}{12} \text{ yr/TL} \;\Rightarrow\; n_{\min} = \frac{1}{t_{\max}} \text{ TL/yr} \;\Rightarrow\; q = \frac{f}{\max\{n,\, n_{\min}\}} \\
+t_{\max} &= \frac{3}{12} \text{ yr/TL} \\
+\Rightarrow\quad n_{\min} &= \frac{1}{t_{\max}} \text{ TL/yr} \\
+\Rightarrow\quad q &= \frac{f}{\max\{n,\, n_{\min}\}} \\
 TC'_{FTL} &= \max\{n,\, n_{\min}\}\, r\, d
 \end{aligned}
 \tag{7}
@@ -810,8 +812,10 @@ Including the minimum-charge and maximum-payload restrictions, determine the TLC
 Charged at the FTL rate, a shipment of size $q_{TL}^{*}$ costs:
 
 $$
-TLC_\text{AllocFTL}(q_{TL}^{*}) \;=\; \frac{f}{q_{TL}^{*}} \bigl(q_{TL}^{*} r_{FTL} d\bigr) + \alpha v h q_{TL}^{*}
-\;=\; f \frac{r}{q_{\max}} d + \alpha v h q_{TL}^{*}
+\begin{aligned}
+TLC_\text{AllocFTL}(q_{TL}^{*}) &= \frac{f}{q_{TL}^{*}} \bigl(q_{TL}^{*} r_{FTL} d\bigr) + \alpha v h q_{TL}^{*} \\
+&= f \frac{r}{q_{\max}} d + \alpha v h q_{TL}^{*}
+\end{aligned}
 \tag{20}
 $$
 
@@ -879,12 +883,14 @@ Determine the LTL shipment size $q_{LTL}^{*}$ that minimizes the annual TLC for 
 Care is needed in picking bounds for optimization since the LTL formula is only valid for a limited range of values:
 
 $$
+\begin{gathered}
+r_{LTL} = PPI_{LTL} \left[ \frac{\frac{s^{2}}{8} + 14}{\left( q^{\frac{1}{7}} d^{\frac{15}{29}} - \frac{7}{2} \right)\left( s^{2} + 2 s + 14 \right)} \right] \\
 \begin{aligned}
-r_{LTL} &= PPI_{LTL} \left[ \frac{\frac{s^{2}}{8} + 14}{\left( q^{\frac{1}{7}} d^{\frac{15}{29}} - \frac{7}{2} \right)\left( s^{2} + 2 s + 14 \right)} \right] \\
 \text{valid for}\quad 37 &\leq d \leq 3354 && \text{(distance, mi)} \\
 \frac{150}{2{,}000} &\leq q \leq \frac{10{,}000}{2{,}000} && \text{(weight, ton)} \\
 2{,}000\, \frac{q}{s} &\leq 650 && \text{(cube, ft}^{3}\text{)}
 \end{aligned}
+\end{gathered}
 \tag{23}
 $$
 
@@ -1030,8 +1036,10 @@ function costcurves!(ax, v)
     lab!(xT, TLC_TL(xT), L"TLC_{TL}", (:left, :bottom), (6, 2))
     lab!(0.99UB, TLC_LTL(0.99UB), L"TLC_{LTL}", (:right, :bottom), (0, 6))
     lab!(at(0.32), TC_TL(at(0.32)), L"TC_{TL}", (:left, :bottom), (6, 2))
-    lab!(at(0.18), TC_LTL(at(0.18)), L"TC_{LTL}", (:right, :top),
-         (-2, -6))
+    # TC_LTL hangs under its curve at the left edge, below the curve's
+    # height a fifth of the way in, so the steep TC_TL stays clear even
+    # in the narrow panels of the next figure.
+    lab!(at(0.0), TC_LTL(at(0.2)), L"TC_{LTL}", (:left, :top), (4, -8))
     lab!(at(0.35), IC(at(0.35), v), L"IC", (:left, :top), (6, -4))
     xlims!(ax, x0, x1)
     ylims!(ax, IC(x0, v), top)

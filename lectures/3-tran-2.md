@@ -29,7 +29,7 @@ Trucking is the only transport mode that most shippers need to have detailed kno
 
 ### 1.1 For-hire services
 
-Freight can be transported via private trucking or for-hire trucking. For-hire trucking services include full truckload (TL), less-than-truckload (LTL), and package express (PX), shown in Table 1. TL is 80% of all trucking.1 PX can also include transport by rail and air, and it also has a limit on the maximum dimension of a load (e.g., 130 in.) in order to allow automated sortation equipment to be used at terminals. “Parcels” are PX loads, while loads under 2 lbs. are referred to as “packets.” Other services include bulk, motor vehicle carrier, refrigerated, and tank car.
+Freight can be transported via private trucking or for-hire trucking. For-hire trucking services include full truckload (TL), less-than-truckload (LTL), and package express (PX), shown in Table 1. TL is 80% of all trucking. PX can also include transport by rail and air, and it also has a limit on the maximum dimension of a load (e.g., 130 in.) in order to allow automated sortation equipment to be used at terminals. “Parcels” are PX loads, while loads under 2 lbs. are referred to as “packets.” Other services include bulk, motor vehicle carrier, refrigerated, and tank car.
 
 Table 1: U.S. for-hire trucking services.
 
@@ -47,7 +47,7 @@ The average value of an LTL load is nine times that of a TL load. The kind of pr
 
 The two haul lengths invite a question whose answer is about the statistic rather than about trucking. The average haul is 294 mi for TL and 752 mi for LTL, the reverse of what the payloads suggest. Nothing about a load changes at 10,000 lb. What the TL figure includes is truckloads of gravel, cement and similar bulk material, which are almost always shipped TL and almost always shipped a short distance, and those short hauls are averaged into the 294. The same mixing depresses the average value, since a great deal of very cheap and very heavy material moves TL. Both TL statistics are averages over a spectrum containing two quite different populations, and neither describes the general merchandise this course is about.
 
-The maximum gross weight limit of 80,000 lbs applies to the entire vehicle (i.e., 3-axle tractor and 2-axle 53′ semi-trailer). The maximum payload weight of 50,000 lbs is based on an estimated average “tare” weight for the empty vehicle of approximately 30,000 lbs2 (13,900 lb tractor and 13,800 lb semi-trailer). Although the physical cube capacity of a trailer ranges from 3,332 to 3,968 ft3 for 48 to 53 ft trailers, respectively, in practice not all of this space can be utilized when different-size items are packed into the trailer, resulting in an effective cube capacity from approximately 2,500 to 3,000 ft3.
+The maximum gross weight limit of 80,000 lbs applies to the entire vehicle (i.e., 3-axle tractor and 2-axle 53′ semi-trailer). The maximum payload weight of 50,000 lbs is based on an estimated average “tare” weight for the empty vehicle of approximately 30,000 lbs1 (13,900 lb tractor and 13,800 lb semi-trailer). Although the physical cube capacity of a trailer ranges from 3,332 to 3,968 ft3 for 48 to 53 ft trailers, respectively, in practice not all of this space can be utilized when different-size items are packed into the trailer, resulting in an effective cube capacity from approximately 2,500 to 3,000 ft3.
 
 Figure 1: The enclosed van semi-trailer, with interior dimensions in parenthesis.
 
@@ -79,13 +79,13 @@ Figure 3: The logistics network used for LTL and PX. Local pickup and delivery a
 
 Fig. 3 is what a TL operation does not need, and the cost of building one is why there are far fewer LTL carriers than TL carriers.
 
-An LTL terminal is easy to mistake for a warehouse, and what distinguishes it is its shape. A warehouse on the same site would be far larger and would occupy the parking area; an LTL terminal is deliberately narrow, because it is not storing anything. Freight comes off one trailer and is carried across the building on a pallet jack to another. It is a switching network rather than a store, and a T-shape is the best shape at 150 to 200 doors, which is what Fig. 4 shows.3
+An LTL terminal is easy to mistake for a warehouse, and what distinguishes it is its shape. A warehouse on the same site would be far larger and would occupy the parking area; an LTL terminal is deliberately narrow, because it is not storing anything. Freight comes off one trailer and is carried across the building on a pallet jack to another. It is a switching network rather than a store, and a T-shape is the best shape at 150 to 200 doors, which is what Fig. 4 shows.2
 
-Figure 4: An LTL terminal from the air, and the T-shape that is best at 150 to 200 doors.4 It is built long and narrow because nothing is stored in it: freight crosses from an inbound door to an outbound door, and the shape keeps that crossing short.
+Figure 4: An LTL terminal from the air, and the T-shape that is best at 150 to 200 doors.3 It is built long and narrow because nothing is stored in it: freight crosses from an inbound door to an outbound door, and the shape keeps that crossing short.
 
 ### 1.3 Hours of service
 
-The Federal Motor Carrier Safety Administration’s Hours-of-Service (HOS) regulations provide constraints on the number of hours that a driver can operate a truck: “Drivers may drive up to 11 hours in the 14-hour on-duty window after they come on duty following 10 or more consecutive hours off duty.”5 The HOS regulations effectively limit the total distance traveled by a single driver in a day to around 400 miles. As a result, a DC is limited to serving customers located within a 200 mile radius if it is desired that drivers return to a home location each day. Similar considerations result in a 200-mile maximum separation between LTL terminals. Team drivers can be used to allow almost continual operation, where each driver must rest at least eight consecutive hours in the sleeper berth per HOS regulations.
+The Federal Motor Carrier Safety Administration’s Hours-of-Service (HOS) regulations provide constraints on the number of hours that a driver can operate a truck: “Drivers may drive up to 11 hours in the 14-hour on-duty window after they come on duty following 10 or more consecutive hours off duty.”4 The HOS regulations effectively limit the total distance traveled by a single driver in a day to around 400 miles. As a result, a DC is limited to serving customers located within a 200 mile radius if it is desired that drivers return to a home location each day. Similar considerations result in a 200-mile maximum separation between LTL terminals. Team drivers can be used to allow almost continual operation, where each driver must rest at least eight consecutive hours in the sleeper berth per HOS regulations.
 
 The 400-mile day is why the 250-mile threshold in Sec. 2 matters: inside it a driver can deliver and return the same day.
 
@@ -95,7 +95,7 @@ The rule reaches further into logistics decisions than a safety regulation usual
 
 One-time shipments are an operational decision, and they are what this lecture is about: the shipment size $q$ is known. A shipper already knows when and how much to ship, and what is left is to determine if TL and/or LTL is to be used. The charge is the carrier’s to state, so a shipper must contact a carrier or have an agreement to know the charge, but it can, and should, be estimated first: that estimate is what the rest of this lecture builds.
 
-Periodic shipments are a tactical decision: here the demand rate $f$ is known and the size $q$ must be determined. What has to be worked out is how often and how much to ship, and an analytical transport charge formula is what allows an “optimal” size, and with it the shipment frequency, to be estimated. The U.S. Bureau of Labor Statistic’s Producer Price Index (PPI) for TL and LTL is used to estimate those transport charges, and Sec. 2.8 is where it enters here. Periodic shipments are lecture 3.3’s subject.
+Periodic shipments are a tactical decision: here the demand rate $f$ is known and the size $q$ must be determined. What has to be worked out is how often and how much to ship, and an analytical transport charge formula is what allows an “optimal” size, and with it the shipment frequency, to be estimated. The U.S. Bureau of Labor Statistic’s Producer Price Index (PPI) for TL and LTL is used to estimate those transport charges, and Sec. 2.8 is where it enters here. Periodic shipments are Lecture 3.3’s subject.
 
 ## 2. Design constants
 
@@ -301,7 +301,7 @@ The three figures that turn the carrier’s cost into the shipper’s rate are i
 - $15\%$ = average deadhead travel, the share of total truck miles run empty
 - $\$1.60$ = cost per mile in 2004, loaded or not
 - $\dfrac{\$1.60}{1 - 0.15}$ = $\$1.88$, cost per loaded-mile
-- $6.35\%$ = average operating margin for trucking6
+- $6.35\%$ = average operating margin for trucking5
 - $\dfrac{\$1.88}{1 - 0.0635}$ $\approx$ $\$2.00$, revenue per loaded-mile.
 
 So \$1.60 is the real number, and \$2.00 is what it becomes once the empty miles and the margin – the carrier’s profit as a share of revenue – are added back. Deadhead has come down a little as carriers have grown better at matching loads, but 15% is stable enough to plan with.
@@ -391,26 +391,26 @@ Table 4: The bottom-up estimate of TL cost per mile in 2004.
 | Item | | 2004 |
 |---|---|---|
 | Interest rate | | |
-| Prime rate7 | | 4.75% |
+| Prime rate6 | | 4.75% |
 | Increase over prime | | 2.00% |
 | Nominal interest rate | | 6.75% |
-| Current inflation rate8 | | 2.70% |
+| Current inflation rate7 | | 2.70% |
 | Real interest rate | $i$ | 4.05% |
 | Lease | | |
-| Economic life (yr)9 | $N$ | 7.25 |
-| Investment cost (\$)10 | $IV$ | 132,576 |
+| Economic life (yr)8 | $N$ | 7.25 |
+| Investment cost (\$)9 | $IV$ | 132,576 |
 | Salvage percentage | | 20.00% |
 | Salvage value (\$) | $SV$ | 26,515 |
 | Effective investment cost (\$) | $IV^{\text{eff}}$ | 112,695 |
 | Capital recovery cost (\$/yr) | $K$ | 18,240 |
 | Costing | | |
-| Annual mileage (mi)11 | $q$ | 103,945 |
-| Fuel efficiency (mi/gal)12 | | 4.5 |
-| Fuel cost per gallon (\$/gal)13 | | 1.780 |
+| Annual mileage (mi)10 | $q$ | 103,945 |
+| Fuel efficiency (mi/gal)11 | | 4.5 |
+| Fuel cost per gallon (\$/gal)12 | | 1.780 |
 | Fuel cost (\$/mi) | | 0.3956 |
 | Annual fuel cost (\$/yr) | | 41,116 |
-| Tire, repair, insurance (\$/yr)14 | | 58,367 |
-| Driver salary with benefits (\$/yr)15 | | 49,058 |
+| Tire, repair, insurance (\$/yr)13 | | 58,367 |
+| Driver salary with benefits (\$/yr)14 | | 49,058 |
 | Operating cost (\$/yr) | $OC$ | 148,541 |
 | Operating cost per mile (\$/mi) | | 1.43 |
 | Annual investment cost (\$/yr) | | 18,240 |
@@ -473,11 +473,11 @@ Sec. 3.2 is where this is applied.
 
 ### 2.8 Producer Price Index
 
-The two series that carry design constant 7 forward are published monthly by the Bureau of Labor Statistics.16
+The two series that carry design constant 7 forward are published monthly by the Bureau of Labor Statistics.15
 
 Where the data is and how to get it. Each series has a page of its own, and the series identifier is what addresses it: PCU484121484121 for truckload and PCU484122484122 for less-than-truckload. Going to data.bls.gov/timeseries/PCU484121484121 returns the whole monthly history, which is the fastest way to look at one value.
 
-Table 5 and Table 6 are those two series from the base month, December 2003, to the present, laid out the way BLS lays them out so that the page and this lecture are recognizably the same table. Both are built from the committed data at render rather than copied from the website as an image, so they carry whatever the last refresh of data/ppi-trucking.csv returned. The years 2007 to 2015 are left out to hold each table to one screen, and the rightmost column is BLS’s own annual average rather than a mean taken here. Two markings carry over from BLS: the (P) on a value that is still provisional and will be revised, and the base date, which is December 2003 = 100.17 Three entries are set in bold, and each is a number the arithmetic below stands on: the base month itself, where the index is 100 by construction; the 2004 annual average, 102.7 for TL and 104.2 for LTL, the two divisors that carry a 2004 estimate forward; and the January 2018 reading this lecture is anchored at, chosen so that its arithmetic does not change from one year to the next.
+Table 5 and Table 6 are those two series from the base month, December 2003, to the present, laid out the way BLS lays them out so that the page and this lecture are recognizably the same table. Both are built from the committed data at render rather than copied from the website as an image, so they carry whatever the last refresh of data/ppi-trucking.csv returned. The years 2007 to 2015 are left out to hold each table to one screen, and the rightmost column is BLS’s own annual average rather than a mean taken here. Two markings carry over from BLS: the (P) on a value that is still provisional and will be revised, and the base date, which is December 2003 = 100.16 Three entries are set in bold, and each is a number the arithmetic below stands on: the base month itself, where the index is 100 by construction; the 2004 annual average, 102.7 for TL and 104.2 for LTL, the two divisors that carry a 2004 estimate forward; and the January 2018 reading this lecture is anchored at, chosen so that its arithmetic does not change from one year to the next.
 
 Table 5: PCU484121484121 – PPI industry data for General freight trucking, long-distance TL, not seasonally adjusted. Base date 200312. Avg is the BLS annual average. A P marks a provisional value.
 
@@ -664,7 +664,7 @@ LTL is rated differently from TL, and the difference is not merely a smaller num
 
 ### 4.1 Rate estimate
 
-In most commercial transportation management and planning systems, LTL rates are determined using tariff tables (e.g., CzarLite), but this requires the shipper/decision maker to purchase access to the tariff tables and, further, to know what discount to apply to the tariff rates. The following model was developed from tariff rate tables and provides a general means of estimating rates for LTL transport between origin-destination (O-D) pairs located anywhere within the continental United States.18 Since it requires only distance, weight, and density as inputs and allows direct comparison of LTL and TL rates, it can be used in the earliest stages of logistics network design. The LTL transport charge, $c_{LTL}$, is the estimated rate over the size and the distance of the shipment, and the rate is what the model supplies:
+In most commercial transportation management and planning systems, LTL rates are determined using tariff tables (e.g., CzarLite), but this requires the shipper/decision maker to purchase access to the tariff tables and, further, to know what discount to apply to the tariff rates. The following model was developed from tariff rate tables and provides a general means of estimating rates for LTL transport between origin-destination (O-D) pairs located anywhere within the continental United States.17 Since it requires only distance, weight, and density as inputs and allows direct comparison of LTL and TL rates, it can be used in the earliest stages of logistics network design. The LTL transport charge, $c_{LTL}$, is the estimated rate over the size and the distance of the shipment, and the rate is what the model supplies:
 
 $$
 \hphantom{\underset{\displaystyle r_{LTL}}{c_{LTL}}}\mathllap{c_{LTL}} = \mathrlap{r_{LTL}\, q\, d}\hphantom{\underset{\displaystyle PPI_{LTL} \left[ \frac{\frac{s^2}{8} + 14}
@@ -688,7 +688,7 @@ The range the estimate is valid over is part of the estimate. Eq. 12 holds for $
 
 NoteHow the formula was fitted
 
-Eq. 12 is Kay and Warsing’s top-down regression onto published tariff rates rather than a model of a carrier’s costs.19 One can verify by inspection that actual tariff-based LTL rates are inversely proportional to the density, weight, and distance of the shipment, and that observation is the basis for the specification of the initial model:
+Eq. 12 is Kay and Warsing’s top-down regression onto published tariff rates rather than a model of a carrier’s costs.18 One can verify by inspection that actual tariff-based LTL rates are inversely proportional to the density, weight, and distance of the shipment, and that observation is the basis for the specification of the initial model:
 
 $$
 r_{LTL}^{(1)}(q, s, d) = \frac{\beta_1}{\beta_2 + q^{\beta_3} s^{\beta_4} d^{\beta_5}}
@@ -717,7 +717,7 @@ Table 7: The analysis steps and the weighted absolute relative error at each.
 
 As parameters were dropped from the model in simplifying it (Steps 3 to 4), some of the remaining parameters changed rather dramatically. Steps 4 to 5 represent only a scaling step, which altered only certain coefficient and constant terms, with the remaining steps representing the final tuning of the parameters. Table 7 is also what the readable form cost: rounding the exponents to the fractions Eq. 12 carries gives up about a quarter of a percentage point of accuracy.
 
-Figure 7: Relative error against density, weight and distance, for the initial model (top) and the full model (bottom).20
+Figure 7: Relative error against density, weight and distance, for the initial model (top) and the full model (bottom).19
 
 Fig. 7 is where the improvement went. The density panel falls from 12.93% to 2.74%, which is the term in $s$ doing its work; weight and distance barely move, at 7.54% to 7.24% and 7.58% to 7.51%.
 
@@ -1085,9 +1085,9 @@ LTL rates are dependent on a number of factors, prominent among them being the s
 - Stowability, e.g., some items can be nested.
 - Liability, e.g., high value items are more expensive to insure while in transit.
 
-The National Motor Freight Classification is typically used to determine the rating of an item.21 Most LTL carriers have a Freight All Kinds (FAK) rate that can be used for any item that cannot be classified. Discounts of up to 15% from the published rates are usually available for a single one-time shipment; when a firm has frequent shipments, discounts of 30–65% can usually be negotiated.
+The National Motor Freight Classification is typically used to determine the rating of an item.20 Most LTL carriers have a Freight All Kinds (FAK) rate that can be used for any item that cannot be classified. Discounts of up to 15% from the published rates are usually available for a single one-time shipment; when a firm has frequent shipments, discounts of 30–65% can usually be negotiated.
 
-Figure 11: A page of the classification’s listings. Each row gives an item, a description precise enough to separate two forms of the same thing, and the class that follows from it.22
+Figure 11: A page of the classification’s listings. Each row gives an item, a description precise enough to separate two forms of the same thing, and the class that follows from it.21
 
 Fig. 11 is what a classification actually looks like, and the second column is the part worth noticing: two entries for Assembled Furniture differ only in whether the chairs come with upholstery, and that difference is 125 against 300.
 
@@ -1122,7 +1122,7 @@ NoteThe same threshold in the other two modes
 
 Density decides which of a vehicle’s two capacities runs out first, and the threshold is not the same in every mode. Lecture 3.1 makes the point without figures because the trailer numbers had not been introduced; they have now.
 
-Table 9: The density above which weight binds before cube, by mode.23
+Table 9: The density above which weight binds before cube, by mode.22
 
 | Mode | Weighs out above | |
 |---|---|---|
@@ -1133,7 +1133,7 @@ Table 9: The density above which weight binds before cube, by mode.23
 
 Table 9 sets the average load against each threshold. On the road it sits at 53% of it and cubes out with room to spare, which is why van semi-trailers weigh out only about 20% of the time against 80% for tank trailers. In the air it sits at 93%: the air threshold is a little over half the road threshold, so a load that comfortably cubes out on a truck is at the edge in an aircraft. Ocean runs the other way, needing half again the road density before weight binds at all.
 
-The air figure is worth checking independently, because the IATA divisor is a billing rule rather than a physical one. A Boeing 777F carries 102,010 kg in 653 m3, which is 156 kg/m3 or 9.75 lb/ft3, the same number, and essentially the Class-100 average density. That is why the divisor is 6,000.24
+The air figure is worth checking independently, because the IATA divisor is a billing rule rather than a physical one. A Boeing 777F carries 102,010 kg in 653 m3, which is 156 kg/m3 or 9.75 lb/ft3, the same number, and essentially the Class-100 average density. That is why the divisor is 6,000.23
 
 The claim that survives scrutiny is about the constraint, not about the invoice: air is the mode where the weight limit binds first, at roughly half the density at which it binds on the road. It is not that most air shipments are billed by weight: air cargo skews to low-density high-value goods, so a large share still falls below 167 kg/m3 and is billed volumetrically.
 
@@ -1161,7 +1161,7 @@ $s =$ 4.4444 lb/ft3, which places the product in Class 200.
 
 A separate table is provided in the tariff for each particular pair of origin and destination (O-D) points, typically zip codes, due to different local market conditions like demand imbalances that can result in an excess of empty trailers at some locations. More freight is shipped to Florida than from Florida, so rates to Florida are higher than the rates from Florida.
 
-Table 10 is an example of a tariff table, for the O-D pair Raleigh, NC (27606) to Gainesville, FL (32606).25 Rates are in \$/cwt, where cwt is hundredweight, or 100 lb. In the bottom row, the mid-points of the weight ranges, in tons, at which the rates change, termed rate breaks, are provided. The actual road distance spanned by this O-D pair is 532 miles. The minimum charge for this tariff is \$95.23.
+Table 10 is an example of a tariff table, for the O-D pair Raleigh, NC (27606) to Gainesville, FL (32606).24 Rates are in \$/cwt, where cwt is hundredweight, or 100 lb. In the bottom row, the mid-points of the weight ranges, in tons, at which the rates change, termed rate breaks, are provided. The actual road distance spanned by this O-D pair is 532 miles. The minimum charge for this tariff is \$95.23.
 
 There is not a tariff table for every five-digit zip code. They are published on the first three digits, so one table covers every origin beginning 276 and every destination beginning 326. Table 10 is that table, and the five-digit codes name the example rather than the tariff itself.
 
@@ -1260,7 +1260,7 @@ $c_\text{tariff} =$ \$766.14, and the weight break is 0.3913 ton. At 0.3 ton the
 
 The two routes to the same charge do not agree: the regression of Sec. 4.1 gives \$602.81 against the tariff’s \$766.14, which is 27.1% higher, and the size of the disagreement is the subject of Sec. 6 rather than a defect in either one.
 
-The chapter puts a number on the gap for the whole rate surface rather than for one shipment: across four load densities and three origin-destination pairs, the estimate and the tariff agree when every tariff rate is discounted by 46.2512%. That is the sense in which the two are consistent. The estimate is not an undiscounted tariff and was never meant to be; it is what an average shipper actually pays, which is a tariff with an average discount already taken out of it.
+A number can be put on the gap for the whole rate surface rather than for one shipment: across four load densities and three origin-destination pairs, the estimate and the tariff agree when every tariff rate is discounted by 46.2512%. That is the sense in which the two are consistent. The estimate is not an undiscounted tariff and was never meant to be; it is what an average shipper actually pays, which is a tariff with an average discount already taken out of it.
 
 ## 6. Estimate against quote
 
@@ -1268,7 +1268,7 @@ The estimate of Sec. 4.1 and the tariff of Sec. 5.2 are both ways of arriving at
 
 Not always, and the exception is worth knowing before a quote is judged against the estimate. A lane with a flow imbalance is cheap in the empty direction: more freight moves into Florida than out of it, so the trucks that carried it in are waiting to go back, and a one-time quote out of Florida can come in well under both the contract rate and the estimate. The same lane quoted in the other direction is the one that pays the premium Table 11 measures.
 
-The chapter measures that premium. Three test O-D pairs were used. These test pairs represent different distances and, in each test pair, a larger population city is paired with a smaller population city so that the rates for that lane reflect a balance of high and low demands, as opposed to, for example, lanes connecting two large cities, which are likely to have more frequent and lower-cost service due to greater competition between carriers serving those cities.
+That premium can be measured. Three test O-D pairs were used. These test pairs represent different distances and, in each test pair, a larger population city is paired with a smaller population city so that the rates for that lane reflect a balance of high and low demands, as opposed to, for example, lanes connecting two large cities, which are likely to have more frequent and lower-cost service due to greater competition between carriers serving those cities.
 
 Table 11: What a one-time spot quote costs over the estimate, for a 1,000 lb Class 100 load.
 
@@ -1375,10 +1375,6 @@ That is what the estimate is for. It is not a prediction of what any one carrier
 
 -
 
-The share and the figures in Table 1 are the chapter’s, Freight Transport, Sec. 1.3.2.
-
--
-
 Tare weight is defined in Lecture 3.1, Sec. 8: tare = gross vehicle weight − payload.
 
 -
@@ -1463,7 +1459,7 @@ Reproduced from a published extract of the National Motor Freight Classification
 
 -
 
-Ocean: 67.7 m3 interior against a 26,700 kg payload for a 40-ft dry container, ISO 668. Road and the Class 100 average: the Freight Transport chapter. Air: the IATA volumetric divisor of 6,000 cm3/kg, as set out by Maersk, “Air Cargo Chargeable Weight,” 10 March 2025, and DHL Global Forwarding, “Calculating Chargeable Weights.” Accessed 18 September 2026.
+Ocean: 67.7 m3 interior against a 26,700 kg payload for a 40-ft dry container, ISO 668. Air: the IATA volumetric divisor of 6,000 cm3/kg, as set out by Maersk, “Air Cargo Chargeable Weight,” 10 March 2025, and DHL Global Forwarding, “Calculating Chargeable Weights.” Accessed 18 September 2026.
 
 -
 
@@ -1471,4 +1467,4 @@ Boeing 777F payload and hold volume from flugzeuginfo.net, accessed 18 September
 
 -
 
-CzarLite tariff DEMOCZ02, 04-01-2000. The table is the chapter’s Table 2.4.
+CzarLite tariff DEMOCZ02, 04-01-2000.

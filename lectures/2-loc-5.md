@@ -216,7 +216,7 @@ Everything above sets a floor. There is also a ceiling, and it comes from the me
 
 The two constraints are in tension, and which one binds depends on what is going to be run.
 
-With the heuristics of lecture 2.4 the ceiling is high and forgiving: erring toward too much data costs running time and nothing else. A mixed-integer linear program is the opposite, and the difference is not a matter of degree. A hundred demand points might solve in a minute; a hundred and twenty can take twenty. The growth is not linear, so a set that is comfortably solvable does not warn that the next increment is not, and a demand set chosen purely for fidelity can put a problem out of reach.
+With the heuristics of Lecture 2.4 the ceiling is high and forgiving: erring toward too much data costs running time and nothing else. A mixed-integer linear program is the opposite, and the difference is not a matter of degree. A hundred demand points might solve in a minute; a hundred and twenty can take twenty. The growth is not linear, so a set that is comfortably solvable does not warn that the next increment is not, and a demand set chosen purely for fidelity can put a problem out of reach.
 
 So the rule of a thousand points is a fidelity statement, and it is the right one when the method tolerates it. When the method is a MILP the binding constraint is tractability instead, and the resolution has to come down to meet it. Lecture 2.7 takes up mixed-integer formulations and the choice of scale that goes with them; this lecture supplies the data and the vocabulary for that choice.
 
@@ -312,7 +312,7 @@ Example 1(b): The optimum at the finest resolution
 
 Determine the population-weighted minisum location for North Carolina using every census block group as a demand point.
 
-With the demand points chosen, the single-facility minisum of lecture 2.2 runs unchanged. The weights are block-group populations, the distances are great-circle, and the search starts from the weighted centroid.
+With the demand points chosen, the single-facility minisum of Lecture 2.2 runs unchanged. The weights are block-group populations, the distances are great-circle, and the search starts from the weighted centroid.
 
 ```julia
 # Code block 4: minisum over every North Carolina block group
@@ -349,7 +349,7 @@ And the answer can be checked against one already known. Lecture 2.2 solved the 
 
 That agreement is the point of the example rather than a curiosity, and it has been checked before on the same ground. Going from under a hundred cities to several thousand aggregate demand points barely moves the answer. The finer set is arguably a little more accurate, and for the size of the increase it is probably not worth the effort.
 
-Which is not the same as saying resolution never matters, and the distinction is what makes the rule usable. For a continuous minisum, a large demand set costs nothing but time and buys almost nothing, so the choice is free. For the discrete problems of lecture 2.4 and the mixed-integer ones of 2.7, the same extra points are paid for twice over: once in run time, and again in Sec. 6’s area adjustment, which matters most exactly where the demand set is coarse. The resolution decision matters most for what a model can represent, and least for where a single facility lands.
+Which is not the same as saying resolution never matters, and the distinction is what makes the rule usable. For a continuous minisum, a large demand set costs nothing but time and buys almost nothing, so the choice is free. For the discrete problems of Lecture 2.4 and the mixed-integer ones of 2.7, the same extra points are paid for twice over: once in run time, and again in Sec. 6’s area adjustment, which matters most exactly where the demand set is coarse. The resolution decision matters most for what a model can represent, and least for where a single facility lands.
 
 Table 1 puts the six sources and all three scales in one place. Only the three sources that nest in a county can be cut to a CSA at all.
 
@@ -403,7 +403,7 @@ That is a requirement rather than a definition, and it names no particular point
 
 Doing the algebra produces the centroid, and that is the justification for using it: not that it is the obvious middle, but that it is the point the substitution requires. Once it is in hand, a whole region of population can stand at one location and the location analysis proceeds exactly as before, so long as the objective is minimizing the sum of distances.
 
-That claim is checkable on a single instance, and checking it is more convincing than the algebra. Take the seven I-40 cities of lecture 2.1, measure from an arbitrary point, and total the weighted distances: the answer is 7,860. Now replace all seven by the centroid alone and multiply by the total weight. The answer is 7,860 again, which is what Eq. 2 demanded.
+That claim is checkable on a single instance, and checking it is more convincing than the algebra. Take the seven I-40 cities of Lecture 2.1, measure from an arbitrary point, and total the weighted distances: the answer is 7,860. Now replace all seven by the centroid alone and multiply by the total weight. The answer is 7,860 again, which is what Eq. 2 demanded.
 
 Substitute the median instead and the total comes out lower, and that is the useful half of the demonstration rather than a footnote to it. A smaller number is not a better answer here; it is the wrong answer to a different question. The median minimizes total weighted distance, so of course it gives less. What the aggregate point has to do is reproduce the total, not improve it.
 
@@ -601,7 +601,7 @@ Note what the check does not cover. The populations agree because a sum of sums 
 
 Sec. 4 placed the aggregate point. This section answers the question the placement leaves open, which is the one Sec. 1 opened the lecture with: how far is a facility from a region it is standing on?
 
-The answer cannot be zero, and the reason is a theorem lecture 1.1 already proved. Distance is a nonlinear function of position, so the distance to the mean of a set of points is not the mean of the distances to them. That is Jensen’s inequality, and for a convex function the direction is fixed: the value at the mean falls below the mean of the values. Applied here it says the centroid distance always understates, and it says so before any region is examined. Lecture 1.1 states the working rule in general terms, that a mean may stand in for the data when the quantity of interest is linear in it but not when that function is nonlinear, “where the spread of the data itself changes the answer”. The region’s extent is that spread, which is why an aggregate demand point needed a third field at all.
+The answer cannot be zero, and the reason is a theorem Lecture 1.1 already proved. Distance is a nonlinear function of position, so the distance to the mean of a set of points is not the mean of the distances to them. That is Jensen’s inequality, and for a convex function the direction is fixed: the value at the mean falls below the mean of the values. Applied here it says the centroid distance always understates, and it says so before any region is examined. Lecture 1.1 states the working rule in general terms, that a mean may stand in for the data when the quantity of interest is linear in it but not when that function is nonlinear, “where the spread of the data itself changes the answer”. The region’s extent is that spread, which is why an aggregate demand point needed a third field at all.
 
 What remains is to compute the gap.
 
@@ -1155,7 +1155,7 @@ The same 6 machines, at 17.5% more, in 2 different ZIP codes.
 
 The count did not change and the cost did, which is the pattern to expect: the adjustment adds a term that no facility can avoid, so it moves every candidate in the same direction and rarely changes how many are worth opening. Where it bites is on which ones, and it bit here on 2 of 6.
 
-The comparison against lecture 2.4 is the check, and it is a Landmark. The unadjusted row reproduces 2.4’s Ex. 3 exactly, on data rebuilt from the problem statement rather than carried over, which is what makes the adjusted row believable: the two rows differ in one input and nothing else. A run whose unadjusted column had come back different would mean the demand set had been rebuilt wrongly, and the adjusted answer would say nothing at all.
+The comparison against Lecture 2.4 is the check, and it is a Landmark. The unadjusted row reproduces 2.4’s Ex. 3 exactly, on data rebuilt from the problem statement rather than carried over, which is what makes the adjusted row believable: the two rows differ in one input and nothing else. A run whose unadjusted column had come back different would mean the demand set had been rebuilt wrongly, and the adjusted answer would say nothing at all.
 
 ## 7. Data wrangling
 
@@ -1396,7 +1396,7 @@ Example 6(d): What the new weight buys
 
 Determine how the single-facility minisum optimum for the CSA moves when demand is weighted by total income rather than by population.
 
-The demand set now carries two candidate weights, and the choice between them is the modeling decision the whole exercise was for. Weighting by population locates for the most people; weighting by each tract’s population times its per-capita income locates for the most money, which is what the luxury-goods store wants. Both are the minisum of lecture 2.2, differing only in the weight vector.
+The demand set now carries two candidate weights, and the choice between them is the modeling decision the whole exercise was for. Weighting by population locates for the most people; weighting by each tract’s population times its per-capita income locates for the most money, which is what the luxury-goods store wants. Both are the minisum of Lecture 2.2, differing only in the weight vector.
 
 ```julia
 # Code block 31: population weight against total-income weight

@@ -38,7 +38,7 @@ Constraints on the feasibility of a solution can be incorporated into an optimiz
 
 A math program is the second of those: an objective function and a set of constraints, stated together and handed to a procedure that respects both. When the objective and every constraint are linear it is a linear program, and Eq. 1 is the one this section works with.
 
-This is the first lecture to take math programming as its subject, but it is not the first to use one. Every model in the course so far has been stated as a callout, with an objective in words, a lettered list of constraints, and a statement of what the model returns, and that format is a math program written in English. The two are worth setting beside each other once. Model 1 is the linear program of Eq. 1 stated the way every model since lecture 1.1 has been stated, and Eq. 1 is the same model in symbols. Lecture 2.1 makes the same crossing in the other direction, from a callout down to the course’s first formulation.
+This is the first lecture to take math programming as its subject, but it is not the first to use one. Every model in the course so far has been stated as a callout, with an objective in words, a lettered list of constraints, and a statement of what the model returns, and that format is a math program written in English. The two are worth setting beside each other once. Model 1 is the linear program of Eq. 1 stated the way every model since Lecture 1.1 has been stated, and Eq. 1 is the same model in symbols. Lecture 2.1 makes the same crossing in the other direction, from a callout down to the course’s first formulation.
 
 maximize: total value of the two quantities chosen, worth 6 and 8 a unit
 
@@ -655,15 +655,15 @@ Solving report
   Primal bound      30
   Dual bound        30
   Gap               0% (tolerance: 0.01%)
-  P-D integral      0.000148508123717
+  P-D integral      0.000137790597257
   Solution status   feasible
                     30 (objective)
                     0 (bound viol.)
                     2.22044604925e-16 (int. viol.)
                     0 (row viol.)
-  Timing            0.02
+  Timing            0.01
                     0.00 (Presolve)
-                    0.02 (Solve)
+                    0.01 (Solve)
                     0.00 (Postsolve)
   Max sub-MIP depth 0
   Nodes             1
@@ -741,11 +741,11 @@ Figure 3: A valid cut removes the fractional vertex and no integer point. The li
 
 ## 2. Discrete facility location as a MILP
 
-The UFL is where a mixed-integer program is worth meeting for the first time, and for two reasons. It is a problem already understood well enough to check a model against something: lecture 2.4 solved this same problem by heuristic, so there is an answer to compare with. And the formulation buys a capability no heuristic in that lecture has, which is that a constraint can simply be added to it. What comes later, network flow and production-inventory systems, is much harder to hold in the head, and arriving there already fluent in a MILP is worth the detour.
+The UFL is where a mixed-integer program is worth meeting for the first time, and for two reasons. It is a problem already understood well enough to check a model against something: Lecture 2.4 solved this same problem by heuristic, so there is an answer to compare with. And the formulation buys a capability no heuristic in that lecture has, which is that a constraint can simply be added to it. What comes later, network flow and production-inventory systems, is much harder to hold in the head, and arriving there already fluent in a MILP is worth the detour.
 
 One more property makes the UFL a forgiving place to start. Under the strong formulation of Eq. 4 the relaxation at node 0 is very often integral already, and then the optimum arrives with no branching at all. That is the exception Sec. 1.3 promised rather than a contradiction of it: a relaxation is usually fractional, and this one usually is not, because Eq. 4 is written tightly enough to make it so.
 
-Only part of what a facility costs bears on where it goes. Total production cost is a line in the quantity produced, an intercept plus a rate, and lecture 2.6 fits it to obtain both. The rate is charged per ton wherever the plant stands, so it is the same whatever the answer is and drops out of the comparison. What is left is the intercept, which is incurred once per facility built, and the transport cost, which is the part that depends on where the facility is. Those two together are the total logistics cost of Eq. 3, and they are what the models in this section minimize:
+Only part of what a facility costs bears on where it goes. Total production cost is a line in the quantity produced, an intercept plus a rate, and Lecture 2.6 fits it to obtain both. The rate is charged per ton wherever the plant stands, so it is the same whatever the answer is and drops out of the comparison. What is left is the intercept, which is incurred once per facility built, and the transport cost, which is the part that depends on where the facility is. Those two together are the total logistics cost of Eq. 3, and they are what the models in this section minimize:
 
 $$
 \begin{array}{lrcl}
@@ -766,11 +766,11 @@ where
 
 ### 2.1 Uncapacitated facility location
 
-The set-notation statement of the problem is lecture 2.4’s, and it is not restated here: Model 1 in Lecture 2.4 is the concept and its mathematical formulation rung carries the $Y^{\star}$ that this lecture works from. Read it as a sentence: determine the set of sites $Y$ that minimizes the fixed cost of opening them plus the cost of serving every existing facility from the site it is assigned to, subject to every existing facility being served. The bars around $Y^{\star}$ count the elements of the set rather than taking an absolute value, so the number of facilities opened is read off the answer rather than fixed in advance.
+The set-notation statement of the problem is Lecture 2.4’s, and it is not restated here: Model 1 in Lecture 2.4 is the concept and its mathematical formulation rung carries the $Y^{\star}$ that this lecture works from. Read it as a sentence: determine the set of sites $Y$ that minimizes the fixed cost of opening them plus the cost of serving every existing facility from the site it is assigned to, subject to every existing facility being served. The bars around $Y^{\star}$ count the elements of the set rather than taking an absolute value, so the number of facilities opened is read off the answer rather than fixed in advance.
 
 The single constraint is what forces the assignment to be complete. Without it the cheapest thing to do is open nothing and serve no one, since every cost in the objective is incurred only by doing something.
 
-Being uncapacitated allows simple heuristics to be used to solve the UFL, and Fig. 4 is the map of them: ADD construction adds one NF at a time, DROP construction drops one at a time, XCHG improvement moves one NF at a time to unoccupied sites, and the HYBRID algorithm combines ADD and DROP construction with XCHG improvement, repeating until no change in $Y$. HYBRID is the default heuristic for the UFL and it is what lecture 2.4 uses.10 What this lecture adds is the branch on the left, and it is the first time the mathematical side of that tree has reached a runnable implementation.
+Being uncapacitated allows simple heuristics to be used to solve the UFL, and Fig. 4 is the map of them: ADD construction adds one NF at a time, DROP construction drops one at a time, XCHG improvement moves one NF at a time to unoccupied sites, and the HYBRID algorithm combines ADD and DROP construction with XCHG improvement, repeating until no change in $Y$. HYBRID is the default heuristic for the UFL and it is what Lecture 2.4 uses.10 What this lecture adds is the branch on the left, and it is the first time the mathematical side of that tree has reached a runnable implementation.
 
 Figure 4: The resolution rungs of Model 1 in Lecture 2.4, with the MILP branch this lecture adds. Lecture 2.4 built the mathematical formulation and the four heuristic formulations, each heuristic carrying a Logjam implementation and the mathematical one carrying none. The two MILP formulations of Secs. 2.1 and 2.2 share one implementation, which is the JuMP model a solver is handed.
 
@@ -872,7 +872,7 @@ The implementation is Eq. 4 and nothing else: $y$ is binary, the linking constra
 
 Example 2: Five I-40 cities as a MILP
 
-Determine the sites and the total cost for the five cities of lecture 2.4, which are Asheville, Statesville, Greensboro, Raleigh and Wilmington, at mile markers 50, 150, 220, 295 and 420 along I-40, each with unit demand and costing 150, 200, 150, 150 and 200 to establish, and determine whether the answer its heuristics reached is the best one.
+Determine the sites and the total cost for the five cities of Lecture 2.4, which are Asheville, Statesville, Greensboro, Raleigh and Wilmington, at mile markers 50, 150, 220, 295 and 420 along I-40, each with unit demand and costing 150, 200, 150, 150 and 200 to establish, and determine whether the answer its heuristics reached is the best one.
 
 ```julia
 # Code block 13: the five I-40 cities of lecture 2.4, through the model
@@ -897,7 +897,7 @@ prt(DataFrame(Site = strg.Y,
 
 Sites 1 and 4 at $TC =$ 600
 
-That is the same pair of sites, and the same total cost, that the hybrid heuristic of lecture 2.4 reached on this data by a wholly different route, and the agreement of two independent procedures is a Triangulate check on both.
+That is the same pair of sites, and the same total cost, that the hybrid heuristic of Lecture 2.4 reached on this data by a wholly different route, and the agreement of two independent procedures is a Triangulate check on both.
 
 It is also more than that, and the more is what this section is for. Lecture 2.4 could say that its heuristics had stopped improving; it could not say that nothing better existed, because a heuristic has no way to know. The MILP does: branch and bound terminates by proving that the bound and the incumbent have met, so 600 is not merely the best answer found but the best answer there is.
 
@@ -931,7 +931,7 @@ popco = uflmilp(fill(kP, size(CP, 1)), CP)
 
 24 plants at a total cost of \$725.5M a year, and this one is optimal
 
-Compare the MILP solution with the heuristic solution of lecture 2.6: which is “better”?
+Compare the MILP solution with the heuristic solution of Lecture 2.6: which is “better”?
 
 ```julia
 # Code block 16: the optimum against the heuristic, on the same data
@@ -957,7 +957,7 @@ prt(DataFrame(Case = ["heuristic", "MILP"],
 
 The two answers are worth putting side by side before either is trusted. The MILP is optimal and the heuristic is not, and the distance between them is a small fraction of one percent. Against that, the data underneath is nowhere near so accurate: the rate was backed out of a single year’s spending, the customers are ZIP-code centroids standing in for the real ones, and one intercept is charged at every candidate site. A gap of that size is comfortably inside the margin of error of the inputs, which is the honest way to ask what the MILP was for.
 
-It was not for the saving. What it establishes is the quality of the heuristic: across the instances this course has run, the heuristics of lecture 2.4 have never come back worse than about three percent, and here they land within a tenth of one. Knowing that costs one solve, and it is what makes the heuristic usable on the problems where no solver will finish.
+It was not for the saving. What it establishes is the quality of the heuristic: across the instances this course has run, the heuristics of Lecture 2.4 have never come back worse than about three percent, and here they land within a tenth of one. Knowing that costs one solve, and it is what makes the heuristic usable on the problems where no solver will finish.
 
 The comparison doubles as a Bounds check on the MILP. The heuristic’s answer is feasible for the same model, so the optimum cannot cost more than it does. A solver returning a larger number would be reporting a defect in how the model was written rather than an answer to it.
 
@@ -1021,7 +1021,7 @@ A new facility at a given site is simpler still: $y_i = 1$ fixes it open and $y_
 
 What the three have in common is the point of the section. Each is a line of algebra against a model that already exists, and none of them is available to a heuristic that works by choosing a set of sites and assigning each customer to the nearest open one.
 
-A site that can produce only so much takes one more constraint: whatever is served from it must not exceed its capacity. That is the whole of the capacitated problem, and it is the clearest illustration of what the formulation buys. None of the heuristics in lecture 2.4 can be pointed at it. They choose a set of sites and let each existing facility go to its nearest open one; there is nowhere in that procedure to put a limit on how much any one site absorbs. The MILP takes the limit as a line of algebra.
+A site that can produce only so much takes one more constraint: whatever is served from it must not exceed its capacity. That is the whole of the capacitated problem, and it is the clearest illustration of what the formulation buys. None of the heuristics in Lecture 2.4 can be pointed at it. They choose a set of sites and let each existing facility go to its nearest open one; there is nowhere in that procedure to put a limit on how much any one site absorbs. The MILP takes the limit as a line of algebra.
 
 Model 3 implementation: Capacitated facility location
 
@@ -1054,13 +1054,13 @@ cflmilp (generic function with 1 method)
 
 Example 4: Capacitated EMCA
 
-Determine how many machines EMCA should lease and where to locate them with each machine’s capacity accounted for, on the instance of lecture 2.4: twelve million units a year sold to customers grouped by the twenty-eight three-digit ZIP codes of the Carolinas, each unit weighing 15 pounds and shipped at \$0.25 per ton-mile, each machine leased for \$100,000 per year and able to produce up to two million units a year.
+Determine how many machines EMCA should lease and where to locate them with each machine’s capacity accounted for, on the instance of Lecture 2.4: twelve million units a year sold to customers grouped by the twenty-eight three-digit ZIP codes of the Carolinas, each unit weighing 15 pounds and shipped at \$0.25 per ton-mile, each machine leased for \$100,000 per year and able to produce up to two million units a year.
 
-This is the example lecture 2.4 left open. The heuristics there have nowhere to put a capacity, so what that lecture did instead was raise the number of machines until no machine was over its limit, and it closed by saying the capacity would be handled once this lecture had covered it. The data is 2.4’s, unchanged.
+This is the example Lecture 2.4 left open. The heuristics there have nowhere to put a capacity, so what that lecture did instead was raise the number of machines until no machine was over its limit, and it closed by saying the capacity would be handled once this lecture had covered it. The data is 2.4’s, unchanged.
 
-One thing is not 2.4’s, and it has to be determined before the model is given a capacity. A machine that can make two million units a year cannot be planned to make two million: lecture 1.3 has cycle time running away as utilization approaches one, which is why 2.4 rejects six machines for this instance, saying that six would carry “a utilization of exactly one, and a workstation is designed to run with its utilization strictly below one”.
+One thing is not 2.4’s, and it has to be determined before the model is given a capacity. A machine that can make two million units a year cannot be planned to make two million: Lecture 1.3 has cycle time running away as utilization approaches one, which is why 2.4 rejects six machines for this instance, saying that six would carry “a utilization of exactly one, and a workstation is designed to run with its utilization strictly below one”.
 
-So the capacity the model is handed is an effective capacity, the nameplate times a ceiling on utilization, and the ceiling comes from lecture 1.3 rather than from nowhere. Its feasible minimum $m_{\min} = \lfloor r_a t_e + 1 \rfloor$ is the rule that forces the utilization below one by adding a machine, and the utilization it implies here is $6/7$.
+So the capacity the model is handed is an effective capacity, the nameplate times a ceiling on utilization, and the ceiling comes from Lecture 1.3 rather than from nowhere. Its feasible minimum $m_{\min} = \lfloor r_a t_e + 1 \rfloor$ is the rule that forces the utilization below one by adding a machine, and the utilization it implies here is $6/7$.
 
 ```julia
 # Code block 17: EMCA's customers, as lecture 2.4 sets them up
@@ -1114,7 +1114,7 @@ prt(DataFrame(ZIP = zips[cfl.Y], tons = round.(made[cfl.Y]),
 
 8 machines at a total annual cost of \$1,346,321
 
-Code block 19 puts that beside the four other answers this instance has, and the spread is the point of the section. The arithmetic floor is twelve million units over two million a machine, and it is not achievable: it is the utilization of one that lecture 1.3 rules out, which is why the feasible minimum sits a machine above it. The UFL opens the floor’s six anyway and is no solution at all, its busiest machine asked for more than a machine can make. Lecture 2.4’s sweep is feasible and expensive: with no way to put the capacity into the heuristic it buys feasibility with machines. The CFL puts the capacity where it belongs and lands one machine above 1.3’s minimum.
+Code block 19 puts that beside the four other answers this instance has, and the spread is the point of the section. The arithmetic floor is twelve million units over two million a machine, and it is not achievable: it is the utilization of one that Lecture 1.3 rules out, which is why the feasible minimum sits a machine above it. The UFL opens the floor’s six anyway and is no solution at all, its busiest machine asked for more than a machine can make. Lecture 2.4’s sweep is feasible and expensive: with no way to put the capacity into the heuristic it buys feasibility with machines. The CFL puts the capacity where it belongs and lands one machine above 1.3’s minimum.
 
 ```julia
 # Code block 19: four answers to the same question
@@ -1432,7 +1432,7 @@ Example 7: DWT clinics
 
 Determine the minimum number of clinics at which the analysis equipment would need to remain in order to allow specimens from clinics without equipment to be delivered within a twenty-five minute time window. DWT, Inc., has clinics located throughout the Triangle, and each currently does some of its most common laboratory specimen analysis using equipment located onsite; the equipment is expensive and is not heavily utilized. The file DWTclinics.csv gives the latitude and longitude of each clinic, and nothing else.
 
-Nothing in that statement is a distance, and the model needs one. Two assumptions close the gap, and both are the reader’s to make rather than the problem’s to supply. Road distance is taken as great-circle distance times a circuity factor of 1.2, as in lectures 2.4 and 2.5. And a speed turns twenty-five minutes into miles; 30 miles per hour is the figure used below, which is ordinary in-town driving between appointments rather than highway travel.
+Nothing in that statement is a distance, and the model needs one. Two assumptions close the gap, and both are the reader’s to make rather than the problem’s to supply. Road distance is taken as great-circle distance times a circuity factor of 1.2, as in Lectures 2.4 and 2.5. And a speed turns twenty-five minutes into miles; 30 miles per hour is the figure used below, which is ordinary in-town driving between appointments rather than highway travel.
 
 ```julia
 # Code block 25: the clinics, and the road distance between them
@@ -1516,7 +1516,7 @@ OPTIMAL
 
 The bin packing problem involves determining the minimum number of equal-capacity bins required to pack different size objects so that all of the objects assigned to a bin do not exceed its capacity. The 1-D bin packing problem refers to the bins having a single scalar capacity and each object having a single scalar size. The 2-D bin packing problem can, for example, refer to each bin having both weight and cubic volume restrictions on its capacity and each object having a weight and cubic volume.
 
-Solving a bin packing problem would be a way of determining the minimum number of machines. It would determine the allocation but would not, by itself, involve the location, so the bin packing would have to be combined with the location heuristic. A much easier approach is just to directly model this as a mixed-integer linear program. This gets to the promise in lecture 2.4 that the constraints for the EMCA problem would be handled once capacity constraints were covered, which is what Sec. 2.2 does.
+Solving a bin packing problem would be a way of determining the minimum number of machines. It would determine the allocation but would not, by itself, involve the location, so the bin packing would have to be combined with the location heuristic. A much easier approach is just to directly model this as a mixed-integer linear program. This gets to the promise in Lecture 2.4 that the constraints for the EMCA problem would be handled once capacity constraints were covered, which is what Sec. 2.2 does.
 
 minimize: number of bins used
 
@@ -1627,9 +1627,9 @@ prt(grow)
    objects  binaries  bins  seconds
 ───────────────────────────────────
 1       20       420     6     0.00
-2       50     2,550    15     0.20
-3      100    10,100    31     1.11
-4      200    40,200    61     9.03
+2       50     2,550    15     0.21
+3      100    10,100    31     1.15
+4      200    40,200    61     9.19
 ```
 
 Ten times the objects is a hundred times the variables and rather more than a hundred times the work. Sixty seconds covers two hundred objects several times over and three hundred comfortably, and stops somewhere past that rather than running all afternoon on an instance nobody meant to pose. A limit that is never reached costs nothing, which is the argument for always setting one.
@@ -1654,10 +1654,10 @@ prt(loose)
 ```text
     gap  bins  seconds
 ──────────────────────
-  exact    61     9.18
-     1%    61     9.17
-     2%    62     5.89
-     5%    62     5.89
+  exact    61     9.40
+     1%    61     9.49
+     2%    62     5.85
+     5%    62     5.97
 ```
 
 NoteReading a solve that stopped early
@@ -1767,7 +1767,7 @@ assumptions:
 
 Model 7: Graph coloring
 
-The graph itself is the input, so it is worth seeing before the algebra. Code block 32 builds it. The roster is small enough to write down, so it is carried as a ragged array rather than read from a file. Two of the thirty rows are shorter than four: those students are retaking, and sit only the areas they have left. Read from a file instead, those two rows would arrive as missing values and would need the drop, skip or impute treatment of lecture 2.5 Sec. 7 before anything else could happen. Written down, they need none of it, which keeps this example on the model.
+The graph itself is the input, so it is worth seeing before the algebra. Code block 32 builds it. The roster is small enough to write down, so it is carried as a ragged array rather than read from a file. Two of the thirty rows are shorter than four: those students are retaking, and sit only the areas they have left. Read from a file instead, those two rows would arrive as missing values and would need the drop, skip or impute treatment of Lecture 2.5 Sec. 7 before anything else could happen. Written down, they need none of it, which keeps this example on the model.
 
 ```julia
 # Code block 32: the roster, and the conflict graph it implies
@@ -2073,7 +2073,7 @@ fig
 
 Figure 12: The optimal sequence, one bar per job, with each job’s due date marked. Two jobs finish on time; the other seven are late, and the last two carry most of the total.
 
-The solver proves this is the best sequence there is. What is worth noticing is what it proves it against: lecture 2.4’s kind of local search, moving one job at a time, reaches the same total on this instance and the same sequence. The solve did not find a better answer. It established that there was none to find, which is what makes the search usable on the instances where no solver will finish.
+The solver proves this is the best sequence there is. What is worth noticing is what it proves it against: Lecture 2.4’s kind of local search, moving one job at a time, reaches the same total on this instance and the same sequence. The solve did not find a better answer. It established that there was none to find, which is what makes the search usable on the instances where no solver will finish.
 
 ## Endnotes
 

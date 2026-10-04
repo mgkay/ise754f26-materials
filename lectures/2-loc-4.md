@@ -927,7 +927,7 @@ The sweep does not end where it might be expected to. The busiest machine stays 
 
 17 machines, at a total annual cost of \$1,796,918.
 
-It took 17 machines to find a feasible solution. The throughput-feasible minimum number of machines was 7, but this number of machines would only work if each customer were able to be served from any of the machines. In this problem, each customer is allocated to only one machine, and each machine is capacity-limited. This increased the cost 44% (from \$1,249,936 to \$1,796,918). The reason the number of machines had to be increased so much is that the allocation did not account for capacity. In lecture 2.7, capacity constraints will be added to the UFL model, enabling a more effective solution by accounting for machine capacity.
+It took 17 machines to find a feasible solution. The throughput-feasible minimum number of machines was 7, but this number of machines would only work if each customer were able to be served from any of the machines. In this problem, each customer is allocated to only one machine, and each machine is capacity-limited. This increased the cost 44% (from \$1,249,936 to \$1,796,918). The reason the number of machines had to be increased so much is that the allocation did not account for capacity. In Lecture 2.7, capacity constraints will be added to the UFL model, enabling a more effective solution by accounting for machine capacity.
 
 Example 4: Discrete retail warehouses
 

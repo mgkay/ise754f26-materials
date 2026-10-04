@@ -774,7 +774,7 @@ $$
 
 The above formula can result in round off error if the two points are located at exactly opposite sides of a sphere. Instead, the Haversine formula can be used (Eq. 10). The Haversine formula does not need to be used if the great circle distance is being calculated by hand and the two points are known to not be on opposite sides of the sphere.
 
-The formula applied to a few points shows how far apart the distances can be. The chapter’s worked example measures three cities from Raleigh, each given as a (longitude, latitude) pair in decimal degrees; dists with the :mi unit (or :rad) returns the great-circle distance to each. Fig. 22 draws the same three distances on the globe. Each arc is the shortest path there is between its two points, and none of them is the straight line a flat map would draw between the same pair.
+The formula applied to a few points shows how far apart the distances can be. A worked example measures three cities from Raleigh, each given as a (longitude, latitude) pair in decimal degrees; dists with the :mi unit (or :rad) returns the great-circle distance to each. Fig. 22 draws the same three distances on the globe. Each arc is the shortest path there is between its two points, and none of them is the straight line a flat map would draw between the same pair.
 
 ```julia
 # Code block 20: great-circle distance to three cities
@@ -1144,7 +1144,7 @@ The population-weighted center and the FedEx decision point the same way, to the
 
 -
 
-“What are FOB shipping terms?” simplestudies.com, http://simplestudies.com/what-are-fob-shipping-terms.html (accessed January 2012); carried from the Facility Location chapter.
+“What are FOB shipping terms?” simplestudies.com, http://simplestudies.com/what-are-fob-shipping-terms.html (accessed January 2012).
 
 -
 

@@ -82,7 +82,7 @@ Uncertainty is not what makes logistics network design hard. It matters, and a p
 
 What the modeling has to carry is that lumpiness drives economies of scale, so that more of one thing is cheaper per unit, and economies of scope, so that making many things together is cheaper than making them apart, because the same lumpy resources serve all of them. Between them those reduce the cost of a network to two components: a fixed production cost at each facility, and a variable transport cost that depends on where the facilities are. That is the pair the uncapacitated facility location model takes as input, so the UFL determines the number and location of the new facilities.
 
-The fixed production cost never has to be identified directly, and that is what makes the data obtainable. Before, when the UFL heuristics were the subject, a fixed cost and a variable cost were simply put in to illustrate the mechanics. For a real problem, separating the part of a plant’s cost that genuinely does not depend on output, the people and the leases, is difficult and somewhat arbitrary, and it is not where the economies mostly come from: those come from operating a larger machine at a lower cost per unit, and from running larger batches. So the parts are not separated at all. Total production cost is added up, a linear regression is fitted, and the intercept stands in for the fixed component, as in lecture 2.4 Sec. 8.
+The fixed production cost never has to be identified directly, and that is what makes the data obtainable. Before, when the UFL heuristics were the subject, a fixed cost and a variable cost were simply put in to illustrate the mechanics. For a real problem, separating the part of a plant’s cost that genuinely does not depend on output, the people and the leases, is difficult and somewhat arbitrary, and it is not where the economies mostly come from: those come from operating a larger machine at a lower cost per unit, and from running larger batches. So the parts are not separated at all. Total production cost is added up, a linear regression is fitted, and the intercept stands in for the fixed component, as in Lecture 2.4 Sec. 8.
 
 Lumpiness has a third consequence alongside those two: a facility has a minimum effective size, below which it is not worth having at all.
 
@@ -106,7 +106,7 @@ Read the arrows and the asymmetry is plain. Bottom-up has one input and fans out
 
 ### Three-city total logistics cost
 
-The two analyses are easiest to tell apart on one instance rather than two, and lecture 2.2 already built the instance: a company whose owners are in Cary, and three customers it ships to. What follows evaluates that firm twice, changing only what is known about it.
+The two analyses are easiest to tell apart on one instance rather than two, and Lecture 2.2 already built the instance: a company whose owners are in Cary, and three customers it ships to. What follows evaluates that firm twice, changing only what is known about it.
 
 Example 1: Cary firm
 
@@ -455,7 +455,7 @@ Before starting the procedure, here at a high level are the steps it takes.
 - Evaluate every candidate site against every customer at that rate, with the incumbent plants among the candidates.
 - Run the UFL on the fixed cost and the cost matrix, and compare the result with the original network.
 
-Step 1, the fixed cost. With 42 plants it is the regression of lecture 2.4, and the intercept is what is kept.
+Step 1, the fixed cost. With 42 plants it is the regression of Lecture 2.4, and the intercept is what is kept.
 
 ```julia
 # Code block 14: regress production cost on output, keep the intercept
@@ -763,7 +763,7 @@ Question: If an original plant is kept, will it have sufficient capacity (since 
 
 Question: If Popco was planning to expand to serve the entire continental U.S., how could the current results be utilized
 
-The first is a real gap in the model rather than a caution about it. The uncapacitated facility location problem is uncapacitated by construction: it places facilities as though each could make whatever is allocated to it, and nothing in Eq. 4 or in the solve says otherwise. Closing 42 plants down to 24 over the same total tonnage therefore hands each surviving site more work, and the model has no opinion about whether it can be done. Some of these plants would be asked to double their production rate, and a plant already running two or three shifts cannot. That is a capacity constraint, and the UFL carries no constraints at all, which is what the mixed-integer formulation of lecture 2.7 changes.
+The first is a real gap in the model rather than a caution about it. The uncapacitated facility location problem is uncapacitated by construction: it places facilities as though each could make whatever is allocated to it, and nothing in Eq. 4 or in the solve says otherwise. Closing 42 plants down to 24 over the same total tonnage therefore hands each surviving site more work, and the model has no opinion about whether it can be done. Some of these plants would be asked to double their production rate, and a plant already running two or three shifts cannot. That is a capacity constraint, and the UFL carries no constraints at all, which is what the mixed-integer formulation of Lecture 2.7 changes.
 
 ```julia
 # Code block 23: what each site would have to produce
@@ -815,7 +815,7 @@ The first evidence that it may be answerable is already on the page. Fig. 4 scat
 
 Lecture 1.3 Sec. 5 turns that from an impression into a test. A plant’s nameplate rate is optimistic: the throughput-feasible minimum inflates the arrival rate by yield loss and the process time by availability, so a site that looks adequate against its rated output can still be infeasible. Running it against the table above produces something more useful than a yes or a no. It produces pointed questions: whether the plant asked to more than double its current output can be taken there at all, and what it would cost. Those are questions a client can answer in a phone call, which a request for all their customer data is not.
 
-Where the constraint genuinely cannot be met, the answer is not to re-run the UFL and hope. It is to say what capacity each site may have and let the model respect it, which is a mixed-integer formulation and is lecture 2.7.
+Where the constraint genuinely cannot be met, the answer is not to re-run the UFL and hope. It is to say what capacity each site may have and let the model respect it, which is a mixed-integer formulation and is Lecture 2.7.
 
 The second question has an answer that costs surprisingly little. A national Popco needs no new method: take every three-digit ZIP in the continental United States as a candidate site, keep the western plants among the candidates, let each candidate’s market be the ZIPs within 200 miles of it, carry the same fixed cost, and solve the same UFL. The rate transfers on the assumption that a firm whose fleet, product and service pattern are unchanged buys miles at about the same rate in a new region, which is the transfer case of Sec. 2.
 
@@ -914,7 +914,7 @@ end
 
 The second figure is there to be compared with the first. Splitting a total among zones cannot change it, so printing both is a Balance check on the one step where tonnage changes hands. It costs a line, and it guards the step most likely to lose some: a zone dropped by the screen must have had its tonnage reassigned to the zones that remain, never simply discarded.
 
-Step 4. The nominal rate is what was spent over the ton-miles delivered, by Eq. 3, with the area floor of lecture 2.5 standing in wherever a zone is served from inside itself.
+Step 4. The nominal rate is what was spent over the ton-miles delivered, by Eq. 3, with the area floor of Lecture 2.5 standing in wherever a zone is served from inside itself.
 
 ```julia
 # Code block 29: the nominal rate
