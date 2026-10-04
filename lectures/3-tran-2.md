@@ -140,7 +140,7 @@ Table 3: Inventory carrying rate by product type.
 | Computer and electronic equipment | 50%+ |
 | Perishable goods (produce) | ≫ 100% |
 
-Lecture 3.1 computes 15.65% from the national logistics-cost tally and sets 20% as the working rule for the manufactured goods this course deals with. $h$ does no work in this lecture, because a one-time shipment’s size is already fixed; Lecture 3.3 is where it is used.
+Lecture 3.1 computes 15.65% from the national logistics-cost tally and sets 30% as the working rule for the manufactured goods this course deals with. $h$ does no work in this lecture, because a one-time shipment’s size is already fixed; Lecture 3.3 is where it is used.
 
 4. Value against transport cost: about \$1 per ft³ to cross the Pacific
 
