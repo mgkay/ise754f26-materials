@@ -396,12 +396,12 @@ Table 1: Inventory by role and position: why each role is held, and what it is a
 |---|---|---|---|
 | Working stock | to allow production, including transport | Raw material | in transit from supplier |
 | Work in process | queuing between operations | | |
-| Finished goods | in transit in distribution, or presentation stock | | |
+| Finished goods | in transit to customers, or presentation stock | | |
 | Economic stock | to make purchasing or production cheaper | Raw material | cycle stock from truckloads |
 | Work in process | batches spreading setup cost | | |
 | Finished goods | seasonal pre-build | | |
 | Safety stock | to buffer uncertainty | Raw material | buffer against supplier delay |
-| Work in process | buffer decoupling operations | | |
+| Work in process | buffer between operations | | |
 | Finished goods | buffer against uncertain demand | | |
 
 Working stock is held as part of the production process, with transportation viewed as a production process. Product on a ship coming from China is in-transit inventory, and somebody has to finance it even though it is sitting in a container on a ship. Safety stock covers anything that is not perfect; in the models of this lecture everything is assumed perfectly constant, like clockwork, with no uncertainty, which is not realistic, and accounting for uncertainty is what safety stock does, the subject of Lectures 6.1 and 6.2. This lecture considers only economic stock. Even in a perfect world, freight is lumpy and there are scale economies that make shipping larger units advantageous, and that is cycle stock, the only kind of inventory dealt with in this lecture.
