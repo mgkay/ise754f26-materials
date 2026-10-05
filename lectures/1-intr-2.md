@@ -597,7 +597,7 @@ The ' in a'b is the adjoint (transpose): it lays the column a on its side, so a'
 
 The cosine of truck and freight is $\approx 0.99$ (closely related); of truck and cat, $\approx -0.52$ (unrelated). The coordinates alone carry the meaning.
 
-Every later step is geometry on points like these: combine them, compare them, and read off the nearest. How much combining a prediction needs is the thread of the next three sections, which climb a short ladder: the next token can depend on a single token, on a fixed combination of tokens, or on a combination the model must pick out by content, and these three are answered in turn by a single layer, a hidden layer, and attention.
+Every later step is geometry on points like these: combine them, compare them, and read off the nearest. How much combining a prediction needs is the thread of the next three sections, which take it in three steps: the next token can depend on a single token, on a fixed combination of tokens, or on a combination the model must pick out by content, and these three are answered in turn by a single layer, a hidden layer, and attention.
 
 ### 2.3 Predicting the next token with one layer
 
@@ -788,13 +788,13 @@ The new line d1 = ... carries the output error d2 back through the hidden layer,
 
 The two output rows land at $\approx [1,\,1,\,0,\,0]$ and $\approx [0,\,0,\,1,\,1]$: nearly all the probability goes to go for the matched cases and to wait for the mismatched ones, and the loss falls to about 0. A single layer could never get below $\ln 2 \approx 0.69$, the score of a coin flip, because with no line to separate the cases its best move was to split its bet evenly. The hidden layer is what breaks that tie.
 
-Nothing in either network is concealed: arrays, a loop, and arithmetic that move points until they fit, then read off the most likely next token. Every line in Fig. 8 is a weight that training sets, and a real model is the same kind of machine with billions of them. What it cannot do, though, is escape the shape of what we built here: a fixed window of exactly two tokens, in fixed roles, with the rule frozen into the weights. It has to be told which token is the vehicle and which the load; what it cannot do is work out for itself which tokens belong together. That is the third rung, and the subject of Section 2.5.
+Nothing in either network is concealed: arrays, a loop, and arithmetic that move points until they fit, then read off the most likely next token. Every line in Fig. 8 is a weight that training sets, and a real model is the same kind of machine with billions of them. What it cannot do, though, is escape the shape of what we built here: a fixed window of exactly two tokens, in fixed roles, with the rule frozen into the weights. It has to be told which token is the vehicle and which the load; what it cannot do is work out for itself which tokens belong together. That is the third step, and the subject of Section 2.5.
 
 ### 2.5 When the roles are not fixed: attention
 
-Attention is the operation that lets each token gather meaning from the others before the readout of Section 2.3 runs; it is the third and last rung.
+Attention is the operation that lets each token gather meaning from the others before the readout of Section 2.3 runs; it is the third and last step.
 
-The hidden layer combined two tokens, but only because we promised which was which: token one the vehicle, token two the load. Language never makes that promise. The token a word depends on may sit anywhere, and which token it is changes with the content, not the position. So the combination cannot be wired in ahead of time; the model has to work out, for each token, which others matter to it. Attention is that operation, and it is the third rung: where the hidden layer computes how a fixed pair of tokens interact, attention also computes which tokens interact.
+The hidden layer combined two tokens, but only because we promised which was which: token one the vehicle, token two the load. Language never makes that promise. The token a word depends on may sit anywhere, and which token it is changes with the content, not the position. So the combination cannot be wired in ahead of time; the model has to work out, for each token, which others matter to it. Attention is that operation, and it is the third step: where the hidden layer computes how a fixed pair of tokens interact, attention also computes which tokens interact.
 
 Take “the truck left because it was full.” On its own, “it” means almost nothing. Attention lets the vector at “it” look back over the window, score how well each earlier token answers what it is looking for, and pull in meaning from the ones that match, here mostly “truck”, so that afterward the vector at “it” has come to stand for the truck. The same word among different neighbors comes out a different vector.
 
@@ -829,7 +829,7 @@ That is the whole of attention. It rewrote one token into a better vector by gat
 
 ### 2.6 From a small net to a large language model
 
-Those are the three rungs the next-token prediction climbs. The next token can depend on one token, read off by a single layer; on a fixed combination of tokens, computed by a hidden layer; or on a combination chosen by content, computed by attention. A real model is these three, stacked and scaled. Interleave attention with per-token layers like Section 2.3’s, many times over, and that stack is a transformer; scale it up and train it on the next-token game of Section 2.1, and the result is a language model.
+Those are the three steps the next-token prediction takes. The next token can depend on one token, read off by a single layer; on a fixed combination of tokens, computed by a hidden layer; or on a combination chosen by content, computed by attention. A real model is these three, stacked and scaled. Interleave attention with per-token layers like Section 2.3’s, many times over, and that stack is a transformer; scale it up and train it on the next-token game of Section 2.1, and the result is a language model.
 
 The shape rules from Sections 2.4 and 2.5 explain much of the size. Each layer now carries a token’s full embedding from Section 2.2, so it must be at least as wide as that embedding, hundreds or thousands of neurons rather than three; and the output layer is no longer one neuron but one for every token in the vocabulary, tens of thousands of them. Stack those wide layers many deep and the weights run into the billions.
 

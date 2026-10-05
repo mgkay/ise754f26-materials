@@ -80,6 +80,8 @@ assumptions:
 
 Model 2: Cooperative beach
 
+Variant of Model 1: Competitive beach
+
 Figure 4: The cooperative optimum: one owner places the stands at the quarter and three-quarter marks.
 
 The optimal placement is now the quarter and three-quarter marks (Fig. 4): customers in the first half of the beach use the first stand, those in the second half use the second. Cooperation is unambiguously better for customer travel.
@@ -223,6 +225,8 @@ assumptions:
 
 Model 5: Equitable location by least squares
 
+Variant of Model 4: Fair (equitable) apartment location
+
 The fair location fixes how the driving is shared, but not how much driving there is in total. A couple that cares more about the total mileage, rather than about who bears the driving burden, would pose the question the other way around: they might instead minimize the total distance driven, adding the mileage up rather than balancing it. The new objective simply drops the square.
 
 minimize: total weighted squared distance from the apartment to the two workplaces
@@ -239,6 +243,8 @@ assumptions:
 (b) the Durham trip has weight 1 and the Raleigh trips have weight 2.
 
 Model 6: Efficient apartment location
+
+Variant of Model 5: Equitable location by least squares
 
 The total-travel objective is $\sum_i w_i \lvert x - a_i \rvert$. Between the two cities it equals $60 - x$, which only decreases, so the minimum is at Raleigh, $x = 30$ (Fig. 6). Its first-order condition balances the weights rather than the distances, a majority vote that snaps the location to whichever city holds half the trips. Where the squared objective produced an interior balance point, the total-distance objective lands on a city. How to find that point in general, and why the balancing-distances derivative fails here, is the subject of Sec. 4.
 
@@ -273,6 +279,8 @@ assumptions:
 (e) the couple coordinates fully, so a single objective can speak for both partners.
 
 Model 7: Best-of-both apartment location
+
+Generalization of Model 6: Efficient apartment location
 
 Model 7 is the first model in the course that will be carried past words into mathematics. Every model so far has been stated in words alone, its objective, constraints, and return values all in plain language, with several models in Lecture 1.3 descending straight to runnable Julia. A formulation sits between those two depths: the same model restated in symbols, changing nothing about what the model says. Restating a model in symbols is worth the effort because it forces a precision words cannot supply: a verbal description carries shades of meaning and can leave relationships implicit, while a formulation must name every quantity and pin down every relation exactly. That precision also makes the formulation the fixed reference across implementations. A model can be built in many vehicles, one programming language or another, each differing in its details, but the formulation is the same for all of them, a common specification an implementation can be checked against, so that discrepancies between what was meant and what was built are caught rather than buried in code. The translation is mechanical, and the callout’s own slots drive it. The quantities the model returns become decision variables, the unknowns the optimization is free to set, written under the $\min$ operator; here they are the location $x$ and the yes-or-no choice $z$. The given data receive symbols collected under where:, each traced to the assumption that supplies it. The objective in words becomes an expression in those symbols, and each constraint carries its letter and name over and becomes an equation or inequality the decision variables must satisfy. Model 7 also carries the course’s first subject to line, a good place to restate the distinction from Lecture 1.1: a constraint restricts the solution, ruling out answers the decision variables may not take (here, keeping the second car unless the apartment is in Raleigh), while an assumption restricts the world and its data, fixing what the model treats as given (that a car has a known daily cost, that the trips carry fixed weights).
 

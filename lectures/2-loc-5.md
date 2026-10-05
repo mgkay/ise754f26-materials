@@ -169,7 +169,7 @@ The remedy is the subject of the next section and needs no special handling: at 
 
 ## 3. Choosing a resolution
 
-The units of Sec. 2 form a ladder, and every rung is a usable demand set for some problem. Choosing among them is the decision this lecture exists to teach, and it is genuinely a decision: there is no resolution that is right in general.
+The units of Sec. 2 form a hierarchy, and every unit is a usable demand set for some problem. Choosing among them is the decision this lecture exists to teach, and it is genuinely a decision: there is no resolution that is right in general.
 
 Every count below is measured rather than quoted, which matters because these figures move with each census.
 
@@ -279,7 +279,7 @@ Example 1(a): What each source yields
 
 Determine the number of demand points each of the six census sources provides for North Carolina.
 
-One state makes the ladder concrete, because the counts differ by three orders of magnitude over the same ground.
+One state makes the hierarchy concrete, because the counts differ by three orders of magnitude over the same ground.
 
 ```julia
 # Code block 3: five sources, one state

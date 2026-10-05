@@ -10,25 +10,10 @@ No new Julia packages used.
 
 New Logjam functions used
 
--
-
-ala: Alternating location–allocation for locating n new facilities among m weighted demand points.
-
--
-
-alloclines: Convert allocation matrix to NaN-separated line segments for visualization.
-
--
-
-randX: Generate n random points within the bounding box of point set P.
-
--
-
-uszcta3: Returns DataFrame containing U.S. 3-digit ZIP Code Tabulation Area (ZCTA3) data.
-
--
-
-majority is not yet in Logjam; it is defined in Sec. 3 as the implementation of Model 2.
+- ala: Alternating location–allocation for locating n new facilities among m weighted demand points.
+- alloclines: Convert allocation matrix to NaN-separated line segments for visualization.
+- randX: Generate n random points within the bounding box of point set P.
+- uszcta3: Returns DataFrame containing U.S. 3-digit ZIP Code Tabulation Area (ZCTA3) data.
 
 Companion script
 
