@@ -27,7 +27,7 @@ const WHAT = Dict(
     "maximize"    => "what is being optimized",
     "solve for"   => "each unknown, and what values it may take",
     "subject to"  => "what restricts the solutions",
-    "return"      => "what comes back",
+    "return"      => "what a model that decides nothing computes",
     "assumptions" => "what must be true about the world",
     "where"       => "the given data and symbol meanings",
 )
@@ -146,7 +146,8 @@ function check_slice(lines::Vector{String}, offset::Int)
 
     if isempty(slots)
         push!(out, Finding(0, "ERROR",
-            "no model keywords found; a model needs at least return: and assumptions:"))
+            "no model keywords found; a model needs at least solve for: or " *
+            "return:, and assumptions:"))
         return shift(out)
     end
 
@@ -226,11 +227,15 @@ function check_slice(lines::Vector{String}, offset::Int)
 
     # coherence between slots
     has(k) = k in seen
-    if !has("return")
+    # A model that decides something names its output in solve for:, so it needs
+    # no return: (2026-10-05). Fall 2026 accepts one either way, because the
+    # lectures before 3.4 carry one; from Spring 2027 a deciding model's return:
+    # is an error. Only a model that decides nothing must have return:.
+    if !has("return") && !has("solve for")
         push!(out, Finding(0, "ERROR",
-            "no return:. Every model returns something, so add a \"return:\" line " *
-            "naming the one thing handed back; if it seems to need several, name " *
-            "the one composite thing they make up"))
+            "no return: and no solve for:. A model that decides something names " *
+            "its unknowns in a \"solve for:\" list; a model that decides nothing " *
+            "names what it computes in a \"return:\" line, as one thing"))
     end
     if !has("assumptions")
         push!(out, Finding(0, "warn",
@@ -285,6 +290,8 @@ function self_test()
     ]
     unknown_kw(fs)  = any(occursin("is not a model keyword", f.message) for f in fs)
     retired_find(fs) = any(occursin("find: is retired", f.message) for f in fs)
+    no_output(f::Finding) = occursin("no return: and no solve for:", f.message)
+    no_output(fs) = any(no_output(f) for f in fs)
 
     cases = [
         # (name, lines, predicate on the findings, what the predicate means)
@@ -306,6 +313,13 @@ function self_test()
         ("a model of nothing but an invented keyword still reports it",
          ["settle: everything"],
          fs -> unknown_kw(fs), "must fire even with no recognised slot"),
+        ("a model that decides needs no return:",
+         filter(l -> !startswith(l, "return:"), conforming),
+         fs -> !no_output(fs), "must not fire"),
+        ("a model that decides nothing and has no return: is an ERROR",
+         ["assumptions:", "(a) stops are uniform over the region"],
+         fs -> any(f.severity == "ERROR" && no_output(f) for f in fs),
+         "must fire, as an ERROR"),
     ]
 
     nfail = 0
