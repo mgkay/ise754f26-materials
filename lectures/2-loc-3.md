@@ -640,9 +640,9 @@ $$
 where
 
 - $X$ = NF locations
-$= [X_j] = [(x_j, y_j)]$, $j = 1, \ldots, n$
+= $[X_j] = [(x_j, y_j)]$, $j = 1, \ldots, n$
 - $W$ = allocated flow requirements
-$= [w_{ji}]$, $j = 1, \ldots, n$; $i = 1, \ldots, m$
+= $[w_{ji}]$, $j = 1, \ldots, n$; $i = 1, \ldots, m$
 - $P_i$ = $(a_i, b_i)$, location of EF $i$
 - $d(X_j, P_i)$ = distance between NF $j$ and EF $i$
 - $w_i$ = flow requirement of EF $i$.
@@ -977,7 +977,7 @@ Both only give a local optimal solution (not convex).
 
 The alternating form is more flexible: it solves $n$ $d$-dimensional location problems with a simple allocation, and Nelder-Mead works well for 2-D. The integrated form solves an $(n \times d)$-dimensional problem, a larger search, though not a slower one here. Integrated may be better if there are no allocation (e.g., capacity) or location constraints on the NFs.
 
-Running both formulations from the same random starts determines it, provided both are written the same way, from the same allocation step and the same optimizer. On that footing the integrated form is the faster of the two while few facilities are being located, by about 1.5 times at two and three, an advantage that has gone by nine. Quality is close and the lead changes hands: over a common set of starts each form finds the better answer about as often as the other, and the best answers they reach differ by up to 6.5%. So the cost of the choice is in the search, not in the answer.
+Running both formulations from the same random starts determines it, provided both are written the same way, from the same allocation step and the same optimizer. On that footing the integrated form is the faster of the two while few facilities are being located, by about 2.0 times at two and three, an advantage that has gone by nine. Quality is close and the lead changes hands: over a common set of starts each form finds the better answer about as often as the other, and the best answers they reach differ by up to 6.5%. So the cost of the choice is in the search, not in the answer.
 
 The advantage of the alternating form is that it provides more flexibility in being able to easily change the allocation and the location mechanisms, so it buys flexibility at the cost of increased computation.
 
