@@ -64,8 +64,10 @@ $$
 
 where
 
-- $N$ = $\{1, \dots, n\}$, NFs
-- $M$ = $\{1, \dots, m\}$, EFs
+- $N$ = NFs
+= $\{1, \dots, n\}$
+- $M$ = EFs
+= $\{1, \dots, m\}$
 - $d_{ij}$ = distance from NF $i$ to EF $j$
 - $w_j$ = weight of EF $j$
 - $\alpha_j$ = index of NF serving EF $j$, allocation vector
@@ -313,7 +315,7 @@ In Model 2 below, the two rules alternate until neither fires, determining which
 
 solve for:
 (a) co-located groups among the $n$ NFs;
-(b) an EF for each group the theorem can place.
+(b) EF for each group the theorem can place.
 
 subject to:
 (a) majority: co-location or placement of a facility is determined only when one weight reaches half of that facility’s own total.
@@ -342,7 +344,8 @@ where
 
 - $w_{ij}$ = weight between NF $i$ and EF $j$
 - $v_{ik}$ = interaction weight between NF $i$ and NF $k$
-- $\gamma_i$ = $\sum_{j=1}^{m} w_{ij} + \sum_{k=1}^{n} v_{ik}$, total weight on NF $i$.
+- $\gamma_i$ = total weight on NF $i$
+= $\sum_{j=1}^{m} w_{ij} + \sum_{k=1}^{n} v_{ik}$.
 
 That total runs over both an NF’s customers and its interactions with the other NFs. The two rules are not interchangeable in order. The co-location rule is applied to exhaustion first, each reduction folding two rows into one and so changing the totals the next comparison uses, and only then is the placement rule tried. Ex. 3(c) turns on exactly that: the co-location is what makes the placement possible, and neither facility can be placed before it.
 
@@ -631,8 +634,8 @@ $$
 \text{Minimize} \quad & f(X, W) = \sum_{i=1}^{m} \sum_{j=1}^{n}
 w_{ji} \, d(X_j, P_i) &&\\[2pt]
 \text{subject to} \quad & \sum_{j=1}^{n} w_{ji} = w_i,
-&& i = 1, \ldots, m\\[2pt]
-& w_{ji} \ge 0, && j = 1, \ldots, n; \ i = 1, \ldots, m
+&& i = 1, \ldots, m \quad (a)\\[2pt]
+& w_{ji} \ge 0, && j = 1, \ldots, n; \ i = 1, \ldots, m \quad (b)
 \end{aligned}
 
 $$
@@ -643,7 +646,8 @@ where
 = $[X_j] = [(x_j, y_j)]$, $j = 1, \ldots, n$
 - $W$ = allocated flow requirements
 = $[w_{ji}]$, $j = 1, \ldots, n$; $i = 1, \ldots, m$
-- $P_i$ = $(a_i, b_i)$, location of EF $i$
+- $P_i$ = location of EF $i$
+= $(a_i, b_i)$
 - $d(X_j, P_i)$ = distance between NF $j$ and EF $i$
 - $w_i$ = flow requirement of EF $i$.
 
@@ -977,7 +981,7 @@ Both only give a local optimal solution (not convex).
 
 The alternating form is more flexible: it solves $n$ $d$-dimensional location problems with a simple allocation, and Nelder-Mead works well for 2-D. The integrated form solves an $(n \times d)$-dimensional problem, a larger search, though not a slower one here. Integrated may be better if there are no allocation (e.g., capacity) or location constraints on the NFs.
 
-Running both formulations from the same random starts determines it, provided both are written the same way, from the same allocation step and the same optimizer. On that footing the integrated form is the faster of the two while few facilities are being located, by about 2.0 times at two and three, an advantage that has gone by nine. Quality is close and the lead changes hands: over a common set of starts each form finds the better answer about as often as the other, and the best answers they reach differ by up to 6.5%. So the cost of the choice is in the search, not in the answer.
+Running both formulations from the same random starts determines it, provided both are written the same way, from the same allocation step and the same optimizer. On that footing the integrated form is the faster of the two while few facilities are being located, by about 1.5 times at two and three, an advantage that has gone by nine. Quality is close and the lead changes hands: over a common set of starts each form finds the better answer about as often as the other, and the best answers they reach differ by up to 6.5%. So the cost of the choice is in the search, not in the answer.
 
 The advantage of the alternating form is that it provides more flexibility in being able to easily change the allocation and the location mechanisms, so it buys flexibility at the cost of increased computation.
 

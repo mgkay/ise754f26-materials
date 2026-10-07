@@ -67,8 +67,10 @@ $$
 
 where
 
-- $M$ = $\{1, \dots, m\}$, existing facilities (EFs)
-- $N$ = $\{1, \dots, n\}$, sites available to locate NFs
+- $M$ = existing facilities (EFs)
+= $\{1, \dots, m\}$
+- $N$ = sites available to locate NFs
+= $\{1, \dots, n\}$
 - $M_i$ = set of EFs served by the NF at site $i$, $M_i \subseteq M$
 - $c_{ij}$ = variable cost to serve EF $j$ from the NF at site $i$
 - $k_i$ = fixed cost of locating an NF at site $i$
@@ -846,8 +848,10 @@ $$
 
 where
 
-- $r_a$ = $12{,}000{,}000 \text{ units/yr}$, arrival rate
-- $t_e$ = $1/2{,}000{,}000 \text{ yr/unit}$, effective processing time.
+- $r_a$ = arrival rate
+= $12{,}000{,}000$ units/yr
+- $t_e$ = effective processing time
+= $1/2{,}000{,}000$ yr/unit.
 
 The arrival rate is the rate at which work is presented to the machines, and the effective processing time is the machine-time each unit requires. The offered load is therefore $r_a t_e = 6$ machine-years of work per year, and
 
@@ -1111,7 +1115,7 @@ solve for:
 return: fitted coefficients $\alpha_1$ and $\alpha_2$
 
 assumptions:
-(a) the response is linear in the predictor over the range of the data;
+(a) response is linear in the predictor over the range of the data;
 (b) deviations above and below the line are equally costly, so the loss is symmetric.
 
 Model 3: Least-squares line

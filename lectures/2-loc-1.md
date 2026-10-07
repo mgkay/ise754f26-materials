@@ -63,7 +63,7 @@ Model 1: Competitive beach
 
 Cooperative location. On the competitive beach, each stand maximizing its own share of the market drives the two together and both stands sit at the center of the beach. These are the worst possible locations with respect to how far customers have to walk. Now suppose on a different beach, the competition is removed. A single resort buys the beach and grants a single owner the exclusive right to sell hot dogs on it. Freed from the fight over market share, the owner would want to place two stands at locations that minimize customer travel so that excessive walking discourages the least amount of customer demand (Model 2). Changing who owns the stands changes the objective; the remaining assumptions of uniform demand, an identical product, and nearest-stand choice carry over unchanged.
 
-maximize: the share of the market a stand captures minimize: the average distance a customer travels to reach a stand
+maximize: share of the market a stand captures minimize: average distance a customer travels to reach a stand
 
 solve for:
 (a) where each stand locates, any point along the beach.
@@ -108,7 +108,7 @@ Customer’s choice. Shorter walks are not the whole story, though. With competi
 
 The objectives so far belonged to the sellers. To see what the customer faces, put the two beaches side by side: the competitive beach, with its stands at the center and a price held down by competition, and the cooperative beach, with its stands at the quarter marks and the higher price a single owner can charge. A customer choosing between them weighs a cheaper hot dog against a longer walk, and the two are measured in different units. Comparing them requires making dollars and miles commensurate: a per-mile cost $c$ that evaluates how much a customer values a mile of walking saved.
 
-minimize: a customer’s total cost of a hot dog: the price paid plus the round-trip walk valued at $c$ dollars per mile
+minimize: customer’s total cost of a hot dog: the price paid plus the round-trip walk valued at $c$ dollars per mile
 
 solve for:
 (a) which beach the customer visits, the competitive or the cooperative.
@@ -122,7 +122,7 @@ assumptions:
 (b) customers are spread uniformly along each beach;
 (c) each customer values a mile of walking at their own rate $c$;
 (d) on either beach, a customer buys from the nearer stand;
-(e) a customer picks a beach before picking a spot on it.
+(e) customer picks a beach before picking a spot on it.
 
 Model 3: A customer’s choice of beach
 
@@ -174,8 +174,8 @@ subject to:
 return: location $x$ of the apartment along the corridor
 
 assumptions:
-(a) an apartment can be located anywhere along the corridor;
-(b) the Durham trip has weight 1 and the Raleigh trips have weight 2.
+(a) apartment can be located anywhere along the corridor;
+(b) Durham trip has weight 1 and the Raleigh trips have weight 2.
 
 Model 4: Fair (equitable) apartment location
 
@@ -210,7 +210,7 @@ This same fact sits under the ordinary average, and the connection is worth maki
 
 Changing the fairness condition into a quantity to minimize is a genuine change of objective, not merely a rewording, so it defines a new model: a refinement of Model 4 that solves the same problem in a form a standard optimizer can accept. Refining a model this way, from stating the condition a solution must satisfy to naming an objective to optimize, is a routine and powerful move, and here it also exposes the tie to least squares.
 
-minimize: the total weighted squared distance from the apartment to the two workplaces
+minimize: total weighted squared distance from the apartment to the two workplaces
 
 solve for:
 (a) location $x$ of the apartment, any point along the corridor.
@@ -220,8 +220,8 @@ subject to: none, the equity condition having been replaced by the objective abo
 return: location $x$ of the apartment along the corridor
 
 assumptions:
-(a) an apartment can be located anywhere along the corridor;
-(b) the Durham trip has weight 1 and the Raleigh trips have weight 2.
+(a) apartment can be located anywhere along the corridor;
+(b) Durham trip has weight 1 and the Raleigh trips have weight 2.
 
 Model 5: Equitable location by least squares
 
@@ -239,8 +239,8 @@ subject to: none
 return: location $x$ of the apartment along the corridor
 
 assumptions:
-(a) an apartment can be located anywhere along the corridor;
-(b) the Durham trip has weight 1 and the Raleigh trips have weight 2.
+(a) apartment can be located anywhere along the corridor;
+(b) Durham trip has weight 1 and the Raleigh trips have weight 2.
 
 Model 6: Efficient apartment location
 
@@ -260,7 +260,7 @@ This coincidence, the fair point equalling the centroid, is exact only because t
 
 Locating in Raleigh can in fact be the best of both worlds, but only once the objective is widened again. Concentrating the trips at Raleigh may let the couple keep one car instead of two, a saving with a clear dollar value. That saving does belong in the objective, and folding it in requires, as with the customer’s choice of beach, weighting the incommensurable together: once travel is evaluated at a shared rate, the miles and the cost of a car are both in dollars and can be added into a single total cost. Fairness is handled differently. Raleigh leaves the Durham partner bearing the whole commute, and rather than add that imbalance to the objective, the couple determines it outside the objective, through a compensating task such as cooking. The widened objective therefore minimizes total cost alone, with the car folded in and the even split arranged separately.
 
-minimize: the total weighted distance from the apartment to the two workplaces total couple cost: both partners’ travel valued at the couple’s single shared rate, plus the cost of the vehicles the couple keeps
+minimize: total weighted distance from the apartment to the two workplaces total couple cost: both partners’ travel valued at the couple’s single shared rate, plus the cost of the vehicles the couple keeps
 
 solve for:
 (a) location $x$ of the apartment, any point along the corridor;
@@ -272,11 +272,11 @@ subject to:
 return: location $x$ of the apartmentcouple’s plan: where to live, and whether to keep the second car
 
 assumptions:
-(a) an apartment can be located anywhere along the corridor;
-(b) the Durham trip has weight 1 and the Raleigh trips have weight 2;
-(c) the couple pools its costs, so both partners’ travel is valued at the same rate, $c$ dollars per mile, and the daily cost of a car is known;
+(a) apartment can be located anywhere along the corridor;
+(b) Durham trip has weight 1 and the Raleigh trips have weight 2;
+(c) couple pools its costs, so both partners’ travel is valued at the same rate, $c$ dollars per mile, and the daily cost of a car is known;
 (d) burdens can be rebalanced within the couple by compensating tasks, such as cooking, so any division of the total cost between the partners is achievable.
-(e) the couple coordinates fully, so a single objective can speak for both partners.
+(e) couple coordinates fully, so a single objective can speak for both partners.
 
 Model 7: Best-of-both apartment location
 
@@ -297,7 +297,7 @@ subject to
 
 $$
 \begin{aligned}
-a_2\,z &\le x &\quad& \text{second car given up only if apartment in Raleigh}\\
+a_2\,z &\le x &\quad& \text{(a) one-car: second car given up only if apartment in Raleigh}\\
 z &\in \{0,1\} &\quad& \text{binary car choice}
 \end{aligned}
 
@@ -496,8 +496,8 @@ subject to: none
 return: location of the new facility
 
 assumptions:
-(a) the facility is undesirable, so the aim is to stay as far as possible from the nearest existing facility;
-(b) the facility is confined to a bounded region, without which the problem has no finite answer.
+(a) facility is undesirable, so the aim is to stay as far as possible from the nearest existing facility;
+(b) facility is confined to a bounded region, without which the problem has no finite answer.
 
 Model 10: Maximin location
 

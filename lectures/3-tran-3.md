@@ -33,8 +33,10 @@ $$
 
 where
 
-- $n$ = $\dfrac{f}{q}$, average shipment frequency (1/yr)
-- $t$ = $\dfrac{q}{f}$, average shipment interval (yr)
+- $n$ = average shipment frequency (1/yr)
+= $\dfrac{f}{q}$
+- $t$ = average shipment interval (yr)
+= $\dfrac{q}{f}$
 - $f$ = expected annual demand (ton/yr)
 - $q$ = average shipment size (ton)
 - $c$ = transport charge (\$).

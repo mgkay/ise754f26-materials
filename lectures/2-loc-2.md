@@ -54,7 +54,7 @@ $$
 \text{procurement cost} &= \text{landed cost at supplier} + \text{inbound transport cost}\\
 \text{production cost} &= \text{procurement cost} + \text{local resource cost}\\
 \text{total delivered cost} &= \text{production cost} + \text{outbound transport cost}\\
-TC &= \text{inbound transport cost} + \text{outbound transport cost}
+\text{transport cost} &= \text{inbound transport cost} + \text{outbound transport cost}
 \end{aligned}
 \tag{1}
 $$
@@ -240,7 +240,7 @@ return: location $X^\star$ of the new facility
 
 assumptions:
 (a) distance is a metric, for example the straight-line distance used below or the great-circle distance of Sec. 6;
-(b) the cost of each flow is proportional to distance, so each monetary weight $w_i$ is a constant.
+(b) cost of each flow is proportional to distance, so each monetary weight $w_i$ is a constant.
 
 Model 1: Single-facility minisum
 

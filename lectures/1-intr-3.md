@@ -147,13 +147,13 @@ The squared coefficient of variation (SCV) provides a normalized measure used to
 
 $$
 \begin{aligned}
-c &= \frac{\sigma}{t} = \text{coefficient of variation (CV)}, \\
-c^2 &= \frac{\sigma^2}{t^2} = \text{squared coefficient of variation (SCV)},
+c &= \frac{\sigma}{t}, \\
+c^2 &= \frac{\sigma^2}{t^2},
 \end{aligned}
 \tag{2}
 $$
 
-where $\sigma$ is the standard deviation of the process, $t$ its mean, and $\sigma^2$ its variance. The SCV places a process on a scale of variability:
+where $c$ is the coefficient of variation (CV), $c^2$ the squared coefficient of variation (SCV), $\sigma$ the standard deviation of the process, $t$ its mean, and $\sigma^2$ its variance. The SCV places a process on a scale of variability:
 
 - $c^2 = 0$: deterministic / exactly spaced (best case, lower bound);
 - $c^2 < 0.75$: low variability;
@@ -229,11 +229,14 @@ where
 
 - $r_a$ = arrival rate to workstation
 - $t_0$ = natural mean process time
-- $A$ = $\text{MTTF}/(\text{MTTF}+\text{MTTR})$, availability
-- $t_e$ = $t_0/A$, effective mean process time with failures
+- $A$ = availability
+= $\text{MTTF}/(\text{MTTF}+\text{MTTR})$
+- $t_e$ = effective mean process time with failures
+= $t_0/A$
 - $H$ = hours of operation
 - $m$ = number of identical machines installed ($m \ge m_{\min}$)
-- $r_e$ = $m/t_e$, service rate (effective capacity)
+- $r_e$ = service rate (effective capacity)
+= $m/t_e$
 - $\text{MTTF}$ = mean time to failure
 - $\text{MTTR}$ = mean time to repair.
 
@@ -309,12 +312,17 @@ $$
 
 where
 
-- $u$ = $r_a\,t_e / m$, utilization
-- $c_a^2$ = $\sigma_a^2 / t_a^2$, arrival SCV
-- $t_a$ = $1/r_a$, mean time between arrivals
+- $u$ = utilization
+= $r_a\,t_e / m$
+- $c_a^2$ = arrival SCV
+= $\sigma_a^2 / t_a^2$
+- $t_a$ = mean time between arrivals
+= $1/r_a$
 - $c_e^2$ = effective process-time SCV with failures
-- $c_0^2$ = $\sigma_0^2 / t_0^2$, natural process-time SCV
-- $c_r^2$ = $\sigma_r^2 / \text{MTTR}^2$, repair-time SCV.
+- $c_0^2$ = natural process-time SCV
+= $\sigma_0^2 / t_0^2$
+- $c_r^2$ = repair-time SCV
+= $\sigma_r^2 / \text{MTTR}^2$.
 
 For the arrival SCV, $\sigma_a^2 = 0$ for deterministic arrivals and $\sigma_a^2 = t_a^2$ for exponential ones.
 
@@ -408,11 +416,11 @@ Because $1 - U$ is itself uniform on $[0,1]$, it may stand in for $U$, leaving t
 
 The method is standard for random-variate generation; see A. M. Law and W. D. Kelton, Simulation Modeling and Analysis, 2nd ed. (McGraw-Hill, 1991), Sec. 8.2.1.
 
-return: a sample of $n$ inter-arrival times from a Poisson stream at rate $r_a$
+return: sample of $n$ inter-arrival times from a Poisson stream at rate $r_a$
 
 assumptions:
 (a) inter-arrival times are independent exponential draws at rate $r_a$;
-(b) the rate $r_a$ is constant over the run (homogeneous).
+(b) rate $r_a$ is constant over the run (homogeneous).
 
 Model 1: Poisson arrival simulation
 
@@ -450,7 +458,7 @@ return: cycle time of each job through a single-server FIFO queue
 assumptions:
 (a) exponential inter-arrivals at rate $r_a$ and exponential service at mean $t_e$, so $c_a^2 = c_e^2 = 1$;
 (b) one server, first-in-first-out, one job at a time;
-(c) the queue starts empty.
+(c) queue starts empty.
 
 Model 2: Single-server queue simulation
 
@@ -518,7 +526,7 @@ return: cycle time of each job through a single-server queue that serves the sho
 assumptions:
 (a) exponential inter-arrivals at rate $r_a$ and exponential service at mean $t_e$, so $c_a^2 = c_e^2 = 1$;
 (b) one server, non-preemptive: a job in service finishes before the next choice is made;
-(c) the queue starts empty.
+(c) queue starts empty.
 
 Model 3: Single-server SPT queue simulation
 

@@ -54,7 +54,7 @@ return: pair of quantities giving the greatest total value
 
 assumptions:
 (a) value contributed and supply consumed are proportional to the quantity chosen;
-(b) a quantity may be set to any nonnegative real number.
+(b) quantity may be set to any nonnegative real number.
 
 Model 1: Linear program
 
@@ -63,8 +63,8 @@ Model 1 formulation: Linear program
 $$
 \begin{array}{rlrclll}
 \textbf{LP} : & \text{Maximize} & 6x_1 + 8x_2 & & & & \\[2pt]
-& \text{subject to} & 2x_1 + 3x_2 & \leq & 11 & & \\[2pt]
-& & 2x_1 & \leq & 7 & & \\[2pt]
+& \text{subject to} & 2x_1 + 3x_2 & \leq & 11 & & (a) \\[2pt]
+& & 2x_1 & \leq & 7 & & (b) \\[2pt]
 & & x_1,\, x_2 & \geq & 0 & &
 \end{array}
 \tag{1}
@@ -655,7 +655,7 @@ Solving report
   Primal bound      30
   Dual bound        30
   Gap               0% (tolerance: 0.01%)
-  P-D integral      0.000143372837877
+  P-D integral      0.000153543704595
   Solution status   feasible
                     30 (objective)
                     0 (bound viol.)
@@ -1184,16 +1184,20 @@ Model 4 is the model, and it is resolved twice. The set-theoretic statement of E
 Model 4 formulation: Mathematical formulation
 
 $$
-\begin{array}{rcl}
-M & = & \{1, \ldots, m\}, \quad \text{objects to be covered} \\
-M_i \subseteq M,\; i \in N & = & \{1, \ldots, n\}, \quad \text{subsets of } M \\
-c_i & = & \text{cost of using } M_i \text{ in cover} \\
-I^{\star} & = & \displaystyle\arg\min_{I}\Bigl\{ \sum_{i \in I} c_i \;:\;
-\bigcup_{i \in I} M_i = M \Bigr\} \\
-& & \text{min cost covering of } M
-\end{array}
+I^{\star} = \arg\min_{I}\Bigl\{ \sum_{i \in I} c_i \;:\;
+\bigcup_{i \in I} M_i = M \Bigr\}
 \tag{8}
 $$
+
+where
+
+- $I^{\star}$ = min cost covering of $M$
+- $c_i$ = cost of using $M_i$ in cover
+- $M_i$ = subsets of $M$, $i \in N$
+- $N$ = indices of the subsets
+= $\{1, \ldots, n\}$
+- $M$ = objects to be covered
+= $\{1, \ldots, m\}$.
 
 Model 4 formulation: Math-programming formulation
 
@@ -1539,16 +1543,18 @@ Model 6: Bin packing
 Model 6 formulation: Mathematical formulation
 
 $$
-\begin{array}{rcl}
-M & = & \{1, \ldots, m\}, \quad \text{objects to be packed into bins} \\
-v_j & = & \text{volume of object } j \\
-V & = & \text{volume of each bin } B_i, \quad \max_j v_j \leq V \\
-B^{\star} & = & \displaystyle\arg\min_{B}\Bigl\{ \lvert B \rvert \;:\;
-\sum_{j \in B_i} v_j \leq V, \; \bigcup_{B_i \in B} B_i = M \Bigr\} \\
-& & \text{min cost bin packing of } M
-\end{array}
+B^{\star} = \arg\min_{B}\Bigl\{ \lvert B \rvert \;:\;
+\sum_{j \in B_i} v_j \leq V, \; \bigcup_{B_i \in B} B_i = M \Bigr\}
 \tag{11}
 $$
+
+where
+
+- $B^{\star}$ = min cost bin packing of $M$
+- $v_j$ = volume of object $j$
+- $V$ = volume of each bin $B_i$, $\max_j v_j \leq V$
+- $M$ = objects to be packed into bins
+= $\{1, \ldots, m\}$.
 
 The binary program below is the same problem with an indicator per bin and per object-bin pair, which is the form a solver takes.
 
@@ -1628,8 +1634,8 @@ prt(grow)
 ───────────────────────────────────
 1       20       420     6     0.00
 2       50     2,550    15     0.20
-3      100    10,100    31     1.19
-4      200    40,200    61     9.37
+3      100    10,100    31     1.12
+4      200    40,200    61     9.10
 ```
 
 Ten times the objects is a hundred times the variables and rather more than a hundred times the work. Sixty seconds covers two hundred objects several times over and three hundred comfortably, and stops somewhere past that rather than running all afternoon on an instance nobody meant to pose. A limit that is never reached costs nothing, which is the argument for always setting one.
@@ -1654,10 +1660,10 @@ prt(loose)
 ```text
     gap  bins  seconds
 ──────────────────────
-  exact    61     9.61
-     1%    61     9.80
-     2%    62     6.05
-     5%    62     5.97
+  exact    61     9.27
+     1%    61     9.32
+     2%    62     5.77
+     5%    62     5.85
 ```
 
 NoteReading a solve that stopped early
@@ -1762,8 +1768,8 @@ subject to:
 return: colors used, and the vertices of each
 
 assumptions:
-(a) the graph is given;
-(b) a color is available for every vertex, so a coloring always exists.
+(a) graph is given;
+(b) color is available for every vertex, so a coloring always exists.
 
 Model 7: Graph coloring
 

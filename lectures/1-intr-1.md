@@ -106,7 +106,7 @@ A model with an objective prescribes; a model without one only describes. The ke
 
 The strategic problem chooses where to put a fixed number of hubs; Fig. 2 shows the solution it selects.
 
-minimize: the total population-weighted distance (people-miles) from the demand points to the hubs that serve them
+minimize: total population-weighted distance (people-miles) from the demand points to the hubs that serve them
 
 solve for:
 (a) which six of the candidate locations to open;
@@ -115,11 +115,11 @@ solve for:
 subject to:
 (a) assignment: every demand point is served by exactly one of the six hubs.
 
-return: a hub plan: the six locations opened and the hub serving each demand point
+return: hub plan: the six locations opened and the hub serving each demand point
 
 assumptions:
 (a) demand is located at the 3-digit ZIP code centroids, weighted by population;
-(b) the number of hubs is fixed in advance, here six.
+(b) number of hubs is fixed in advance, here six.
 
 Model 1: Strategic facility location
 
@@ -139,7 +139,7 @@ subject to:
 (b) capacity: production stays within capacity every period;
 (c) startup: a product incurs a startup cost when its production begins, not in every period it continues.
 
-return: a production-inventory plan: what to make and what to hold, by product and period
+return: production-inventory plan: what to make and what to hold, by product and period
 
 assumptions:
 (a) demand for each product in each period is known;
@@ -161,11 +161,11 @@ subject to:
 (a) coverage: every delivery is made exactly once;
 (b) capacity: each vehicle makes at most three drop-offs.
 
-return: a day’s routing plan: the vehicles used and the ordered stops of each
+return: day’s routing plan: the vehicles used and the ordered stops of each
 
 assumptions:
 (a) all routes start and end at the single central depot;
-(b) the travel distance between every pair of stops is known.
+(b) travel distance between every pair of stops is known.
 
 Model 3: Operational vehicle routing
 
@@ -409,11 +409,11 @@ A pizza shop delivers to customers located within 3 miles of the shop. Estimate 
 
 The quantity wanted is a single performance measure, with nothing to choose, so this is a descriptive model: it has a return and its assumptions, but no objective.
 
-return: the average round-trip distance of a delivery
+return: average round-trip distance of a delivery
 
 assumptions:
 (a) every customer lies within the 3-mile delivery radius;
-(b) a round trip is exactly twice the one-way distance.
+(b) round trip is exactly twice the one-way distance.
 
 Model 4: Average delivery distance
 
