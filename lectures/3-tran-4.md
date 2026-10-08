@@ -619,11 +619,23 @@ The periodic shipments of Lecture 3.3 had one origin and one destination; at a D
 
 With a DC between the suppliers and the customers, each product is either cross-docked or stocked at the DC, and Model 1 states the problem of deciding which.
 
+A cross-docking set is a group of products whose suppliers all ship on one interval, the set’s own, so that its products arrive at the DC together and leave it the same day. A product in no set is stocked: held at the DC, and shipped in on its own interval. A delivery is everything a customer receives from the DC on one day. Each set makes a delivery to each customer on its interval, and a stocked product goes out either in one set’s deliveries or in a delivery that carries only stocked products. A shipment is uncoordinated when its size is its own optimal size, as in Lecture 3.3, and coordinated when its size is its annual flow times its set’s interval. Every shipment is therefore one of the four kinds in Table 1.
+
+Table 1: The four kinds of shipment through the DC, in or out and uncoordinated or coordinated, each with its inventory fraction.
+
+| | Uncoordinated | Coordinated |
+|---|---|---|
+| In from a supplier | stocked product’s shipment ($\alpha_S + \frac{1}{2}$) | cross-docked product’s shipment ($\alpha_S$) |
+| Out to a customer | delivery that carries only stocked products ($\alpha_C$) | set’s delivery, with any stocked products it carries ($\alpha_C$) |
+
+The two columns differ in what one truck means. An uncoordinated shipment never needs more than one: two truckloads sent together cost the same transport as two sent on different days, since the TL charge of Eq. 9 in Lecture 3.2 counts every truck, but they double the inventory, which is why Eq. 2 in Lecture 3.3 holds a periodic shipment to one truck. A coordinated shipment can be larger. One in from a supplier is still held to one truck, which limits how long its set’s interval can be. A set’s delivery that is larger than one truck goes as two or more shipments on the same day, since its products arrived together and leave together.
+
 minimize: total logistics cost of transporting the products from their suppliers through the DC to the customers, transport plus cycle inventory
 
 solve for:
 (a) sets of products cross-docked together, no product in two sets, and products in no set stocked at the DC (with no sets, every product is stocked);
-(b) shipment interval of each set, and shipment size of each shipment of the stocked products.
+(b) shipment interval of each set, and shipment size of each uncoordinated shipment;
+(c) for each stocked product, the set, if any, whose deliveries to the customers also carry it.
 
 subject to:
 (a) payload: no shipment is larger than one truck’s maximum payload;
@@ -631,40 +643,46 @@ subject to:
 
 assumptions:
 (a) DC location is given;
-(b) suppliers produce in batches and customers consume at a constant rate;
-(c) each set’s products move together, inbound and outbound on the set’s interval, in their own outbound shipment to each customer;
-(d) stocked products are held at the DC and leave it in one outbound shipment to each customer, sized on its own;
-(e) suppliers and customers at the DC are served at no transport or inventory cost.
+(b) each supplier’s and each customer’s inventory fraction, $\alpha_S$ and $\alpha_C$, is given;
+(c) every shipment is an independent shipment;
+(d) stocked products are held at the DC, and the products of each set arrive at it together and leave it the same day.
 
 Model 1: Single-DC transshipment
 
-The decision is a split of the products: a set $S$ stocked at the DC, and a collection $\mathcal{G}$ of sets, the products of each set cross-docked together on its own interval. Any split can be evaluated by the two models that follow, Model 2 for the stocked products and Model 3 for each cross-docked set, so the problem is to find the split of least total cost:
+The decision is a split of the products: a set $S$ stocked at the DC, and a collection $\mathcal{G}$ of sets, the products of each set cross-docked together on its own interval, and the stocked products, if any, that each set’s deliveries also carry. Its shipments are the four kinds of Table 1, and the problem is to find the split of least total cost:
 
 Model 1 formulation: Single-DC transshipment
 
 $$
-\begin{array}{rlrcll}
-& \text{Minimize} & \displaystyle TLC_{UC}(S) + \sum_{G \in \mathcal{G}} TLC_{XD}(G) & & & \\[2pt]
-& \text{subject to} & S \cup {\textstyle\bigcup_{G \in \mathcal{G}}} G & = & P & \\[2pt]
-& & S \cap G & = & \emptyset, & G \in \mathcal{G} \\[2pt]
-& & G \cap G' & = & \emptyset, & G \neq G' \in \mathcal{G}
+\begin{array}{rlrclll}
+& \text{Minimize} & \displaystyle \sum_{i \in I} TLC_i(q_i) & & & & \\[2pt]
+& \text{subject to} & 0 < q_i & \leq & q_{\max,i}, & i \in I_S & (a) \\[2pt]
+& & t_G & \geq & t_{\min}, & G \in \mathcal{G} & (b) \\[2pt]
+& & q_i & = & f_i\, t_G, & i \in I_G,\ G \in \mathcal{G} &
 \end{array}
 \tag{5}
 $$
 
 where
 
-- $S$ = set of products stocked at the DC (decision variable)
-- $\mathcal{G}$ = collection of cross-docked sets (decision variable)
-- $P$ = set of products, each from its own supplier
-- $TLC_{UC}(S)$ = total logistics cost of Model 2 for the products in $S$ (\$/yr)
-- $TLC_{XD}(G)$ = total logistics cost of Model 3 for the products in $G$ (\$/yr).
+- $q_i$ = size of shipment or delivery $i$ (decision variable, ton)
+- $I$ = shipments in from the suppliers, and deliveries out
+- $TLC_i(q)$ = total logistics cost of shipment or delivery $i$ at size $q$ (\$/yr)
+- $I_S$ = shipments in from the suppliers
+- $q_{\max,i}$ = maximum payload of shipment $i$ (ton)
+- $t_G$ = shipment interval of set $G$ (decision variable, yr)
+- $\mathcal{G}$ = cross-docking sets, no product in two (decision variable)
+- $t_{\min}$ = shortest interval, one day (yr)
+= $1/365.25$
+- $f_i$ = annual flow of shipment or delivery $i$ (ton/yr)
+- $I_G$ = shipments in of the products in $G$, and deliveries out of $G \cup S_G$
+- $S_G$ = stocked products in $G$’s deliveries (decision variable).
 
-A model states its constraints in words, under subject to, and its formulation writes each one as a row with the same letter. Model 1’s two constraints, (a) payload and (b) interval, are about shipments: what a truck carries, and how often a set ships. This formulation sizes no shipments. It only decides which products are stocked and which are cross-docked together, and leaves the shipments to the two formulations that follow, Eq. 6 for the stocked products and Eq. 7 for each cross-docked set. So (a) and (b) are rows there, not here: (a) in both, and (b) in Eq. 7.
+A model states its constraints in words, under subject to, and its formulation writes each one as a row with the same letter. Model 1’s two constraints, (a) payload and (b) interval, are about shipments: what a truck carries, and how often a set ships. Both are rows here, (a) for the shipments in from the suppliers and (b) for each set. A delivery needs no row (a), since one larger than a truck goes as two or more shipments.
 
-The three rows that are here have no letter, because they are not among Model 1’s constraints: they spell out what its solve-for (a) asks of the split.
+The row with no letter is not among Model 1’s constraints: it puts each set’s coordinated shipments, $I_G$, on the set’s interval. The sets $\mathcal{G}$ of solve-for (a) and the stocked products $S_G$ of solve-for (c) need no rows of their own; they decide which deliveries make up $I$ and $I_G$, and what each carries.
 
-Together the three rows make $S$ and the sets in $\mathcal{G}$ a partition of $P$: every product is in exactly one of them. With $\mathcal{G}$ empty, every product is stocked, which is Model 2; with $S$ empty and $\mathcal{G}$ a single set, every product is cross-docked together, which is Model 3. The formulation says how any split is evaluated and nothing about how to search for a good one; Model 1 has no implementation here, on purpose.
+With $\mathcal{G}$ empty, every product is stocked, which is Model 2; with $S$ empty and $\mathcal{G}$ a single set, every product is cross-docked together, which is Model 3. The formulation says how any split is evaluated and nothing about how to search for a good one; Model 1 has no implementation here, on purpose.
 
 In practice it is difficult to put every shipment on a single interval: the DC would sit empty most of the day, and then everything would arrive, be cross-docked and leave within a two-hour window. What happens at most DCs is a mix of stocked and cross-docked products, and the cross-docked products are usually not a single set. Coordination makes sense for certain high-value products, while low-value, more general products are probably best left uncoordinated. Seasonal goods are a classic case. A large retailer’s DC does not receive Halloween products from January on and fill a warehouse with them; they arrive over the month or two before the holiday, and a container or truckload of them, once unloaded, is not put into storage, because the stores need it quickly. It is cross-docked at once, one truckload holding enough to supply perhaps 20 to 25 stores, as whole pallets that go straight onto the store floor and are opened there. The trend is toward ever more cross-docking, since cross-docking needs good coordination and companies have become better at tracking their shipments.
 
@@ -674,7 +692,8 @@ minimize: total logistics cost of transporting the products from their suppliers
 
 solve for:
 (a) sets of products cross-docked together, no product in two sets, and products in no set stocked at the DC (with no sets, every product is stocked);
-(b) shipment interval of each set, and shipment size of each shipment of the stocked products.
+(b) shipment interval of each set, and shipment size of each uncoordinated shipment;
+(c) for each stocked product, the set, if any, whose deliveries to the customers also carry it.
 
 subject to:
 (a) payload: no shipment is larger than one truck’s maximum payload;
@@ -683,10 +702,9 @@ subject to:
 
 assumptions:
 (a) DC location is given;
-(b) suppliers produce in batches and customers consume at a constant rate;
-(c) each set’s products move together, inbound and outbound on the set’s interval, in their own outbound shipment to each customer;
-(d) stocked products are held at the DC and leave it in one outbound shipment to each customer, sized on its own;
-(e) suppliers and customers at the DC are served at no transport or inventory cost.
+(b) each supplier’s and each customer’s inventory fraction, $\alpha_S$ and $\alpha_C$, is given;
+(c) every shipment is an independent shipment;
+(d) stocked products are held at the DC, and the products of each set arrive at it together and leave it the same day.
 
 Model 2: Uncoordinated transshipment
 
@@ -713,7 +731,7 @@ where
 
 Model 2 states three constraints in words, and its formulation writes each one it needs as a row with the same letter. It needs only one. Row (a) is the payload constraint: each shipment fits in one truck. Constraint (b) limits the interval of a cross-docked set, and with every product stocked, which is constraint (c), there is no such set, so neither needs a row. Stocking does show up in the costs, as the DC’s inventory in the inbound fraction of Eq. 4.
 
-No term of the objective and no row involves two shipments, so the program separates into one P2P problem per shipment, each the minimization of Eq. 17 in Lecture 3.3 that Lecture 3.3 solved for a single shipment. Its solution is the sizes $q_i^{\star}$, and its minimum, $TLC_{UC} = \sum_{i \in I} TLC_i(q_i^{\star})$, is the cost $TLC_{UC}(S)$ that Eq. 5 charges for the stocked products.
+No term of the objective and no row involves two shipments, so the program separates into one P2P problem per shipment, each the minimization of Eq. 17 in Lecture 3.3 that Lecture 3.3 solved for a single shipment. Its solution is the sizes $q_i^{\star}$, and its minimum, $TLC_{UC} = \sum_{i \in I} TLC_i(q_i^{\star})$, is the cost of Eq. 5 with no cross-docking sets, every product stocked.
 
 No Logjam function computes either extreme, so each implementation is written out here. The one new piece is the transport charge of a supplier or customer located at the DC itself, which is zero, since the product moves to the DC without a truck.
 
@@ -749,7 +767,8 @@ minimize: total logistics cost of transporting the products from their suppliers
 
 solve for:
 (a) sets of products cross-docked together, no product in two sets, and products in no set stocked at the DC (with no sets, every product is stocked);
-(b) shipment interval of each set, and shipment size of each shipment of the stocked products.
+(b) shipment interval of each set, and shipment size of each uncoordinated shipment;
+(c) for each stocked product, the set, if any, whose deliveries to the customers also carry it.
 
 subject to:
 (a) payload: no shipment is larger than one truck’s maximum payload;
@@ -758,10 +777,9 @@ subject to:
 
 assumptions:
 (a) DC location is given;
-(b) suppliers produce in batches and customers consume at a constant rate;
-(c) each set’s products move together, inbound and outbound on the set’s interval, in their own outbound shipment to each customer;
-(d) stocked products are held at the DC and leave it in one outbound shipment to each customer, sized on its own;
-(e) suppliers and customers at the DC are served at no transport or inventory cost.
+(b) each supplier’s and each customer’s inventory fraction, $\alpha_S$ and $\alpha_C$, is given;
+(c) every shipment is an independent shipment;
+(d) stocked products are held at the DC, and the products of each set arrive at it together and leave it the same day.
 
 Model 3: Perfect cross-docking
 
@@ -774,7 +792,7 @@ Model 3 formulation: Perfect cross-docking
 $$
 \begin{array}{rlrclll}
 & \text{Minimize} & \displaystyle \sum_{i \in I} TLC_i(q_i) & & & & \\[2pt]
-& \text{subject to} & q_i & \leq & q_{\max,i}, & i \in I & (a) \\[2pt]
+& \text{subject to} & q_i & \leq & q_{\max,i}, & i \in I_S & (a) \\[2pt]
 & & t & \geq & t_{\min} & & (b) \\[2pt]
 & & q_i & = & f_i\, t, & i \in I & (c)
 \end{array}
@@ -783,18 +801,28 @@ $$
 
 where
 
-- $q_i$ = size of shipment $i$ (decision variable, ton)
-- $I$ = shipments in from the suppliers and out to the customers
-- $TLC_i(q)$ = total logistics cost of shipment $i$ at size $q$ (\$/yr)
+- $q_i$ = size of shipment or delivery $i$ (decision variable, ton)
+- $I$ = shipments in from the suppliers, and deliveries out
+- $TLC_i(q)$ = total logistics cost of shipment or delivery $i$ at size $q$ (\$/yr)
+- $I_S$ = shipments in from the suppliers
+- $q_{\max,i}$ = maximum payload of shipment $i$ (ton)
 - $t$ = common shipment interval (decision variable, yr)
 - $t_{\min}$ = shortest interval, one day (yr)
 = $1/365.25$
-- $f_i$ = annual flow of shipment $i$ (ton/yr)
-- $q_{\max,i}$ = maximum payload of shipment $i$ (ton).
+- $f_i$ = annual flow of shipment or delivery $i$ (ton/yr).
 
-Model 3 states the same three constraints, and here all three are rows. Row (a), payload, is the row of Eq. 6: each shipment fits in one truck. Row (b), interval, keeps the common interval to at least one day. Row (c), single set, puts every shipment on that one interval, so each shipment’s size is its annual flow times the interval. Rows (a) and (c) together also cap the interval: since no shipment may outgrow its truck, $t$ can be no longer than $t_{\max} = \min_{i \in I} q_{\max,i}/f_i$, the interval at which the first shipment fills its truck, and that is the upper end of the implementation’s search. With nothing held at the DC, each shipment’s inventory fraction is $\alpha_S$ inbound and $\alpha_C$ outbound.
+Model 3 states the same three constraints, and here all three are rows. Row (a), payload, is the row of Eq. 5, for the shipments in from the suppliers. Row (b), interval, keeps the common interval to at least one day. Row (c), single set, puts every shipment and delivery on that one interval, so each one’s size is its annual flow times the interval. With nothing held at the DC, each shipment’s inventory fraction is $\alpha_S$ inbound and $\alpha_C$ outbound. Rows (a) and (c) together also cap the interval: a shipment in from a supplier fills its truck at $t = q_{\max,i}/f_i$, so $t$ can be no longer than the shortest of these, which is the upper end of the implementation’s search:
 
-Set beside Eq. 6, the objective and row (a) are the same, and Model 3 adds rows (b) and (c). Row (c) ties every size to one variable, so the program no longer separates, and the search is over $t$ alone. Its solution is the interval $t^{\star}$, the sizes follow as $q_i^{\star} = f_i\, t^{\star}$, and its minimum, $TLC_{XD} = \sum_{i \in I} TLC_i(q_i^{\star})$, is the cost $TLC_{XD}(G)$ that Eq. 5 charges for a cross-docked set.
+$$
+t_{\max} = \min_{i \in I_S} \frac{q_{\max,i}}{f_i}
+\tag{8}
+$$
+
+where
+
+- $t_{\max}$ = longest common interval (yr).
+
+Set beside Eq. 6, the objective is the same, row (a) is written only for the shipments in from the suppliers, and Model 3 adds rows (b) and (c). Row (c) ties every size to one variable, so the program no longer separates, and the search is over $t$ alone. Its solution is the interval $t^{\star}$, the sizes follow as $q_i^{\star} = f_i\, t^{\star}$, and its minimum, $TLC_{XD} = \sum_{i \in I} TLC_i(q_i^{\star})$, is the cost of Eq. 5 with every product in a single cross-docking set.
 
 The implementation prices every shipment with the charge c0 of Model 2.
 
@@ -824,7 +852,7 @@ Total logistics cost needs the value of each product per ton, which follows from
 
 $$
 v_A = \frac{\mathit{uv}_A}{\mathit{wt}_A/2000} = \frac{300}{30/2000} = \$20{,}000\text{/ton}
-\tag{8}
+\tag{9}
 $$
 
 where
@@ -913,13 +941,13 @@ Example 1(f): Perfect cross-docking at Statesville
 
 Determine the total logistics cost of perfect cross-docking with the DC at Statesville, and the common shipment interval that minimizes it.
 
-To simplify, the example uses the optimal UC location (Statesville, as Ex. 3(a) shows), which may not be optimal for XD. As a result, it can use the final shUC from UC since it has a column d with the distance from the optimal UC location to each EF. shUC is copied to a new DataFrame shXD so that the a column can reflect cross-docking (it cannot just add another column to sh because totlogcost is looking for the a column).
+To simplify, the example uses the optimal UC location (Statesville, as Ex. 3(a) shows), which may not be optimal for XD. As a result, it can use the final shUC from UC since it has a column d with the distance from the optimal UC location to each EF. shUC is copied to a new DataFrame shXD so that the a column can reflect cross-docking (it cannot just add another column to sh because totlogcost is looking for the a column). The upper end of the search is $t_{\max}$ of Eq. 8, taken over the inbound shipments, idxin.
 
 ```julia
 # Code block 15: perfect cross-docking with the DC at Statesville
 shXD = shUC[:, Not([:qᵒ, :TLCᵒ])]
 shXD[idxin, :a] .= αS               # outbound α is unchanged
-tmax = minimum(shXD.qmax./shXD.f)   # yr, every shipment in one truck
+tmax = minimum(shXD.qmax[idxin]./shXD.f[idxin])  # yr, inbound only
 xd = tlc_xd(shXD, tr, 1/365.25, tmax)
 @show xd.t, 365.25xd.t              # yr, days
 shXD.qXD = xd.q
@@ -947,7 +975,7 @@ r_{FTL} &= \frac{r_{TL}}{q_{\max}} \\
 TLC_{\text{AllocFTL}} ( q_{TL}^{\star} ) &= \frac{f}{q_{TL}^{\star}} ( q_{TL}^{\star} r_{FTL} d ) + \alpha v h\, q_{TL}^{\star} \\
 &= f \frac{r_{TL}}{q_{\max}} d + \alpha v h\, q_{TL}^{\star}
 \end{aligned}
-\tag{9}
+\tag{10}
 $$
 
 where
@@ -978,7 +1006,7 @@ sum(shXD.TLC_AFTL) = 44594.79980072833
 44594.79980072833
 ```
 
-Table 1 sets the three policies side by side, shipment by shipment.
+Table 2 sets the three policies side by side, shipment by shipment.
 
 Show the code that builds the table
 
@@ -1006,7 +1034,7 @@ println("\n: Ex. 1 with the DC at Statesville, shipment by shipment: ",
         "logistics costs in \\\$/yr. {#tbl-statesville .dense .fit}\n")
 ```
 
-Table 1: Ex. 1 with the DC at Statesville, shipment by shipment: $f$ in ton/yr, $d$ in mi, sizes in ton, and the uncoordinated (UC), cross-docked (XD) and allocated full-truckload (Eq. 20 in Lecture 3.3) total logistics costs in \$/yr.
+Table 2: Ex. 1 with the DC at Statesville, shipment by shipment: $f$ in ton/yr, $d$ in mi, sizes in ton, and the uncoordinated (UC), cross-docked (XD) and allocated full-truckload (Eq. 20 in Lecture 3.3) total logistics costs in \$/yr.
 
 | Shipment | $f$ | $d$ | $q_{\max}$ | $q^{*}$ | UC | $q_{XD}$ | XD | Allocated FTL |
 |---|---|---|---|---|---|---|---|---|
@@ -1206,7 +1234,7 @@ Determine the total logistics cost when the shipments use a DC located at Memphi
 idxin2 = 1:length(fS2)             # the three inbound shipments
 shXD2 = sh2[:, Not([:qᵒ, :TLCᵒ, :isLTL, :t])]
 shXD2[idxin2, :a] .= αS            # outbound α is unchanged
-tmax2 = minimum(shXD2.qmax./shXD2.f)  # yr, every shipment in one truck
+tmax2 = minimum(shXD2.qmax[idxin2]./shXD2.f[idxin2])  # yr, inbound only
 xd2 = tlc_xd(shXD2, tr2, 1/365.25, tmax2, ppiLTL)
 shXD2.qXD = xd2.q
 shXD2.TLC_XD = [totlogcost(r.qXD, c0(r.qXD, r, tr2, ppiLTL), r)
@@ -1257,7 +1285,7 @@ TLC_{TL}(\mathbf{x}) &= \sum_{i=1}^{m} w_i(\mathbf{x})\, d_i(\mathbf{x}) + \alph
 &= \sum_{i=1}^{m} \frac{f_i}{q_i(\mathbf{x})}\, r\, d_i(\mathbf{x}) + \alpha v h\, q_i(\mathbf{x}) \\
 &= \sum_{i=1}^{m} \frac{f_i}{\sqrt{\dfrac{f_i\, r\, d_i(\mathbf{x})}{\alpha v h}}}\, r\, d_i(\mathbf{x}) + \alpha v h \sqrt{\frac{f_i\, r\, d_i(\mathbf{x})}{\alpha v h}}
 \end{aligned}
-\tag{10}
+\tag{11}
 $$
 
 where
@@ -1272,7 +1300,7 @@ Both terms reduce to the same square root, so the sum simplifies to
 
 $$
 TLC_{TL}(\mathbf{x}) = \sum_{i=1}^{m} 2\sqrt{\alpha v h\, f_i\, r\, d_i(\mathbf{x})}
-\tag{11}
+\tag{12}
 $$
 
 With full truckloads, Eq. 2, the inventory cost is a constant and each facility’s cost grows with its distance; with TL shipments sized optimally, each facility’s cost grows with the square root of its distance, and transport and inventory cannot be separated.
@@ -1566,9 +1594,9 @@ At its lowest level, warehouse operations involve the storage of an object at a 
 
 NoteLogistics-related codes
 
-Table 2 lists the three major categories of codes that are used in logistics-related activities. In warehousing, item-level stock-keeping unit (SKU) codes are used for inventory control, while unit-level radio-frequency identification (RFID) tags are just starting to be used to track each individual unit of an item in a warehouse, thereby facilitating FIFO stock rotation, for example. The use of a globally unique code allows products to move through the supply chain from firm to firm without the need to apply firm-specific codes when product is received at the warehouse door. The use of commodity codes is most useful for procurement activities where, for example, a similar item from multiple vendors is being sought and each vendor has a different SKU number.
+Table 3 lists the three major categories of codes that are used in logistics-related activities. In warehousing, item-level stock-keeping unit (SKU) codes are used for inventory control, while unit-level radio-frequency identification (RFID) tags are just starting to be used to track each individual unit of an item in a warehouse, thereby facilitating FIFO stock rotation, for example. The use of a globally unique code allows products to move through the supply chain from firm to firm without the need to apply firm-specific codes when product is received at the warehouse door. The use of commodity codes is most useful for procurement activities where, for example, a similar item from multiple vendors is being sought and each vendor has a different SKU number.
 
-Table 2: Logistics-related codes.
+Table 3: Logistics-related codes.
 
 | | Commodity Code | Item Code | Unit Code |
 |---|---|---|---|
@@ -1600,7 +1628,7 @@ With the wage and benefits paid at the start of each year of the service life, t
 
 $$
 P = A\,\frac{1 - (1 + i)^{-n}}{1 - (1 + i)^{-1}}
-\tag{12}
+\tag{13}
 $$
 
 where
