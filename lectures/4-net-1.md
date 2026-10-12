@@ -1283,7 +1283,7 @@ N8, L8 = addconnectors(N7, L7, x1, y1)
 isc = isequal.(L8.SOURCE, "CONNECTOR")       # the connectors
 nnx = count(isc .& (L8.DST .> n1))           # new node to existing
 nnn = count(isc .& (L8.DST .<= n1))          # new node to new node
-prt(L8[isc .& (L8.SRC .== 1), 1:3])          # those of new node 1
+prt(sort(L8[isc .& (L8.SRC .== 1), 1:3], :DST))  # those of new node 1
 
 ```
 
@@ -1292,12 +1292,12 @@ prt(L8[isc .& (L8.SRC .== 1), 1:3])          # those of new node 1
 ```text
    SRC  DST   DIST
 ──────────────────
-1    1   10   6.27
-2    1   11  42.99
-3    1    8  69.23
-4    1    4  26.44
-5    1    2  28.50
-6    1    3  26.38
+1    1    2  28.50
+2    1    3  26.38
+3    1    4  26.44
+4    1    8  69.23
+5    1   10   6.27
+6    1   11  42.99
 ```
 
 Show the code that draws this figure
