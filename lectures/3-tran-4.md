@@ -710,7 +710,7 @@ Model 2: Uncoordinated transshipment
 
 Special case of Model 1: Single-DC transshipment
 
-With every product stocked, each shipment is sized on its own, as Lecture 3.3 sized a single P2P shipment, with the DC’s inventory counted on the inbound side by Eq. 4:
+With every product stocked, every shipment is uncoordinated, with its own optimal shipment size, found as Lecture 3.3 found it for a single P2P shipment, with the DC’s inventory counted on the inbound side by Eq. 4:
 
 Model 2 formulation: Uncoordinated transshipment
 
@@ -785,7 +785,7 @@ Model 3: Perfect cross-docking
 
 Special case of Model 1: Single-DC transshipment
 
-Perfect cross-docking cannot size the shipments one at a time, because they all share one interval $t$. The key is that a shipment’s size is then its annual flow times that interval, $q_i = f_i t$, so one interval fixes every size. The formulation keeps the objective of Eq. 6 and adds that relation as row (c):
+Under perfect cross-docking every shipment is coordinated, so the shipment sizes cannot be found one at a time: every shipment shares one interval $t$. The key is that a shipment’s size is then its annual flow times that interval, $q_i = f_i t$, so one interval fixes every size. The formulation keeps the objective of Eq. 6 and adds that relation as row (c):
 
 Model 3 formulation: Perfect cross-docking
 
@@ -1129,7 +1129,7 @@ Example 2(a): Direct shipments
 
 Determine the total logistics cost when each supplier ships its product directly to each customer, TL or LTL, whichever costs less.
 
-In the tables of this example, t is a shipment’s interval, the time between its shipments, $t = q/f$ as in Lecture 3.3, converted to days, and tavg in the comparison table is its average over the shipments. Under perfect cross-docking every shipment has the same interval, so there tavg is that common interval.
+In the tables of this example, t is a shipment’s interval, the time between its shipments, $t = q/f$ as in Lecture 3.3, converted to days, and t̄ in the comparison table is its average over the shipments. Under perfect cross-docking every shipment has the same interval, so there t̄ is that common interval.
 
 ```julia
 # Code block 21: direct shipments, every supplier to every customer
@@ -1150,7 +1150,7 @@ prt(shD[:, Not(:h)])
 
 # The comparison of the three ways to ship, row by row
 out = DataFrame(Method = "Direct shipments", TLC = sum(shD.TLCᵒ),
-                tavg = mean(shD.t), LTL = sum(shD.isLTL))
+                t̄ = mean(shD.t), LTL = sum(shD.isLTL))
 prt(out)
 ```
 
@@ -1169,7 +1169,7 @@ prt(out)
 10  100.00  32  0.5000  50,000    626.06  25.00   1.23   65,794.53      1    4.48
 11   15.00   3  0.5000  25,000  1,295.17   4.12   3.64   27,265.89      0   88.52
 12   60.00  12  0.5000  10,000  1,327.78  16.50  11.64   34,920.43      0   70.86
-            Method         TLC   tavg  LTL
+            Method         TLC      t̄  LTL
 ──────────────────────────────────────────
   Direct shipments  778,498.09  50.67    4
 ```
@@ -1217,7 +1217,7 @@ prt(out)
 5  306.25  13.33  0.5000  34,142.86  1,460.96  18.33  14.93  152,914.27      0  17.80
 6  218.75  13.33  0.5000  34,142.86  1,053.32  18.33  10.71  109,734.76      0  17.89
 7  175.00  13.33  0.5000  34,142.86    671.89  18.33   7.65   78,389.70      0  15.97
-               Method         TLC   tavg  LTL
+               Method         TLC      t̄  LTL
 ─────────────────────────────────────────────
      Direct shipments  778,498.09  50.67    4
   Uncoordinated at DC  796,512.67  18.65    0
@@ -1256,7 +1256,7 @@ prt(out)
 5  306.25  13.33  0.5000  34,142.86  1,460.96  18.33  15.31  152,963.49
 6  218.75  13.33  0.5000  34,142.86  1,053.32  18.33  10.94  109,758.30
 7  175.00  13.33  0.5000  34,142.86    671.89  18.33   8.75   79,093.93
-               Method         TLC   tavg  LTL
+               Method         TLC      t̄  LTL
 ─────────────────────────────────────────────
      Direct shipments  778,498.09  50.67    4
   Uncoordinated at DC  796,512.67  18.65    0

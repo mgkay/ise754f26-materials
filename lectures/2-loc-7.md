@@ -655,7 +655,7 @@ Solving report
   Primal bound      30
   Dual bound        30
   Gap               0% (tolerance: 0.01%)
-  P-D integral      0.000160345751724
+  P-D integral      0.000150558639941
   Solution status   feasible
                     30 (objective)
                     0 (bound viol.)
@@ -850,11 +850,11 @@ function uflmilp(k, C)
     set_silent(u)
     @variable(u, y[N], Bin)                  # open a site, or not
     @variable(u, 0 <= x[N, M] <= 1)          # share of EF j served from i
-    @objective(u, Min, sum(k[i] * y[i] for i in N) +
-                       sum(C[i, j] * x[i, j] for i in N, j in M))
-    @constraint(u, coverage[j in M],         # (a)
-                sum(x[i, j] for i in N) == 1)
-    @constraint(u, linking[i in N, j in M],  # (b)
+    @objective(u, Min, sum(k[i] * y[i] for i ∈ N) +
+                       sum(C[i, j] * x[i, j] for i ∈ N, j ∈ M))
+    @constraint(u, coverage[j ∈ M],          # (a)
+                sum(x[i, j] for i ∈ N) == 1)
+    @constraint(u, linking[i ∈ N, j ∈ M],    # (b)
                 y[i] >= x[i, j])
     optimize!(u)
     yᵒ = snapvals(value.(y))
@@ -1034,12 +1034,12 @@ function cflmilp(k, C, f, K)
     set_silent(c)
     @variable(c, y[N], Bin)
     @variable(c, 0 <= x[N, M] <= 1)
-    @objective(c, Min, sum(k[i] * y[i] for i in N) +
-                       sum(C[i, j] * x[i, j] for i in N, j in M))
-    @constraint(c, coverage[j in M],  # (a) coverage
-                sum(x[i, j] for i in N) == 1)
-    @constraint(c, capacity[i in N],  # (b) capacity
-                K[i] * y[i] >= sum(f[j] * x[i, j] for j in M))
+    @objective(c, Min, sum(k[i] * y[i] for i ∈ N) +
+                       sum(C[i, j] * x[i, j] for i ∈ N, j ∈ M))
+    @constraint(c, coverage[j ∈ M],   # (a) coverage
+                sum(x[i, j] for i ∈ N) == 1)
+    @constraint(c, capacity[i ∈ N],   # (b) capacity
+                K[i] * y[i] >= sum(f[j] * x[i, j] for j ∈ M))
     optimize!(c)
     yᵒ = snapvals(value.(y))
     res = (Y = findall(==(1.0), yᵒ), X = snapvals(value.(x)),
@@ -1229,9 +1229,9 @@ function setcover(A)
     M, N = 1:size(A, 1), 1:size(A, 2)
     model = Model(HiGHS.Optimizer)
     @variable(model, x[1:length(N)], Bin)
-    @objective(model, Min, sum(x[i] for i in N))
-    @constraint(model, coverage[j in M],  # (a)
-                sum(A[j, i] * x[i] for i in N) >= 1)
+    @objective(model, Min, sum(x[i] for i ∈ N))
+    @constraint(model, coverage[j ∈ M],   # (a)
+                sum(A[j, i] * x[i] for i ∈ N) >= 1)
     set_silent(model)
     set_time_limit_sec(model, 60.0)       # solution timeout
     optimize!(model)
@@ -1289,9 +1289,9 @@ function setpack(A)
     M, N = 1:size(A, 1), 1:size(A, 2)
     model = Model(HiGHS.Optimizer)
     @variable(model, x[N], Bin)
-    @objective(model, Max, sum(x[i] for i in N))
-    @constraint(model, disjoint[j in M],  # (a)
-                sum(A[j, i] * x[i] for i in N) <= 1)
+    @objective(model, Max, sum(x[i] for i ∈ N))
+    @constraint(model, disjoint[j ∈ M],   # (a)
+                sum(A[j, i] * x[i] for i ∈ N) <= 1)
     set_silent(model)
     optimize!(model)
     return findall(==(1.0), snapvals(value.(x)))
@@ -1594,14 +1594,14 @@ function binpack(v, V; tlim = 60.0, gap = 1e-4)
     @variable(bp, y[M], Bin)
     @variable(bp, x[M, M], Bin)
     @objective(bp, Min, sum(y))
-    @constraint(bp, capacity[i in M],      # (a)
-                V * y[i] >= sum(v[j] * x[i, j] for j in M))
-    @constraint(bp, assignment[j in M],    # (b)
-                sum(x[i, j] for i in M) == 1)
+    @constraint(bp, capacity[i ∈ M],       # (a)
+                V * y[i] >= sum(v[j] * x[i, j] for j ∈ M))
+    @constraint(bp, assignment[j ∈ M],     # (b)
+                sum(x[i, j] for i ∈ M) == 1)
     optimize!(bp)
     xᵒ, yᵒ = snapvals(value.(x)), snapvals(value.(y))
     used = findall(==(1.0), yᵒ)
-    bins = [findall(==(1.0), xᵒ[i, :]) for i in used]
+    bins = [findall(==(1.0), xᵒ[i, :]) for i ∈ used]
     res = (bins = bins, used = Int(objective_value(bp)),
            status = termination_status(bp), gap = relative_gap(bp),
            secs = solve_time(bp))
@@ -1632,10 +1632,10 @@ prt(grow)
 ```text
    objects  binaries  bins  seconds
 ───────────────────────────────────
-1       20       420     6     0.00
-2       50     2,550    15     0.22
-3      100    10,100    31     1.29
-4      200    40,200    61     9.92
+1       20       420     6     0.01
+2       50     2,550    15     0.19
+3      100    10,100    31     1.15
+4      200    40,200    61     9.02
 ```
 
 Ten times the objects is a hundred times the variables and rather more than a hundred times the work. Sixty seconds covers two hundred objects several times over and three hundred comfortably, and stops somewhere past that rather than running all afternoon on an instance nobody meant to pose. A limit that is never reached costs nothing, which is the argument for always setting one.
@@ -1660,10 +1660,10 @@ prt(loose)
 ```text
     gap  bins  seconds
 ──────────────────────
-  exact    61     9.35
-     1%    61    10.06
-     2%    62     6.50
-     5%    62     5.73
+  exact    61     9.20
+     1%    61     9.06
+     2%    62     5.78
+     5%    62     5.91
 ```
 
 NoteReading a solve that stopped early
@@ -2015,7 +2015,7 @@ function tardymilp(p, d)
     @variable(model, t[K] >= 0)
     @variable(model, C[J] >= 0)
     @variable(model, T[J] >= 0)
-    @objective(model, Min, sum(T[j] for j in J))
+    @objective(model, Min, sum(T[j] for j ∈ J))
     @constraint(model, [j ∈ J], sum(y[j, k] for k ∈ K) == 1)
     @constraint(model, [k ∈ K], sum(y[j, k] for j ∈ J) == 1)
     @constraint(model, t[1] == sum(p[j] * y[j, 1] for j ∈ J))
