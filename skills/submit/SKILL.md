@@ -137,7 +137,7 @@ it; send them there rather than guessing at credentials.
 
 ## Step 6 — the deadline, said once
 
-Work is due at **6:00 am Eastern on the morning of the meeting it is assessed at**. That
+Work is due at **7:00 am Eastern on the morning of the meeting it is assessed at**. That
 is absolute, the same for both sections, and it is when submissions are collected to prepare
 that morning's class. **Anything pushed later is not in that set.**
 

@@ -188,7 +188,7 @@ counts as submitted; until that last step it is still only on your machine.
 single commit of everything an hour before class shows less about your work than five commits over
 two days. Write messages that say what changed, not "update."
 
-**Work is due at 6:00 am Eastern on the morning of the class meeting at which it is assessed.**
+**Work is due at 7:00 am Eastern on the morning of the class meeting at which it is assessed.**
 That is an absolute time, the same for both sections, and it is when submissions are collected and
 reviewed together to prepare that morning's class. Anything pushed later is not in that set.
 

@@ -120,7 +120,7 @@ is available and that they remain answerable for what is in the commit either wa
 making them find a command name first, contradicts their own instructions. Offering unprompted is
 fine and is what the `/review` skill does at its close; acting unprompted is not.
 
-**Everything is due at 6:00 am Eastern on the MORNING OF the meeting it is listed against.** One
+**Everything is due at 7:00 am Eastern on the MORNING OF the meeting it is listed against.** One
 rule, every activity: review, homework, project. Not the evening before, which is the old rule and
 is wrong. If a sheet in `handouts/` states its own date and time, that sheet wins for that
 assignment; otherwise this is the deadline.
