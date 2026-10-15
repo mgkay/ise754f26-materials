@@ -4,7 +4,7 @@
 
 ISE 754: Logistics Engineering, Fall 2026
 
-Greedy algorithms take the next best step; linear programs take the best path.
+Where the network’s structure once provided the most efficient solution, it now serves as the intuitive model for the more general method of linear programming.
 
 New Julia packages used
 
@@ -13,11 +13,12 @@ New Julia packages used
 
 New Logjam functions used
 
+- mapbbox: Calculates the bounding box for a set of geographic coordinates, with optional expansion along the x and y axes.
 - osm_roads: Download OpenStreetMap drivable roads for a bounding box and return Logjam-compatible DataFrames. Requires LightOSM and NearestNeighbors to be loaded (using LightOSM, NearestNeighbors).
 
 Companion script
 
-4-net-2.jl, runnable Julia extracted from the lecture’s code blocks. (osm_w-78.7_e-78.6_s35.75_n35.85_nodes.csv, osm_w-78.7_e-78.6_s35.75_n35.85_links.csv, geocode_cache.csv; OpenStreetMap data under the ODbL, see README-osm.md)
+4-net-2.jl, runnable Julia extracted from the lecture’s code blocks. (Ex. 1’s osm_w-78.7_e-78.65_s35.75_n35.8_nodes.csv and osm_w-78.7_e-78.65_s35.75_n35.8_links.csv, Ex. 3’s osm_w-78.75_e-78.55_s35.7_n35.85_nodes.csv and osm_w-78.75_e-78.55_s35.7_n35.85_links.csv, geocode_cache.csv; OpenStreetMap data under the ODbL, see README-osm.md)
 
 ## 1. OpenStreetMap
 
@@ -25,37 +26,78 @@ When should an actual road network be used, rather than the great circle distanc
 
 For a few trips, a distance could be looked up by hand in Google Maps, but with hundreds of facilities that is not a solution. Google Maps has a programming interface that returns the distance between two places automatically, but where it was once free up to a generous daily limit, it now charges for its use and has grown more restrictive. The good option is OpenStreetMap, which years ago was not a real alternative but has become a good one, and which can be used from Julia, so road distances can be computed within a script rather than looked up.
 
-Logjam’s osm_roads downloads every drivable street inside a box of longitude and latitude from OpenStreetMap’s public server, Overpass, and returns the same two tables, nodes and links, as the FAF5 networks of Lecture 4.1, so every function of Lecture 4.1, Sec. 4 applies unchanged. Because every street is returned, the number of nodes and links can grow quite large. The bounding box given in Code block 1 below, representing a portion of Raleigh’s streets, is about 6 miles on a side, and results in around 82,000 links requiring 6 MB and can be downloaded in a few seconds. A bounding box covering all of Raleigh would require around a quarter to half a million links and about 20 to 40 MB, and take several minutes to download. The entire state of North Carolina would represent around 15 million links and over a gigabyte, but for distances across North Carolina, great circle distances and the circuity factor are a reasonable way to estimate actual road distances.
+Logjam’s osm_roads downloads every drivable street inside a box of longitude and latitude from OpenStreetMap’s public server, Overpass, and returns the same two tables, nodes and links, as the FAF5 networks of Lecture 4.1, so every function of Lecture 4.1, Sec. 4 applies unchanged. Because every street is returned, the number of nodes and links can grow quite large. A bounding box around a portion of Raleigh’s streets about 6 miles on a side results in around 82,000 links requiring 6 MB and can be downloaded in a few seconds. A bounding box covering all of Raleigh would require around a quarter to half a million links and about 20 to 40 MB, and take several minutes to download. The entire state of North Carolina would represent around 15 million links and over a gigabyte, but for distances across North Carolina, great circle distances and the circuity factor are a reasonable way to estimate actual road distances.
 
-The bounding box of Code block 1 is drawn around NC State’s two campuses, Centennial Campus and the main campus, and the streets between them, its corners typed in by hand. A copy of its streets, fetched on 2026-10-12 and saved in the data folder, is read through the same call that would download it:1
+The streets of Ex. 1 are found the way they would be for any problem: the places that matter are located first, a box is put around them, and the streets inside the box are downloaded. Logjam’s loc2lonlat can be used to look up an address or other place with OpenStreetMap’s online geocoder, Nominatim. It returns the exact longitude and latitude of an address, while for aggregate demand points like ZIP codes, cities, etc., it returns a central point of the area (for a county or a state, its center of population), along with an estimate of uncertainty, which corresponds to the average distance of a point within the area representing the aggregate demand point from the centroid.
+
+The two NC State buildings of Ex. 1 are looked up by their street addresses, with four queries that give less than an address:
 
 ```julia
-# Code block 1: Raleigh's streets in a bounding box, from OpenStreetMap
+# Code block 1: the two buildings of Ex. 1, and four coarser queries
+bldg = ["Fitts-Woolard Hall", "D. H. Hill Library"]
+qry = ["915 Partners Way, Raleigh, NC 27606",     # the two buildings
+       "2 Broughton Dr, Raleigh, NC 27695",
+       "Raleigh, NC", "27695", "Raliegh, NC", "Raleigh"]
+loc = loc2lonlat(qry; cache_dir = "data")
+prt(select(loc, Not(:LON, :LAT)))       # how each query was answered
+x = Float64.(loc.LON[1:2])     # the two buildings, for Ex. 1, as
+y = Float64.(loc.LAT[1:2])     # numbers (the column holds a missing)
+@show x
+@show y;
+
+```
+
+- 1 Given a vector of queries, loc2lonlat returns a table with a row for each: the query (INPUT), the LON and LAT found, the tier the answer came from (GC_SOURCE), its uncertainty in miles (GC_UNCERT) and its status (GC_STATUS). The table is printed without LON and LAT, which would make it wider than the page, and the two buildings’ are shown below it. Only an answer at the ADDRESS tier is saved, in data/geocode_cache.csv, so the two addresses are read from the copy saved in data/; the other four are answered from Logjam’s Census tables, and none of the six needs the Internet.
+
+```text
+                                INPUT   GC_SOURCE  GC_UNCERT  GC_STATUS
+───────────────────────────────────────────────────────────────────────
+  915 Partners Way, Raleigh, NC 27606     ADDRESS       0.00         OK
+    2 Broughton Dr, Raleigh, NC 27695     ADDRESS       0.00         OK
+                          Raleigh, NC       PLACE       5.46         OK
+                                27695  POSTALCODE       0.23         OK
+                          Raliegh, NC       STATE      99.23    PARTIAL
+                              Raleigh                missing       FAIL
+x = [-78.6758457, -78.6695716]
+y = [35.7706306, 35.7875615]
+```
+
+Logjam’s mapbbox puts a box around the two buildings, widened on each side by a multiple of its width and of its height. The buildings lie nearly north and south of each other, so the box is widened more across than along, enough to take in the faster roads around them. osm_roads downloads the streets in the box, and cropnetwork keeps those inside it. A copy of the streets, fetched on 2026-10-14 and saved in the data folder, is read through the same call that would download it:1
+
+```julia
+# Code block 2: a box around the two buildings, and the streets in it
 # osm_roads needs LightOSM and NearestNeighbors loaded, even when, as
-# here, it reads the copy of the box's streets already saved in data/
+# here, it reads the copy of the streets already saved in data/
 using LightOSM, NearestNeighbors
-bbox = (-78.70, -78.605, 35.75, 35.82)    # lon min, max, lat min, max
-dfN, dfL = osm_roads(bbox; cache_dir = "data")
+bb = mapbbox(x, y; xexpand = 2, yexpand = 0.5)  # (lon, lon), (lat, lat)
+dfN, dfL = osm_roads((bb[1]..., bb[2]...); cache_dir = "data")
+dfN, dfL = cropnetwork(dfN, dfL, x, y; xexpand = 2,
+                       yexpand = 0.5)
+@show round.(bb[1], digits = 3)
+@show round.(bb[2], digits = 3)
 @show nrow(dfN)
 @show nrow(dfL);
 
 ```
 
-- 1 With cache_dir, osm_roads reads the bounding box’s streets from that folder if they are saved there, and downloads and saves it only if not; the copy read here was saved on 2026-10-12.
+- 1 osm_roads takes the box as one tuple of four numbers, the least and greatest longitude and then latitude, so mapbbox’s two pairs are joined with .... It downloads whole cells of a grid 0.05° of longitude and latitude on a side, every cell the box touches, so that nearby boxes share a download; here one cell, about 2.8 by 3.5 miles, holds the box. With cache_dir, it reads the cells from that folder if they are saved there, and downloads and saves them only if not; the copy read here was saved on 2026-10-14.
+- 2 cropnetwork keeps the nodes inside the box mapbbox gives for the same points and expansions, and the links between them, so the network is the box’s and no more.
 
 ```text
-[ Info: Loading cached OSM data: data\osm_w-78.7_e-78.6_s35.75_n35.85_nodes.csv
-nrow(dfN) = 45218
-nrow(dfL) = 82497
+[ Info: Loading cached OSM data: data\osm_w-78.7_e-78.65_s35.75_n35.8_nodes.csv
+round.(bb[1], digits = 3) = (-78.688, -78.657)
+round.(bb[2], digits = 3) = (35.762, 35.796)
+nrow(dfN) = 4726
+nrow(dfL) = 8000
 
 ```
 
 NoteA county’s bounding box from its Census block groups
 
-The box around a county or a state can be computed instead of typed in, from Logjam’s Census block groups; here, Wake County’s:
+The box around a county or a state can be computed from Logjam’s Census block groups; here, Wake County’s:
 
 ```julia
-# Code block 2: a county's box, from the Census block groups in it
+# Code block 3: a county's box, from the Census block groups in it
 co = only(filter(r -> r.ST == :NC && r.NAME == "Wake", uscounty()))
 B = filter(r -> r.STFIP == co.STFIP && r.COFIP == co.COFIP,
            uscenblkgrp())                 # Wake's block groups
@@ -88,7 +130,7 @@ NoteThe links by functional class, and their speeds
 The tables have the columns of Lecture 4.1’s, and what is in them differs. The links can be counted by the functional class osm_roads gives each, from 1, Interstates, to 7, local streets:
 
 ```julia
-# Code block 3: the bounding box's links by functional class
+# Code block 4: the box's links by functional class
 cls = ["Interstate", "Other freeway", "Principal arterial",
        "Minor arterial", "Major collector", "Minor collector", "Local"]
 S = combine(groupby(dfL, :FCLASS, sort = true), nrow => :Links,
@@ -100,21 +142,19 @@ prt(S)
 ```
 
 ```text
-  FCLASS               Class   Links   Miles     mph
-────────────────────────────────────────────────────
-       1          Interstate   2,400   54.00  45, 65
-       2       Other freeway     256    5.90  35, 55
-       3  Principal arterial   7,127   95.40  30, 45
-       4      Minor arterial   7,143  101.10  25, 35
-       5     Major collector  12,541  170.20  20, 30
-       6     Minor collector   1,128   11.10      25
-       7               Local  51,902  686.20  15, 25
+  FCLASS               Class  Links  Miles     mph
+──────────────────────────────────────────────────
+       3  Principal arterial    863  10.10  30, 45
+       4      Minor arterial  1,195  13.50  25, 35
+       5     Major collector  1,321  14.50  20, 30
+       6     Minor collector    754   8.00      25
+       7               Local  3,867  54.40      25
 ```
 
-Six of the seven classes show two speeds because osm_roads gives a speed to each OpenStreetMap road type, not to each class, and those classes hold two types each. In classes 1 to 5 they are a road and the ramps joining it, which OpenStreetMap tags as the road’s _link type (motorway_link for a motorway), the ramps at the lower speed; in class 7 they are residential streets, at 25 mph, and living streets, at 15. A living street is, in OpenStreetMap’s words, a “road with very low speed limits and other pedestrian friendly traffic rules,” where pedestrians have at least the same right of way as other road users.2 Class 6’s roads are all at 25 mph.
+Three of the five classes in the box show two speeds because osm_roads gives a speed to each OpenStreetMap road type, not to each class, and those classes hold two types each, a road and the ramps joining it, which OpenStreetMap tags as the road’s _link type (secondary_link for a secondary), the ramps at the lower speed. The larger box of Ex. 3 holds Interstates and other freeways as well, and in class 7 living streets, at 15 mph, beside residential streets, at 25. A living street is, in OpenStreetMap’s words, a “road with very low speed limits and other pedestrian friendly traffic rules,” where pedestrians have at least the same right of way as other road users.2 Classes 6 and 7 in this box are all at 25 mph.
 
 ```julia
-# Code block 4: residential streets, one-way links and link length
+# Code block 5: residential streets, one-way links and link length
 using Statistics
 arcs = Set(zip(dfL.SRC, dfL.DST))       # a one-way link has no reverse
 oneway = count(((s, d),) -> (d, s) ∉ arcs, zip(dfL.SRC, dfL.DST))
@@ -131,59 +171,25 @@ medft = round(Int, 5280 * median(dfL.DIST))
 - 1 DIR is the direction column of Lecture 4.1’s links: 0 for a two-way road, which can be traveled from SRC to DST and back, 1 for a one-way link traveled from SRC to DST, and -1 for one traveled the other way. osm_roads gives a two-way street one link in each direction, so every link has DIR 1, which this line confirms (true); a one-way street is then simply a link with no reverse, which is how oneway counts them above.
 
 ```text
-pctlocal = 62.9
-pctoneway = 14.6
-medft = 42
+pctlocal = 48.3
+pctoneway = 23.8
+medft = 39
 all((==)(1), dfL.DIR) = true
 ```
 
-Table 1: FAF5 and OpenStreetMap as road networks, the second measured on Code block 1’s streets.
+Table 1: FAF5 and OpenStreetMap as road networks, the second measured on Code block 2’s streets.
 
 | | FAF5 (Lecture 4.1) | OpenStreetMap |
 |---|---|---|
 | Source | federal freight network, released periodically | volunteer-edited map, changed daily |
 | Access | part of Logjam: faf5nodes() and faf5links() return it, ready to use | on OpenStreetMap’s server, not part of Logjam: Logjam’s osm_roads downloads it a box at a time |
-| Roads | freight roads, arterials and up | every street, 62.9% of the links local |
-| Links | road segment, DIR 0 if two-way | one per direction of travel, DIR 1 on every link, 14.6% one-way |
-| Link length | fraction of a mile | median 42 ft, every bend a node |
+| Roads | freight roads, arterials and up | every street, 48.3% of the links local |
+| Links | road segment, DIR 0 if two-way | one per direction of travel, DIR 1 on every link, 23.8% one-way |
+| Link length | fraction of a mile | median 39 ft, every bend a node |
 | Speed | posted speed of each link | one speed for each road type |
 | License | public domain | ODbL; copyright OpenStreetMap contributors, credited on each map |
 
 Each difference in Table 1 shows in the examples that follow: a trip and its return can take different streets, a trip can begin and end at an address in a neighborhood, and a travel time is an estimate from speeds by class, which the Landmark check of Ex. 1 measures.
-
-Logjam’s loc2lonlat can be used to look up an address or other place with OpenStreetMap’s online geocoder, Nominatim. It returns the exact longitude and latitude of an address, while for aggregate demand points like ZIP codes, cities, etc., it returns a central point of the area (for a county or a state, its center of population), along with an estimate of uncertainty, which corresponds to the average distance of a point within the area representing the aggregate demand point from the centroid.
-
-The two NC State buildings of Ex. 1 are looked up by their street addresses, with four queries that give less than an address:
-
-```julia
-# Code block 5: the two buildings of Ex. 1, and four coarser queries
-bldg = ["Fitts-Woolard Hall", "D. H. Hill Library"]
-qry = ["915 Partners Way, Raleigh, NC 27606",     # the two buildings
-       "2 Broughton Dr, Raleigh, NC 27695",
-       "Raleigh, NC", "27695", "Raliegh, NC", "Raleigh"]
-loc = loc2lonlat(qry; cache_dir = "data")
-prt(select(loc, Not(:LON, :LAT)))       # how each query was answered
-x = Float64.(loc.LON[1:2])     # the two buildings, for Ex. 1, as
-y = Float64.(loc.LAT[1:2])     # numbers (the column holds a missing)
-@show x
-@show y;
-
-```
-
-- 1 Given a vector of queries, loc2lonlat returns a table with a row for each: the query (INPUT), the LON and LAT found, the tier the answer came from (GC_SOURCE), its uncertainty in miles (GC_UNCERT) and its status (GC_STATUS). The table is printed without LON and LAT, which would make it wider than the page, and the two buildings’ are shown below it. Only an answer at the ADDRESS tier is saved, in data/geocode_cache.csv, so the two addresses are read from the copy saved in data/; the other four are answered from Logjam’s Census tables, and none of the six needs the Internet.
-
-```text
-                                INPUT   GC_SOURCE  GC_UNCERT  GC_STATUS
-───────────────────────────────────────────────────────────────────────
-  915 Partners Way, Raleigh, NC 27606     ADDRESS       0.00         OK
-    2 Broughton Dr, Raleigh, NC 27695     ADDRESS       0.00         OK
-                          Raleigh, NC       PLACE       5.46         OK
-                                27695  POSTALCODE       0.23         OK
-                          Raliegh, NC       STATE      99.23    PARTIAL
-                              Raleigh                missing       FAIL
-x = [-78.6758457, -78.6695716]
-y = [35.7706306, 35.7875615]
-```
 
 Example 1: Fitts-Woolard to D. H. Hill Library
 
@@ -194,9 +200,7 @@ The two graphs, on miles and on minutes, are built as Lecture 4.1, Code block 53
 ```julia
 # Code block 6: the streets around the two buildings, as two graphs
 using Graphs, SimpleWeightedGraphs
-Nc, Lc = cropnetwork(dfN, dfL, x, y; xexpand = 1.5,
-                     yexpand = 1.5)
-Nc, Lc = addconnectors(Nc, Lc, x, y; add_nf_nf = false)
+Nc, Lc = addconnectors(dfN, dfL, x, y; add_nf_nf = false)
 con = isequal.(Lc.SOURCE, "CONNECTOR")
 tmin = [c ? 60d / 20 : 60d / v                   # minutes, a connector
         for (c, d, v) in zip(con, Lc.DIST, Lc.SPEED)]   # 20 mph
@@ -213,13 +217,13 @@ T, PT = shortestpaths(gT, 2)
 
 ```
 
-- 1 The network of the bounding box is cropped to the area around the two buildings before they are connected to it, since addconnectors takes about 25 s on the whole bounding box and about half a second on the crop, with the same answer; xexpand = 1.5 widens the buildings’ box by 1.5 times its width on each side, and yexpand by 1.5 times its height, the smallest crop that still gives the whole bounding box’s answer.
+- 1 addconnectors joins the two buildings to the streets of Code block 2’s box: each becomes a node, the buildings nodes 1 and 2, linked to the street nodes around it by connectors, links whose SOURCE is CONNECTOR.
 - 2 c ? a : b is a when c is true and b otherwise. A connector has no speed of its own (addconnectors leaves its SPEED missing), so it is timed at 20 mph, and a street at its class’s speed; 60d / v is the minutes to go d miles at v mph.
-- 3 As in Lecture 4.1, Code block 45, each link gives an arc in each direction it can be traveled. On OpenStreetMap every street link has DIR 1 (Code block 4), so fw is every link and bw only the connectors, whose DIR is 0 because they run both ways; of two arcs between the same nodes, the quicker is kept (combine = min).
+- 3 As in Lecture 4.1, Code block 45, each link gives an arc in each direction it can be traveled. On OpenStreetMap every street link has DIR 1 (Code block 5), so fw is every link and bw only the connectors, whose DIR is 0 because they run both ways; of two arcs between the same nodes, the quicker is kept (combine = min).
 
 ```text
-nrow(Nc) = 6405
-nrow(Lc) = 11200
+nrow(Nc) = 4728
+nrow(Lc) = 8006
 ```
 
 ```julia
@@ -319,7 +323,7 @@ Out (Fig. 1), the shortest route, 1.906 mi, keeps to the campus streets, which O
 Show the code that draws this map
 
 ```julia
-# Code block 9: the two routes out, on the streets around them
+# Code block 9: the two routes out, on the streets of the box
 using GeoMakie                           # makemap draws with it
 supc  = colorant"#d21f26"                # shortest route
 dcc   = colorant"#1e8a3c"                # fastest route
@@ -331,10 +335,9 @@ street(k) = SimpleWeightedGraph(Lc.SRC[k], Lc.DST[k], Lc.DIST[k];
 lo = street(.!con .& (Lc.FCLASS .>= 6))  # local and minor collector
 hi = street(.!con .& (Lc.FCLASS .<= 5))  # the other classes
 pS, pF = paths[1], paths[2]              # out: shortest, fastest
-zm = unique([pS; pF])                    # zoomed to the two routes
-fig, ax = makemap(Nc.LON[zm], Nc.LAT[zm]; doRoadbkgd = false,
-                  xexpand = 0.5, yexpand = 0.05)
-resize!(fig, 687, 560)
+fig, ax = makemap(bb[1], bb[2]; doRoadbkgd = false,   # the whole box
+                  xexpand = 0, yexpand = 0)
+resize!(fig, 540, 690)
 # Both street layers faint: a muted base under the routes and names
 lines!(ax, x2ln(lo, Nc.LON), x2ln(lo, Nc.LAT); color = (ink, 0.12),
        linewidth = 0.6)
@@ -371,11 +374,10 @@ function namestreet!(ax, N, L, nm, xl, yl; f = 0.5, side = 1, gap = 5)
           offset = gap * side .* (-sin(θ), cos(θ)))
     return nothing
 end
-xl, yl = extrema(Nc.LON[zm]), extrema(Nc.LAT[zm])
-xl = xl .+ (-0.3, 0.3) .* (xl[2] - xl[1])  # the streets beside them too
+xl, yl = bb                              # the streets of the whole box
 for (nm, f, side) in (("Hillsborough Street", 0.35, 1),
-                      ("Western Boulevard", 0.55, 1),
-                      ("Avent Ferry Road", 0.8, -1),
+                      ("Western Boulevard", 0.49, -1),
+                      ("Avent Ferry Road", 0.12, 1),
                       ("Pullen Road", 0.4, -1),
                       ("Varsity Drive", 0.5, -1))
     namestreet!(ax, Nc, Lc, nm, xl, yl; f, side)
@@ -385,7 +387,7 @@ axislegend(ax, [lS, lF], ["Shortest", "Fastest"]; position = :rb,
 fig
 ```
 
-Figure 1: Fitts-Woolard Hall to D. H. Hill Library on the streets of OpenStreetMap: the shortest route (red) and the fastest route (green). Minor collector and local streets are light, the other classes darker. Map data © OpenStreetMap contributors (openstreetmap.org/copyright), as of 2026-10-12.
+Figure 1: Fitts-Woolard Hall to D. H. Hill Library on the streets of Code block 2’s box, from OpenStreetMap: the shortest route (red) and the fastest route (green). Minor collector and local streets are light, the other classes darker. Map data © OpenStreetMap contributors (openstreetmap.org/copyright), as of 2026-10-14.
 
 The Open Source Routing Machine (OSRM), a router that runs on the same OpenStreetMap data, gives a landmark to check the routes against. It answers in meters and seconds, which the call converts at 1,609.344 m to the mile and 60 s to the minute before any number is compared, the Units check of Lecture 1.2. The call is shown and not run, as in Lecture 4.1, Code block 55, and its answer of 2026-10-12 is Table 2:3
 
@@ -891,18 +893,21 @@ Before either procedure ran, the matrix alone set an expectation: each passenger
 
 Greedy assigns car 2 to passenger 2, car 1 to passenger 1 and car 3 to passenger 3, for a total distance of 12; the linear program assigns car 1 to passenger 3, car 2 to passenger 1 and car 3 to passenger 2, for a total of 10
 
-Example 3: Uber on Raleigh’s streets
+Example 3: Unter on Raleigh’s streets
 
-Twelve drivers and ten passengers wanting a ride are spread across the OpenStreetMap streets of Raleigh of Ex. 1. Assign the drivers to the passengers, by the greedy procedure and as Model 1, so that the total driving time to the pickups is least, and determine, by Little’s Law, how many drivers are on the way to a pickup at any time when 20 requests arrive an hour.
+Twelve drivers and ten passengers wanting a ride are at Census block groups within 3 miles of downtown Raleigh. Assign the drivers to the passengers, by the greedy procedure and as Model 1, so that the total driving time to the pickups is least, and determine, by Little’s Law, how many drivers are on the way to a pickup at any time when 20 requests arrive an hour.
 
-Code block 30 below generates random locations for drivers and passengers by drawing without replacement a random set of Census block groups and using the population centroid of each group as its location. The seed and the two counts are set in the code, so a different seed, or more drivers or passengers, gives another instance:
+Code block 30 below generates random locations for drivers and passengers by drawing without replacement a random set of the Census block groups within 3 miles of the State Capitol, downtown, and using the population centroid of each group as its location. The seed and the two counts are set in the code, so a different seed, or more drivers or passengers, gives another instance:
 
 ```julia
 # Code block 30: synthetic driver and passenger creation
 using Random
 nd, np = 12, 10                         # drivers, passengers
-bg = filter(r -> bbox[1] <= r.LON <= bbox[2] &&
-                 bbox[3] <= r.LAT <= bbox[4], uscenblkgrp())
+cap = loc2lonlat(["1 E Edenton St, Raleigh, NC 27601"];
+                 cache_dir = "data")
+c0 = (Float64(cap.LON[1]), Float64(cap.LAT[1]))   # the State Capitol
+bg = filter(r -> dgc(c0, (r.LON, r.LAT)) <= 3,    # block groups within
+            uscenblkgrp())                         # 3 mi of it
 sort!(bg, [:TRFIP, :BGFIP])             # a fixed order for the draw
 Random.seed!(754)                       # change it for another draw
 k = randperm(nrow(bg))[1:nd+np]         # distinct block groups
@@ -920,35 +925,37 @@ prt(U)
 ───────────────────────────────
      driver   D1  -78.65  35.78
      driver   D2  -78.66  35.80
-     driver   D3  -78.62  35.75
-     driver   D4  -78.69  35.77
+     driver   D3  -78.61  35.77
+     driver   D4  -78.67  35.75
      driver   D5  -78.66  35.80
      driver   D6  -78.67  35.80
-     driver   D7  -78.64  35.81
+     driver   D7  -78.60  35.78
      driver   D8  -78.64  35.77
      driver   D9  -78.67  35.78
-     driver  D10  -78.67  35.81
-     driver  D11  -78.66  35.81
-     driver  D12  -78.69  35.75
+     driver  D10  -78.65  35.81
+     driver  D11  -78.65  35.80
+     driver  D12  -78.63  35.74
   passenger   P1  -78.63  35.80
-  passenger   P2  -78.67  35.77
-  passenger   P3  -78.65  35.81
+  passenger   P2  -78.61  35.74
+  passenger   P3  -78.64  35.81
   passenger   P4  -78.69  35.78
-  passenger   P5  -78.70  35.76
-  passenger   P6  -78.61  35.75
-  passenger   P7  -78.64  35.80
-  passenger   P8  -78.70  35.75
+  passenger   P5  -78.61  35.75
+  passenger   P6  -78.59  35.77
+  passenger   P7  -78.63  35.81
+  passenger   P8  -78.68  35.77
   passenger   P9  -78.68  35.78
-  passenger  P10  -78.67  35.75
+  passenger  P10  -78.62  35.75
 ```
 
-The cost of assigning a driver to a passenger is the driving time from the driver to the passenger, read in that direction, since with one-way streets the trip back would differ:
+As in Ex. 1, the points come first and the streets after: Code block 31 puts a box around the 22 points with mapbbox, downloads its streets with osm_roads and keeps those inside it with cropnetwork. The cost of assigning a driver to a passenger is the driving time from the driver to the passenger, read in that direction, since with one-way streets the trip back would differ:
 
 ```julia
-# Code block 31: driving minutes from each driver to each passenger
+# Code block 31: the 22 points' box, its streets, and driving minutes
 drv = findall(==("driver"), U.ROLE)      # rows of U: 12 drivers
 pas = findall(==("passenger"), U.ROLE)   # and 10 passengers
-NU, LU = cropnetwork(dfN, dfL, U.LON, U.LAT; xexpand = 0.1,
+bbU = mapbbox(U.LON, U.LAT; xexpand = 0.1, yexpand = 0.1)  # their box
+NU, LU = osm_roads((bbU[1]..., bbU[2]...); cache_dir = "data")
+NU, LU = cropnetwork(NU, LU, U.LON, U.LAT; xexpand = 0.1,
                      yexpand = 0.1)
 NU, LU = addconnectors(NU, LU, U.LON, U.LAT; add_nf_nf = false)
 cU = isequal.(LU.SOURCE, "CONNECTOR")
@@ -964,19 +971,24 @@ round.(C, digits = 1)
 ```
 
 ```text
+[ Info: Loading cached OSM data: data\osm_w-78.75_e-78.55_s35.7_n35.85_nodes.csv
+
+```
+
+```text
 12×10 Matrix{Float64}:
-  3.3  4.9   3.5  5.1  6.3   6.9   3.2  6.9  4.5   6.3
-  4.6  5.0   3.4  5.3  6.5   9.0   3.2  7.1  4.7   8.3
-  6.8  7.1   9.2  8.7  9.8   2.4   8.4  9.0  8.0   6.1
-  7.9  3.6   7.8  2.3  2.6   9.4   7.9  3.2  0.9   6.3
-  5.6  5.1   3.4  4.9  6.6   9.5   4.4  7.2  4.8   8.4
-  5.6  5.3   3.6  4.1  6.1   9.9   4.2  6.7  4.2   8.7
-  4.5  7.6   2.0  7.6  9.1   9.5   1.1  9.7  7.2   9.0
-  4.6  5.7   6.8  6.3  7.4   4.4   6.0  7.6  5.6   4.7
-  6.0  3.1   5.7  2.8  3.9   7.8   6.0  4.5  2.1   6.4
-  6.3  6.4   3.7  5.0  7.1  10.7   4.9  7.7  5.3   9.7
-  6.9  7.5   2.8  6.1  8.3  11.3   4.3  8.9  6.4  10.8
- 10.2  4.5  10.8  5.3  3.4   8.2  10.8  1.5  4.4   2.4
+ 3.3   7.3  3.1   6.1  6.9  6.4   4.6  4.6  4.1   7.3
+ 4.6   9.4  3.1   6.3  9.0  8.5   4.6  4.8  4.3   9.4
+ 5.8   4.2  7.7   9.0  3.8  2.6   8.0  7.4  6.9   4.2
+ 8.9   7.3  9.7   7.4  6.9  9.4  10.7  7.1  6.7   7.3
+ 5.6   9.9  4.2   5.9  9.5  9.0   5.7  4.9  4.0   9.9
+ 5.6  10.3  4.1   5.1  9.9  9.4   5.6  4.4  3.5  10.3
+ 5.0   6.0  7.6  10.1  5.6  4.4   7.0  8.6  8.1   6.0
+ 4.6   4.8  6.4   7.3  4.4  5.3   7.2  5.7  5.2   4.8
+ 6.0   8.2  5.8   3.8  7.8  7.9   7.3  2.2  1.7   8.2
+ 5.5  10.3  2.0   8.2  9.9  9.4   3.2  7.3  6.7  10.3
+ 4.3   9.2  2.0   7.5  8.8  8.3   3.5  6.6  6.0   9.1
+ 6.7   3.9  8.5   9.1  4.9  6.8   9.4  7.9  7.4   2.8
 ```
 
 The assignment is a snapshot: it assumes that every driver is free at the moment the ten requests are assigned together, the assumption to state whenever its result is read, as the Assumptions check of Lecture 1.2 asks. With more drivers than passengers, two drivers are left without a passenger, which row (a) of Eq. 1 allows. The greedy procedure of Ex. 2(b) and the linear program of Model 1 run unchanged on the 12 × 10 matrix:
@@ -1001,18 +1013,18 @@ prt(DataFrame("Passenger" => U.ID[pas[d]],
 ```
 
 ```text
-round(TC, digits = 2) = 30.41
-round(TCᵒ, digits = 2) = 29.45
+round(TC, digits = 2) = 36.17
+round(TCᵒ, digits = 2) = 35.55
   Passenger  Greedy  Greedy min  LP  LP min
 ───────────────────────────────────────────
-         P4      D9        2.77  D6    4.12
-         P5      D6        6.08  D4    2.55
-         P9      D4        0.89  D9    2.11
+         P4      D5        5.90  D6    5.11
+         P8      D6        4.35  D9    2.21
+         P9      D9        1.71  D5    4.01
 ```
 
 Unter’s 3 × 3 matrix of Ex. 2 was chosen to make greedy look especially bad. On small instances drawn at random, with three cars and three passengers at random points, greedy and the linear program tend to come out much the same, and the difference is rarely as large as Ex. 2’s.
 
-On Raleigh’s streets the same holds (Fig. 4): greedy is 3.3% above the optimum, and the two differ on only 3 of the ten passengers, where greedy’s first choices, each the least time still available, leave later passengers with longer pickups.
+On Raleigh’s streets the same holds (Fig. 4): greedy is 1.7% above the optimum, and the two differ on only 3 of the ten passengers, where greedy’s first choices, each the least time still available, leave later passengers with longer pickups.
 
 What the assignment saves can be put in the units a ride-hailing service manages, drivers. By Little’s Law of Lecture 1.3, Sec. 3, $WIP = TH \times CT$: with requests arriving at a throughput of $TH$ an hour and each pickup taking a cycle time of $CT$, on average, the number of drivers on the way to a pickup at any time, the work in process, is $WIP$. The request rate below is an estimate, 20 an hour, set once so that it can be changed. A ride’s time is taken from the data: the average driving time between two of the 22 drawn points, as if each passenger rode to another of them. The drivers busy, picking up or carrying a passenger, are then $TH$ times the pickup and ride together:
 
@@ -1034,14 +1046,14 @@ prt(DataFrame("Assignment" => ["Greedy", "LP"],
 ```
 
 ```text
-round(ride, digits = 2) = 5.96
+round(ride, digits = 2) = 6.46
   Assignment    CT   WIP  Busy
 ──────────────────────────────
-      Greedy  3.04  1.01  3.00
-          LP  2.95  0.98  2.97
+      Greedy  3.62  1.21  3.36
+          LP  3.55  1.18  3.34
 ```
 
-At 20 requests an hour, about 1.0 driver is on the way to a pickup at any time, and the linear program’s shorter pickups free only 0.03 of a driver. The rides take more of the fleet’s time than the pickups, 6.0 min against 2.9: with them, about 3.0 of the 12 drivers are busy whichever assignment is used, so the fleet is sized by the rides, and a better assignment matters more as requests rise and pickups lengthen.
+At 20 requests an hour, about 1.2 driver is on the way to a pickup at any time, and the linear program’s shorter pickups free only 0.02 of a driver. The rides take more of the fleet’s time than the pickups, 6.5 min against 3.6: with them, about 3.4 of the 12 drivers are busy whichever assignment is used, so the fleet is sized by the rides, and a better assignment matters more as requests rise and pickups lengthen.
 
 Show the code that draws this map
 
@@ -1055,10 +1067,9 @@ hi = streetU(.!cU .& (LU.FCLASS .<= 5))
 route(i, j) = tracepath(PU[drv[i]], drv[i], pas[j])  # driver i to j
 rts = [[route(car(Xᵒ, j), j) for j in 1:length(pas)]; # LP, then
        [route(car(X, j), j) for j in d]]              # greedy's
-z = unique(vcat(rts...))                   # zoomed to every route drawn
-fig, ax = makemap(NU.LON[z], NU.LAT[z]; doRoadbkgd = false,
-                  xexpand = 0.03, yexpand = 0.03)
-resize!(fig, 687, 620)
+fig, ax = makemap(bbU[1], bbU[2]; doRoadbkgd = false,  # the whole box
+                  xexpand = 0, yexpand = 0)
+resize!(fig, 687, 640)
 lines!(ax, x2ln(lo, NU.LON), x2ln(lo, NU.LAT); color = (ink, 0.12),
        linewidth = 0.5)
 lines!(ax, x2ln(hi, NU.LON), x2ln(hi, NU.LAT); color = (ink, 0.3),
@@ -1071,33 +1082,29 @@ for p in rts[np+1:end]                      # greedy's, where they differ
     lines!(ax, NU.LON[p], NU.LAT[p]; color = (orc, 0.9), linewidth = 2.5,
            linestyle = :dash)
 end
-xl, yl = extrema(NU.LON[z]), extrema(NU.LAT[z])
-for (nm, f, side) in (("Hillsborough Street", 0.8, -1),
-                      ("Glenwood Avenue", 0.45, 1),
+xl, yl = bbU                                # the streets of the whole box
+for (nm, f, side) in (("Hillsborough Street", 0.72, -1),
                       ("Wade Avenue", 0.5, 1),
                       ("Western Boulevard", 0.85, -1))
     namestreet!(ax, NU, LU, nm, xl, yl; f, side)   # Code block 9's
 end
 # Two places: NC State, below its two buildings of Ex. 1, clear of the
-# routes, and downtown, at the State Capitol (1 E Edenton St, as
-# loc2lonlat finds it)
-text!(ax, [mean(x), -78.6391], [mean(y), 35.7804];
+# routes, and downtown, at the State Capitol of Code block 30
+text!(ax, [mean(x), c0[1]], [mean(y), c0[2]];
       text = ["NC State", "Downtown"], fontsize = 14, font = :bold,
       color = (ink, 0.6), align = (:center, :center),
-      offset = [(-20, -50), (0, 0)])
+      offset = [(-30, -95), (0, 0)])
 sD = scatter!(ax, U.LON[drv], U.LAT[drv]; marker = :rect, color = bluec,
               markersize = 13, strokecolor = :white, strokewidth = 1)
 sP = scatter!(ax, U.LON[pas], U.LAT[pas]; color = supc, markersize = 13,
               strokecolor = :white, strokewidth = 1)
 # Each ID above right of its point, unless a route leaves that way
-pl = Dict("D1" => ((:right, :bottom), (-6, 4)),
-          "D3" => ((:right, :center), (-9, 0)),
-          "P2" => ((:right, :center), (-9, 0)),
-          "P4" => ((:right, :center), (-9, 0)),
-          "P5" => ((:left, :top), (6, -4)),
-          "D4" => ((:center, :bottom), (0, 9)),
-          "P8" => ((:center, :bottom), (0, 9)),
-          "P9" => ((:center, :bottom), (0, 9)))
+pl = Dict("D1" => ((:right, :center), (-9, 0)),
+          "D3" => ((:right, :top), (-6, -4)),
+          "D10" => ((:right, :bottom), (-6, 4)),
+          "D11" => ((:right, :bottom), (-6, 4)),
+          "P3" => ((:right, :bottom), (-6, 4)),
+          "P9" => ((:right, :top), (-6, -4)))
 ap = [get(pl, id, ((:left, :bottom), (6, 4))) for id in U.ID]
 text!(ax, U.LON, U.LAT; text = U.ID, fontsize = 11, color = ink,
       align = first.(ap), offset = last.(ap))
@@ -1108,9 +1115,9 @@ axislegend(ax, [sD, sP, lL, lG], ["Driver", "Passenger", "LP",
 fig
 ```
 
-Figure 4: Twelve drivers (blue squares) and ten passengers (red circles) on Raleigh’s streets, and the route of each driver the linear program assigns to a passenger (green). The assignments greedy makes differently are dashed (orange). Map data © OpenStreetMap contributors (openstreetmap.org/copyright), as of 2026-10-12.
+Figure 4: Twelve drivers (blue squares) and ten passengers (red circles) on the streets of Code block 31’s box, and the route of each driver the linear program assigns to a passenger (green). The assignments greedy makes differently are dashed (orange). Map data © OpenStreetMap contributors (openstreetmap.org/copyright), as of 2026-10-14.
 
-The linear program’s pickups total 29.5 min against greedy’s 30.4; at 20 requests an hour, about 1.0 driver is on the way to a pickup at any time
+The linear program’s pickups total 35.5 min against greedy’s 36.2; at 20 requests an hour, about 1.2 driver is on the way to a pickup at any time
 
 ## 3. Transportation problem
 
@@ -1211,7 +1218,7 @@ cst = [8 6 10 9; 9 12 13 7; 14 9 16 5]  # the tableau's costs per unit
 at = [0.12 0.12 0.15 0.12; 0.12 0.12 0.15 0.12; 0.21 0.15 0.12 0.12]
 sd = [1 1 1 -1; 1 -1 -1 -1; -1 -1 -1 -1]
 
-fig = Figure(size = (440, 366))
+fig = Figure(size = (440, 390))
 ax = Axis(fig[1, 1]; aspect = DataAspect())
 hidedecorations!(ax); hidespines!(ax)
 # Every arc, outline to outline, and its cost
@@ -1234,11 +1241,14 @@ for (k, (x, y)) in enumerate([XYs; XYd])  # the nodes, over the arcs
     text!(ax, x + dx, y; text = string(amt), color = c, fontsize = 14,
           align = (:center, :center))
 end
-xlims!(ax, -0.8, 3.2); ylims!(ax, -0.4, 2.8)
+# The supply and the demand columns, titled
+text!(ax, [-0.45, 2.85], [2.55, 2.75]; text = ["Supply", "Demand"],
+      color = [supc, demc], fontsize = 13, align = (:center, :bottom))
+xlims!(ax, -0.9, 3.4); ylims!(ax, -0.4, 3.1)
 fig
 ```
 
-Figure 5: The transportation network of Ex. 4: each supply node (red) is joined to every demand node (green), its supply or demand beside it, and each arc is labeled with its cost per unit, near its supply node.
+Figure 5: The transportation network of Ex. 4: each supply node (red) is joined to every demand node (green), its supply or demand beside it under the column’s title, and each arc is labeled with its cost per unit, near its supply node.
 
 Table 3: Ex. 4’s tableau: the cost per unit from each supply node (row) to each demand node (column), with each node’s supply and demand.
 
@@ -1720,12 +1730,19 @@ Show the code that draws this figure
 # Code block 50: drawing a network with its net supplies
 # Nodes at XY; arc k from I[k] to J[k] labeled lab[k] in size ls, at
 # fraction at[k] along it, on side side[k], the arc shifted sideways by
-# off[k] (for parallel arcs); net supply s[i] beside node i, away from
-# its arcs
+# off[k] (for parallel arcs) and drawn two-way if two[k]; net supply
+# s[i] beside node i, away from its arcs or at angle dirs[i], with its
+# role above it if roles (or the name roles[i]), and a zero shown if
+# showzero; notes, k => text, on the other side of arc k from its label;
+# and a legend at (x, y) reading an arc's label: given over default
 function drawnet(XY, I, J, lab, s; off = zeros(length(I)), r = 0.17,
                  w = 380, h = 260, lim = nothing,
                  at = fill(0.5, length(I)),
-                 side = [o >= 0 ? 1 : -1 for o in off], ls = 13)
+                 side = [o >= 0 ? 1 : -1 for o in off], ls = 13,
+                 roles = false, showzero = roles != false,
+                 two = falses(length(I)), rotate = false,
+                 notes = Dict{Int,String}(), legend = nothing,
+                 dirs = nothing)
     fig = Figure(size = (w, h))
     ax = Axis(fig[1, 1]; aspect = DataAspect())
     hidedecorations!(ax); hidespines!(ax)
@@ -1738,9 +1755,24 @@ function drawnet(XY, I, J, lab, s; off = zeros(length(I)), r = 0.17,
         arrows2d!(ax, [t[1]], [t[2]], [hd[1] - t[1]], [hd[2] - t[2]];
                   color = ink, shaftwidth = 1.3, tipwidth = 8,
                   tiplength = 8)
+        if two[k]                        # two-way: a head at each end
+            tl = p .+ (r + 0.015) .* u .+ off[k] .* nrm
+            arrows2d!(ax, [hd[1]], [hd[2]], [tl[1] - hd[1]],
+                      [tl[2] - hd[2]]; color = ink, shaftwidth = 1.3,
+                      tipwidth = 8, tiplength = 8)
+        end
+        θ = atan(u[2], u[1])             # the arc's angle, kept readable
+        θ < -π / 2 + 0.01 && (θ += π)
+        θ > π / 2 + 0.01 && (θ -= π)
         m = t .+ at[k] .* (hd .- t) .+ 0.01ls * side[k] .* nrm
         text!(ax, m[1], m[2]; text = lab[k], color = ink, fontsize = ls,
-              align = (:center, :center))
+              rotation = rotate ? θ : 0.0, align = (:center, :center))
+        if haskey(notes, k)              # a note on the arc's other side
+            n = t .+ at[k] .* (hd .- t) .- 0.01ls * side[k] .* nrm
+            text!(ax, n[1], n[2]; text = notes[k], color = ink,
+                  fontsize = ls - 1, rotation = θ,
+                  align = (:center, :center))
+        end
     end
     for (i, (x, y)) in enumerate(XY)          # the nodes, over the arcs
         c = s[i] > 0 ? supc : s[i] < 0 ? demc : ink
@@ -1748,13 +1780,34 @@ function drawnet(XY, I, J, lab, s; off = zeros(length(I)), r = 0.17,
               strokecolor = c, strokewidth = 1.8)
         text!(ax, x, y; text = string(i), color = c, fontsize = 14,
               align = (:center, :center))
-        s[i] == 0 && continue
+        s[i] == 0 && !showzero && continue
         a = sum(collect(XY[j] .- (x, y)) ./ hypot((XY[j] .- (x, y))...)
                 for j in [J[I .== i]; I[J .== i]])  # toward its arcs
-        a = a ./ hypot(a...)
-        text!(ax, x - (r + 0.16) * a[1], y - (r + 0.16) * a[2];
-              text = replace(string(s[i]), "-" => "−"),  # minus sign
-              color = c, fontsize = 13, align = (:center, :center))
+        a = dirs === nothing ? a ./ hypot(a...) :   # or away from dirs[i]
+            (-cosd(dirs[i]), -sind(dirs[i]))
+        txt = replace(string(s[i]), "-" => "−")      # minus sign
+        roles == true && (txt = (s[i] > 0 ? "Supply" : s[i] < 0 ?
+                                 "Demand" : "Transshipment") * "\n" * txt)
+        roles isa AbstractVector && (txt = roles[i] * "\n" * txt)
+        d = r + (roles != false ? 0.27 : 0.16)
+        text!(ax, x - d * a[1], y - d * a[2]; text = txt, color = c,
+              fontsize = 13, align = (:center, :center))
+    end
+    if legend !== nothing                # how an arc's label reads
+        x0, y0 = legend
+        for (x, t) in ((x0, "i"), (x0 + 0.8, "j"))
+            poly!(ax, Circle(Point2f(x, y0), 0.12); color = :white,
+                  strokecolor = ink, strokewidth = 1.2)
+            text!(ax, x, y0; text = t, color = ink, fontsize = 12,
+                  font = :italic, align = (:center, :center))
+        end
+        arrows2d!(ax, [x0 + 0.12], [y0], [0.8 - 0.255], [0.0];
+                  color = ink, shaftwidth = 1.2, tipwidth = 7,
+                  tiplength = 7)
+        text!(ax, x0 + 0.4, y0 + 0.08; text = "c, u, l", color = ink,
+              fontsize = 12, align = (:center, :bottom))
+        text!(ax, x0 + 0.4, y0 - 0.08; text = "c, ∞, 0",
+              color = (ink, 0.6), fontsize = 12, align = (:center, :top))
     end
     lim === nothing || (xlims!(ax, lim[1]...); ylims!(ax, lim[2]...))
     return fig
@@ -1762,11 +1815,12 @@ end
 
 XY5 = [(0.0, 1.0), (1.2, 1.8), (1.2, 0.2), (2.4, 1.8), (2.4, 0.2)]
 drawnet(XY5, [1, 1, 2, 2, 3, 4], [2, 3, 4, 5, 5, 5],
-        string.([2, 3, 4, 5, 1, 3]), [6, 2, 0, 0, -8];
-        lim = ((-0.4, 2.8), (-0.2, 2.3)))
+        string.([2, 3, 4, 5, 1, 3]), [6, 2, 0, 0, -8]; roles = true,
+        notes = Dict(1 => "arc cost"), dirs = [180, 90, 270, 90, 270],
+        w = 440, h = 320, lim = ((-0.8, 3.0), (-0.65, 2.55)))
 ```
 
-Figure 8: A five-node network: nodes 1 and 2 supply 6 and 2 units (positive net supply), node 5 demands 8 (negative), and nodes 3 and 4 are transshipment nodes (zero); each arc is labeled with its cost per unit.
+Figure 8: A five-node network, each node labeled with its role and its net supply: nodes 1 and 2 supply 6 and 2 units (positive net supply), node 5 demands 8 (negative), and nodes 3 and 4 are transshipment nodes (zero); each arc is labeled with its cost per unit of flow.
 
 minimize: total cost of the flow on the arcs of a network
 
@@ -1805,7 +1859,7 @@ where
 - $c_k$ = cost per unit of flow on arc $k$ (cost/unit)
 - $a_{ik}$ = $\begin{cases} 1, & \text{if arc } k \text{ starts at node } i \\ -1, & \text{if arc } k \text{ ends at node } i \\ 0, & \text{otherwise} \end{cases}$
 - $s_i$ = net supply of node $i$ (units)
-= $\begin{cases} \text{supply of node } i \;(> 0), & \text{if node } i \text{ is a supply node} \\ -\,\text{demand of node } i \;(< 0), & \text{if node } i \text{ is a demand node} \\ 0, & \text{if node } i \text{ is a transshipment node} \end{cases}$
+= $\begin{cases} > 0, & \text{supply node } i \\ = 0, & \text{transshipment node } i \\ < 0, & \text{demand node } i \end{cases}$
 - $l_k$ = lower bound on the flow on arc $k$, by default $0$ (units)
 - $u_k$ = upper bound on the flow on arc $k$, by default $\infty$ (units)
 - $V$ = nodes
@@ -1894,7 +1948,7 @@ Example 6(a): Ex. 4’s transportation problem
 
 Solve Ex. 4’s transportation problem as a minimum cost network flow, and compare the total cost with Ex. 4(b)’s.
 
-In Ex. 4, the LP model was created directly from the interlevel matrix C, the matrix of arc costs from one level of nodes to the next, a row for each supply node and a column for each demand node. Since the transportation problem is a special case of the MCNF problem, C can be converted into an incidence matrix, A, and then solved as an MCNF instance.
+In Ex. 4 (Fig. 5), the LP model was created directly from the interlevel matrix C, the matrix of arc costs from one level of nodes to the next, a row for each supply node and a column for each demand node. Since the transportation problem is a special case of the MCNF problem, C can be converted into an incidence matrix, A, and then solved as an MCNF instance.
 
 ```julia
 # Code block 52: Ex. 4's tableau as an arc list, solved as a network flow
@@ -1962,8 +2016,8 @@ Show the code that draws this figure
 # its arc where Lecture 4.1 puts the arc's length
 XY6 = [(0.0, 0.0), (1.0, 0.58), (1.0, -0.58), (2.0, 0.58),
        (2.0, -0.58), (3.0, 0.0)]
-fig = drawnet(XY6, i, j, string.(c), s; w = 440, h = 200,
-              lim = ((-0.6, 3.6), (-0.8, 0.8)),
+fig = drawnet(XY6, i, j, string.(c), s; showzero = true, w = 440,
+              h = 230, lim = ((-0.6, 3.6), (-0.95, 0.95)),
               side = [1, -1, -1, 1, 1, 1, -1, 1, -1])
 # The lower bound on arc (2,3), on the side of it clear of its cost
 text!(content(fig[1, 1]), 1.07, 0.24; text = L"l = 1", color = ink,
@@ -1971,7 +2025,7 @@ text!(content(fig[1, 1]), 1.07, 0.24; text = L"l = 1", color = ink,
 fig
 ```
 
-Figure 9: Lecture 4.1’s six-node network, its arcs directed, as a minimum cost network flow. Node 1 (red) has a net supply of 1 and node 6 (green) a net supply of $-1$, so one unit flows from node 1 to node 6, and the other four nodes (black) are transshipment nodes, of zero net supply. Each arc is labeled with its cost per unit, the length Lecture 4.1 gives it, and $l = 1$ beside arc (2,3) is the lower bound on its flow that forces the unit through that arc.
+Figure 9: Lecture 4.1’s six-node network, its arcs directed, as a minimum cost network flow, each node labeled with its net supply. Node 1 (red) has a net supply of 1 and node 6 (green) a net supply of $-1$, so one unit flows from node 1 to node 6, and the other four nodes (black) are transshipment nodes, of zero net supply. Each arc is labeled with its cost per unit, the length Lecture 4.1 gives it, and $l = 1$ beside arc (2,3) is the lower bound on its flow, which forces the unit through it.
 
 ```julia
 # Code block 55: the shortest path as a minimum cost network flow
@@ -2126,8 +2180,26 @@ prt(df)
 6  4  5  3  Inf  1
 ```
 
+Fig. 10 draws the network with these bounds, each arc labeled with its cost and then with any bound that differs from its default:
+
+Show the code that draws this figure
+
 ```julia
-# Code block 61: the network without its bounds, and with them
+# Code block 61: the network with its bounds, drawn with Code block 50
+# An arc's label: its cost, then its upper and lower bound where either
+# differs from its default, an upper bound of Inf written as ∞
+arclab(c, u, l) = l > 0 ? "$c, $(isinf(u) ? "∞" : Int(u)), $l" :
+                  isinf(u) ? "$c" : "$c, $(Int(u))"
+drawnet(XY5, df.i, df.j, arclab.(df.c, df.u, df.l), [6, 2, 0, 0, -8];
+        showzero = true, rotate = true, dirs = [180, 90, 270, 90, 270],
+        legend = (3.0, 1.0), w = 520, h = 300,
+        lim = ((-0.6, 4.1), (-0.45, 2.3)))
+```
+
+Figure 10: The network of Fig. 8 with the bounds of Ex. 6(c), each node labeled with its net supply. Each arc is labeled $c, u, l$: its cost, its upper bound and its lower bound, a default left off the end, as the key at the right reads. Arc (4,5)’s lower bound of 1 is the only lower bound above zero, and arcs (2,4), (2,5) and (3,5) carry the only upper bounds below infinity.
+
+```julia
+# Code block 62: the network without its bounds, and with them
 s = [6, 2, 0, 0, -8]
 A = list2incid(df.i, df.j, length(s))
 TCᵒwoBnds, xᵒwoBnds = mcnf(A, df.c, s)
@@ -2161,8 +2233,28 @@ In the multigraph of Fig. 4 in Lecture 4.1, nodes 1, 2 and 3 supply 30, 10 and 2
 
 Of the two arcs between nodes 1 and 4, the 18, at the higher cost, might represent a more costly mode of transport, and the 6 a less costly one with limited capacity, so that only so much flow can use the cheaper mode, and beyond that quantity the higher-cost arc is needed. Representing that takes upper and lower bounds on the arcs. So there are contexts where a multigraph is wanted, and when it is, the arc list has to be used, since the adjacency matrix cannot represent it. That is one of the reasons for having several representations of a network: some cannot represent everything, and in other cases one is simply more convenient than another, as the adjacency matrix often is, even though it cannot represent everything.
 
+Fig. 11 draws the multigraph of Lecture 4.1 with the net supplies and the capacity of this example:
+
+Show the code that draws this figure
+
 ```julia
-# Code block 62: Lecture 4.1's multigraph, from its arc list, as a flow
+# Code block 63: Ex. 6(d)'s multigraph, drawn with Code block 50
+# The nodes where Lecture 4.1 draws them; each two-way pair of arcs 1-4
+# drawn as one arc with a head at each end
+XYm = [(0.0, 2.0), (0.0, 1.0), (0.0, 0.0), (2.4, 1.6), (2.4, 0.4)]
+drawnet(XYm, [1, 1, 1, 2, 2, 3, 3], [4, 4, 5, 4, 5, 5, 5],
+        ["6, 20", "18", "10", "0", "13", "16", "3"],
+        [30, 10, 20, -40, -20]; off = [0.07, -0.07, 0, 0, 0, 0.07, -0.07],
+        two = [true, true, false, false, false, false, false],
+        at = [0.5, 0.5, 0.2, 0.3, 0.3, 0.5, 0.5],
+        side = [1, -1, -1, 1, -1, 1, -1],
+        w = 400, h = 330, lim = ((-0.7, 3.1), (-0.4, 2.4)))
+```
+
+Figure 11: Lecture 4.1’s multigraph as a minimum cost network flow, each node labeled with its net supply: nodes 1, 2 and 3 (red) supply 30, 10 and 20 units, and nodes 4 and 5 (green) demand 40 and 20. Each arc is labeled with its cost per unit. The two two-way arcs between nodes 1 and 4 are the two modes, and the cheaper’s label, 6, 20, gives its cost per unit and the 20 units it can carry from node 1 to node 4.
+
+```julia
+# Code block 64: Lecture 4.1's multigraph, from its arc list, as a flow
 i = [1, 4, 1, 4, 1, 2, 2, 3, 3]     # two-way arcs 1-4 listed both ways
 j = [4, 1, 4, 1, 5, 4, 5, 5, 5]
 c = [6, 6, 18, 18, 10, 0, 13, 16, 3]
@@ -2197,81 +2289,180 @@ The arc list is the one Lecture 4.1 draws as Fig. 4 in Lecture 4.1, as it stands
 
 With the cheaper mode capacitated at 20 units, the least total cost is 360, against 240 uncapacitated
 
-Example 7: Three-level network
+Example 7: Earthquake emergency response
 
-Two plants, which can supply 65 and 80 units, ship to the three supply nodes of Ex. 4, now DCs that only pass flow through, at costs per unit of 4, 6 and 5 from the first plant to the three DCs and 3, 8 and 2 from the second; the DCs ship to Ex. 4’s demand nodes at its costs. Determine the least-cost flows through the network, and compare the result with the transportation problem the network reduces to.
+Determine the least-cost flows, as Model 3, that deliver the 700 pallets the Field Hospital needs through the relief network of Table 6; if the network as it stands cannot deliver them, determine which arc’s capacity to raise, and the least total cost with it.
 
-For a problem solved again and again as a transportation problem, the transportation representation, a cost matrix with its supplies and demands, is a lot easier to work with than building a network flow by hand. The network flow earns its keep when a third level is added in the middle. The cost matrix of Ex. 4 becomes the arcs from the second level to the third, and new arcs run from a first level to the second: where the original problem was 3 to 4, the network is now 2 to 3 and then 3 to 4. The two new nodes of the first level supply 65 and 80, the three original supply nodes, now the middle level, have a net supply of 0 and are transshipment nodes, and the original demands are negative net supplies.
+A major earthquake has struck a region, and emergency medical supplies must be transported to a central field hospital. Two warehouses have supplies, but the routes are compromised, with varying costs, travel risks, and transportation capacities. The goal is to meet the hospital’s demand at the lowest possible cost. The relief effort’s logistics network is composed of six key locations, as shown in Table 5. The supply originates from two source nodes: the Regional Warehouse (RW), which holds 500 pallets of general supplies, and a Specialty Pharmacy (SP) with 200 pallets of critical medicines. From these points, supplies travel through three transshipment nodes: a Local Airfield (LA) for consolidation, a Central Distribution Hub (CH) for sorting, and a Staging Area (SA) for final preparation. The ultimate goal is to deliver the combined 700 pallets to the single demand node, the Field Hospital (FH), to make it fully operational.
+
+Table 5: The relief network’s nodes, each with its net supply: positive at a supply node, zero at a transshipment node and negative at the demand node.
+
+| Node | Name | Type | Net supply |
+|---|---|---|---|
+| 1 | Regional Warehouse (RW) | Supply | 500 |
+| 2 | Specialty Pharmacy (SP) | Supply | 200 |
+| 3 | Local Airfield (LA) | Transshipment | 0 |
+| 4 | Central Distribution Hub (CH) | Transshipment | 0 |
+| 5 | Staging Area (SA) | Transshipment | 0 |
+| 6 | Field Hospital (FH) | Demand | $-700$ |
+
+Table 6: The relief network’s arcs, each with its cost per pallet and the least and the most it can carry.
+
+| From Node | To Node | Cost (\$/pallet) | Lower Bound (pallets) | Upper Bound (pallets) | Notes |
+|---|---|---|---|---|---|
+| 1 (RW) | 3 (LA) | 4 | 0 | 400 | Main road, limited trucks |
+| 1 (RW) | 4 (CH) | 6 | 0 | 300 | Secondary road, some damage |
+| 2 (SP) | 4 (CH) | 3 | 0 | 200 | Direct, efficient route |
+| 3 (LA) | 5 (SA) | 10 | 0 | 150 | Expensive helicopter transport |
+| 4 (CH) | 5 (SA) | 5 | 100 | 600 | Main convoy, needs scarce escort detail |
+| 5 (SA) | 6 (FH) | 2 | 0 | 800 | Secure final-mile shuttle |
+
+The arcs are entered as Ex. 6(c)’s were, an arc list in a string, the empty lower bounds read as missing and set to zero, and the net supplies are those of Table 5:
 
 ```julia
-# Code block 63: two plants, three DCs and four customers, as a flow
-C12 = [4 6 5; 3 8 2]                     # plant to DC
-C23 = [8 6 10 9; 9 12 13 7; 14 9 16 5]   # DC to customer, Ex. 4's C
-p, m, n = size(C12, 1), size(C12, 2), size(C23, 2)
-i = [repeat(1:p, m); p .+ repeat(1:m, n)]
-j = [p .+ repeat(1:m, inner = p); p + m .+ repeat(1:n, inner = m)]
-c = [vec(C12); vec(C23)]
-s = [65, 80, 0, 0, 0, -45, -20, -30, -30]
-A = list2incid(i, j, p + m + n)
-TCᵒ, xᵒ = mcnf(A, c, s)
-@show TCᵒ
-F12 = reshape(xᵒ[1:p*m], p, m)           # plant to DC
-F23 = reshape(xᵒ[p*m+1:end], m, n)       # DC to customer
-prt(F12; rows = string.(1:p), cols = string.(p+1:p+m),
-    row_title = "Plant")
-prt(F23; rows = string.(p+1:p+m), cols = string.(p+m+1:p+m+n),
-    row_title = "DC")
+# Code block 65: the relief network's arcs, with their bounds, as a flow
+arclist_str = """
+i,j,c,u,l
+1,3,4,400,
+1,4,6,300,
+2,4,3,200,
+3,5,10,150,
+4,5,5,600,100
+5,6,2,800,
+"""
+df = CSV.read(IOBuffer(arclist_str), DataFrame)
+df.l = coalesce.(df.l, 0)
+s = [500, 200, 0, 0, 0, -700]
+A = list2incid(df.i, df.j, length(s))
+prt(df)
 ```
 
 ```text
-TCᵒ = 1320.0
-Plant   3  4   5
-────────────────
-    1  45  0   0
-    2  50  0  30
-DC   6   7   8   9
-──────────────────
- 3  45  20  30   0
- 4   0   0   0   0
- 5   0   0   0  30
+   i  j   c    u    l
+─────────────────────
+1  1  3   4  400    0
+2  1  4   6  300    0
+3  2  4   3  200    0
+4  3  5  10  150    0
+5  4  5   5  600  100
+6  5  6   2  800    0
 ```
+
+Since this problem has restrictive upper bounds, there is a significant probability that it may not be feasible to satisfy the required demand. As a result, the call to mcnf, the implementation of Model 3, is wrapped so that its error, which names the solver’s status, is printed rather than stopping the script.
+
+```julia
+# Code block 66: the network as it stands
+try
+    mcnf(A, df.c, s; u = df.u, l = df.l)
+catch e
+    showerror(stdout, e)
+end
+```
+
+```text
+INFEASIBLE
+```
+
+Since the model is infeasible, likely due to the upper bounds on flows being too restrictive, one way to look at this is to examine the network structure, where the label on each arc gives its cost and its bounds (Fig. 12).
 
 Show the code that draws this figure
 
 ```julia
-# Code block 64: the three-level network, drawn with Code block 50
-XY3 = [(0.0, 1.8), (0.0, 0.6), (1.3, 2.4), (1.3, 1.2), (1.3, 0.0),
-       (2.6, 2.7), (2.6, 1.8), (2.6, 0.9), (2.6, 0.0)]
-# Each cost near its arc's tail, on the side clear of the other arcs
-drawnet(XY3, i, j, string.(c), s; w = 520, h = 410, ls = 10,
-        lim = ((-0.5, 3.1), (-0.4, 3.1)), at = fill(0.16, length(i)),
-        side = [fill(1, 10); -1; -1; 1; fill(-1, 5)])
+# Code block 67: the relief network, drawn with Code block 50
+XYq = [(0.0, 1.9), (0.0, 0.3), (1.4, 2.2), (1.4, 0.6), (2.8, 1.3),
+       (4.2, 1.3)]
+drawnet(XYq, df.i, df.j, arclab.(df.c, df.u, df.l), s;
+        roles = ["RW", "SP", "LA", "CH", "SA", "FH"], rotate = true,
+        dirs = [180, 180, 90, 270, 270, 0], side = [1, -1, -1, 1, -1, 1],
+        legend = (3.5, 2.4), w = 600, h = 330,
+        lim = ((-0.8, 5.0), (-0.4, 2.8)))
 ```
 
-Figure 10: The three-level network of Ex. 7: two plants (red) ship to three DCs, transshipment nodes of zero net supply, which ship to the four demand nodes (green) of Ex. 4; each arc is labeled with its cost per unit, near the node it leaves.
+Figure 12: The relief network of Ex. 7, each node labeled with its name and its net supply: the Regional Warehouse (RW) and the Specialty Pharmacy (SP) supply 500 and 200 pallets, the Field Hospital (FH) needs 700, and the airfield (LA), the hub (CH) and the staging area (SA) are transshipment nodes. Each arc is labeled $c, u, l$: its cost per pallet, its upper bound and its lower bound, a default left off the end, as the key at the top right reads.
 
-Because the DCs of Fig. 10 have no capacity, each unit a plant sends to a customer simply goes through whichever DC makes the two legs cheapest, and the network reduces to a transportation problem from the plants to the customers at those cheapest two-leg costs:
+In looking at the graph, at most 500 units can flow into Node 4 and then on to Node 5. Since only 150 units can travel from 3 to 5, the total of 650 is less than the required demand of 700 at Node 6. One way to fix this is to “somehow try to” increase the capacity between 3 and 5 to 200.
 
 ```julia
-# Code block 65: the cheapest two-leg costs, as a transportation problem
-C13 = [minimum(C12[a, k] + C23[k, b] for k in 1:m) for a in 1:p, b in 1:n]
-TC13, X13 = trans(C13, s[1:p], -s[p+m+1:end])
-@show TC13; C13
+# Code block 68: the helicopter's capacity, arc (3,5), raised to 200
+df2 = deepcopy(df) # deepcopy used so that `df2` changes don't change `df`
+df2.u[4] = 200
+prt(df2)
 ```
 
 ```text
-TC13 = 1320.0
+   i  j   c    u    l
+─────────────────────
+1  1  3   4  400    0
+2  1  4   6  300    0
+3  2  4   3  200    0
+4  3  5  10  200    0
+5  4  5   5  600  100
+6  5  6   2  800    0
+```
+
+```julia
+# Code block 69: the network with it
+TC2ᵒ, x2ᵒ = mcnf(A, df2.c, s; u = df2.u, l = df2.l)
+@show TC2ᵒ; x2ᵒ
 ```
 
 ```text
-2×4 Matrix{Int64}:
- 12  10  14  10
- 11   9  13   7
+TC2ᵒ = 9100.0
 ```
 
-The network flow and the transportation problem on the two-leg costs return totals of 1,320 and 1,320, the same: two formulations, one answer, the Triangulate check of Lecture 1.2. The reduction holds only because the DCs are uncapacitated. With a capacity at a DC, the cheapest DC for one customer could fill up, and the reduction would no longer hold.
+```text
+6-element Vector{Float64}:
+ 200.0
+ 300.0
+ 200.0
+ 200.0
+ 500.0
+ 700.0
+```
 
-The plants supply the customers at a least total cost of 1,320, the same as the transportation problem on the cheapest two-leg costs
+Feasible now. But this was achieved by increasing the expensive helicopter capacity. Another possibility is to “somehow try to” increase the capacity between 1 and 4 to 350. At a cost of \$6 per unit, increasing this by 50 is cheaper than increasing the expensive \$10 per unit helicopter capacity by 50.
+
+```julia
+# Code block 70: road (1,4)'s capacity raised to 350 instead
+df3 = deepcopy(df)
+df3.u[2] = 350
+prt(df3)
+```
+
+```text
+   i  j   c    u    l
+─────────────────────
+1  1  3   4  400    0
+2  1  4   6  350    0
+3  2  4   3  200    0
+4  3  5  10  150    0
+5  4  5   5  600  100
+6  5  6   2  800    0
+```
+
+```julia
+# Code block 71: the network with it
+TC3ᵒ, x3ᵒ = mcnf(A, df3.c, s; u = df3.u, l = df3.l)
+@show TC3ᵒ; x3ᵒ
+```
+
+```text
+TC3ᵒ = 8950.0
+```
+
+```text
+6-element Vector{Float64}:
+ 150.0
+ 350.0
+ 200.0
+ 150.0
+ 550.0
+ 700.0
+```
+
+Raising road (1,4) instead delivers all 700 pallets for 8,950, 150 less than raising the helicopter’s: the 50 pallets the path 1 → 3 → 5 carried at 4 + 10 = 14 a pallet go by road, 1 → 4 → 5, at 6 + 5 = 11, a saving of 3 × 50 = 150, the Triangulate check of Lecture 1.2. The count before Code block 68, at most 650 pallets into node 5 against the 700 needed, is the Bounds check: it explains the infeasibility without the linear program.
+
+As the network stands, no flow delivers the 700 pallets; raising road (1,4)’s capacity to 350 delivers them at a least total cost of 8,950, against 9,100 by raising the helicopter’s to 200
 
 ## Endnotes
 
