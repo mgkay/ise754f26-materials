@@ -8,7 +8,9 @@ In transshipment, inventory is stored time: the gap between when freight arrives
 
 No new Julia packages used.
 
-No new Logjam functions used.
+New Logjam functions used
+
+- loc2lonlat: Geocode a single location string. Accepts addresses, city names, postal codes.
 
 Companion script
 
