@@ -160,7 +160,7 @@ drawpinet([200, 800], [50 0 50; 60 0 0], [5, 25], [20, 10, 15], [0, 0],
           [35, 0])
 ```
 
-Figure 1: The time-expanded network of a single product made in two stages over three monthly periods, with the data of Ex. 1. Production enters each stage’s node at a cost of $c_i^p$ per ton, up to the stage’s capacity $u_{ij}$ in the period; inventory $y_{ij}$ is carried from period $j-1$ to period $j$ at a cost of $c_i^i$ per ton; and the last stage meets each period’s demand $d_j$. Everything in black is a symbol, and everything in red its particular value. The horizontal arcs, left to right, are the inventory flows, and the vertical arcs, top to bottom, are the production flows.
+Figure 1: The time-expanded network of a single product made in two stages over three monthly periods, with the data of Ex. 3. Production enters each stage’s node at a cost of $c_i^p$ per ton, up to the stage’s capacity $u_{ij}$ in the period; inventory $y_{ij}$ is carried from period $j-1$ to period $j$ at a cost of $c_i^i$ per ton; and the last stage meets each period’s demand $d_j$. Everything in black is a symbol, and everything in red its particular value. The horizontal arcs, left to right, are the inventory flows, and the vertical arcs, top to bottom, are the production flows.
 
 ## 2. Capacity determined outside the model
 
@@ -178,7 +178,7 @@ The first model is for a production system that produces a single product, and i
 
 Fig. 1 shows the model on its data, a network flow problem. Raw materials go into stage 1, and the first column of nodes is the first of three months. The arc into stage 1 in month 1 has an upper bound, its capacity $u_{1,1}$, here 50 tons, and a cost of \$200 per ton; $u_{1,2}$ is stage 1’s capacity in month 2, and so on. The initial inventory, $y_1^0$ at stage 1, is where the plan stands now, carried over from the previous run, since the linear program is re-solved every month: next month’s run makes month 2 the first month and extends the plan one month further, and the inventory on the horizontal arcs becomes the initial inventory of the new first month. Because the model is not run to infinity, the final inventory is the inventory wanted when the plan ends, and typically it is not zero: a final inventory of zero would not be realistic for an ongoing production process that is not being shut down in three months. An ongoing operation would also typically have a positive initial inventory; Fig. 1 sets it to zero for simplicity. At stage 2, production costs \$800 per ton, with a capacity of 60 tons, and the flow out of stage 2 is the demand, 20, 10 and 15 tons in the three months. Carrying a ton from month 1 to month 2 costs \$25 at stage 2, more than at stage 1, because \$800 more has been spent processing it. Some capacities are zero, stage 1’s in month 2 and stage 2’s in months 2 and 3, because the resource may be making another product then, or be down for scheduled maintenance.
 
-What the stages mean in context is the steps of production, since production does not all happen at one point. Stage 1 might take the raw material, a metal or a plastic, and cast it into a particular form, and stage 2 take the casting and process it further, say trimming features off its edges that need correcting. A stage can also be the physical transportation of the product: the processing of one stage takes place at one location, and the product is then put on a plane and flown to another country for the next stage, perhaps a second operation, and then flown somewhere else again, so that a complex production process can easily have dozens of stages. The inventory cost reflects this. The product at stage 2 is in a sense the same product as at stage 1, but not really: \$200 has been spent to produce a ton of it at stage 1, and another \$800 at stage 2. Carrying a ton costs the carrying rate times what has been invested in it, so a ton at stage 2, carrying what was spent at both stages, costs more to carry than a ton at stage 1; Ex. 1 calculates the two costs, the \$5 and \$25 per ton of Fig. 1, in Eq. 2. In essence, each stage adds value. That is obvious in manufacturing, which changes the physical form of a product, but it applies as well to a product put in a shipping container in China when \$3,000 is spent to transport the container to the port of Long Beach: the \$3,000 is added to the value of all the products in the container.
+What the stages mean in context is the steps of production, since production does not all happen at one point. Stage 1 might take the raw material, a metal or a plastic, and cast it into a particular form, and stage 2 take the casting and process it further, say trimming features off its edges that need correcting. A stage can also be the physical transportation of the product: the processing of one stage takes place at one location, and the product is then put on a plane and flown to another country for the next stage, perhaps a second operation, and then flown somewhere else again, so that a complex production process can easily have dozens of stages. The inventory cost reflects this. The product at stage 2 is in a sense the same product as at stage 1, but not really: \$200 has been spent to produce a ton of it at stage 1, and another \$800 at stage 2. Carrying a ton costs the carrying rate times what has been invested in it, so a ton at stage 2, carrying what was spent at both stages, costs more to carry than a ton at stage 1; Ex. 3 calculates the two costs, the \$5 and \$25 per ton of Fig. 1, in Eq. 2. In essence, each stage adds value. That is obvious in manufacturing, which changes the physical form of a product, but it applies as well to a product put in a shipping container in China when \$3,000 is spent to transport the container to the port of Long Beach: the \$3,000 is added to the value of all the products in the container.
 
 So the product is worth more when it is taken off the ship in Los Angeles than when it left China. The difference is often small enough to ignore, but every manufacturing or transportation step adds value, even one that leaves the product physically unchanged, and that is how the inventory costs of Fig. 1 are to be read. The solver makes no use of the network’s structure; the model is solved simply as a linear program. For a single product, as here, it is a minimum cost network flow problem, Model 3 in Lecture 4.2. Once integer or binary variables are added (Sec. 3), it is no longer the classic minimum cost network flow problem, but as a linear program it is exactly that.
 
@@ -213,15 +213,15 @@ $$
 \mathrlap{\text{Minimize}} & & & & & \\[2pt]
 \mathrlap{\qquad \displaystyle \sum_{i=1}^{m} \sum_{j=1}^{t} c_i^p\, x_{ij} + \sum_{i=1}^{m} \sum_{j=2}^{t+1} c_i^i\, y_{ij}} & & & & & \\[16pt]
 \mathrlap{\text{subject to}} & & & & & \\[8pt]
-& -x_{ij} + x_{(i+1)j} - y_{ij} + y_{i(j+1)} & = & 0, & i = 1, \dots, m-1 & (a) \\[-2pt]
-& & & & j = 1, \dots, t & \\[8pt]
-& -x_{mj} - y_{mj} + y_{m(j+1)} & = & -d_j, & j = 1, \dots, t & (b) \\[8pt]
-& x_{ij} & \le & u_{ij}, & i = 1, \dots, m & (c) \\[-2pt]
-& & & & j = 1, \dots, t & \\[8pt]
-& y_{i1} & = & y_i^0, & \hphantom{j}\mathllap{i} = 1, \dots, m & (d) \\[8pt]
-& y_{i(t+1)} & = & y_i^{t+1}, & \hphantom{j}\mathllap{i} = 1, \dots, m & (d) \\[8pt]
-& y_{ij} & \le & u_i^y, & i = 1, \dots, m & (e) \\[-2pt]
-& & & & j = 2, \dots, t & \\[8pt]
+& -x_{ij} + x_{(i+1)j} - y_{ij} + y_{i(j+1)} & = & 0, & \hphantom{k}\mathllap{i} = 1, \dots, m-1 & (a) \\[-2pt]
+& & & & \hphantom{k}\mathllap{j} = 1, \dots, t & \\[8pt]
+& -x_{mj} - y_{mj} + y_{m(j+1)} & = & -d_j, & \hphantom{k}\mathllap{j} = 1, \dots, t & (b) \\[8pt]
+& x_{ij} & \le & u_{ij}, & \hphantom{k}\mathllap{i} = 1, \dots, m & (c) \\[-2pt]
+& & & & \hphantom{k}\mathllap{j} = 1, \dots, t & \\[8pt]
+& y_{i1} & = & y_i^0, & \hphantom{k}\mathllap{i} = 1, \dots, m & (d) \\[8pt]
+& y_{i(t+1)} & = & y_i^{t+1}, & \hphantom{k}\mathllap{i} = 1, \dots, m & (d) \\[8pt]
+& y_{ij} & \le & u_i^y, & \hphantom{k}\mathllap{i} = 1, \dots, m & (e) \\[-2pt]
+& & & & \hphantom{k}\mathllap{j} = 2, \dots, t & \\[8pt]
 & x_{ij},\ y_{ij} & \ge & 0 & &
 \end{array}
 \tag{1}
@@ -288,325 +288,20 @@ end
 prodinv (generic function with 1 method)
 ```
 
-### 2.2 Greedy procedure
-
-Inventory costs more to carry at each later stage, because more has been spent producing the product by then, so it often makes sense to carry inventory at an early stage, such as stage 1, and to produce each ton only when it is actually needed.
-
-For a single product, something like a simple greedy procedure can be used, because the network is essentially feed forward, and solving the problem as a linear program can be overkill.
-
-Every arc of the time-expanded network points forward, to a later period or to the next stage, so a plan can be found by working back along it, from the last stage: the last stage’s latest plan leaves every earlier stage the most time to supply it. Model 2 states the procedure, which is how a plan is found by hand. It is a feasibility model, not an optimization model, in the terms of the Model Format Reference: it determines the production with no preference among the plans that work, so it has no objective function, and nothing in it is chosen by cost: under its assumption (a), the production cost is the same for every plan that satisfies the demand, which leaves only the inventory cost, and under the rest, producing each ton as late as capacity allows is what keeps that least. The rule takes the place of the objective, and Ex. 1 checks that its plan costs what the linear program’s does.
-
-solve for:
-(a) production at each stage in each period.
-
-subject to:
-(a) as late as possible: each stage produces its requirement in the latest periods its capacity allows, the last stage’s requirement being the demand and each other stage’s the production of the stage after it;
-(b) initial and final inventory: a stage’s initial inventory meets its earliest requirements, and its final inventory is produced as late as the rest.
-
-assumptions:
-(a) production cost and inventory cost per ton at each stage are the same in every period;
-(b) inventory cost does not decrease from one stage to the next;
-(c) no storage limit binds;
-(d) production can pass through every stage within the period it starts in.
-
-Model 2: Greedy as-late-as-possible procedure
-
-Model 2 formulation: Greedy as-late-as-possible procedure
-
-```text
-algorithm latestplan;
-{ input:  capacities uᵢⱼ, demands dⱼ, initial and final inventories    }
-{         y⁰ᵢ and yᵢᵗ⁺¹, stages i = 1 … m, periods j = 1 … t           }
-{ output: production xᵢⱼ, or infeasible                                }
-begin
-    rⱼ := dⱼ, j = 1 … t;                 { the last stage's requirement }
-    for i := m downto 1 do
-    begin
-        meet r₁, r₂, … in turn from y⁰ᵢ, and let s be what is left;
-        c := yᵢᵗ⁺¹ − s;                  { final inventory still to make }
-        if c < 0 then return infeasible;
-        for j := t downto 1 do
-        begin
-            xᵢⱼ := min(uᵢⱼ, rⱼ + c);
-            c := rⱼ + c − xᵢⱼ;           { left to an earlier period }
-        end;
-        if c > 0 then return infeasible;
-        rⱼ := xᵢⱼ, j = 1 … t;            { what stage i − 1 must supply }
-    end;
-    return x;
-end;
-```
-
-Model 2 implementation: Greedy as-late-as-possible procedure
-
-```julia
-# Model: greedy as-late-as-possible procedure
-function latestplan(d, u, y⁰, yᵗ⁺¹)
-    m, t = size(u)
-    x, r = zeros(m, t), Float64.(d)       # the last stage's requirement
-    for i in m:-1:1
-        s = Float64(y⁰[i])
-        for j in 1:t                       # initial inventory first
-            use = min(s, r[j])
-            r[j] -= use
-            s -= use
-        end
-        c = yᵗ⁺¹[i] - s                    # final inventory still to make
-        c < 0 && return nothing
-        for j in t:-1:1                    # as late as possible
-            x[i, j] = min(u[i, j], r[j] + c)
-            c = r[j] + c - x[i, j]         # left to an earlier period
-        end
-        c > 0 && return nothing
-        r = x[i, :]                        # what stage i - 1 must supply
-    end
-    y = [y⁰ zeros(m, t)]                   # inventory, by flow balance
-    for j in 1:t, i in 1:m
-        y[i, j+1] = y[i, j] + x[i, j] - (i < m ? x[i+1, j] : d[j])
-    end
-    return (x = x, y = y)
-end
-```
-
-```text
-latestplan (generic function with 1 method)
-```
-
-Example 1: Two stages with unavailable capacity
-
-For the product of Fig. 1, made in two stages over three months, determine the production plan that minimizes total production and inventory cost, and the cost: by hand, and with Model 1 in Julia.
-
-A single product is produced in two stages. The planning period is three months, and the model is run each month using current demand forecasts and scheduled production capacity. In some periods, the capacity is input as zero, which indicates that it will be used for other purposes during that period. Fig. 1 shows the production-inventory planning network.
-
-Assuming an annual inventory carrying rate of 0.3 \$/\$-yr, the monthly rate is $h = 0.3/12$. The inventory cost per ton at stage $i$ is then the monthly rate times the cumulative cost to produce each ton from stage 1 through $i$:
-
-$$
-\begin{aligned}
-c_1^i &= \frac{0.3}{12}\, 200 = 5 \\
-c_2^i &= \frac{0.3}{12} \bigl( 200 + 800 \bigr) = 25
-\end{aligned}
-\tag{2}
-$$
-
-Eq. 2 is the Units check of Lecture 1.2 at work: a carrying rate in \$/\$-yr becomes an inventory cost in \$/ton-month only once it is divided by 12 months a year and multiplied by a cumulative cost in \$/ton.
-
-Example 1(a): By hand
-
-Determine the plan and its cost by hand, from the capacities and flow balance.
-
-With no inventory at stage 2 at the start or wanted at the end, and no capacity at stage 2 after the first period, all of stage 2’s production has to be in the first period. Can a ton be moved from stage 1 to stage 2 within the same period? It can: a ton can be produced at stage 1 and passed on to stage 2 in the same period, going all the way through, from raw material to finished product, within one period, and nothing forces a wait between the stages. If a stage did have to wait for the next period, the network would have a diagonal arc from stage 1 in one period to stage 2 in the next, and a process taking two months, such as some continuous processes, would have an arc spanning two periods. Networks like that very quickly get complex, but the network remains the best way to visualize them, and about the only one. The problem is also easy to make infeasible. Here all of the production has to be in the first period, where stage 1 can produce 50 tons; the total demand is less than 50 tons, but with a total demand over 50 the plan would not be feasible. That is one of the uses of these models: when demand is high, an infeasible model shows that the operation as it stands does not have the capacity, and that perhaps overtime should be scheduled. Identifying what causes the infeasibility shows what has to change to make the model feasible.
-
-By Model 2, the last stage first, stage 2 produces all three months’ demand in the first month, the only month it has capacity, $x_{2,1} = 20 + 10 + 15 = 45$ tons, and carries $y_{2,2} = 45 - 20 = 25$ tons into month 2 and $y_{2,3} = 25 - 10 = 15$ tons into month 3. Stage 1 feeds it in the same month, $x_{1,1} = 45$ tons, within its capacity of 50. Stage 1’s final inventory of 35 tons can be produced only in month 1, where 5 tons of capacity are left, or in month 3; produced in month 3, it is carried no month before the end of the horizon, so $x_{1,3} = 35$ tons, carried out as $y_{1,4} = 35$. Every other flow is zero, and the cost is
-
-$$
-\begin{aligned}
-\text{production:}\quad & 200\,(45 + 35) + 800\,(45) = 52{,}000 \\
-\text{inventory:}\quad & 25\,(25 + 15) + 5\,(35) = 1{,}175 \\
-\text{total:}\quad & 52{,}000 + 1{,}175 = 53{,}175
-\end{aligned}
-
-$$
-
-The final inventory’s cost, $5 \times 35$, is counted because the inventory sum of Eq. 1 runs to $j = t + 1$.
-
-Produce 45 tons at each stage in month 1 and 35 tons at stage 1 in month 3, at a total cost of \$53,175.
-
-Example 1(b): In Julia
-
-Determine the plan and its cost with Model 1.
-
-Code block 2 enters the data of Fig. 1:
-
-```julia
-# Code block 2: Ex. 1's data
-u = [50  0 50;                # capacity of stage i in period j (ton)
-     60  0  0];
-d = [20, 10, 15]              # demand in period j (ton)
-cᵖ = [200, 800]               # production cost in stage i ($/ton)
-h = 0.3/12                    # monthly inventory carrying rate (1/month)
-@show cⁱ = cumsum(cᵖ)*h       # inventory cost for stage i ($/ton)
-y⁰ = [0, 0]                   # initial inventory of stage i (ton)
-yᵗ⁺¹ = [35, 0]                # final inventory of stage i (ton)
-m = length(cᵖ)                # number of production stages = 2
-t = length(d)                 # number of periods of production = 3
-LBʸ = [y⁰ zeros(m, t-1) yᵗ⁺¹] # same LB and UB to fix inventory level
-UBʸ = [y⁰ fill(Inf, m, t-1) yᵗ⁺¹];
-```
-
-```text
-cⁱ = cumsum(cᵖ) * h = [5.0, 24.999999999999996]
-```
-
-The printed inventory costs are where the 5 and the 25 of Fig. 1 come from. The initial inventory is 0 at both stages and the final inventory 35 and 0, taken from the figure. The number of production stages, m, is the number of elements in the production cost, and the number of periods, t, the length of the demand vector, rather than being hard-coded, so that a change in the number of stages or periods changes them too. The lower and upper bounds on inventory, LBʸ and UBʸ, are both the initial inventory, y⁰, in their first column; between it and the last column the lower bound is zero, since inventory need not be carried, and in this problem the upper bound is infinity. Setting the lower and upper bounds to the same value clamps the inventory: it forces the variable to have that value. The final inventory, in the last column, is forced the same way, both bounds set to it. Those are all the inputs the model needs, and solving it is much like solving the minimum cost network flow problem, an application of what has already been seen.
-
-The 25 prints as 24.999999999999996 because 0.3/12 has no exact binary representation, a rounding far too small to matter. Logjam’s snapvals, which Model 1’s implementation applies to its solution, rounds a value that close to a whole number to it: snapvals(cⁱ) is [5.0, 25.0].
-
-Code block 3 solves Ex. 1 with the implementation of Model 1, in place of a model written out for the example, and again with Model 2’s, which needs no solver:
-
-```julia
-# Code block 3: Ex. 1 solved with prodinv, and as late as possible
-TCᵒ, xᵒ, yᵒ = prodinv(cᵖ, cⁱ, d, u, LBʸ, UBʸ)
-@show TCᵒ
-xˡ, yˡ = latestplan(d, u, y⁰, yᵗ⁺¹)
-@show sum(cᵖ .* xˡ) + sum(cⁱ .* yˡ[:, 2:end]);   # its cost
-
-```
-
-- 1 prodinv returns a named tuple, (TC = …, x = …, y = …), and assigning it to three names unpacks its fields in order, so TCᵒ, xᵒ and yᵒ hold the total cost, the production and the inventory.
-- 2 Model 2 finds the plan a second way, without a solver, and its cost should match TCᵒ: two routes to one number, a validation, the Triangulate check of Lecture 1.2.
-
-```text
-TCᵒ = 53175.0
-sum(cᵖ .* xˡ) + sum(cⁱ .* yˡ[:, 2:end]) = 53175.0
-```
-
-Fig. 2 shows the optimal production and inventory flows (in blue) in the production-inventory planning network. Note that the flow is balanced at each node; that is, the flow into a node equals the combined production, inventory, and demand flow out of the node.
-
-Show the code that draws this figure
-
-```julia
-# Code block 4: the optimal flows of Ex. 1 on its network
-drawpinet(cᵖ, u, cⁱ, d, y⁰, yᵗ⁺¹; X = xᵒ, Y = yᵒ)
-```
-
-Figure 2: The optimal plan of Ex. 1 on its network: each production and inventory flow in blue, with the costs, the initial and final inventories and the demands of Fig. 1. At every node the flow in equals the flow out.
-
-Raw math programming output is not typically very interpretable, so part of the job of a logistics engineer, in reporting to a manager, is to add a reporting function at the end that converts the results into whatever makes sense.
-
-The optimal production flows, with the required demands beneath them, are:
-
-```julia
-[xᵒ; d']                      # Code block 5: production, then demand
-```
-
-```text
-3×3 Matrix{Float64}:
- 45.0   0.0  35.0
- 45.0   0.0   0.0
- 20.0  10.0  15.0
-```
-
-The optimal inventory flows are:
-
-```julia
-yᵒ                            # Code block 6: inventory
-```
-
-```text
-2×4 Matrix{Float64}:
- 0.0   0.0   0.0  35.0
- 0.0  25.0  15.0   0.0
-```
-
-Solved with the solver’s output turned off, and checked to be optimal, the plan costs \$53,175. The values are hard to read as a list, so Fig. 2 puts them in blue on the network of Fig. 1. Stage 1, with a capacity of 50 tons in the first month, produces 45 tons then and carries no inventory, and stage 2 carries 25 tons of inventory into the second month and 15 into the third. Everything balances. At stage 1 in the first month, 0 tons come in as inventory and 45 are produced, while 0 go out as inventory and 45 go on to stage 2, so the node nets to zero. At stage 2, 0 tons come in as inventory and 45 are produced, and 25 go out as inventory, so the node nets 20 tons out, the demand. Every node nets to zero except those of the last stage, which net to the demand: the plan is just a set of accounting identities that have to hold. Code blocks 5 and 6 make the values more readable, the production with the demand beneath it, and the inventory, which has four columns for three months because it runs to $t + 1$.
-
-The plan is the one found by hand in Ex. 1(a), and by Model 2 in Code block 3, and so is its cost: two routes to one number, the Triangulate check of Lecture 1.2.
-
-The same plan, at a total cost of \$53,175.
-
-NoteEx. 1 as a minimum cost network flow
-
-As a minimum cost network flow, Model 3 in Lecture 4.2, the network of Fig. 1 needs a node for each arc to start from: a supply node feeding stage 1 in every period, and for each stage a node holding its initial inventory and a node receiving its final inventory. The last stage’s nodes are the demand nodes, each with the period’s demand as a negative net supply, and every other node is a transshipment node. Each production arc is bounded by its capacity, and the inventory arcs between periods are unbounded. Code block 7 repeats Lecture 4.2’s implementation of the model:
-
-```julia
-# Code block 7: list2incid and mcnf, as implemented in Lecture 4.2
-using SparseArrays
-list2incid(i, j, n) = sparse([i; j], [1:length(i); 1:length(i)],
-                             [ones(length(i)); -ones(length(j))],
-                             n, length(i))
-
-function mcnf(A, c, s; u = fill(Inf, size(A, 2)), l = zeros(size(A, 2)))
-    V, E = 1:size(A, 1), 1:size(A, 2)
-    model = Model(HiGHS.Optimizer)
-    @variable(model, l[k] ≤ x[k ∈ E] ≤ u[k])                  # (b)
-    @objective(model, Min, sum(c[k] * x[k] for k ∈ E))
-    @constraint(model, supply[i ∈ V; s[i] > 0],
-                sum(A[i, k] * x[k] for k ∈ E) ≤ s[i])               # (a)
-    @constraint(model, balance[i ∈ V; s[i] ≤ 0],
-                sum(A[i, k] * x[k] for k ∈ E) == s[i])              # (a)
-
-    set_silent(model)
-    optimize!(model)
-    if termination_status(model) == JuMP.OPTIMAL
-        return (TC = objective_value(model), x = snapvals(value.(x)))
-    end
-    error(termination_status(model))
-end
-```
-
-```text
-mcnf (generic function with 1 method)
-```
-
-The initial inventory arcs cost nothing, because their cost was already incurred in the previous period; the final ones cost $c_i^i$, as the inventory sum of Eq. 1 runs from $j = 2$ to $t + 1$. Code block 8 builds the network’s arc list from Ex. 1’s data, production arcs first, period by period, and then each stage’s inventory arcs, solves the network, and compares its production arcs, the first $mt$ in the list, with Ex. 1(b)’s plan:
-
-```julia
-# Code block 8: Ex. 1's time-expanded network as an arc list, solved
-# Node 1 supplies stage 1; node nd(i, j) is stage i in period j; then a
-# node per stage for its initial inventory, and one for its final
-nd(i, j) = 1 + (j - 1)*m + i
-B(i) = 1 + m*t + i
-F(i) = 1 + m*t + m + i
-n = 1 + m*t + 2m
-I, J, c, ub, lb = Int[], Int[], Float64[], Float64[], Float64[]
-arc!(a, b, cc, uu, ll = 0.0) = (push!(I, a); push!(J, b); push!(c, cc);
-                                push!(ub, uu); push!(lb, ll))
-for j in 1:t, i in 1:m                        # production
-    arc!(i == 1 ? 1 : nd(i - 1, j), nd(i, j), cᵖ[i], u[i, j])
-end
-for i in 1:m
-    arc!(B(i), nd(i, 1), 0.0, y⁰[i], y⁰[i])          # initial inventory
-    for j in 1:t-1
-        arc!(nd(i, j), nd(i, j + 1), cⁱ[i], Inf)      # inventory
-    end
-    arc!(nd(i, t), F(i), cⁱ[i], yᵗ⁺¹[i], yᵗ⁺¹[i])     # final inventory
-end
-s = zeros(n)                                  # net supplies
-s[1] = sum(d) + sum(yᵗ⁺¹)                     # enough for any plan
-for i in 1:m
-    s[B(i)], s[F(i)] = y⁰[i], -yᵗ⁺¹[i]
-end
-for j in 1:t
-    s[nd(m, j)] = -d[j]
-end
-@show length(I)                               # arcs
-@show n                                       # nodes
-TCᵐ, xᵐ = mcnf(list2incid(I, J, n), c, s; u = ub, l = lb)
-@show TCᵐ
-reshape(xᵐ[1:m*t], m, t) == xᵒ                # the plan of Ex. 1(b)
-
-```
-
-- 1 Each call appends one arc to the list: start node, end node, cost, upper bound and lower bound (0 unless given). Giving the initial and final inventory arcs the same lower and upper bound fixes their flow, as LBʸ and UBʸ do in Model 1’s implementation.
-
-```text
-length(I) = 14
-n = 11
-TCᵐ = 53175.0
-```
-
-```text
-true
-```
-
-The minimum cost network flow reaches the same plan at the same cost, a third route to the number found in Ex. 1(a) and (b), the Triangulate check of Lecture 1.2 again, and the demonstration that Model 1 is a special case of the minimum cost network flow problem.
-
-The same plan, at a total cost of \$53,175.
-
-### 2.3 Flows determined by flow balance
+### 2.2 Flows determined by flow balance
 
 Flow balance makes it possible to determine some of the flows in a production-inventory network by hand. Given a diagram of the network with only some of its flows, the missing flows are filled in from the flow balance at its nodes. Doing so is a good way of demonstrating an understanding of the basic structure of these networks.
 
-Missing flows are not something to expect in practice, and filling them in is not part of the normal use of these models. Where some are missing, this is a way to fill them in; it works only because the structure of the model is such that some of the data can be determined from the rest. It is brought up here because it is a useful way of testing an understanding of that structure. Were flows to be found to any large extent, it would be coded up, so that the model determined them automatically. Exs. 2 and 3 are two such tests, the first with one flow missing and the second with data of several kinds missing.
+Missing flows are not something to expect in practice, and filling them in is not part of the normal use of these models. Where some are missing, this is a way to fill them in; it works only because the structure of the model is such that some of the data can be determined from the rest. It is brought up here because it is a useful way of testing an understanding of that structure. Were flows to be found to any large extent, it would be coded up, so that the model determined them automatically. Exs. 1 and 2 are two such tests, the first with one flow missing and the second with data of several kinds missing.
 
-Example 2: One missing flow
+Example 1: One missing flow
 
-Determine the missing value of flow c in the network of Fig. 3(a).
+Determine the missing value of flow c in the network of Fig. 2(a).
 
 Show the code that draws this figure
 
 ```julia
-# Code block 9: Ex. 2's network as given, and its missing flow found
+# Code block 2: Ex. 1's network as given, and its missing flow found
 # frame! draws the flows N on the network, each marked by what it is in
 # N₀, the network as given: given red, unknown black and named, found blue
 # and named; a node in hl is circled in blue. A flow is named by its array
@@ -682,7 +377,7 @@ colgap!(fig.layout, 8)
 fig
 ```
 
-Figure 3: Ex. 2’s missing flow found by flow balance: (a) the network as given, its production, demand and inventory flows in red and the unknown inventory flow $c$; (b) the node of stage 2 in month 1 balanced, circled in blue, and the flow it determines in blue.
+Figure 2: Ex. 1’s missing flow found by flow balance: (a) the network as given, its production, demand and inventory flows in red and the unknown inventory flow $c$; (b) the node of stage 2 in month 1 balanced, circled in blue, and the flow it determines in blue.
 
 At stage 2 in the first month, 19 tons come in, and 7 are needed for the demand, which leaves 12, and the only place the 12 can go is into the second month as inventory, so c is 12; every other node nets the rest to zero. Flow balance always holds, so it is a way of validating, whenever a plan has any complexity, that things are working the way they should: the Balance check of Lecture 1.2.
 
@@ -690,10 +385,10 @@ $c$ = 12.
 
 NoteFind missing flows using Julia
 
-Code block 10 finds missing flows the way they are found by hand, node by node: fillflows balances each node that has exactly one unknown flow, records the step, and repeats until no flow is missing. Production $x_{ij}$ is the matrix X, inventory $y_{ij}$ the matrix Y, and demand $d_j$ the vector d, each with missing for an unknown, and the flows found are returned in N:
+Code block 3 finds missing flows the way they are found by hand, node by node: fillflows balances each node that has exactly one unknown flow, records the step, and repeats until no flow is missing. Production $x_{ij}$ is the matrix X, inventory $y_{ij}$ the matrix Y, and demand $d_j$ the vector d, each with missing for an unknown, and the flows found are returned in N:
 
 ```julia
-# Code block 10: missing flows found node by node by flow balance
+# Code block 3: missing flows found node by node by flow balance
 # At node (i, j), inventory in plus production equals what goes on, to
 # stage i + 1 or to demand, plus inventory out; a node with one unknown
 # flow determines it, and each step records the node and the flow found
@@ -744,18 +439,16 @@ steps = Tuple[(2, 1, (:Y, 2, 2))]
 
 fillflows finds the one step taken by hand, at stage 2 in month 1, and the same $c$.
 
-Not every result is needed to know the plan. In Ex. 1, if the other three flows at stage 1 in month 3 are known, the only possible result for its production is the 35 tons, because every node except those of the last stage has to net to zero: whatever comes in has to go out. The only difference at the last stage is the demand that has to be satisfied.
-
 The flows behave like water flowing through a pipe, and the analogy is exact. With some of the information missing, the rest can be inferred from these two ideas, which is how the problem is done by hand.
 
-Example 3: Unknowns of several kinds
+Example 2: Unknowns of several kinds
 
-Determine the missing values $p$, $q$, $r$ and $s$ in the network of Fig. 4(a): a production flow, an inventory flow, a final inventory and a demand.
+Determine the missing values $p$, $q$, $r$ and $s$ in the network of Fig. 3(a): a production flow, an inventory flow, a final inventory and a demand.
 
 Show the code that draws this figure
 
 ```julia
-# Code block 11: Ex. 3's missing data found by fillflows, a frame a step
+# Code block 4: Ex. 2's missing data found by fillflows, a frame a step
 X = [40 0 30; missing 20 22]          # production at stage i in period j
 d = [20, missing, 17]                 # demand in period j
 Y = [10 25 missing missing;           # inventory at stage i into period
@@ -786,13 +479,500 @@ colgap!(fig.layout, 8); rowgap!(fig.layout, 4)
 fig
 ```
 
-Figure 4: Ex. 3’s missing data found by flow balance, one frame per step of fillflows (Code block 10): (a) the network as given, its known flows in red and four unknowns, the production flow $p$, the inventory flow $q$, the final inventory $r$ and the demand $s$; (b) to (e) one node balanced at each step, circled in blue, and the value it determines in blue; (f) the two nodes left over, which balance too.
+Figure 3: Ex. 2’s missing data found by flow balance, one frame per step of fillflows (Code block 3): (a) the network as given, its known flows in red and four unknowns, the production flow $p$, the inventory flow $q$, the final inventory $r$ and the demand $s$; (b) to (e) one node balanced at each step, circled in blue, and the value it determines in blue; (f) the two nodes left over, which balance too.
 
 Stage 1 is balanced first, month by month. In month 1, the 10 tons of initial inventory and the 40 produced come in, and 25 are carried into month 2, so what goes on to stage 2 is $p = 10 + 40 - 25 = 25$ (frame b). In month 2, the 25 carried in and nothing produced feed the 20 that stage 2 makes, which leaves $q = 25 + 0 - 20 = 5$ to carry into month 3 (frame c). In month 3, those 5 and the 30 produced feed the 22 that stage 2 makes, which leaves the final inventory, $r = 5 + 30 - 22 = 13$ (frame d), so $r$ could be found only after $q$. At stage 2, month 2’s node gives the demand: the 11 carried in and the 20 made, less the 7 carried out, $s = 11 + 20 - 7 = 24$ (frame e). The two nodes left over check the answer (frame f): in month 1, $6 + 25$ comes in and $20 + 11$ goes out, and in month 3, $7 + 22$ comes in and $17 + 12$ goes out. The first of the two is also a second route to $p$, since its only unknown was $p$: $p = 20 + 11 - 6 = 25$, the Triangulate check of Lecture 1.2.
 
 $p$ = 25, $q$ = 5, $r$ = 13, $s$ = 24.
 
-Not all missing variables can be recovered: two unknowns that meet at only one node are known only through their sum, as the demand in month 3 and stage 2’s final inventory would be in Ex. 3, and fillflows then stops with its error.
+Not all missing variables can be recovered: two unknowns that meet at only one node are known only through their sum, as the demand in month 3 and stage 2’s final inventory would be in Ex. 2, and fillflows then stops with its error.
+
+### 2.3 Greedy procedure
+
+Inventory costs more to carry at each later stage, because more has been spent producing the product by then, so it often makes sense to carry inventory at an early stage, such as stage 1, and to produce each ton only when it is actually needed.
+
+For a single product, something like a simple greedy procedure can be used, because the network is essentially feed forward, and solving the problem as a linear program can be overkill.
+
+Every arc of the time-expanded network points forward, to a later period or to the next stage, so a plan can be found by working back along it, from the last stage: the last stage’s latest plan leaves every earlier stage the most time to supply it. Model 2 states the procedure, which is how a plan is found by hand. It is a feasibility model, not an optimization model, in the terms of the Model Format Reference: it determines the production with no preference among the plans that work, so it has no objective function, and nothing in it is chosen by cost: under its assumption (a), the production cost is the same for every plan that satisfies the demand, which leaves only the inventory cost, and under the rest, producing each ton as late as capacity allows is what keeps that least. The rule takes the place of the objective, and Ex. 3 checks that its plan costs what the linear program’s does.
+
+solve for:
+(a) production at each stage in each period.
+
+subject to:
+(a) as late as possible: each stage produces its requirement in the latest periods its capacity allows, the last stage’s requirement being the demand and each other stage’s the production of the stage after it;
+(b) initial and final inventory: a stage’s initial inventory meets its earliest requirements, and its final inventory is produced as late as the rest.
+
+assumptions:
+(a) production cost and inventory cost per ton at each stage are the same in every period;
+(b) inventory cost does not decrease from one stage to the next;
+(c) no storage limit binds;
+(d) production can pass through every stage within the period it starts in.
+
+Model 2: Greedy as-late-as-possible procedure
+
+Model 2 formulation: Greedy as-late-as-possible procedure
+
+```text
+algorithm latestplan;
+{ input:  capacities uᵢⱼ, demands dⱼ, initial and final inventories }
+{         yᵢ⁰ and yᵢᵗ⁺¹, stages i = 1 … m, periods j = 1 … t        }
+{ output: production xᵢⱼ and inventory yᵢⱼ, or infeasible           }
+begin
+    for i := m downto 1 do
+    begin
+        yᵢ₁ := yᵢ⁰;  yᵢ,ₜ₊₁ := yᵢᵗ⁺¹;
+        for j := t downto 2 do           { as late as possible }
+        begin
+            out := (dⱼ if i = m, else xᵢ₊₁,ⱼ) + yᵢ,ⱼ₊₁;
+            xᵢⱼ := min(uᵢⱼ, out);        { what capacity allows }
+            yᵢⱼ := out − xᵢⱼ;            { the rest, from j − 1 }
+        end;
+        xᵢ₁ := (d₁ if i = m, else xᵢ₊₁,₁) + yᵢ₂ − yᵢ₁;
+        j := 1;
+        while xᵢⱼ < 0 and j < t do       { more on hand than needed: }
+        begin
+            yᵢ,ⱼ₊₁ := yᵢ,ⱼ₊₁ − xᵢⱼ;      {   carry it forward }
+            xᵢ,ⱼ₊₁ := xᵢ,ⱼ₊₁ + xᵢⱼ;      {   and make that much less }
+            xᵢⱼ := 0;  j := j + 1;
+        end;
+        if xᵢⱼ < 0 or xᵢ₁ > uᵢ₁ then return infeasible;
+    end;
+    return x, y;
+end;
+```
+
+Model 2 implementation: Greedy as-late-as-possible procedure
+
+```julia
+# Model: greedy as-late-as-possible procedure
+function latestplan(d, u, y⁰, yᵗ⁺¹)
+    m, t = size(u)
+    x, y = zeros(m, t), zeros(m, t + 1)
+    for i in m:-1:1
+        on = i == m ? d : x[i+1, :]          # what stage i passes on
+        y[i, 1], y[i, t+1] = y⁰[i], yᵗ⁺¹[i]  # initial, final inventory
+        for j in t:-1:2                      # as late as possible
+            out = on[j] + y[i, j+1]          # flow out of node (i, j)
+            x[i, j] = min(u[i, j], out)      # what capacity allows
+            y[i, j] = out - x[i, j]          # the rest, from j - 1
+        end
+        x[i, 1] = on[1] + y[i, 2] - y[i, 1]  # initial inventory first
+        j = 1
+        while x[i, j] < 0 && j < t           # more on hand than needed:
+            y[i, j+1] -= x[i, j]             #   carry it forward
+            x[i, j+1] += x[i, j]             #   and make that much less
+            x[i, j] = 0
+            j += 1
+        end
+        (x[i, j] < 0 || x[i, 1] > u[i, 1]) && return nothing
+    end
+    return (x = x, y = y)
+end
+```
+
+```text
+latestplan (generic function with 1 method)
+```
+
+Example 3: Two stages with unavailable capacity
+
+For the product of Fig. 1, made in two stages over three months, determine the production plan that minimizes total production and inventory cost, and the cost: by hand, and with Model 1 in Julia.
+
+A single product is produced in two stages. The planning period is three months, and the model is run each month using current demand forecasts and scheduled production capacity. In some periods, the capacity is input as zero, which indicates that it will be used for other purposes during that period. Fig. 1 shows the production-inventory planning network.
+
+Assuming an annual inventory carrying rate of 0.3 \$/\$-yr, the monthly rate is $h = 0.3/12$. The inventory cost per ton at stage $i$ is then the monthly rate times the cumulative cost to produce each ton from stage 1 through $i$:
+
+$$
+\begin{aligned}
+c_1^i &= \frac{0.3}{12}\, 200 = 5 \\
+c_2^i &= \frac{0.3}{12} \bigl( 200 + 800 \bigr) = 25
+\end{aligned}
+\tag{2}
+$$
+
+Eq. 2 is the Units check of Lecture 1.2 at work: a carrying rate in \$/\$-yr becomes an inventory cost in \$/ton-month only once it is divided by 12 months a year and multiplied by a cumulative cost in \$/ton.
+
+Example 3(a): By hand
+
+Determine the plan and its cost by hand, from the capacities and flow balance.
+
+With no inventory at stage 2 at the start or wanted at the end, and no capacity at stage 2 after the first period, all of stage 2’s production has to be in the first period. Can a ton be moved from stage 1 to stage 2 within the same period? It can: a ton can be produced at stage 1 and passed on to stage 2 in the same period, going all the way through, from raw material to finished product, within one period, and nothing forces a wait between the stages. If a stage did have to wait for the next period, the network would have a diagonal arc from stage 1 in one period to stage 2 in the next, and a process taking two months, such as some continuous processes, would have an arc spanning two periods. Networks like that very quickly get complex, but the network remains the best way to visualize them, and about the only one. The problem is also easy to make infeasible. Here all of the production has to be in the first period, where stage 1 can produce 50 tons; the total demand is less than 50 tons, but with a total demand over 50 the plan would not be feasible. That is one of the uses of these models: when demand is high, an infeasible model shows that the operation as it stands does not have the capacity, and that perhaps overtime should be scheduled. Identifying what causes the infeasibility shows what has to change to make the model feasible.
+
+Model 2 is the flow balance of Sec. 2.2, node by node from the last, with one choice. At each node the flow out is already known: what goes on to the next stage, or to the demand at the last stage, plus the inventory carried into the next month. Production takes as much of it as the capacity allows, and the rest has to come in as inventory from the month before, which is then the inventory out of the node to its left. In month 1 the inventory coming in is the initial inventory, so production is the rest, which has to fit within the capacity. Fig. 4 draws the steps, and Table 1 lists them:
+
+Show the code that draws this figure
+
+```julia
+# Code block 5: Model 2 by hand, a frame a node
+# The network with the flows found so far: its data in red, a flow still
+# to be found as its symbol (a production flow with its capacity), a flow
+# found in blue, and the node balanced at the step circled in blue
+function planframe!(ax, X, Y, d, u, hl; r = 0.16, ls = 13)
+    m, t = size(u)
+    hidedecorations!(ax); hidespines!(ax)
+    P(i, j) = ((j - 1) * 2.1, -(i - 1) * 1.7)     # stage i, period j
+    arc(p, q) = arrows2d!(ax, [p[1]], [p[2]], [q[1] - p[1]],
+                          [q[2] - p[2]]; color = ink, shaftwidth = 1.0,
+                          tipwidth = 6, tiplength = 6)
+    tx(p, s, al) = text!(ax, p[1], p[2]; text = s, fontsize = ls,
+                         align = al)
+    xl(i, j) = ismissing(X[i, j]) ?
+        rich(sym("x", "$i,$j"), up(" ≤ $(u[i, j])"; color = datac)) :
+        rich(sym("x", "$i,$j"), up(" = $(num(X[i, j]))"; color = flowc))
+    yl(i, j) = ismissing(Y[i, j]) ? sym("y", "$i,$j") :
+        rich(sym("y", "$i,$j"), up(" = $(num(Y[i, j]))"; color = flowc))
+    for j in 1:t                                  # production and demand
+        x0, y0 = P(1, j)
+        arc((x0, y0 + 0.9), (x0, y0 + r))
+        tx((x0 + 0.08, y0 + 0.5), xl(1, j), (:left, :center))
+        for i in 2:m
+            p, q = P(i - 1, j), P(i, j)
+            arc(p .- (0, r), q .+ (0, r))
+            tx((p[1] + 0.08, (p[2] + q[2]) / 2), xl(i, j),
+               (:left, :center))
+        end
+        xm, ym = P(m, j)
+        arc((xm, ym - r), (xm, ym - 0.7))
+        tx((xm, ym - 0.8), up("$(d[j])"; color = datac), (:center, :top))
+    end
+    for i in 1:m                                  # inventory
+        p = P(i, 1) .- (0.75, 0)
+        arc(p, P(i, 1) .- (r, 0))
+        tx(p .- (0.08, 0), up("$(num(Y[i, 1]))"; color = datac),
+           (:right, :center))
+        # each label below its arc, clear of the production label above
+        for j in 1:t-1
+            p, q = P(i, j) .+ (r, 0), P(i, j + 1) .- (r, 0)
+            arc(p, q)
+            tx(((p[1] + q[1]) / 2, p[2] - 0.1), yl(i, j + 1),
+               (:center, :top))
+        end
+        q = P(i, t) .+ (0.75, 0)
+        arc(P(i, t) .+ (r, 0), q)
+        tx(q .+ (0.08, 0), up("$(num(Y[i, t+1]))"; color = datac),
+           (:left, :center))
+    end
+    for i in 1:m, j in 1:t                        # nodes, over the arcs
+        h = (i, j) == hl
+        poly!(ax, Circle(Point2f(P(i, j)...), r); color = :white,
+              strokecolor = h ? flowc : ink, strokewidth = h ? 2.6 : 1.4)
+    end
+    xlims!(ax, -1.45, (t - 1) * 2.1 + 1.4)
+    ylims!(ax, -(m - 1) * 1.7 - 1.2, 1.0)
+    return ax
+end
+# The frames: the network as given, then one per node in the order the
+# procedure balances them, the last stage first and, within it, the last
+# period first; each fills in its node's production and inventory in
+function latestframes(d, u, y⁰, yᵗ⁺¹)
+    m, t = size(u)
+    pl = latestplan(d, u, y⁰, yᵗ⁺¹)
+    X = Matrix{Union{Missing, Float64}}(missing, m, t)
+    Y = Matrix{Union{Missing, Float64}}(missing, m, t + 1)
+    Y[:, 1], Y[:, t+1] = y⁰, yᵗ⁺¹
+    nodes = [(i, j) for i in reverse(1:m) for j in reverse(1:t)]
+    fig = Figure(size = (680, 230 * (length(nodes) ÷ 2 + 1)))
+    for k in 0:length(nodes)
+        if k == 0
+            hl, title = (0, 0), "(a) As given"
+        else
+            i, j = nodes[k]
+            X[i, j] = pl.x[i, j]
+            j > 1 && (Y[i, j] = pl.y[i, j])
+            hl, title = (i, j), "($('a' + k)) Step $k: stage $i, month $j"
+        end
+        ax = Axis(fig[k ÷ 2 + 1, k % 2 + 1]; aspect = DataAspect(),
+                  title = title, titlesize = 13, titlefont = :regular)
+        planframe!(ax, X, Y, d, u, hl)
+    end
+    colgap!(fig.layout, 8); rowgap!(fig.layout, 4)
+    return fig
+end
+
+latestframes([20, 10, 15], [50 0 50; 60 0 0], [0, 0], [35, 0])
+```
+
+Figure 4: Ex. 3 solved by hand with Model 2, a frame per node: (a) the network as given, its data in red and each flow still to be found as its symbol, a production flow with its capacity; (b) to (g) the node balanced at each step, circled in blue, the last stage first and, within each stage, the last month first, and the production and the inventory in that it determines, in blue.
+
+Table 1: Ex. 3 solved by hand with Model 2, a step per node: the flow out of the node, the production that takes as much of it as the capacity allows, and the inventory that comes in for the rest.
+
+| Step | Node | Flow out | Production | Inventory in |
+|---|---|---|---|---|
+| 1 | stage 2, month 3 | $d_3 + y_{2,4} = 15 + 0 = 15$ | $x_{2,3} = \min(0, 15) = 0$ | $y_{2,3} = 15$ |
+| 2 | stage 2, month 2 | $d_2 + y_{2,3} = 10 + 15 = 25$ | $x_{2,2} = \min(0, 25) = 0$ | $y_{2,2} = 25$ |
+| 3 | stage 2, month 1 | $d_1 + y_{2,2} = 20 + 25 = 45$ | $x_{2,1} = 45 - 0 = 45 \le 60$ | $y_{2,1} = 0$, initial |
+| 4 | stage 1, month 3 | $x_{2,3} + y_{1,4} = 0 + 35 = 35$ | $x_{1,3} = \min(50, 35) = 35$ | $y_{1,3} = 0$ |
+| 5 | stage 1, month 2 | $x_{2,2} + y_{1,3} = 0 + 0 = 0$ | $x_{1,2} = \min(0, 0) = 0$ | $y_{1,2} = 0$ |
+| 6 | stage 1, month 1 | $x_{2,1} + y_{1,2} = 45 + 0 = 45$ | $x_{1,1} = 45 - 0 = 45 \le 50$ | $y_{1,1} = 0$, initial |
+
+By Model 2, the last stage first, stage 2 produces all three months’ demand in the first month, the only month it has capacity, $x_{2,1} = 20 + 10 + 15 = 45$ tons, and carries $y_{2,2} = 45 - 20 = 25$ tons into month 2 and $y_{2,3} = 25 - 10 = 15$ tons into month 3. Stage 1 feeds it in the same month, $x_{1,1} = 45$ tons, within its capacity of 50. Stage 1’s final inventory of 35 tons can be produced only in month 1, where 5 tons of capacity are left, or in month 3; produced in month 3, it is carried no month before the end of the horizon, so $x_{1,3} = 35$ tons, carried out as $y_{1,4} = 35$. Every other flow is zero, and the cost is
+
+$$
+\begin{aligned}
+\text{production:}\quad & 200\,(45 + 35) + 800\,(45) = 52{,}000 \\
+\text{inventory:}\quad & 25\,(25 + 15) + 5\,(35) = 1{,}175 \\
+\text{total:}\quad & 52{,}000 + 1{,}175 = 53{,}175
+\end{aligned}
+
+$$
+
+The final inventory’s cost, $5 \times 35$, is counted because the inventory sum of Eq. 1 runs to $j = t + 1$.
+
+Produce 45 tons at each stage in month 1 and 35 tons at stage 1 in month 3, at a total cost of \$53,175.
+
+Example 3(b): In Julia
+
+Determine the plan and its cost with Model 1.
+
+Code block 6 enters the data of Fig. 1:
+
+```julia
+# Code block 6: Ex. 3's data
+u = [50  0 50;                # capacity of stage i in period j (ton)
+     60  0  0];
+d = [20, 10, 15]              # demand in period j (ton)
+cᵖ = [200, 800]               # production cost in stage i ($/ton)
+h = 0.3/12                    # monthly inventory carrying rate (1/month)
+@show cⁱ = cumsum(cᵖ)*h       # inventory cost for stage i ($/ton)
+y⁰ = [0, 0]                   # initial inventory of stage i (ton)
+yᵗ⁺¹ = [35, 0]                # final inventory of stage i (ton)
+m = length(cᵖ)                # number of production stages = 2
+t = length(d)                 # number of periods of production = 3
+LBʸ = [y⁰ zeros(m, t-1) yᵗ⁺¹] # same LB and UB to fix inventory level
+UBʸ = [y⁰ fill(Inf, m, t-1) yᵗ⁺¹];
+```
+
+```text
+cⁱ = cumsum(cᵖ) * h = [5.0, 24.999999999999996]
+```
+
+The printed inventory costs are where the 5 and the 25 of Fig. 1 come from. The initial inventory is 0 at both stages and the final inventory 35 and 0, taken from the figure. The number of production stages, m, is the number of elements in the production cost, and the number of periods, t, the length of the demand vector, rather than being hard-coded, so that a change in the number of stages or periods changes them too. The lower and upper bounds on inventory, LBʸ and UBʸ, are both the initial inventory, y⁰, in their first column; between it and the last column the lower bound is zero, since inventory need not be carried, and in this problem the upper bound is infinity. Setting the lower and upper bounds to the same value clamps the inventory: it forces the variable to have that value. The final inventory, in the last column, is forced the same way, both bounds set to it. Those are all the inputs the model needs, and solving it is much like solving the minimum cost network flow problem, an application of what has already been seen.
+
+The 25 prints as 24.999999999999996 because 0.3/12 has no exact binary representation, a rounding far too small to matter. Logjam’s snapvals, which Model 1’s implementation applies to its solution, rounds a value that close to a whole number to it: snapvals(cⁱ) is [5.0, 25.0].
+
+Code block 7 solves Ex. 3 with the implementation of Model 1, in place of a model written out for the example, and again with Model 2’s, which needs no solver:
+
+```julia
+# Code block 7: Ex. 3 solved with prodinv, and as late as possible
+TCᵒ, xᵒ, yᵒ = prodinv(cᵖ, cⁱ, d, u, LBʸ, UBʸ)
+@show TCᵒ
+xˡ, yˡ = latestplan(d, u, y⁰, yᵗ⁺¹)
+@show sum(cᵖ .* xˡ) + sum(cⁱ .* yˡ[:, 2:end]);   # its cost
+
+```
+
+- 1 prodinv returns a named tuple, (TC = …, x = …, y = …), and assigning it to three names unpacks its fields in order, so TCᵒ, xᵒ and yᵒ hold the total cost, the production and the inventory.
+- 2 Model 2 finds the plan a second way, without a solver, and its cost should match TCᵒ: two routes to one number, a validation, the Triangulate check of Lecture 1.2.
+
+```text
+TCᵒ = 53175.0
+sum(cᵖ .* xˡ) + sum(cⁱ .* yˡ[:, 2:end]) = 53175.0
+```
+
+Fig. 5 shows the optimal production and inventory flows (in blue) in the production-inventory planning network. Note that the flow is balanced at each node; that is, the flow into a node equals the combined production, inventory, and demand flow out of the node.
+
+Show the code that draws this figure
+
+```julia
+# Code block 8: the optimal flows of Ex. 3 on its network
+drawpinet(cᵖ, u, cⁱ, d, y⁰, yᵗ⁺¹; X = xᵒ, Y = yᵒ)
+```
+
+Figure 5: The optimal plan of Ex. 3 on its network: each production and inventory flow in blue, with the costs, the initial and final inventories and the demands of Fig. 1. At every node the flow in equals the flow out.
+
+Raw math programming output is not typically very interpretable, so part of the job of a logistics engineer, in reporting to a manager, is to add a reporting function at the end that converts the results into whatever makes sense.
+
+The optimal production flows, with the required demands beneath them, are:
+
+```julia
+[xᵒ; d']                      # Code block 9: production, then demand
+```
+
+```text
+3×3 Matrix{Float64}:
+ 45.0   0.0  35.0
+ 45.0   0.0   0.0
+ 20.0  10.0  15.0
+```
+
+The optimal inventory flows are:
+
+```julia
+yᵒ                            # Code block 10: inventory
+```
+
+```text
+2×4 Matrix{Float64}:
+ 0.0   0.0   0.0  35.0
+ 0.0  25.0  15.0   0.0
+```
+
+Solved with the solver’s output turned off, and checked to be optimal, the plan costs \$53,175. The values are hard to read as a list, so Fig. 5 puts them in blue on the network of Fig. 1. Stage 1, with a capacity of 50 tons in the first month, produces 45 tons then and carries no inventory, and stage 2 carries 25 tons of inventory into the second month and 15 into the third. Everything balances. At stage 1 in the first month, 0 tons come in as inventory and 45 are produced, while 0 go out as inventory and 45 go on to stage 2, so the node nets to zero. At stage 2, 0 tons come in as inventory and 45 are produced, and 25 go out as inventory, so the node nets 20 tons out, the demand. Every node nets to zero except those of the last stage, which net to the demand: the plan is just a set of accounting identities that have to hold. Code blocks 9 and 10 make the values more readable, the production with the demand beneath it, and the inventory, which has four columns for three months because it runs to $t + 1$.
+
+The plan is the one found by hand in Ex. 3(a), and by Model 2 in Code block 7, and so is its cost: two routes to one number, the Triangulate check of Lecture 1.2.
+
+The same plan, at a total cost of \$53,175.
+
+Example 3(c): By hand, with capacity that binds
+
+Ex. 3’s product, with its costs and demand, has 10 tons of inventory at stage 1 to start, none wanted at either stage at the end, and in place of those of Fig. 1 the capacities, in tons,
+
+$$
+u = \begin{bmatrix} 40 & 20 & 0 \\ 30 & 15 & 10 \end{bmatrix}.
+
+$$
+
+Determine the plan and its cost by hand.
+
+The steps are those of (a). This time stage 2’s capacity in month 3 is less than its flow out, so 5 of the 15 tons come in as inventory from month 2, and at stage 1 the 10 tons on hand come in to month 1, so production there is the rest. Fig. 6 draws the steps, and Table 2 lists them:
+
+Show the code that draws this figure
+
+```julia
+# Code block 11: Ex. 3(c) by hand, a frame a node
+latestframes([20, 10, 15], [40 20 0; 30 15 10], [10, 0], [0, 0])
+```
+
+Figure 6: Ex. 3(c) solved by hand with Model 2, in the frames of Fig. 4, with the capacities of Ex. 3(c) and the 10 tons on hand at stage 1.
+
+Table 2: Ex. 3(c) solved by hand with Model 2, a step per node.
+
+| Step | Node | Flow out | Production | Inventory in |
+|---|---|---|---|---|
+| 1 | stage 2, month 3 | $d_3 + y_{2,4} = 15 + 0 = 15$ | $x_{2,3} = \min(10, 15) = 10$ | $y_{2,3} = 5$ |
+| 2 | stage 2, month 2 | $d_2 + y_{2,3} = 10 + 5 = 15$ | $x_{2,2} = \min(15, 15) = 15$ | $y_{2,2} = 0$ |
+| 3 | stage 2, month 1 | $d_1 + y_{2,2} = 20 + 0 = 20$ | $x_{2,1} = 20 - 0 = 20 \le 30$ | $y_{2,1} = 0$, initial |
+| 4 | stage 1, month 3 | $x_{2,3} + y_{1,4} = 10 + 0 = 10$ | $x_{1,3} = \min(0, 10) = 0$ | $y_{1,3} = 10$ |
+| 5 | stage 1, month 2 | $x_{2,2} + y_{1,3} = 15 + 10 = 25$ | $x_{1,2} = \min(20, 25) = 20$ | $y_{1,2} = 5$ |
+| 6 | stage 1, month 1 | $x_{2,1} + y_{1,2} = 20 + 5 = 25$ | $x_{1,1} = 25 - 10 = 15 \le 40$ | $y_{1,1} = 10$, initial |
+
+What goes in balances what goes out over the horizon, the Balance check of Lecture 1.2: the 15 + 20 + 0 tons stage 1 produces and the 10 it has on hand are the 45 tons stage 2 makes, and stage 2’s 20 + 15 + 10 = 45 tons are the 45 tons of demand. The 10 tons on hand at the start add nothing to the cost, since their cost was incurred in the previous period and the inventory sum of Eq. 1 starts at $j = 2$. The cost is
+
+$$
+\begin{aligned}
+\text{production:}\quad & 200\,(15 + 20) + 800\,(20 + 15 + 10) = 43{,}000 \\
+\text{inventory:}\quad & 5\,(5 + 10) + 25\,(5) = 200 \\
+\text{total:}\quad & 43{,}000 + 200 = 43{,}200
+\end{aligned}
+
+$$
+
+Produce 15 and 20 tons at stage 1 in months 1 and 2, and 20, 15 and 10 tons at stage 2 in months 1 to 3, at a total cost of \$43,200.
+
+NoteCheck Ex. 3(c) using Julia
+
+Code block 12 solves Ex. 3(c) with Model 2’s implementation and again with Model 1’s, and the two should agree with each other and with the hand calculation, the Triangulate check of Lecture 1.2:
+
+```julia
+# Code block 12: Ex. 3(c) solved as late as possible, and with prodinv
+uc = [40 20  0;                    # capacity of stage i in period j (ton)
+      30 15 10]
+y⁰c, yᵗ⁺¹c = [10, 0], [0, 0]       # initial and final inventory (ton)
+xˡc, yˡc = latestplan(d, uc, y⁰c, yᵗ⁺¹c)
+@show sum(cᵖ .* xˡc) + sum(cⁱ .* yˡc[:, 2:end]);   # its cost
+LBʸc = [y⁰c zeros(m, t-1) yᵗ⁺¹c]
+UBʸc = [y⁰c fill(Inf, m, t-1) yᵗ⁺¹c]
+TCc, xᵒc, yᵒc = prodinv(cᵖ, cⁱ, d, uc, LBʸc, UBʸc)
+@show TCc;
+```
+
+```text
+sum(cᵖ .* xˡc) + sum(cⁱ .* yˡc[:, 2:end]) = 43200.0
+TCc = 43200.0
+```
+
+Both cost \$43,200, the cost found by hand.
+
+Not every result is needed to know the plan. In Ex. 3, if the other three flows at stage 1 in month 3 are known, the only possible result for its production is the 35 tons, because every node except those of the last stage has to net to zero: whatever comes in has to go out. The only difference at the last stage is the demand that has to be satisfied.
+
+NoteEx. 3 as a minimum cost network flow
+
+As a minimum cost network flow, Model 3 in Lecture 4.2, the network of Fig. 1 needs a node for each arc to start from: a supply node feeding stage 1 in every period, and for each stage a node holding its initial inventory and a node receiving its final inventory. The last stage’s nodes are the demand nodes, each with the period’s demand as a negative net supply, and every other node is a transshipment node. Each production arc is bounded by its capacity, and the inventory arcs between periods are unbounded. Code block 13 repeats Lecture 4.2’s implementation of the model:
+
+```julia
+# Code block 13: list2incid and mcnf, as implemented in Lecture 4.2
+using SparseArrays
+list2incid(i, j, n) = sparse([i; j], [1:length(i); 1:length(i)],
+                             [ones(length(i)); -ones(length(j))],
+                             n, length(i))
+
+function mcnf(A, c, s; u = fill(Inf, size(A, 2)), l = zeros(size(A, 2)))
+    V, E = 1:size(A, 1), 1:size(A, 2)
+    model = Model(HiGHS.Optimizer)
+    @variable(model, l[k] ≤ x[k ∈ E] ≤ u[k])                  # (b)
+    @objective(model, Min, sum(c[k] * x[k] for k ∈ E))
+    @constraint(model, supply[i ∈ V; s[i] > 0],
+                sum(A[i, k] * x[k] for k ∈ E) ≤ s[i])               # (a)
+    @constraint(model, balance[i ∈ V; s[i] ≤ 0],
+                sum(A[i, k] * x[k] for k ∈ E) == s[i])              # (a)
+
+    set_silent(model)
+    optimize!(model)
+    if termination_status(model) == JuMP.OPTIMAL
+        return (TC = objective_value(model), x = snapvals(value.(x)))
+    end
+    error(termination_status(model))
+end
+```
+
+```text
+mcnf (generic function with 1 method)
+```
+
+The initial inventory arcs cost nothing, because their cost was already incurred in the previous period; the final ones cost $c_i^i$, as the inventory sum of Eq. 1 runs from $j = 2$ to $t + 1$. Code block 14 builds the network’s arc list from Ex. 3’s data, production arcs first, period by period, and then each stage’s inventory arcs, solves the network, and compares its production arcs, the first $mt$ in the list, with Ex. 3(b)’s plan:
+
+```julia
+# Code block 14: Ex. 3's time-expanded network as an arc list, solved
+# Node 1 supplies stage 1; node nd(i, j) is stage i in period j; then a
+# node per stage for its initial inventory, and one for its final
+nd(i, j) = 1 + (j - 1)*m + i
+B(i) = 1 + m*t + i
+F(i) = 1 + m*t + m + i
+n = 1 + m*t + 2m
+I, J, c, ub, lb = Int[], Int[], Float64[], Float64[], Float64[]
+arc!(a, b, cc, uu, ll = 0.0) = (push!(I, a); push!(J, b); push!(c, cc);
+                                push!(ub, uu); push!(lb, ll))
+for j in 1:t, i in 1:m                        # production
+    arc!(i == 1 ? 1 : nd(i - 1, j), nd(i, j), cᵖ[i], u[i, j])
+end
+for i in 1:m
+    arc!(B(i), nd(i, 1), 0.0, y⁰[i], y⁰[i])          # initial inventory
+    for j in 1:t-1
+        arc!(nd(i, j), nd(i, j + 1), cⁱ[i], Inf)      # inventory
+    end
+    arc!(nd(i, t), F(i), cⁱ[i], yᵗ⁺¹[i], yᵗ⁺¹[i])     # final inventory
+end
+s = zeros(n)                                  # net supplies
+s[1] = sum(d) + sum(yᵗ⁺¹)                     # enough for any plan
+for i in 1:m
+    s[B(i)], s[F(i)] = y⁰[i], -yᵗ⁺¹[i]
+end
+for j in 1:t
+    s[nd(m, j)] = -d[j]
+end
+@show length(I)                               # arcs
+@show n                                       # nodes
+TCᵐ, xᵐ = mcnf(list2incid(I, J, n), c, s; u = ub, l = lb)
+@show TCᵐ
+reshape(xᵐ[1:m*t], m, t) == xᵒ                # the plan of Ex. 3(b)
+
+```
+
+- 1 Each call appends one arc to the list: start node, end node, cost, upper bound and lower bound (0 unless given). Giving the initial and final inventory arcs the same lower and upper bound fixes their flow, as LBʸ and UBʸ do in Model 1’s implementation.
+
+```text
+length(I) = 14
+n = 11
+TCᵐ = 53175.0
+```
+
+```text
+true
+```
+
+The minimum cost network flow reaches the same plan at the same cost, a third route to the number found in Ex. 3(a) and (b), the Triangulate check of Lecture 1.2 again, and the demonstration that Model 1 is a special case of the minimum cost network flow problem.
+
+The same plan, at a total cost of \$53,175.
 
 ### 2.4 Limits of the greedy procedure
 
@@ -802,10 +982,10 @@ A single product is produced in a two-stage production process. Stage one has a 
 
 Solution approach: Can use the Single-Product with Variable Capacity model, Model 1. The maximum inventory storage constraint can be modeled as an upper bound on $y$.
 
-Ex. 4 is how a problem would arise in practice: a description gives the demand, all of the costs and the other data, and reading it translates it into the model’s data. Here there are two stages and six periods, six months, with a demand for each. Stage 2 is shut down in month 3, and both stages in month 5, for scheduled maintenance; otherwise they run at their normal capacities of 40 and 80 tons. Instead of a carrying rate from which to calculate the inventory costs, the inventory costs $c_i^i$ themselves are given, \$12 and \$46 per ton-month, along with the initial and final inventories. What is different from Ex. 1 is that the upper bound on inventory is not infinity: up to 30 tons can be stored at each stage. A limit other than infinity on how much inventory can be held between stages is not unusual: a production system does not have infinite storage, and there may be only a certain buffer for the inventory passed from one stage to the next, so a maximum inventory that can be carried is quite common. With it, the inventory’s bounds are the initial inventory, the final inventory, and an upper bound of 30 tons on every period in between, row (e) of Eq. 1.
+Ex. 4 is how a problem would arise in practice: a description gives the demand, all of the costs and the other data, and reading it translates it into the model’s data. Here there are two stages and six periods, six months, with a demand for each. Stage 2 is shut down in month 3, and both stages in month 5, for scheduled maintenance; otherwise they run at their normal capacities of 40 and 80 tons. Instead of a carrying rate from which to calculate the inventory costs, the inventory costs $c_i^i$ themselves are given, \$12 and \$46 per ton-month, along with the initial and final inventories. What is different from Ex. 3 is that the upper bound on inventory is not infinity: up to 30 tons can be stored at each stage. A limit other than infinity on how much inventory can be held between stages is not unusual: a production system does not have infinite storage, and there may be only a certain buffer for the inventory passed from one stage to the next, so a maximum inventory that can be carried is quite common. With it, the inventory’s bounds are the initial inventory, the final inventory, and an upper bound of 30 tons on every period in between, row (e) of Eq. 1.
 
 ```julia
-# Code block 12: Ex. 4's data
+# Code block 15: Ex. 4's data
 u = [40 40 40 40 0 40;          # capacity of each stage (ton)
      80 80  0 80 0 80]
 d = [25, 15, 10, 50, 25, 15]    # demand in each period (ton)
@@ -823,10 +1003,10 @@ UBʸ = [y⁰ fill(30, m, t-1) yᵗ⁺¹];  # max inventory storage level
 
 Negative zeros, and values that are really close to zero, are fixed by snapping each value to the closest integer when it is really close, since it is typically supposed to be an integer value, with an absolute tolerance of $10^{-8}$. Logjam’s snapvals does this.
 
-Code block 13 solves it with Model 1’s implementation, which reads every value through snapvals, as in Lecture 2.7. It then tries Model 2, whose assumption (c) the storage limit puts in doubt, and solves the problem once more without the limit:
+Code block 16 solves it with Model 1’s implementation, which reads every value through snapvals, as in Lecture 2.7. It then tries Model 2, whose assumption (c) the storage limit puts in doubt, and solves the problem once more without the limit:
 
 ```julia
-# Code block 13: Ex. 4 solved with prodinv, and as late as possible
+# Code block 16: Ex. 4 solved with prodinv, and as late as possible
 TCᵒ, xᵒ, yᵒ = prodinv(cᵖ, cⁱ, d, u, LBʸ, UBʸ)
 @show TCᵒ
 xˡ, yˡ = latestplan(d, u, y⁰, yᵗ⁺¹)
@@ -849,7 +1029,7 @@ The latest plan carries 35 tons at stage 1 into month 4, built ahead for the 75 
 The optimal production flows, with the required demands beneath them, are:
 
 ```julia
-[xᵒ; d']                      # Code block 14: production, then demand
+[xᵒ; d']                      # Code block 17: production, then demand
 ```
 
 ```text
@@ -862,7 +1042,7 @@ The optimal production flows, with the required demands beneath them, are:
 The optimal inventory flows are:
 
 ```julia
-yᵒ                            # Code block 15: inventory
+yᵒ                            # Code block 18: inventory
 ```
 
 ```text
@@ -874,7 +1054,7 @@ yᵒ                            # Code block 15: inventory
 Calculate total production cost and total inventory cost:
 
 ```julia
-TCᵖ, TCⁱ = sum(cᵖ.*xᵒ), sum(cⁱ.*yᵒ)   # Code block 16: component costs
+TCᵖ, TCⁱ = sum(cᵖ.*xᵒ), sum(cⁱ.*yᵒ)   # Code block 19: component costs
 ```
 
 ```text
@@ -884,7 +1064,7 @@ TCᵖ, TCⁱ = sum(cᵖ.*xᵒ), sum(cⁱ.*yᵒ)   # Code block 16: component cos
 The sum of the component costs exceeds the total cost from the solver because it includes the first-period (time 0) inventory costs:
 
 ```julia
-TCᵖ + TCⁱ, TCᵒ                # Code block 17: their sum, and the total
+TCᵖ + TCⁱ, TCᵒ                # Code block 20: their sum, and the total
 ```
 
 ```text
@@ -894,7 +1074,7 @@ TCᵖ + TCⁱ, TCᵒ                # Code block 17: their sum, and the total
 Exclude first period from inventory costs:
 
 ```julia
-TCⁱ = sum(cⁱ.*yᵒ[:,2:end])    # Code block 18: inventory from period 2
+TCⁱ = sum(cⁱ.*yᵒ[:,2:end])    # Code block 21: inventory from period 2
 ```
 
 ```text
@@ -904,30 +1084,30 @@ TCⁱ = sum(cⁱ.*yᵒ[:,2:end])    # Code block 18: inventory from period 2
 The component costs now sum to the total cost from the solver:
 
 ```julia
-TCᵖ + TCⁱ, TCᵒ                # Code block 19: the sum, and the total
+TCᵖ + TCⁱ, TCᵒ                # Code block 22: the sum, and the total
 ```
 
 ```text
 (134300.0, 134300.0)
 ```
 
-Code blocks 16 to 19 are a sanity check, a way of making sure that a model is doing its accounting correctly, and the way the need to include the initial or the final inventory, but not both, comes to light. The total production cost and the total inventory cost are calculated from the plan, added up, and compared with the model’s objective. Summed over every inventory arc, they come to \$135,510, more than the model’s \$134,300, because the model excludes the first period. Recalculated from period 2, the inventory cost is \$3,300 rather than \$4,510, and the sum then equals the objective. For any moderately complex production-inventory problem, this bookkeeping check is worth doing almost always: whatever the model reports as its objective is recalculated from its plan, to make sure it can be duplicated. It is a great way of catching any errors that creep into the calculation, and it is the Triangulate check of Lecture 1.2, two routes to one number.
+Code blocks 19 to 22 are a sanity check, a way of making sure that a model is doing its accounting correctly, and the way the need to include the initial or the final inventory, but not both, comes to light. The total production cost and the total inventory cost are calculated from the plan, added up, and compared with the model’s objective. Summed over every inventory arc, they come to \$135,510, more than the model’s \$134,300, because the model excludes the first period. Recalculated from period 2, the inventory cost is \$3,300 rather than \$4,510, and the sum then equals the objective. For any moderately complex production-inventory problem, this bookkeeping check is worth doing almost always: whatever the model reports as its objective is recalculated from its plan, to make sure it can be duplicated. It is a great way of catching any errors that creep into the calculation, and it is the Triangulate check of Lecture 1.2, two routes to one number.
 
 Total cost \$134,300: production \$131,000 and inventory \$3,300.
 
 A stage can have more than one resource. Between two nodes of the network there can then be two arcs, a multigraph, as when there are two transport options; even for a single product, one stage of production can be the transportation of the product rather than production as such, with a base transport option and a costlier overflow option. The same holds for production proper: a base machine, and, for excess production, a secondary machine that is more expensive to run but is available for overflow. That is the way an electric utility serves its demand, and it is a valuable way of looking at these problems. An electric utility typically has base load units, typically nuclear and coal units, and gas turbines, for example, that handle the peak demands. The idea is used throughout production systems as a way of handling variability in demand.
 
-In such a multigraph the base unit typically has an upper bound, and the more expensive alternative is needed only for a demand that exceeds it. Ex. 6(d) in Lecture 4.2 is the example: the cheaper of two modes carries at most 20 units, and only what it cannot carry takes the costlier one. Overtime is such a costlier resource: it is what Ex. 1(a) suggests scheduling when a plan comes back infeasible because the operation, as it stands, does not have the capacity.
+In such a multigraph the base unit typically has an upper bound, and the more expensive alternative is needed only for a demand that exceeds it. Ex. 6(d) in Lecture 4.2 is the example: the cheaper of two modes carries at most 20 units, and only what it cannot carry takes the costlier one. Overtime is such a costlier resource: it is what Ex. 3(a) suggests scheduling when a plan comes back infeasible because the operation, as it stands, does not have the capacity.
 
 ## 3. Capacity determined inside the model
 
-Even where capacity is set to zero and the decision is made outside the model, it is still quite hard for a person to look at all the different trade-offs once the number of stages and periods gets long enough. Table 1 summarizes the single-product problems of this lecture by what it takes to solve each: when a simple greedy procedure solves the problem, when it is a linear program that the greedy procedure cannot solve, when it requires dynamic programming, and when it requires more. It also motivates the mixed-integer linear programming version of the problem, as a way of internalizing the need to make these decisions. In Sec. 2, the indicator that gates the capacity is provided outside the model.
+Even where capacity is set to zero and the decision is made outside the model, it is still quite hard for a person to look at all the different trade-offs once the number of stages and periods gets long enough. Table 3 summarizes the single-product problems of this lecture by what it takes to solve each: when a simple greedy procedure solves the problem, when it is a linear program that the greedy procedure cannot solve, when it requires dynamic programming, and when it requires more. It also motivates the mixed-integer linear programming version of the problem, as a way of internalizing the need to make these decisions. In Sec. 2, the indicator that gates the capacity is provided outside the model.
 
-Table 1: Single-product problems in this lecture: whether capacity’s availability is set outside the model or gated inside it, whether production carries a setup cost, and what solves each.
+Table 3: Single-product problems in this lecture: whether capacity’s availability is set outside the model or gated inside it, whether production carries a setup cost, and what solves each.
 
 | Capacity | Problem | Solved by |
 |---|---|---|
-| Set outside the model: $u_{ij}$ given, $0$ where unavailable | no setup cost, Model 2’s assumptions hold (Exs. 1, 7) | greedy procedure, Model 2, at the linear program’s cost |
+| Set outside the model: $u_{ij}$ given, $0$ where unavailable | no setup cost, Model 2’s assumptions hold (Exs. 3, 7) | greedy procedure, Model 2; its plan is optimal, costing the same as the linear program’s |
 | | no setup cost, a storage limit binds (Ex. 4) | linear program, Model 1; the greedy plan breaks the limit |
 | | no setup cost, a base resource and a costlier one, a multigraph (Sec. 2.4) | minimum cost network flow on the multigraph, as in Lecture 4.2 |
 | Gated inside the model by indicators $z_{ij}$ | no setup cost (Sec. 3) | linear program, Model 1: the indicators determine nothing |
@@ -982,15 +1162,15 @@ $$
 \mathrlap{\text{Minimize}} & & & & & \\[2pt]
 \mathrlap{\qquad \displaystyle \sum_{i=1}^{m} \sum_{j=1}^{t} \bigl( c_i^p\, x_{ij} + c_i^s\, z_{ij} \bigr) + \sum_{i=1}^{m} \sum_{j=2}^{t+1} c_i^i\, y_{ij}} & & & & & \\[16pt]
 \mathrlap{\text{subject to}} & & & & & \\[8pt]
-& -x_{ij} + x_{(i+1)j} - y_{ij} + y_{i(j+1)} & = & 0, & i = 1, \dots, m-1 & (a) \\[-2pt]
-& & & & j = 1, \dots, t & \\[8pt]
-& -x_{mj} - y_{mj} + y_{m(j+1)} & = & -d_j, & j = 1, \dots, t & (b) \\[8pt]
-& x_{ij} & \le & u_i\, z_{ij}, & i = 1, \dots, m & (c) \\[-2pt]
-& & & & j = 1, \dots, t & \\[8pt]
-& y_{i1} & = & y_i^0, & \hphantom{j}\mathllap{i} = 1, \dots, m & (d) \\[8pt]
-& y_{i(t+1)} & = & y_i^{t+1}, & \hphantom{j}\mathllap{i} = 1, \dots, m & (d) \\[8pt]
-& y_{ij} & \le & u_i^y, & i = 1, \dots, m & (e) \\[-2pt]
-& & & & j = 2, \dots, t & \\[8pt]
+& -x_{ij} + x_{(i+1)j} - y_{ij} + y_{i(j+1)} & = & 0, & \hphantom{k}\mathllap{i} = 1, \dots, m-1 & (a) \\[-2pt]
+& & & & \hphantom{k}\mathllap{j} = 1, \dots, t & \\[8pt]
+& -x_{mj} - y_{mj} + y_{m(j+1)} & = & -d_j, & \hphantom{k}\mathllap{j} = 1, \dots, t & (b) \\[8pt]
+& x_{ij} & \le & u_i\, z_{ij}, & \hphantom{k}\mathllap{i} = 1, \dots, m & (c) \\[-2pt]
+& & & & \hphantom{k}\mathllap{j} = 1, \dots, t & \\[8pt]
+& y_{i1} & = & y_i^0, & \hphantom{k}\mathllap{i} = 1, \dots, m & (d) \\[8pt]
+& y_{i(t+1)} & = & y_i^{t+1}, & \hphantom{k}\mathllap{i} = 1, \dots, m & (d) \\[8pt]
+& y_{ij} & \le & u_i^y, & \hphantom{k}\mathllap{i} = 1, \dots, m & (e) \\[-2pt]
+& & & & \hphantom{k}\mathllap{j} = 2, \dots, t & \\[8pt]
 & x_{ij},\ y_{ij} & \ge & 0 & & \\[8pt]
 & z_{ij} & \in & \mathrlap{\{0, 1, \dots, \bar{z}_{ij}\}} & &
 \end{array}
@@ -1092,7 +1272,7 @@ Example 5(a): Optimal plan
 Determine the plan and its cost with Model 3.
 
 ```julia
-# Code block 20: Ex. 5's data
+# Code block 23: Ex. 5's data
 u = [40, 80]                    # capacity of each stage (ton)
 d = [25, 15, 10, 50, 25, 15]    # demand in each period (ton)
 # variable production cost for each stage ($/ton)
@@ -1114,10 +1294,10 @@ UBʸ = [y⁰ fill(30, m, t-1) yᵗ⁺¹];  # max inventory storage level
 cⁱ = cumsum(cᵖ + cˢ ./ u) * h = [11.666666666666666, 45.833333333333336]
 ```
 
-Code block 21 solves it with Model 3’s implementation, each stage a machine set up at most once a month:
+Code block 24 solves it with Model 3’s implementation, each stage a machine set up at most once a month:
 
 ```julia
-# Code block 21: Ex. 5 solved with prodinv_setup
+# Code block 24: Ex. 5 solved with prodinv_setup
 z̄ = ones(Int, m, t)                 # one setup a month at most
 TCᵒ, xᵒ, yᵒ, zᵒ = prodinv_setup(cᵖ, cˢ, cⁱ, d, u, z̄, LBʸ, UBʸ)
 @show TCᵒ;
@@ -1130,7 +1310,7 @@ TCᵒ = 212275.0
 The optimal production flows, with the required demands beneath them, are:
 
 ```julia
-[xᵒ; d']                      # Code block 22: production, then demand
+[xᵒ; d']                      # Code block 25: production, then demand
 ```
 
 ```text
@@ -1143,7 +1323,7 @@ The optimal production flows, with the required demands beneath them, are:
 The optimal inventory flows are:
 
 ```julia
-yᵒ                            # Code block 23: inventory
+yᵒ                            # Code block 26: inventory
 ```
 
 ```text
@@ -1155,7 +1335,7 @@ yᵒ                            # Code block 23: inventory
 The optimal setups, the production indicators, are:
 
 ```julia
-zᵒ                            # Code block 24: setups
+zᵒ                            # Code block 27: setups
 ```
 
 ```text
@@ -1167,7 +1347,7 @@ zᵒ                            # Code block 24: setups
 Calculate total variable production, inventory, and setup cost components:
 
 ```julia
-# Code block 25: the cost components, inventory from period 2
+# Code block 28: the cost components, inventory from period 2
 TCᵖ, TCⁱ, TCˢ = sum(cᵖ.*xᵒ), sum(cⁱ.*yᵒ[:,2:end]), sum(cˢ.*zᵒ)
 ```
 
@@ -1178,7 +1358,7 @@ TCᵖ, TCⁱ, TCˢ = sum(cᵖ.*xᵒ), sum(cⁱ.*yᵒ[:,2:end]), sum(cˢ.*zᵒ)
 The component costs sum to the total cost from the solver:
 
 ```julia
-TCᵖ + TCⁱ + TCˢ, TCᵒ          # Code block 26: their sum, and the total
+TCᵖ + TCⁱ + TCˢ, TCᵒ          # Code block 29: their sum, and the total
 ```
 
 ```text
@@ -1195,7 +1375,7 @@ Example 5(b): Cost of a given plan by hand
 
 Using some different data as noted below (otherwise, use the data given in Ex. 5) and only a three-month planning horizon, determine the total variable production, inventory, and setup cost over the horizon. The forecasted demand is 22, 3, and 33 tons per month. The product loses five percent of its value after one month. Each month, 20, 4, 40 and 25, 0, 37 tons, respectively, are produced at each stage. Currently, five tons of material is in storage at stage one and none at stage two; at the end of the planning period, seven tons of material should be in storage at stage one and four at stage two.
 
-The production values, the inputs to the network, are given, so the missing data can be inferred using the flow balance equations, as in Exs. 2 and 3, and the costs then computed from them.
+The production values, the inputs to the network, are given, so the missing data can be inferred using the flow balance equations, as in Exs. 1 and 2, and the costs then computed from them.
 
 Going month by month, the inventory carried out of each node is what came in less what went on:
 
@@ -1219,10 +1399,10 @@ $$
 
 $$
 
-Code block 27 computes the same three costs from the plan, and checks them against the answers published with the problem, the Landmark check of Lecture 1.2:
+Code block 30 computes the same three costs from the plan, and checks them against the answers published with the problem, the Landmark check of Lecture 1.2:
 
 ```julia
-# Code block 27: Ex. 5(b)'s plan, costed
+# Code block 30: Ex. 5(b)'s plan, costed
 X = [20 4 40; 25 0 37]              # production at stage i in month j
 db = [22, 3, 33]                    # demand in month j
 Y = zeros(2, 4)                     # inventory, by flow balance
@@ -1261,10 +1441,10 @@ The plan has two stages. Stage 1 is the plant, which can produce any amount in a
 
 The cost of having a truck is found from the truck rate, and that cost becomes the setup cost of the production-inventory problem: every time a truck comes, its cost is incurred, the same kind of cost as a setup.
 
-Code block 28 repeats the data of Lecture 3.3, Ex. 1, and the charge for one truck:
+Code block 31 repeats the data of Lecture 3.3, Ex. 1, and the charge for one truck:
 
 ```julia
-# Code block 28: Lecture 3.3's Ex. 1, and one truck's charge
+# Code block 31: Lecture 3.3's Ex. 1, and one truck's charge
 uwt, ucu = 40, 9                    # lb and ft^3 per carton
 s = uwt/ucu                         # density (lb/ft^3)
 Kwt, Kcu = 25, 2750                 # trailer limits (ton, ft^3)
@@ -1289,10 +1469,10 @@ Example 6(a): Weekly plan
 
 Determine the weekly plan for the year.
 
-Code block 29 builds the year’s data for Model 3 from the truck’s charge and payload, as a function of the product’s value v, so that part (b) can change it, and solves it:
+Code block 32 builds the year’s data for Model 3 from the truck’s charge and payload, as a function of the product’s value v, so that part (b) can change it, and solves it:
 
 ```julia
-# Code block 29: the year planned week by week, at product value v
+# Code block 32: the year planned week by week, at product value v
 using Statistics
 function weekly(v)
     weeks, h = 52, 0.3              # weeks in the year; carrying rate
@@ -1303,7 +1483,7 @@ function weekly(v)
     z̄ = [ones(Int, 1, weeks);       # most setups in a week: the plant,
          fill(10, 1, weeks)]        #   and trucks, more than ever needed
     cⁱ = h/weeks .* [v, v + cTL/qmax]   # inventory cost ($/ton-week)
-    LBʸ = zeros(2, weeks + 1)           # no inventory at either end
+    LBʸ = zeros(2, weeks + 1)       # no inventory at either end
     UBʸ = [zeros(2) fill(Inf, 2, weeks - 1) zeros(2)]
     return prodinv_setup(cᵖ, cˢ, cⁱ, dw, u, z̄, LBʸ, UBʸ)
 end
@@ -1327,10 +1507,10 @@ The plan sends 7 trucks in the year, about 2.86 tons each, one every 7.5 weeks o
 
 As Lecture 3.3 put it, most companies more realistically do batch production: a customer’s product is produced over a very short time, so there is essentially no inventory at the origin. With consumption still constant at the destination, $\alpha = 0 + 1/2 = 1/2$, where before, with inventory at both ends, it was 1.
 
-Code block 30 asks minTLC for the shipment with $\alpha = 1/2$:
+Code block 33 asks minTLC for the shipment with $\alpha = 1/2$:
 
 ```julia
-# Code block 30: Lecture 3.3's minTLC on the same shipment
+# Code block 33: Lecture 3.3's minTLC on the same shipment
 tr = (r = rTL, Kwt = Kwt, Kcu = Kcu, ppi = ppiTL)
 res25 = minTLC((f = f, s = s, a = 1/2, v = 25000, h = 0.3, d = d), tr,
                ppiLTL)
@@ -1357,7 +1537,7 @@ Example 6(b): More valuable product
 Determine the plan again at a value of \$85,000 a ton, as in Ex. 1(k) in Lecture 3.3.
 
 ```julia
-# Code block 31: the plan and minTLC at a value of $85,000 a ton
+# Code block 34: the plan and minTLC at a value of $85,000 a ton
 r85 = weekly(85000)
 tl85 = findall(>(0), r85.z[2, :])
 @show length(tl85)
@@ -1394,12 +1574,12 @@ Every model so far has taken the demand in each period, $d_j$, as given. In prac
 
 The demand over the planning horizon typically comes from a corporate information technology environment, a master production schedule or a material requirements planning (MRP) or enterprise resource planning (ERP) system, which holds the best information available. That information is a mix: for some periods the demand is just a forecast, and for others there are firm orders, customers promised delivery six months out, say. In some businesses the demand going forward is the aggregate of the orders actually received, and little forecasting is done at all: everything to be produced over the next year is produced against firm orders in hand. In a company, the demand comes down a planning hierarchy. Sales and operations planning sets a plan for each family of products, typically monthly and a year or more out; master scheduling turns it into a master production schedule (MPS) for each product, which says what will be made in each period of the planning horizon; and MRP uses the bills of material to work out every component the MPS needs and when to order it. Going down the hierarchy, the detail increases and the horizon shrinks.4 An enterprise resource planning (ERP) system is a software system that controls the entire operations of a firm. The item, carrier, and customer master files are maintained by an ERP system and are used as a common data source for orders.
 
-Of the three scope levels of logistics decisions in Lecture 1.1, Sec. 2, strategic (years), tactical (weeks to a year) and operational (minutes to a week), the production-inventory models of Secs. 2 and 3 are tactical. The demand is a mix of firm and forecasted orders: further out, more of it is forecast, and the more immediate periods have more actual booked orders. Planning guides draw the same shape as a curve, the cumulative orders on hand displacing the forecast the closer a period comes to the present.5 An order that has been booked was part of the forecast, so it cannot simply be added to it. Planning systems let orders consume the forecast: within a short window starting at the present, the demand time fence, only the orders booked count; beyond it, one of several common rules uses the larger of the forecast and the orders already booked.6 Fig. 5 draws both: the orders on hand displacing the forecast as a period comes closer, and the rule on either side of the fence.
+Of the three scope levels of logistics decisions in Lecture 1.1, Sec. 2, strategic (years), tactical (weeks to a year) and operational (minutes to a week), the production-inventory models of Secs. 2 and 3 are tactical. The demand is a mix of firm and forecasted orders: further out, more of it is forecast, and the more immediate periods have more actual booked orders. Planning guides draw the same shape as a curve, the cumulative orders on hand displacing the forecast the closer a period comes to the present.5 An order that has been booked was part of the forecast, so it cannot simply be added to it. Planning systems let orders consume the forecast: within a short window starting at the present, the demand time fence, only the orders booked count; beyond it, one of several common rules uses the larger of the forecast and the orders already booked.6 Fig. 7 draws both: the orders on hand displacing the forecast as a period comes closer, and the rule on either side of the fence.
 
 Show the code that draws this figure
 
 ```julia
-# Code block 32: orders on hand consuming the forecast
+# Code block 35: orders on hand consuming the forecast
 let
     F = [0.85, 1.10, 0.80, 0.95, 1.00, 0.70, 0.95, 1.20, 1.05, 0.80]
     n, fence = length(F), 2            # periods ahead, demand time fence
@@ -1453,7 +1633,7 @@ let
 end
 ```
 
-Figure 5: Schematic of the orders on hand consuming the forecast, for a demand that varies from period to period. The nearer a period, the more of its demand is already booked (dark blue) and the less is forecast (light blue). Within the demand time fence only the orders count, and the forecast not yet booked is set aside; beyond it the plan uses the larger of the forecast and the orders, so in period 4, where the orders already exceed the forecast (dashed), it plans on the orders.
+Figure 7: Schematic of the orders on hand consuming the forecast, for a demand that varies from period to period. The nearer a period, the more of its demand is already booked (dark blue) and the less is forecast (light blue). Within the demand time fence only the orders count, and the forecast not yet booked is set aside; beyond it the plan uses the larger of the forecast and the orders, so in period 4, where the orders already exceed the forecast (dashed), it plans on the orders.
 
 The more immediate periods typically have better forecasts, and the further into the future, the less accurate the forecasts become. A forecast is always wrong, so it should come with a measure of its error, measured at the lead at which the forecast is acted on, since the error grows with the lead; and simple methods are hard to beat.7 8 How long a horizon should be, the subject of Sec. 5, depends on that growth of the error with the lead.
 
@@ -1469,12 +1649,12 @@ The length of the horizon should include all significant planning decisions, and
 
 A typical number of periods is anywhere from six to 36; with monthly periods, three years of monthly data is common. With weekly periods, a plan might look 26 weeks ahead.
 
-The research literature calls a horizon long enough that nothing beyond it can change the first period’s decision a forecast horizon.10 11 Four questions follow, in turn: how a plan uses its horizon, how long the horizon must be, why it should not be longer, and how a choice of horizon is checked. Fig. 6 draws the first two for a resource with an outage ahead, its materials ordered two periods before the period that uses them.
+The research literature calls a horizon long enough that nothing beyond it can change the first period’s decision a forecast horizon.10 11 Four questions follow, in turn: how a plan uses its horizon, how long the horizon must be, why it should not be longer, and how a choice of horizon is checked. Fig. 8 draws the first two for a resource with an outage ahead, its materials ordered two periods before the period that uses them.
 
 Show the code that draws this figure
 
 ```julia
-# Code block 33: rolling plans ahead of an outage, with a lead time
+# Code block 36: rolling plans ahead of an outage, with a lead time
 let
     T, δ = 12, 2                       # periods, lead time
     cap, o = 0.7, 9:10                 # capacity, periods of the outage
@@ -1593,11 +1773,11 @@ let
 end
 ```
 
-Figure 6: Schematic of rolling plans ahead of an outage, with materials ordered two periods before the period that uses them. (a) A plan is made in each period over a horizon of $H = 7$ periods: its first two periods were ordered by the plans before it (outlined), it orders the materials for the period two ahead (dark blue), and the rest is planned but not yet ordered (light blue); each plan starts from the inventory carried in and ends with the inventory carried out (orange). (b) The idle capacity of periods 6 to 8 (green) builds the inventory that covers the demand of the outage in periods 9 and 10 (red). Each period orders for the period two ahead, so the plan made in period 4, outlined in (a), is the earliest that has to see to the end of the outage, and $H \ge \delta$ + build-ahead + outage.
+Figure 8: Schematic of rolling plans ahead of an outage, with materials ordered two periods before the period that uses them. (a) A plan is made in each period over a horizon of $H = 7$ periods: its first two periods were ordered by the plans before it (outlined), it orders the materials for the period two ahead (dark blue), and the rest is planned but not yet ordered (light blue); each plan starts from the inventory carried in and ends with the inventory carried out (orange). (b) The idle capacity of periods 6 to 8 (green) builds the inventory that covers the demand of the outage in periods 9 and 10 (red). Each period orders for the period two ahead, so the plan made in period 4, outlined in (a), is the earliest that has to see to the end of the outage, and $H \ge \delta$ + build-ahead + outage.
 
-How a plan uses its horizon. A plan is acted on only in its first period. For Ex. 1’s plan, the manager is told to produce 45 tons at each stage in period 1. The later periods are not acted on, but they are part of the planning: how much to produce now depends on how much will be carried over as inventory and how much produced later. A month later the model is run again, and the second period becomes the first. Even if no demand has changed, a planned maintenance may have moved and freed capacity, which changes the plan from the inventory carried over; and each new run adds an estimate of the demand one more period out, which can change what is done now. Problems of realistic size give almost no insight just by looking at them.
+A plan is acted on only in its first period. For Ex. 3’s plan, the manager is told to produce 45 tons at each stage in period 1. The later periods are not acted on, but they are part of the planning: how much to produce now depends on how much will be carried over as inventory and how much produced later. A month later the model is run again, and the second period becomes the first. Even if no demand has changed, a planned maintenance may have moved and freed capacity, which changes the plan from the inventory carried over; and each new run adds an estimate of the demand one more period out, which can change what is done now. Problems of realistic size give almost no insight just by looking at them.
 
-The work flow of a planning model in use, as Fig. 7 draws it, runs in five steps:
+The work flow of a planning model in use, as Fig. 9 draws it, runs in five steps:
 
 $$
 \text{Data} \;\rightarrow\; \text{Model} \;\rightarrow\; \text{Solver} \;\rightarrow\; \text{Output} \;\rightarrow\; \text{Report}
@@ -1609,7 +1789,7 @@ Reports are run on a regular period-to-period, rolling-horizon basis as part of 
 Show the code that draws this figure
 
 ```julia
-# Code block 34: the logistics software stack
+# Code block 37: the logistics software stack
 let
     boxc, edgec = colorant"#dff2da", colorant"#3a8a4f"
     # name, what it is, centre (x, y); every box 6.65 wide and 2.5 high
@@ -1664,24 +1844,24 @@ let
 end
 ```
 
-Figure 7: The logistics software stack, the work flow of a planning model in use: the data go into a script, which calls a MIP solver and its libraries and turns the output into a report. Commercial software, such as LLamasoft’s, packages everything inside the dashed line.
+Figure 9: The logistics software stack, the work flow of a planning model in use: the data go into a script, which calls a MIP solver and its libraries and turns the output into a report. Commercial software, such as LLamasoft’s, packages everything inside the dashed line.
 
 With the models of this lecture done, the overall work flow can be seen better. The first step is getting the data, and for a model run every week or every month, getting them is worth automating: fed in from whatever system the company uses, its forecast of demand, say, and whatever other information is needed, so that they are taken into the model on a regular basis without much work. A scripting language, Julia, Matlab or Python, is a good way of getting the data: it takes them in whatever form they come, from a database or elsewhere, and converts them into what the mathematical programming model needs.
 
 The script then calls the solver, and the last piece is reporting the results in a user-friendly way. With 20 plants, not every plant manager needs the entire output of the run: each is sent what that plant should produce over the next several periods, the output focused on each entity in the logistics network. Data, model, solver, output and report is the basic flow.
 
-How long the horizon must be. A plan’s final inventory stands in for every period beyond its horizon, and with nothing required at its end, a plan too short to see a coming outage will not build for it. The cumulative lead time $\delta$ is the longest chain of purchasing and production lead times.
+A plan’s final inventory stands in for every period beyond its horizon, and with nothing required at its end, a plan too short to see a coming outage will not build for it. The cumulative lead time $\delta$ is the longest chain of purchasing and production lead times.
 
 Each period’s materials are ordered $\delta$ periods ahead of the period that uses them, so the first $\delta$ periods of every plan are already committed by orders placed in the periods before, and the decision a plan made now acts on is the order for period $\delta + 1$; with the materials on hand, $\delta = 0$.12 A plan therefore looks at least $\delta$ periods ahead, and further when the order placed now depends on what comes after the period it supplies. For an outage, a count estimates how much further. Scheduled maintenance is one of the important reasons to plan several periods ahead: the plan has to make sure that enough inventory is on hand to cover the maintenance.
 
-An outage with no other source. This count is the machine-hours accounting of Lecture 1.3, Sec. 5, done one period at a time. A resource at utilization $u$ (Eq. 5 in Lecture 1.3) has idle capacity of $1 - u$ of what it can produce in a period. Lecture 1.3 warned that $u < 1$ holds only on average, and a scheduled outage is a burst of demand over capacity that is known in advance and too long to average away. The plan builds the inventory for it on the idle capacity of the periods before it: counting back from the outage, each period’s idle capacity is added until the total covers the outage’s demand, and the horizon has to span those periods and the outage. The plan that has to see the outage is the one that orders the materials for the first period of the build-ahead, $\delta$ periods before it, the plan outlined in Fig. 6; each later period’s materials are ordered by a later plan, which sees the outage as well. At a steady utilization $u$ the count can be done in closed form. Measure demand and inventory in periods of the resource’s production, so that each period’s demand is $u$ and its idle capacity $1 - u$. An outage of $\tau$ periods then has a demand of $\tau u$, all of it to be built ahead, and $b$ periods of build-ahead supply $b\,(1 - u)$ of it, so the number of periods of build-ahead satisfies:
+An outage with no other source. This count is the machine-hours accounting of Lecture 1.3, Sec. 5, done one period at a time. A resource at utilization $u$ (Eq. 5 in Lecture 1.3) has idle capacity of $1 - u$ of what it can produce in a period. Lecture 1.3 warned that $u < 1$ holds only on average, and a scheduled outage is a burst of demand over capacity that is known in advance and too long to average away. The plan builds the inventory for it on the idle capacity of the periods before it: counting back from the outage, each period’s idle capacity is added until the total covers the outage’s demand, and the horizon has to span those periods and the outage. The plan that has to see the outage is the one that orders the materials for the first period of the build-ahead, $\delta$ periods before it, the plan outlined in Fig. 8; each later period’s materials are ordered by a later plan, which sees the outage as well. At a steady utilization $u$ the count can be done in closed form. Measure demand and inventory in periods of the resource’s production, so that each period’s demand is $u$ and its idle capacity $1 - u$. An outage of $\tau$ periods then has a demand of $\tau u$, all of it to be built ahead, and $b$ periods of build-ahead supply $b\,(1 - u)$ of it, so the number of periods of build-ahead satisfies:
 
 $$
 b\,(1 - u) = \tau u, \qquad b = \frac{\tau u}{1 - u}
 
 $$
 
-The plan that has to see the outage spans, in turn, the $\delta$ periods already committed at its front, the $b$ periods of build-ahead and the $\tau$ periods of the outage, the three spans Fig. 6(b) brackets, so its horizon is at least their sum. With $b$ substituted, and since $\tau u + \tau (1 - u) = \tau$, the sum is Eq. 5:
+The plan that has to see the outage spans, in turn, the $\delta$ periods already committed at its front, the $b$ periods of build-ahead and the $\tau$ periods of the outage, the three spans Fig. 8(b) brackets, so its horizon is at least their sum. With $b$ substituted, and since $\tau u + \tau (1 - u) = \tau$, the sum is Eq. 5:
 
 $$
 H \ge \delta + b + \tau = \delta + \frac{\tau u}{1 - u} + \tau = \delta + \frac{\tau}{1 - u}
@@ -1699,17 +1879,15 @@ By Eq. 5, with materials on hand ($\delta = 0$), a month-long outage at 90% util
 
 The lead time is counted once in Eq. 5, not once for each period of the build-ahead, because the materials for a build-ahead are not all ordered at one time and left to sit for two or three periods; they are ordered each period, so a two-period lead time overlaps each period of the build-ahead.
 
-Why it should not be longer. The plan is re-solved every period, so the numbers get less certain the further out they are, and are more subject to change.
-
-Each run can also change what was planned for the coming periods, which unsettles everyone who works to the plan; companies damp this by freezing the nearest periods of the plan, at some cost.13
+The plan is re-solved every period, so the numbers get less certain the further out they are, and are more subject to change. Each run can also change what was planned for the coming periods, which unsettles everyone who works to the plan; companies damp this by freezing the nearest periods of the plan, at some cost.13
 
 A longer horizon can also break the model: one that solves well can go to running for 80 hours without stopping when one more variable is added, or when the horizon goes from 12 periods to 18. These models assume the demand will be satisfied exactly as planned; safety stock applies only to the current period.
 
-How a horizon is checked. Solve with $H$ and again with a longer one: if neither the first period’s decision nor the cost of the plan acted on changes, $H$ was long enough for these data, the Nudge check of Lecture 1.2. As Sec. 1 said, more than one horizon can be defended; what makes the choice right is its reason.
+Solve with $H$ and again with a longer one: if neither the first period’s decision nor the cost of the plan acted on changes, $H$ was long enough for these data, the Nudge check of Lecture 1.2. As Sec. 1 said, more than one horizon can be defended; what makes the choice right is its reason.
 
 Example 7: Horizon of the month-1 plan
 
-Ex. 1’s product, with Ex. 1’s costs, has a forecast of demand and a schedule of capacities for the next six months, the three of Ex. 1 and three more, starting and ending with no inventory. The capacities of its two stages and the demand in the six months are, in tons,
+Ex. 3’s product, with Ex. 3’s costs, has a forecast of demand and a schedule of capacities for the next six months, the three of Ex. 3 and three more, starting and ending with no inventory. The capacities of its two stages and the demand in the six months are, in tons,
 
 $$
 \begin{gathered}
@@ -1721,7 +1899,7 @@ $$
 
 The six months are the data available, not the horizon. Determine by hand how many of them a plan made in month 1 has to look ahead, and the plan over all six months.
 
-This is a two-stage, six-month example. It is the same as Ex. 1, except that the figure of Ex. 1’s network showed only the first three periods; otherwise the data are the same.
+This is a two-stage, six-month example. It is the same as Ex. 3, except that the figure of Ex. 3’s network showed only the first three periods; otherwise the data are the same.
 
 Starting and ending with no inventory, as this example and Ex. 6 do, is rare in practice, since these are typically ongoing operations; the zeros are a simplification.
 
@@ -1735,10 +1913,10 @@ Example 7(b): In Julia
 
 Determine the plan over all six months.
 
-Code block 35 enters the six months, Ex. 1’s three and the next three, and solves them with Model 1:
+Code block 38 enters the six months, Ex. 3’s three and the next three, and solves them with Model 1:
 
 ```julia
-# Code block 35: the six-month plan
+# Code block 38: the six-month plan
 u6 = [50  0 50  0  0 50;          # capacity of stage i in period j (ton)
       60  0  0 60 60 60]
 d6 = [20, 10, 15, 20, 15, 25]       # demand in period j (ton)
@@ -1760,14 +1938,14 @@ Stage  1   2   3   4   5  6  7
     2  0  25  15   0   0  0  0
 ```
 
-The plan carries 35 tons of stage-1 inventory out of month 3, because stage 1 has no capacity in months 4 and 5 and stage 2 needs it to meet their demand. That is where Ex. 1’s final inventory of 35 tons at stage 1 came from: Ex. 1 is the first three months of this plan, and its final inventory stands in for the months beyond its horizon. The plan also agrees with the count of Ex. 7(a): stage 2 makes 45 tons in month 1, the demand of months 1 to 3, and carries 25 and 15 tons of it into months 2 and 3.
+The plan carries 35 tons of stage-1 inventory out of month 3, because stage 1 has no capacity in months 4 and 5 and stage 2 needs it to meet their demand. That is where Ex. 3’s final inventory of 35 tons at stage 1 came from: Ex. 3 is the first three months of this plan, and its final inventory stands in for the months beyond its horizon. The plan also agrees with the count of Ex. 7(a): stage 2 makes 45 tons in month 1, the demand of months 1 to 3, and carries 25 and 15 tons of it into months 2 and 3.
 
 NoteCheck the horizon using Julia
 
-Code block 36 checks the count of Ex. 7(a). It solves the plan made in month 1 with Model 1 over each horizon $H$ from one month to six, with nothing required at its end, and keeps each plan’s month-1 production, the decision that is acted on:
+Code block 39 checks the count of Ex. 7(a). It solves the plan made in month 1 with Model 1 over each horizon $H$ from one month to six, with nothing required at its end, and keeps each plan’s month-1 production, the decision that is acted on:
 
 ```julia
-# Code block 36: the plan made in month 1, over horizons of 1 to 6 months
+# Code block 39: the plan made in month 1, over horizons of 1 to 6 months
 x₁ = zeros(2, 6)                    # month-1 production, horizon H
 for H in 1:6
     LBʸ = zeros(2, H + 1)           # no inventory at the start or end
