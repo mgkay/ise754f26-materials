@@ -102,7 +102,7 @@ Setting the transport rate $r_i = 1$ leaves the monetary weight $w_i$ as $f_i$, 
 
 A plant draws raw materials from its suppliers and ships finished goods to its customers, so its location is pulled from both sides at once: procurement, the inbound flows, and distribution, the outbound flows. Each existing facility, supplier or customer, enters the minisum objective of Eq. 2 through its monetary weight, and the location balances all of them together.
 
-The simplest case, one supplier and one customer, already shows how the weights decide the location. Two products illustrate the two extremes (Fig. 3 and Fig. 4), with the same transport rate on both sides, so only the physical weights matter.
+The simplest case, one supplier and one customer, already shows how the weights determine the location. Two products illustrate the two extremes (Fig. 3 and Fig. 4), with the same transport rate on both sides, so only the physical weights matter.
 
 Figure 3: Product A: two tons of raw material from Asheville yield one ton of finished goods for Durham, with one ton of scrap disposed of locally.
 
@@ -110,7 +110,7 @@ Figure 4: Product B: one ton of raw material from Wilmington, plus two tons of u
 
 Product A is physically weight-losing: two tons move in for every one ton that moves out, so every mile the plant sits closer to Asheville saves a net ton-mile of transport, and the plant belongs at the supplier. Product B is weight-gaining: its ubiquitous inputs, such as water or air, are available everywhere and incur no transport, so only one ton moves in for every three tons that move out, and the plant belongs at the customer. If the two products were made in a single shared plant, neither answer stands alone: the location would depend on how much of each product is made, so each product’s annual demand $f_i$ enters, and the problem becomes exactly the weighted minisum of Eq. 2.
 
-The worked example combines both sides at full scale: a plant on the I-40 corridor (Fig. 5) with two suppliers, three customers, and different inbound and outbound transport rates.
+The example combines both sides at full scale: a plant on the I-40 corridor (Fig. 5) with two suppliers, three customers, and different inbound and outbound transport rates.
 
 Figure 5: The I-40 corridor with mile markers: Asheville (50), Statesville (150), Winston-Salem (190), Greensboro (220), Durham (270), Raleigh (295), and Wilmington (420).
 
@@ -199,7 +199,7 @@ sum(wout) = 60.0
 
 The plant is (monetary) weight-gaining since $\Sigma w_\text{in} = 50 < \Sigma w_\text{out} = 60$, but the plant is physically weight-losing since $\Sigma f_\text{in} = 150 > \Sigma f_\text{out} = 60$; the difference is due to the higher outbound transport rate, finished goods costing three times as much per ton-mile to move as raw materials. Physically, 150 tons per year arrive to make 60 tons of product, with the difference discarded as scrap. The monetary weights are the ones the location responds to, which is why the plant lands at a customer, pulled toward its market even while shedding mass.
 
-A plant can lose physical weight and gain monetary weight at the same time. The transport rates, not the tons alone, decide which way the location moves.
+A plant can lose physical weight and gain monetary weight at the same time. The transport rates, not the tons alone, determine which way the location moves.
 
 ## 3. Single-facility minisum
 
@@ -290,7 +290,7 @@ where
 
 - $W$ = total weight over all $m$ existing facilities.
 
-The condition is a majority in the literal sense, and the reason it determines the problem is that moving away from EF$_j$ adds distance against more than half the weight while removing it from less than half. Lecture 2.3 returns to the theorem for several new facilities, where it decides which operations belong together rather than where a single facility goes.
+The condition is a majority in the literal sense, and the reason it determines the problem is that moving away from EF$_j$ adds distance against more than half the weight while removing it from less than half. Lecture 2.3 returns to the theorem for several new facilities, where it determines which operations belong together rather than where a single facility goes.
 
 When no facility holds a majority the location has to be found some other way. A Varignon frame does it mechanically: strings run from each existing facility over a pulley and carry a weight proportional to $w_i$, and the knot settles at the minisum point. The rest of this section does it numerically.
 
@@ -318,7 +318,7 @@ Xᵒ = minisum(w, P, d2)              # the minisum location
 
 $X^\star \approx (5.09,\ 1.97)$, the Steiner point of Fig. 9.
 
-The search reached that point without any care about where it started, and the reason is the shape of the objective. When the objective is convex, a single bowl (Fig. 12), a downhill search reaches the bottom from wherever it starts, so any starting point gives the same optimum. The weighted-minisum objective is convex, so choosing a start is not a concern here. Nonconvexity by itself does not change that. An objective can be nonconvex and still unimodal, a single basin of irregular shape, and a downhill search reaches its one minimum from any start just as it does in the convex case. What makes the starting point matter is multimodality: several separate local minima, so that where the search begins decides which one it settles in (Fig. 11).
+The search reached that point without any care about where it started, and the reason is the shape of the objective. When the objective is convex, a single bowl (Fig. 12), a downhill search reaches the bottom from wherever it starts, so any starting point gives the same optimum. The weighted-minisum objective is convex, so choosing a start is not a concern here. Nonconvexity by itself does not change that. An objective can be nonconvex and still unimodal, a single basin of irregular shape, and a downhill search reaches its one minimum from any start just as it does in the convex case. What makes the starting point matter is multimodality: several separate local minima, so that where the search begins determines which one it settles in (Fig. 11).
 
 Figure 11: Convex unimodal, nonconvex unimodal, and nonconvex multimodal objectives. If convex or unimodal, any starting point will lead to the global optimum; otherwise, different starting points can lead to different local optima.
 
@@ -360,7 +360,7 @@ current_figure()
 
 Figure 13: Nelder-Mead in action from $(0,0)$: each blue dot is one evaluation of the objective; the search sweeps toward the optimum (red star), the existing facilities in firebrick.
 
-Nelder-Mead is also called the amoeba method, for the way it moves. It works a triangle of points across the plane, evaluating the objective at each: from the current triangle it tries a new point, and when that point improves on the worst corner it moves the triangle that way, creeping downhill by function evaluations alone. The step rules that decide each move are collected in the callout below; the working point is that the method needs nothing but the objective’s values (Fig. 14).
+Nelder-Mead is also called the amoeba method, for the way it moves. It works a triangle of points across the plane, evaluating the objective at each: from the current triangle it tries a new point, and when that point improves on the worst corner it moves the triangle that way, creeping downhill by function evaluations alone. The step rules that determine each move are collected in the callout below; the working point is that the method needs nothing but the objective’s values (Fig. 14).
 
 Figure 14: The simplex crawling downhill across a contour map: at each step it reflects its worst vertex through the opposite face, stretching when that helps and shrinking when it does not, until it closes on the minimum.2
 
@@ -774,7 +774,7 @@ $$
 
 The above formula can result in round off error if the two points are located at exactly opposite sides of a sphere. Instead, the Haversine formula can be used (Eq. 10). The Haversine formula does not need to be used if the great circle distance is being calculated by hand and the two points are known to not be on opposite sides of the sphere.
 
-The formula applied to a few points shows how far apart the distances can be. A worked example measures three cities from Raleigh, each given as a (longitude, latitude) pair in decimal degrees; dists with the :mi unit (or :rad) returns the great-circle distance to each. Fig. 22 draws the same three distances on the globe. Each arc is the shortest path there is between its two points, and none of them is the straight line a flat map would draw between the same pair.
+The formula applied to a few points shows how far apart the distances can be. An example measures three cities from Raleigh, each given as a (longitude, latitude) pair in decimal degrees; dists with the :mi unit (or :rad) returns the great-circle distance to each. Fig. 22 draws the same three distances on the globe. Each arc is the shortest path there is between its two points, and none of them is the straight line a flat map would draw between the same pair.
 
 ```julia
 # Code block 20: great-circle distance to three cities

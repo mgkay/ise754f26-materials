@@ -39,16 +39,16 @@ Figure 4: Multi-vehicle VRP (savings + 2-opt): nine deliveries served by three v
 A logistics study rarely stops at describing a system. The reason to build a model is usually to change the system: to choose a solution that performs better than the system in place. Four terms name the kinds of model involved:
 
 - a model is a representation of the system, detailed enough to predict how it would perform;
-- a descriptive model computes a measure of performance with no preference about the outcome, and decides nothing (the guesstimation and mean-value models later in this lecture are of this kind, returning an estimate or an average);
+- a descriptive model computes a measure of performance with no preference about the outcome, and determines nothing (the guesstimation and mean-value models later in this lecture are of this kind, returning an estimate or an average);
 - a feasibility model determines unknowns that must satisfy stated conditions, with no preference among the answers that work;
 - an optimization model determines unknowns and adds a preference, an objective, and chooses the answer that performs best. Feasibility and optimization models both prescribe, since each determines something rather than only reporting on it; the distinction that does the daily work is the simpler one, whether a model needs an answer that works or the best one.
 
-Whatever form a model eventually takes, it is written down with keywords, at most the five below, listed in the order they appear in the boxes that follow. A descriptive model uses only the last two. solve for: is what makes a model decide, and an objective is what makes a deciding model an optimization, so which of the first two lines appear is what tells the three kinds apart:
+Whatever form a model eventually takes, it is written down with keywords, at most the five below, listed in the order they appear in the boxes that follow. A descriptive model uses only the last two. solve for: is what makes a model determine something, and an objective is what makes such a model an optimization, so which of the first two lines appear is what tells the three kinds apart:
 
 - minimize (or maximize): the objective, the preference added to change the system rather than only describe it;
 - solve for: the unknowns the model determines, each with what values it may take;
 - subject to: the constraints, the conditions any acceptable solution must satisfy; a model with none writes none rather than dropping the line, since an unconstrained problem is a finding about it and not an omission;
-- return: the output of the model, as one thing: a measure of performance for a descriptive model, the decision determined for a model that decides;
+- return: the output of the model, as one thing: a measure of performance for a descriptive model, the decision determined for a model that determines something;
 - assumptions: what the model takes as given about the world and its data.
 
 A constraint and an assumption are easy to confuse and do opposite work: a constraint restricts the solution (which answers the model may return), while an assumption restricts the world and its data (what the model takes as given about the setting).
@@ -175,7 +175,7 @@ These three models are stated only at the level of the decision each one makes. 
 
 ## 4. Levels of modeling
 
-A model is a representation of a real system whose parts and relationships are just detailed enough that it can be used to predict how the system would perform under conditions that have not been tried, and to decide what to do without experimenting on the system itself. Fig. 5 shows a variety of different methods of analysis in relationship to the degree to which they focus on the three elements of the model itself, the data used in making decisions, and the computational effort needed to make decisions. While logistics engineering utilizes all of these different methods of analysis, they tend to focus more towards the computational issues due to the complex interactions of the different elements in most logistics systems.
+A model is a representation of a real system whose parts and relationships are just detailed enough that it can be used to predict how the system would perform under conditions that have not been tried, and to determine what to do without experimenting on the system itself. Fig. 5 shows a variety of different methods of analysis in relationship to the degree to which they focus on the three elements of the model itself, the data used in making decisions, and the computational effort needed to make decisions. While logistics engineering utilizes all of these different methods of analysis, they tend to focus more towards the computational issues due to the complex interactions of the different elements in most logistics systems.
 
 Figure 5: The analysis triangle — Model, Data, and Computer vertices, with analysis methods along each edge; center: Logistics Engineering (the 754 version).
 

@@ -20,7 +20,7 @@ A network is a set of nodes, the connections between them, and something that mo
 
 A logistics network gives them their logistics meaning. The nodes are facilities, plants and warehouses and distribution centers, and what matters most is where a facility is, because its location is usually what is being chosen. The connections are flows of materials, and what matters is how much moves and how far.
 
-Network design is choosing that structure rather than taking it as given: how many nodes, where they go, which are connected, and the characteristics of each. Logistics network design is choosing how many facilities a system should have, where, and which demand each serves. The flows follow: once the facilities are placed and the customers assigned, what moves between them is determined. As introduced in Lecture 1.1, these types of decisions are often strategic because they involve, for example, committing capital to construct buildings in place for decades; they are tactical when a design must determine how production and inventory will be controlled throughout the network; and they are almost never operational, deciding, for example, this week’s deliveries.
+Network design is choosing that structure rather than taking it as given: how many nodes, where they go, which are connected, and the characteristics of each. Logistics network design is choosing how many facilities a system should have, where, and which demand each serves. The flows follow: once the facilities are placed and the customers assigned, what moves between them is determined. As introduced in Lecture 1.1, these types of decisions are often strategic because they involve, for example, committing capital to construct buildings in place for decades; they are tactical when a design must determine how production and inventory will be controlled throughout the network; and they are almost never operational, determining, for example, this week’s deliveries.
 
 Show the code that draws this figure
 
@@ -88,7 +88,7 @@ Lumpiness has a third consequence alongside those two: a facility has a minimum 
 
 ## 2. Bottom-up vs. top-down analysis
 
-Almost every analysis of a logistics network, at the level where the number and location of facilities is decided, is one of two kinds. The difference between them is not the model, which is the same model, and not the objective, which is the same objective. It is where the transport rate comes from.
+Almost every analysis of a logistics network, at the level where the number and location of facilities is determined, is one of two kinds. The difference between them is not the model, which is the same model, and not the objective, which is the same objective. It is where the transport rate comes from.
 
 In a bottom-up analysis the rate is given. A carrier quotes a figure, or the firm knows what it pays per loaded mile, and total cost is built upward from that figure: rate times distance times volume, summed over the customers. Every location example so far in this course has been of this kind.
 
@@ -382,6 +382,8 @@ prt(DataFrame(Plant = 1:length(best.y),
 
 ## 3. Popco Bottling Company
 
+### Number of plants
+
 Popco is a century-old bottling company on the West Coast. It began with a single plant and grew by buying others, and a hundred years of that left it with 42 bottling plants, currently spread across the western U.S.. The question the company brings is whether 42 is the right number: whether profitability could be improved by reducing or adding plants, that is, whether some plants should be closed, or new ones opened, if the saving would be significant.
 
 One thing about the units is worth fixing before the steps begin, because it is the most common place to lose the thread. The units of demand are tons. Population enters at exactly one step, to split a facility’s tonnage among the zones it serves in proportion to the people in them, and it appears nowhere else: not in the rate, not in the cost matrix, not in the objective. Every quantity downstream of that split is a tonnage.
@@ -502,7 +504,7 @@ So the request is deliberately small: what each plant produced, and what that pr
 
 Step 2, the market. Every three-digit ZIP goes to its nearest plant, and a plant serves nothing beyond 200 road miles. That number is not a round figure chosen for convenience. Popco supplies its own trucks, and those trucks must return to the plant at the end of the day, so 200 miles out is a 400-mile round trip, which is about the maximum a truck can do in a day. Beyond that a ZIP is not feasible to serve at all, even one holding a customer as large as a Walmart distribution center. A firm using common carriage would have no such screen.
 
-Tracing it back that far is a Source check. The 200 miles is not a rule of the method and not a convention of the course: it is a fact about Popco’s own fleet, and the check is asking where the number came from before letting it decide which customers exist. A parameter that survives that question can be defended to a client and moved when the fleet changes; one that does not is a constant somebody once typed.
+Tracing it back that far is a Source check. The 200 miles is not a rule of the method and not a convention of the course: it is a fact about Popco’s own fleet, and the check is asking where the number came from before letting it determine which customers exist. A parameter that survives that question can be defended to a client and moved when the fleet changes; one that does not is a constant somebody once typed.
 
 Eq. 1 is the market of plant $i$: every ZIP code whose nearest plant is $i$, and which lies within the screen:
 
@@ -844,7 +846,7 @@ A firm has two plants, A and B, serving four zones that lie along one road. Ever
 pos = (A = 0.0, Z1 = 30.0, Z2 = 90.0, Z3 = 160.0, B = 200.0, Z4 = 420.0)
 zone, plant = [:Z1, :Z2, :Z3, :Z4], [:A, :B]
 
-output = [300.0, 200.0]                    # ton/yr produced at A and B
+output = [300.0, 200.0]                 # ton/yr produced at A and B
 prodcost = [460_000.0, 340_000.0]       # $/yr production + procurement
 distcost = [162_000.0, 80_000.0]        # $/yr outbound distribution
 popn = [120_000.0, 80_000.0, 100_000.0, 60_000.0]    # people
@@ -951,7 +953,7 @@ prt(DataFrame(Case = ["two plants, as today", "one plant at zone 2"],
    one plant at zone 2  361,541
 ```
 
-Everything this example does happens along one road, so the whole of it fits in Fig. 7: the instance, the screen that decides which zones exist at all, the tonnage each surviving zone is given, and the single site that replaces both plants.
+Everything this example does happens along one road, so the whole of it fits in Fig. 7: the instance, the screen that determines which zones exist at all, the tonnage each surviving zone is given, and the single site that replaces both plants.
 
 Show the code that draws this figure
 

@@ -12,7 +12,7 @@ New Julia packages used
 - HiGHS is an open-source solver for linear programs, mixed-integer linear programs and quadratic programs, developed at the University of Edinburgh. It is among the fastest open-source solvers in independent benchmarks, and it is callable from Julia, Python, C++ and the command line.
 - Graphs is the standard Julia package for working with graphs: vertices joined by edges, directed or not. It supplies the data structures and the classical algorithms that run on them, such as shortest paths, connectivity, spanning trees and traversals, and it is the base the other graph packages in Julia build on.
 - SimpleWeightedGraphs extends Graphs with graph types that carry a weight on every edge, stored as a sparse matrix. It is the type to reach for whenever an edge means a distance, a cost or a capacity rather than merely a connection.
-- GraphMakie draws graphs with Makie. It handles the part that is genuinely hard, which is deciding where to put the vertices, and it lets the color, size and label of every vertex and edge be set from data.
+- GraphMakie draws graphs with Makie. It handles the part that is genuinely hard, which is determining where to put the vertices, and it lets the color, size and label of every vertex and edge be set from data.
 - Combinatorics generates and counts the standard combinatorial objects: permutations, combinations, partitions, powersets and their relatives. It is what to reach for when a small instance is to be determined by looking at every possibility.
 
 New Logjam functions used
@@ -47,8 +47,8 @@ solve for:
 (b) second quantity, any nonnegative amount.
 
 subject to:
-(a) shared supply: the two quantities draw 2 and 3 a unit on a supply of 11;
-(b) own supply: first quantity alone draws 2 a unit on a supply of 7.
+(a) Shared supply: the two quantities draw 2 and 3 a unit on a supply of 11;
+(b) Own supply: first quantity alone draws 2 a unit on a supply of 7.
 
 return: pair of quantities giving the greatest total value
 
@@ -63,8 +63,9 @@ Model 1 formulation: Linear program
 $$
 \begin{array}{rlrclll}
 \textbf{LP} : & \text{Maximize} & 6x_1 + 8x_2 & & & & \\[2pt]
-& \text{subject to} & 2x_1 + 3x_2 & \leq & 11 & & (a) \\[2pt]
-& & 2x_1 & \leq & 7 & & (b) \\[2pt]
+& \text{subject to} & & & & & \\[2pt]
+& & \textcolor{#d21f26}{\small\text{Shared supply}}\quad\mathopen{} 2x_1 + 3x_2 & \leq & 11 & & (a) \\[2pt]
+& & \textcolor{#d21f26}{\small\text{Own supply}}\quad\mathopen{} 2x_1 & \leq & 7 & & (b) \\[2pt]
 & & x_1,\, x_2 & \geq & 0 & &
 \end{array}
 \tag{1}
@@ -245,7 +246,7 @@ So an integer restriction is not a detail to be tidied up at the end. It is a di
 
 - Integer variable: the variable is inherently discrete. Rounding fails as above. Example: the number of machines, or of trucks.
 - Direct decision: an internal decision variable indicates a choice between two or more alternatives. Binary variables are used, for example, to represent a yes-or-no choice, to indicate or count membership, or to define a relationship, and constraints can then represent logical conditions. Examples: set covering and bin packing, Secs. 3 and 4.
-- Indirect control: an internal decision variable controls other continuous and discrete variables, typically by turning another variable’s lower or upper bound on or off. Taking the product of two variables would be easier to write and would make the model nonlinear, which is the reason for the detour. Examples: the UFL of Sec. 2, where a binary variable decides whether a new facility is located at a site; fixed-charge problems; semi-continuous variables, used to represent a minimum order quantity; a one-time setup cost; and minimum, maximum and absolute values.
+- Indirect control: an internal decision variable controls other continuous and discrete variables, typically by turning another variable’s lower or upper bound on or off. Taking the product of two variables would be easier to write and would make the model nonlinear, which is the reason for the detour. Examples: the UFL of Sec. 2, where a binary variable determines whether a new facility is located at a site; fixed-charge problems; semi-continuous variables, used to represent a minimum order quantity; a one-time setup cost; and minimum, maximum and absolute values.
 
 The important simplification is that a control variable only has to work when the solver would otherwise want to violate a constraint to improve the solution.
 
@@ -655,7 +656,7 @@ Solving report
   Primal bound      30
   Dual bound        30
   Gap               0% (tolerance: 0.01%)
-  P-D integral      0.00014394949644
+  P-D integral      0.000219051130525
   Solution status   feasible
                     30 (objective)
                     0 (bound viol.)
@@ -782,8 +783,8 @@ solve for:
 (a) sites at which to locate new facilities, a subset of the $n$ candidate sites.
 
 subject to:
-(a) coverage: every existing facility is fully served;
-(b) linking: nothing is served from a site unless a facility is established there.
+(a) Coverage: every existing facility is fully served;
+(b) Linking: nothing is served from a site unless a facility is established there.
 
 return: sites chosen and the resulting total cost
 
@@ -800,11 +801,12 @@ Model 2 formulation: MILP formulation
 $$
 \begin{array}{rlrclll}
 & \text{Minimize} & \displaystyle \sum_{i \in N} k_i y_i +
-\sum_{i \in N}\sum_{j \in M} c_{ij} x_{ij} & & & & \\[2pt]
-& \text{subject to} & \displaystyle \sum_{i \in N} x_{ij} & = & 1, & j \in M & (a) \\[2pt]
-& & y_i & \geq & x_{ij}, & i \in N,\; j \in M & (b) \\[2pt]
-& & 0 \leq x_{ij} & \leq & 1, & i \in N,\; j \in M & \\[2pt]
-& & y_i & \in & \{0,1\}, & i \in N &
+\sum_{i \in N}\sum_{j \in M} c_{ij} x_{ij} & & & & \\[16pt]
+& \text{subject to} & & & & & \\[2pt]
+& & \textcolor{#d21f26}{\small\text{Coverage}}\quad\mathopen{} \smash{\displaystyle \sum_{i \in N}}\, x_{ij} & = & 1, & \hphantom{k}\mathllap{j} \in M & (a) \\[16pt]
+& & \textcolor{#d21f26}{\small\text{Linking}}\quad\mathopen{} y_i & \geq & x_{ij}, & \hphantom{k}\mathllap{i} \in N,\ j \in M & (b) \\[16pt]
+& & 0 \leq x_{ij} & \leq & 1, & \hphantom{k}\mathllap{i} \in N,\ j \in M & \\[16pt]
+& & y_i & \in & \{0,1\}, & \hphantom{k}\mathllap{i} \in N &
 \end{array}
 \tag{4}
 $$
@@ -832,7 +834,7 @@ Constraint (b) alone is replaced, and the symbols are those above:
 
 $$
 \begin{array}{rlrclll}
-& & m\,y_i & \geq & \displaystyle \sum_{j \in M} x_{ij}, & i \in N & (b)
+& & \textcolor{#d21f26}{\small\text{Linking}}\quad\mathopen{} m\,y_i & \geq & \displaystyle \sum_{j \in M} x_{ij}, & i \in N & (b)
 \end{array}
 \tag{5}
 $$
@@ -876,7 +878,7 @@ Determine the sites and the total cost for the five cities of Lecture 2.4, which
 
 ```julia
 # Code block 13: the five I-40 cities of lecture 2.4, through the model
-P = [50 150 220 295 420]'          # mile markers along I-40
+P = [50 150 220 295 420]'      # mile markers along I-40
 r, f = 1, 1                    # rate and flow, both unit here
 w = r * f
 k = [150, 200, 150, 150, 200]  # fixed cost of a site
@@ -972,8 +974,8 @@ solve for:
 (b) share of each existing facility’s demand served from each open site.
 
 subject to:
-(a) coverage: every existing facility’s demand is fully served;
-(b) capacity: no new facility is asked for more than it can produce.
+(a) Coverage: every existing facility’s demand is fully served;
+(b) Capacity: no new facility is asked for more than it can produce.
 
 return: sites chosen, the allocation, and the resulting total cost
 
@@ -988,11 +990,12 @@ Model 3 formulation: Capacitated facility location
 $$
 \begin{array}{rlrclll}
 & \text{Minimize} & \displaystyle \sum_{i \in N} k_i y_i +
-\sum_{i \in N}\sum_{j \in M} c_{ij} x_{ij} & & & & \\[2pt]
-& \text{subject to} & \displaystyle \sum_{i \in N} x_{ij} & = & 1, & j \in M & (a) \\[2pt]
-& & K_i\,y_i & \geq & \displaystyle \sum_{j \in M} f_j x_{ij}, & i \in N & (b) \\[2pt]
-& & 0 \leq x_{ij} & \leq & 1, & i \in N,\; j \in M & \\[2pt]
-& & y_i & \in & \{0,1\}, & i \in N &
+\sum_{i \in N}\sum_{j \in M} c_{ij} x_{ij} & & & & \\[16pt]
+& \text{subject to} & & & & & \\[2pt]
+& & \smash{\displaystyle \sum_{i \in N}}\, x_{ij} & = & 1, & \hphantom{k}\mathllap{j} \in M & (a) \\[16pt]
+& & \textcolor{#d21f26}{\small\text{Capacity}}\quad\mathopen{} K_i\,y_i & \geq & \smash{\displaystyle \sum_{j \in M}}\, f_j x_{ij}, & \hphantom{k}\mathllap{i} \in N & (b) \\[16pt]
+& & 0 \leq x_{ij} & \leq & 1, & \hphantom{k}\mathllap{i} \in N,\ j \in M & \\[16pt]
+& & y_i & \in & \{0,1\}, & \hphantom{k}\mathllap{i} \in N &
 \end{array}
 \tag{6}
 $$
@@ -1169,7 +1172,7 @@ solve for:
 (a) subsets to include in the cover.
 
 subject to:
-(a) coverage: every object belongs to at least one chosen subset.
+(a) Coverage: every object belongs to at least one chosen subset.
 
 return: subsets chosen and the resulting cost
 
@@ -1203,8 +1206,9 @@ Model 4 formulation: Math-programming formulation
 
 $$
 \begin{array}{rlrclll}
-& \text{Minimize} & \displaystyle \sum_{i \in N} c_i x_i & & & & \\[2pt]
-& \text{subject to} & \displaystyle \sum_{i \in N} a_{ji} x_i & \geq & 1, & j \in M & (a) \\[2pt]
+& \text{Minimize} & \displaystyle \sum_{i \in N} c_i x_i & & & & \\[16pt]
+& \text{subject to} & & & & & \\[2pt]
+& & \textcolor{#d21f26}{\small\text{Coverage}}\quad\mathopen{} \smash{\displaystyle \sum_{i \in N}}\, a_{ji} x_i & \geq & 1, & j \in M & (a) \\[16pt]
 & & x_i & \in & \{0,1\}, & i \in N &
 \end{array}
 \tag{9}
@@ -1256,7 +1260,7 @@ solve for:
 (a) subsets to include in the packing.
 
 subject to:
-(a) disjointness: no object belongs to more than one chosen subset.
+(a) Disjointness: no object belongs to more than one chosen subset.
 
 return: subsets chosen, and the objects left uncovered
 
@@ -1270,8 +1274,9 @@ Model 5 formulation: Set packing
 
 $$
 \begin{array}{rlrclll}
-& \text{Maximize} & \displaystyle \sum_{i \in N} x_i & & & & \\[2pt]
-& \text{subject to} & \displaystyle \sum_{i \in N} a_{ji} x_i & \leq & 1, & j \in M & (a) \\[2pt]
+& \text{Maximize} & \displaystyle \sum_{i \in N} x_i & & & & \\[16pt]
+& \text{subject to} & & & & & \\[2pt]
+& & \textcolor{#d21f26}{\small\text{Disjointness}}\quad\mathopen{} \smash{\displaystyle \sum_{i \in N}}\, a_{ji} x_i & \leq & 1, & j \in M & (a) \\[16pt]
 & & x_i & \in & \{0,1\}, & i \in N &
 \end{array}
 \tag{10}
@@ -1529,8 +1534,8 @@ solve for:
 (b) assignment of each object to an open bin.
 
 subject to:
-(a) capacity: the objects in a bin do not exceed its capacity;
-(b) assignment: every object is placed in exactly one bin.
+(a) Capacity: the objects in a bin do not exceed its capacity;
+(b) Assignment: every object is placed in exactly one bin.
 
 return: number of bins used and the contents of each
 
@@ -1562,10 +1567,11 @@ Model 6 formulation: Math-programming formulation
 
 $$
 \begin{array}{rlrclll}
-& \text{Minimize} & \displaystyle \sum_{i \in M} y_i & & & & \\[2pt]
-& \text{subject to} & V\,y_i & \geq & \displaystyle \sum_{j \in M} v_j x_{ij}, & i \in M & (a) \\[2pt]
-& & \displaystyle \sum_{i \in M} x_{ij} & = & 1, & j \in M & (b) \\[2pt]
-& & x_{ij},\, y_i & \in & \{0,1\}, & i \in M,\; j \in M &
+& \text{Minimize} & \displaystyle \sum_{i \in M} y_i & & & & \\[16pt]
+& \text{subject to} & & & & & \\[2pt]
+& & \textcolor{#d21f26}{\small\text{Capacity}}\quad\mathopen{} V\,y_i & \geq & \smash{\displaystyle \sum_{j \in M}}\, v_j x_{ij}, & \hphantom{k}\mathllap{i} \in M & (a) \\[16pt]
+& & \textcolor{#d21f26}{\small\text{Assignment}}\quad\mathopen{} \smash{\displaystyle \sum_{i \in M}}\, x_{ij} & = & 1, & \hphantom{k}\mathllap{j} \in M & (b) \\[16pt]
+& & x_{ij},\, y_i & \in & \{0,1\}, & \hphantom{k}\mathllap{i} \in M,\ j \in M &
 \end{array}
 \tag{12}
 $$
@@ -1633,9 +1639,9 @@ prt(grow)
    objects  binaries  bins  seconds
 ───────────────────────────────────
 1       20       420     6     0.00
-2       50     2,550    15     0.22
-3      100    10,100    31     1.13
-4      200    40,200    61     9.67
+2       50     2,550    15     0.25
+3      100    10,100    31     1.31
+4      200    40,200    61    11.08
 ```
 
 Ten times the objects is a hundred times the variables and rather more than a hundred times the work. Sixty seconds covers two hundred objects several times over and three hundred comfortably, and stops somewhere past that rather than running all afternoon on an instance nobody meant to pose. A limit that is never reached costs nothing, which is the argument for always setting one.
@@ -1660,10 +1666,10 @@ prt(loose)
 ```text
     gap  bins  seconds
 ──────────────────────
-  exact    61     9.61
-     1%    61     9.55
-     2%    62     6.01
-     5%    62     6.10
+  exact    61    10.13
+     1%    61     9.63
+     2%    62     6.15
+     5%    62     6.18
 ```
 
 NoteReading a solve that stopped early
@@ -1684,7 +1690,7 @@ Random.seed!(1244)             # the same twenty objects every build
 mB, VB = 20, 10
 vB = rand(1:5, mB)
 lbB = ceil(Int, sum(vB) / VB)  # no packing can use fewer than this
-prt(vB')                           # the twenty sizes, one row
+prt(vB')                       # the twenty sizes, one row
 (total = sum(vB), bound = lbB)
 ```
 
@@ -1761,9 +1767,9 @@ solve for:
 (b) color given to each vertex.
 
 subject to:
-(a) coloring: every vertex is given exactly one color;
-(b) conflict: two vertices joined by an edge are not given the same color;
-(c) linking: a vertex is given a color only if that color is used.
+(a) Coloring: every vertex is given exactly one color;
+(b) Conflict: two vertices joined by an edge are not given the same color;
+(c) Linking: a vertex is given a color only if that color is used.
 
 return: colors used, and the vertices of each
 
@@ -1824,12 +1830,13 @@ Model 7 formulation: Graph coloring
 
 $$
 \begin{array}{rlrclll}
-& \text{Minimize} & \displaystyle \sum_{k \in K} y_k & & & & \\[2pt]
-& \text{subject to} & \displaystyle \sum_{k \in K} x_{ik} & = & 1, & i \in V & (a) \\[2pt]
-& & x_{ik} + x_{jk} & \leq & 1, & (i,j) \in E;\; k \in K & (b) \\[2pt]
-& & x_{ik} & \leq & y_k, & i \in V,\; k \in K & (c) \\[2pt]
-& & y_k & \in & \{0,1\}, & k \in K & \\[2pt]
-& & x_{ik} & \in & \{0,1\}, & i \in V,\; k \in K &
+& \text{Minimize} & \displaystyle \sum_{k \in K} y_k & & & & \\[16pt]
+& \text{subject to} & & & & & \\[2pt]
+& & \textcolor{#d21f26}{\small\text{Coloring}}\quad\mathopen{} \smash{\displaystyle \sum_{k \in K}}\, x_{ik} & = & 1, & \hphantom{(i,j)}\mathllap{i} \in V & (a) \\[16pt]
+& & \textcolor{#d21f26}{\small\text{Conflict}}\quad\mathopen{} x_{ik} + x_{jk} & \leq & 1, & (i,j) \in E,\ k \in K & (b) \\[16pt]
+& & \textcolor{#d21f26}{\small\text{Linking}}\quad\mathopen{} x_{ik} & \leq & y_k, & \hphantom{(i,j)}\mathllap{i} \in V,\ k \in K & (c) \\[16pt]
+& & y_k & \in & \{0,1\}, & \hphantom{(i,j)}\mathllap{k} \in K & \\[16pt]
+& & x_{ik} & \in & \{0,1\}, & \hphantom{(i,j)}\mathllap{i} \in V,\ k \in K &
 \end{array}
 \tag{13}
 $$
@@ -1954,10 +1961,10 @@ solve for:
 (a) position each job occupies in the sequence.
 
 subject to:
-(a) assignment: every job occupies exactly one position;
-(b) occupancy: every position holds exactly one job;
-(c) accumulation: a position completes when the one before it completes plus the processing time of the job in it;
-(d) tardiness: a job’s tardiness is its completion past its due date, and is never negative.
+(a) Assignment: every job occupies exactly one position;
+(b) Occupancy: every position holds exactly one job;
+(c) Accumulation: a position completes when the one before it completes plus the processing time of the job in it;
+(d) Tardiness: a job’s tardiness is its completion past its due date, and is never negative.
 
 return: sequence and its total tardiness
 
@@ -1972,14 +1979,15 @@ Model 8 formulation: Single-machine total tardiness
 
 $$
 \begin{array}{rlrclll}
-& \text{Minimize} & \displaystyle \sum_{j \in J} T_j & & & & \\[2pt]
-& \text{subject to} & \displaystyle \sum_{k \in K} y_{jk} & = & 1, & j \in J & (a) \\[2pt]
-& & \displaystyle \sum_{j \in J} y_{jk} & = & 1, & k \in K & (b) \\[2pt]
-& & t_1 & = & \displaystyle \sum_{j \in J} p_j\, y_{j1} & & (c) \\[2pt]
-& & t_k & = & \displaystyle t_{k-1} + \sum_{j \in J} p_j\, y_{jk}, & k \in K \setminus \{1\} & (d) \\[2pt]
-& & C_j & \geq & t_k - M(1 - y_{jk}), & j \in J,\; k \in K & (e) \\[2pt]
-& & T_j & \geq & C_j - d_j, & j \in J & (f) \\[2pt]
-& & y_{jk} & \in & \{0,1\}, & j \in J,\; k \in K & \\[2pt]
+& \text{Minimize} & \displaystyle \sum_{j \in J} T_j & & & & \\[16pt]
+& \text{subject to} & & & & & \\[2pt]
+& & \textcolor{#d21f26}{\small\text{Assignment}}\quad\mathopen{} \smash{\displaystyle \sum_{k \in K}}\, y_{jk} & = & 1, & \hphantom{k}\mathllap{j} \in J & (a) \\[16pt]
+& & \textcolor{#d21f26}{\small\text{Occupancy}}\quad\mathopen{} \smash{\displaystyle \sum_{j \in J}}\, y_{jk} & = & 1, & \hphantom{k}\mathllap{k} \in K & (b) \\[16pt]
+& & \textcolor{#d21f26}{\small\text{Accumulation}}\quad\mathopen{} t_1 & = & \smash{\displaystyle \sum_{j \in J}}\, p_j\, y_{j1} & & (c) \\[16pt]
+& & t_k & = & t_{k-1} + \smash{\displaystyle \sum_{j \in J}}\, p_j\, y_{jk}, & \hphantom{k}\mathllap{k} \in K \setminus \{1\} & (d) \\[16pt]
+& & C_j & \geq & t_k - M(1 - y_{jk}), & \hphantom{k}\mathllap{j} \in J,\ k \in K & (e) \\[16pt]
+& & \textcolor{#d21f26}{\small\text{Tardiness}}\quad\mathopen{} T_j & \geq & C_j - d_j, & \hphantom{k}\mathllap{j} \in J & (f) \\[16pt]
+& & y_{jk} & \in & \{0,1\}, & \hphantom{k}\mathllap{j} \in J,\ k \in K & \\[16pt]
 & & t_k,\, C_j,\, T_j & \geq & 0 & &
 \end{array}
 \tag{14}

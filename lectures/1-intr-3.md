@@ -67,7 +67,7 @@ Variability is absorbed by one of three buffers, and only three:
 - time: customers made to wait, or demand spread out through reservations and appointments;
 - inventory: stock built ahead of need.
 
-Known variability, such as a season that concentrates most of a year’s demand into two months, admits two strategies: produce at a level rate all year and hold the surplus as inventory, or idle the plant and ramp up just before the season. Obsolescence decides between them: durable goods favor level production, perishable goods the ramp. The ramp carries its own cost, several times the capacity to compress a year into two months.
+Known variability, such as a season that concentrates most of a year’s demand into two months, admits two strategies: produce at a level rate all year and hold the surplus as inventory, or idle the plant and ramp up just before the season. Obsolescence determines the choice between them: durable goods favor level production, perishable goods the ramp. The ramp carries its own cost, several times the capacity to compress a year into two months.
 
 Bad control can be worse than none: a service line running smoothly on its own can be thrown into disorder by a manager who intervenes constantly, so that it performs better in the manager’s absence.
 
@@ -142,6 +142,8 @@ To find where it applies, look for three things:
 Given those three, the average time a unit spends inside is the stock divided by the flow, $CT = WIP / TH$. The inventory in a warehouse (a stock) and the rate at which product ships from it (a flow), for instance, give the average time a unit sits in stock. The stock-and-flow distinction is the foundation of system dynamics.8
 
 ## 4. Variability and the Poisson process
+
+### Measuring variability
 
 The squared coefficient of variation (SCV) provides a normalized measure used to estimate the variance of a process (demand, production, etc.):
 
@@ -385,7 +387,7 @@ The remaining level of modeling from Lecture 1.1 Sec. 4 is level 3: simulation, 
 
 The simplest form is Monte Carlo simulation: draw random samples and read statistics off them, with no clock and no system state. Model 1 generates the totally random arrivals of Sec. 4 by drawing each inter-arrival time as $-\ln(U)/r_a$ from a uniform $U$, a use of inverse-transform sampling: inverting the exponential’s cumulative distribution turns independent uniforms into exponential gaps.
 
-The models from here on are written at two depths, and the boxes are labelled accordingly. A model stated in words alone, in the keyword form of Lecture 1.1, is the concept, and it is captioned with the model’s number and name and nothing else, because the concept is what a model is. Committing that statement to runnable Julia is the implementation, captioned “Model N implementation” so it is clear which concept it belongs to. A third depth, the formulation, sits between them when a model is worth writing in symbols before it is written in code; these first models go straight to Julia and so have none. Descending is meant to add detail without changing what the depth above said, which is why the two are shown separately rather than merged: a constraint that appears in the code and nowhere in the concept is something decided silently.10
+The models from here on are written at two depths, and the boxes are labelled accordingly. A model stated in words alone, in the keyword form of Lecture 1.1, is the concept, and it is captioned with the model’s number and name and nothing else, because the concept is what a model is. Committing that statement to runnable Julia is the implementation, captioned “Model N implementation” so it is clear which concept it belongs to. A third depth, the formulation, sits between them when a model is worth writing in symbols before it is written in code; these first models go straight to Julia and so have none. Descending is meant to add detail without changing what the depth above said, which is why the two are shown separately rather than merged: a constraint that appears in the code and nowhere in the concept is something determined silently.10
 
 NoteInverse-transform sampling: turning uniforms into any distribution
 
@@ -519,7 +521,7 @@ ci    = 1.96 * se              # 95% confidence half-width
 
 The trade. The two levels complement each other. The level-2 formula delivers the long-run average instantly, one line of arithmetic, with its assumptions in plain sight. The simulation spends millions of simulated jobs to approach the same number, and tighter precision costs more replications still. For the long-run average of a standard queue, the formula is the right tool. The simulation earns its keep in the other direction: change the system in a way the formula cannot express, and the model needs only a few edited lines. The formula gives speed on the questions it can pose; the simulation gives reach on the questions it cannot; where they overlap, each checks the other.
 
-Beyond the formula: queue discipline. Both Eq. 6 and Model 2 assume first-in-first-out service. Nothing in a real queue requires that. A workstation might instead serve the shortest waiting job first (shortest processing time, SPT), expediting quick jobs at the expense of long ones. The VUT equation has no term for queue discipline, and extending the level-2 analysis to one is hard to impossible; in the simulation, the discipline is just the rule for choosing which waiting job goes next. Model 3 replays the same station with that one rule changed.
+Both Eq. 6 and Model 2 assume first-in-first-out service. Nothing in a real queue requires that. A workstation might instead serve the shortest waiting job first (shortest processing time, SPT), expediting quick jobs at the expense of long ones. The VUT equation has no term for queue discipline, and extending the level-2 analysis to one is hard to impossible; in the simulation, the discipline is just the rule for choosing which waiting job goes next. Model 3 replays the same station with that one rule changed.
 
 return: cycle time of each job through a single-server queue that serves the shortest waiting job first
 

@@ -1326,7 +1326,7 @@ for k in 1:n1                             # the new nodes, filled
     poly!(ax, Circle(Point2f(P8[k, 1], P8[k, 2]), rn); color = bluec,
           strokecolor = :white, strokewidth = 1)
 end
-k1 = findfirst(>(n1), L8.DST[isc])       # a connector of each kind
+k1 = findfirst(>(n1), L8.DST[isc])        # a connector of each kind
 k2 = findfirst(<=(n1), L8.DST[isc])
 sc = MarkerElement(color = bluec, marker = :circle, markersize = 14)
 axislegend(ax, [hs[k1], hs[k2], sc],
@@ -1800,8 +1800,8 @@ solve for:
 (a) intersections to select as terminals.
 
 subject to:
-(a) coverage: every intersection is within half a day’s drive of a terminal;
-(b) linehaul: every terminal is within a day’s drive of another terminal.
+(a) Coverage: every intersection is within half a day’s drive of a terminal;
+(b) Linehaul: every terminal is within a day’s drive of another terminal.
 
 assumptions:
 (a) travel time between two intersections is the time of the shortest path between them;
@@ -1815,9 +1815,10 @@ Model 2 formulation: Transshipment terminals
 
 $$
 \begin{array}{rlrclll}
-& \text{Minimize} & \displaystyle \sum_{i \in N} x_i & & & & \\[2pt]
-& \text{subject to} & \displaystyle \sum_{\substack{i \in N \,: \\ t_{ij} \le t_{\max}/2}} x_i & \geq & 1, & j \in N & (a) \\[2pt]
-& & x_i & \leq & \displaystyle \sum_{\substack{k \in N \setminus \{i\} \,: \\ t_{ik} \le t_{\max}}} x_k, & i \in N & (b) \\[2pt]
+& \text{Minimize} & \displaystyle \sum_{i \in N} x_i & & & & \\[16pt]
+& \text{subject to} & & & & & \\[2pt]
+& & \smash{\displaystyle \sum_{\substack{i \in N \,: \\ t_{ij} \le t_{\max}/2}}}\, x_i & \geq & 1, & j \in N & (a) \\[24pt]
+& & \textcolor{#d21f26}{\small\text{Linehaul}}\quad\mathopen{} x_i & \leq & \smash{\displaystyle \sum_{\substack{k \in N \setminus \{i\} \,: \\ t_{ik} \le t_{\max}}}}\, x_k, & i \in N & (b) \\[24pt]
 & & x_i & \in & \{0,1\}, & i \in N &
 \end{array}
 \tag{5}

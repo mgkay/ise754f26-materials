@@ -19,7 +19,7 @@ New Logjam functions used
 
 Companion script
 
-3-tran-2.jl, runnable Julia extracted from the lecture’s code blocks. (ppi-trucking.csv, the Producer Price Index snapshot Sec. 2.8 reads.)
+3-tran-2.jl, runnable Julia extracted from the lecture’s code blocks. (ppi-trucking.csv, the Producer Price Index snapshot Sec. 2.2 reads.)
 
 ## 1. Trucking services and operations
 
@@ -95,9 +95,11 @@ The rule reaches further into logistics decisions than a safety regulation usual
 
 One-time shipments are an operational decision, and they are what this lecture is about: the shipment size $q$ is known. A shipper already knows when and how much to ship, and what is left is to determine if TL and/or LTL is to be used. The charge is the carrier’s to state, so a shipper must contact a carrier or have an agreement to know the charge, but it can, and should, be estimated first: that estimate is what the rest of this lecture builds.
 
-Periodic shipments are a tactical decision: here the demand rate $f$ is known and the size $q$ must be determined. What has to be worked out is how often and how much to ship, and an analytical transport charge formula is what allows an “optimal” size, and with it the shipment frequency, to be estimated. The U.S. Bureau of Labor Statistic’s Producer Price Index (PPI) for TL and LTL is used to estimate those transport charges, and Sec. 2.8 is where it enters here. Periodic shipments are Lecture 3.3’s subject.
+Periodic shipments are a tactical decision: here the demand rate $f$ is known and the size $q$ must be determined. What has to be worked out is how often and how much to ship, and an analytical transport charge formula is what allows an “optimal” size, and with it the shipment frequency, to be estimated. The U.S. Bureau of Labor Statistic’s Producer Price Index (PPI) for TL and LTL is used to estimate those transport charges, and Sec. 2.2 is where it enters here. Periodic shipments are Lecture 3.3’s subject.
 
 ## 2. Design constants
+
+### 2.1 Seven constants
 
 This section is a reference rather than an argument. Seven standing values recur through the rest of the course, and they are collected here, in the order they are introduced, so that any of them can be found again quickly from the sidebar. Each is stated on its own line; what sits under it is the reasoning, the derivation, and where the constant is treated at length.
 
@@ -207,12 +209,12 @@ fillc = RGBf(0.78, 0.92, 0.78)
 edgec = RGBf(0.25, 0.55, 0.30)
 ink   = RGBf(0.10, 0.12, 0.14)
 
-# EQUAL SCALE ON BOTH AXES IS WHAT MAKES THE GEOMETRY WORK, and leaving it
-# out is what put white gaps between the arrows and the nodes: a node is a
-# marker sized in PIXELS, so trimming a lane by a radius in DATA units is
-# only right when one data unit is the same number of pixels each way.
-# DataAspect fixes the ratio; the limits below are chosen to match the
-# figure's own so nothing is padded to achieve it.
+# EQUAL SCALE ON BOTH AXES IS WHAT MAKES THE GEOMETRY WORK, and leaving
+# it out is what put white gaps between the arrows and the nodes: a
+# node is a marker sized in PIXELS, so trimming a lane by a radius in
+# DATA units is only right when one data unit is the same number of
+# pixels each way. DataAspect fixes the ratio; the limits below are
+# chosen to match the figure's own so nothing is padded to achieve it.
 XLO, XHI, YLO, YHI = -0.10, 5.55, 0.22, 1.36
 WIDTH = 687
 PXU = WIDTH / (XHI - XLO)          # pixels per data unit, both axes
@@ -452,7 +454,7 @@ Note: the average cost is not the present worth spread over the life. It is temp
 
 Every row of Table 4 follows from those three and a handful of published inputs, and the code that produced it folds under the table itself. Each input that was looked up rather than derived carries its source in the table.
 
-Two of those inputs are worth pausing on, because they are where the estimate could most easily have gone wrong. The deflator is the same producer price index Sec. 2.8 is about, used in reverse: the vehicle cost and the wage are current figures brought back to 2004 so that every row sits in the same year’s dollars. And the driver wage is divided by $1 - 0.30$ rather than multiplied by 1.30, because benefits are stated as a share of total compensation rather than as a markup on the wage.
+Two of those inputs are worth pausing on, because they are where the estimate could most easily have gone wrong. The deflator is the same producer price index Sec. 2.2 is about, used in reverse: the vehicle cost and the wage are current figures brought back to 2004 so that every row sits in the same year’s dollars. And the driver wage is divided by $1 - 0.30$ rather than multiplied by 1.30, because benefits are stated as a share of total compensation rather than as a markup on the wage.
 
 The same three formulas size anything bought once and used over time. Run on a \$32,000 car over five years at 12,000 miles a year, they give about 74 cents a mile, which is close to the Internal Revenue Service’s own standard mileage rate and a long way above what most drivers believe a mile costs them.
 
@@ -471,7 +473,7 @@ where
 
 Sec. 3.2 is where this is applied.
 
-### 2.8 Producer Price Index
+### 2.2 Producer Price Index
 
 The two series that carry design constant 7 forward are published monthly by the Bureau of Labor Statistics.15
 
@@ -533,7 +535,7 @@ A product is shipped in cartons from Raleigh, NC (27606) to Gainesville, FL (326
 
 ### 3.1 Maximum payload
 
-A trailer is constrained by weight and by cubic volume at the same time, and which one binds is decided by the density of the load alone. The maximum payload is the maximum size of each truckload:
+A trailer is constrained by weight and by cubic volume at the same time, and which one binds is determined by the density of the load alone. The maximum payload is the maximum size of each truckload:
 
 $$
 q_{\max} = \min\left\{ q_{\max}^{wt},\, q_{\max}^{cu} \right\}
@@ -626,17 +628,14 @@ Before contacting the carrier to negotiate, and using the January 2018 PPI, dete
 d = 532                               # mi, Google Maps road distance
 ppiTL = 131.0                         # TL PPI for Jan 2018
 @show rTL = 2.00ppiTL/102.7           # $/mi
-@show cTL = charge_tl(qTL, s, d; r = rTL, Kwt = Kwt,
-                      Kcu = Kcu, ppi = ppiTL)  # $
+cTL = charge_tl(qTL, s, d; r = rTL, Kwt = Kwt,
+                Kcu = Kcu, ppi = ppiTL)       # $
+@show cTL;
 ```
 
 ```text
 rTL = (2.0ppiTL) / 102.7 = 2.5511197663096397
-cTL = charge_tl(qTL, s, d; r = rTL, Kwt = Kwt, Kcu = Kcu, ppi = ppiTL) = 1357.1957156767282
-```
-
-```text
-1357.1957156767282
+cTL = 1357.1957156767282
 ```
 
 $r_{TL} =$ \$2.55/mi, so $c_{TL} =$ \$1357.2.
@@ -684,7 +683,7 @@ where
 
 The model reflects average industry rates and allows rate estimates to be adjusted to current economic conditions by using the current Producer Price Index for LTL service. Note that, in actuality, an LTL shipment between any origin and destination is likely to travel a longer distance than the road distance $d$ because it will travel through one or more transshipment terminals along its journey. However, the road distance between O-D pairs is the only readily available measure of distance, and, since the particular network of transshipment terminals is specific to each LTL carrier, it is the only reasonable measure. The model is independent of the particular characteristics of any O-D pair and, since the only parameter that distinguishes O-D pairs is road distance, the resulting rate estimate is symmetric with respect to O-D order, with such differences being treated as noise.
 
-The range the estimate is valid over is part of the estimate. Eq. 12 holds for $37 \le d \le 3{,}354$ mi, $0.075 \le q \le 5$ ton, and $2000\,q/s \le 650$ ft3. These conditions represent the range of input data that produced the estimate, and they also ensure that the denominator stays positive. Outside them the formula does not fail, it returns a negative rate: pushing $q$ and $d$ low enough drives $q^{1/7} d^{15/29} - 7/2$ below zero, and the result is a confident, wrong, negative charge. $K_{wt}$ and $K_{cu}$, meanwhile, do not appear anywhere in Eq. 12, and that is not an oversight. The trailer’s capacities are a truckload constraint: they decide how much fits on a truck the shipper is paying for whole. An LTL shipment rides with other freight, so the carrier’s trailer capacity is the carrier’s problem and never enters the rate.
+The range the estimate is valid over is part of the estimate. Eq. 12 holds for $37 \le d \le 3{,}354$ mi, $0.075 \le q \le 5$ ton, and $2000\,q/s \le 650$ ft3. These conditions represent the range of input data that produced the estimate, and they also ensure that the denominator stays positive. Outside them the formula does not fail, it returns a negative rate: pushing $q$ and $d$ low enough drives $q^{1/7} d^{15/29} - 7/2$ below zero, and the result is a confident, wrong, negative charge. $K_{wt}$ and $K_{cu}$, meanwhile, do not appear anywhere in Eq. 12, and that is not an oversight. The trailer’s capacities are a truckload constraint: they determine how much fits on a truck the shipper is paying for whole. An LTL shipment rides with other freight, so the carrier’s trailer capacity is the carrier’s problem and never enters the rate.
 
 NoteHow the formula was fitted
 
@@ -749,7 +748,7 @@ $r_{LTL} =$ \$3.78/ton-mi, so $c_{LTL} =$ \$602.81.
 
 ### 4.2 Comparing TL and LTL
 
-At 0.3 ton, LTL is much the cheaper service. At 6 tons, TL is. Somewhere between them the two charges are equal, and that crossing is what decides which service a given shipment should use.
+At 0.3 ton, LTL is much the cheaper service. At 6 tons, TL is. Somewhere between them the two charges are equal, and that crossing is what determines which service a given shipment should use.
 
 Example 1(e): The shipment size at which the charges are equal
 
@@ -924,7 +923,7 @@ Parabolic interpolation. Pick three points, a triplet, and fit the parabola thro
 
 Brent’s method. Parabolic interpolation is not surefire, and how it fails is worth seeing. If the three points do not enclose the minimum, which is easy enough when the bounds were guessed rather than plotted, the fitted parabola has its own minimum nowhere near the function’s: a bad parabolic update. Brent’s method (1973) is the intelligent way of using parabolic interpolation when it can be trusted, and the test is whether the calculated minimum falls between the first and third points of the triplet. While it does, the method keeps interpolating; the moment it falls outside, the method switches to golden section, and switches back once interpolation is improving again. That is the go-to technique in Optim, in SciPy, in MATLAB and in essentially any scientific programming language, and it has been since 1973.
 
-Finding a root or an intersection. A minimizer can find where a function is zero, and therefore where two functions cross, by minimizing a non-negative function that vanishes there. Minimizing $|f(x)|$ or $f(x)^2$ drives $f$ to zero, which is exactly what Eq. 13 does with the difference of the two charge functions. The bracket matters: a function with several roots has several minima, and the bounds decide which one is found.
+Finding a root or an intersection. A minimizer can find where a function is zero, and therefore where two functions cross, by minimizing a non-negative function that vanishes there. Minimizing $|f(x)|$ or $f(x)^2$ drives $f$ to zero, which is exactly what Eq. 13 does with the difference of the two charge functions. The bracket matters: a function with several roots has several minima, and the bounds determine which one is found.
 
 ```julia
 # Code block 7: the three roots of f(x) = x - x^3, found by bracketing
@@ -1120,7 +1119,7 @@ The ideal density (18.18 lb/ft3) is the density at which a full truckload is sim
 
 NoteThe same threshold in the other two modes
 
-Density decides which of a vehicle’s two capacities runs out first, and the threshold is not the same in every mode. Lecture 3.1 makes the point without figures because the trailer numbers had not been introduced; they have now.
+Density determines which of a vehicle’s two capacities runs out first, and the threshold is not the same in every mode. Lecture 3.1 makes the point without figures because the trailer numbers had not been introduced; they have now.
 
 Table 9: The density above which weight binds before cube, by mode.22
 
