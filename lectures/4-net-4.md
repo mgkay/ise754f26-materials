@@ -554,6 +554,10 @@ Example 1(b): Cost of a given plan by hand
 
 Using some different data (as noted below, otherwise use the data given in Ex. 1) and only a three-week planning horizon, determine the total production, inventory, and transport cost over the horizon. The forecasted demand for both materials is 20, 10, 45 and 12, 25, 5 tons, respectively. It costs \$600 and \$400 to extract each ton of material at the facility, and the annual inventory carrying rate is 0.5. Currently, 20 tons of the second material is in inventory at the final destination. A different amount of material can be in inventory at the end of the planning period. For each material, each period, 30, 30, 30 and 16, 17, 17 tons, respectively, are produced; 30, 10, 50 and 0, 20, 30 tons are transported to the staging station; and 22, 8, 60 and 0, 17, 33 tons are transported to the final destination.
 
+Fig. 3 sets the plan out on each material’s network: the flows it gives in red, and in blue the inventory each node carries out, what came in less what went on, with both materials’ trucks and trailers each week below them:
+
+Figure 3: Ex. 1(b)‘s plan on each material’s network, a week to a column: (a) and (b) the extraction, truck and trailer flows and the demand, with the inventory at the start, in red, and the inventory each node carries out, found by flow balance, in blue; (c) the two materials’ tons on each week’s trucks and trailers, and the loads that carry them.
+
 The plan’s flows are given, so the inventories follow from flow balance, as in Ex. 5(b) in Lecture 4.3: at each stage, the inventory carried out of a week is what came in less what went on. The site has nothing at the start and the staging station nothing; the destination has the 20 tons of the second material. For the first material,
 
 $$
@@ -752,7 +756,7 @@ prodinv_excl (generic function with 1 method)
 
 Constraints (a) and (b) are for flow balance, (c) for production capacity, and (f) are linking constraints that ensure that only one product is produced at each stage during each period. Constraints (a)-(e) all refer to each product separately, and only (f) refer to multiple products together for each stage and period.
 
-With exclusive shared resources, the model can be thought of as two separate math programming models, one for each product. In the constraint matrix of the whole model, Fig. 3, everything outside the two products’ blocks is zero, and the only thing that connects the two math programs is the linking constraints at the bottom; without them, two separate models would be solved. That one simple structure has long been used to decompose such problems: instead of one large integrated model, each product’s model is solved separately, and a master problem combines them, by Lagrangian relaxation and many other decomposition techniques, the subject of literally thousands of papers. Most of that is probably not needed for many problems today. A large enough problem may still need some decomposition, but solvers are good enough on many fairly large problems that they do much of it themselves as part of their presolve, and it is not something a logistics engineer needs to be much concerned about now. In the formulation, the one new row is (f), the linking constraint; otherwise the model is like the setup model of Lecture 4.3, its $z$ variables gating the capacity. Although $z$ is a decision variable, it does not appear in the objective, which has only the production and inventory terms; where Lecture 4.3’s setup model had three terms, the setup cost among them, here $z$ is used only to make the connection.
+With exclusive shared resources, the model can be thought of as two separate math programming models, one for each product. In the constraint matrix of the whole model, Fig. 4, everything outside the two products’ blocks is zero, and the only thing that connects the two math programs is the linking constraints at the bottom; without them, two separate models would be solved. That one simple structure has long been used to decompose such problems: instead of one large integrated model, each product’s model is solved separately, and a master problem combines them, by Lagrangian relaxation and many other decomposition techniques, the subject of literally thousands of papers. Most of that is probably not needed for many problems today. A large enough problem may still need some decomposition, but solvers are good enough on many fairly large problems that they do much of it themselves as part of their presolve, and it is not something a logistics engineer needs to be much concerned about now. In the formulation, the one new row is (f), the linking constraint; otherwise the model is like the setup model of Lecture 4.3, its $z$ variables gating the capacity. Although $z$ is a decision variable, it does not appear in the objective, which has only the production and inventory terms; where Lecture 4.3’s setup model had three terms, the setup cost among them, here $z$ is used only to make the connection.
 
 Example 2: Plant shared by two products
 
@@ -817,90 +821,80 @@ TCᵒ, xᵒ, yᵒ, zᵒ = prodinv_excl(cᵖ, cⁱ, d, u, LBʸ, UBʸ)
 TCᵒ = 64765.105544147846
 ```
 
-The plan for each product, its production with its demand beneath, its inventory and the stages set up for it:
+Code block 9 prints the plan for each product, its production with its demand beneath, its inventory and the stages set up for it, in a loop over the products that titles each table with its product:
 
 ```julia
-# Code block 9: Product 1 production level/Demand
-prt([xᵒ[:,:,1]; d[:,1]']; rows = [string.("Stage ", 1:m); "Demand"],
-    cols = string.(1:t), row_title = "Week")
+# Code block 9: the plan for each product
+stages = string.("Stage ", 1:m)                 # the rows of each table
+for k in 1:g
+    println()                                   # a blank line above each
+    prt([xᵒ[:,:,k]; d[:,k]']; rows = [stages; "Demand"],
+        cols = string.(1:t), row_title = "Week",
+        title = "Product $k: production level and demand")
+    println()
+    prt(yᵒ[:,:,k]; rows = stages, cols = string.(1:t+1),
+        row_title = "Week", title = "Product $k: inventory level")
+    println()
+    prt(zᵒ[:,:,k]; rows = stages, cols = string.(1:t),
+        row_title = "Week", title = "Product $k: set up")
+end
 ```
 
 ```text
+
+Product 1: production level and demand
    Week   1   2   3   4   5   6   7   8   9  10  11  12  13
 ───────────────────────────────────────────────────────────
 Stage 1  29  50   0  27  50   0  29   0  49   0   0  43  25
 Stage 2  29  50   0  27  50   0  29   0  49   0   0  43  25
 Stage 3  29  50   0  27  50   0  29   0  49   0   0  43  25
  Demand   6  40  33  24  29  24  16  13  14  17  18  43  25
-```
 
-```julia
-yᵒ[:,:,1]              # Code block 10: Product 1 inventory level
-```
+Product 1: inventory level
+   Week  1   2   3  4  5   6  7   8  9  10  11  12  13  14
+──────────────────────────────────────────────────────────
+Stage 1  0   0   0  0  0   0  0   0  0   0   0   0   0   0
+Stage 2  0   0   0  0  0   0  0   0  0   0   0   0   0   0
+Stage 3  0  23  33  0  3  24  0  13  0  35  18   0   0   0
 
-```text
-3×14 Matrix{Float64}:
- 0.0   0.0   0.0  0.0  0.0   0.0  0.0   0.0  0.0   0.0   0.0  0.0  0.0  0.0
- 0.0   0.0   0.0  0.0  0.0   0.0  0.0   0.0  0.0   0.0   0.0  0.0  0.0  0.0
- 0.0  23.0  33.0  0.0  3.0  24.0  0.0  13.0  0.0  35.0  18.0  0.0  0.0  0.0
-```
+Product 1: set up
+   Week  1  2  3  4  5  6  7  8  9  10  11  12  13
+──────────────────────────────────────────────────
+Stage 1  1  1  0  1  1  0  1  0  1   0   0   1   1
+Stage 2  1  1  0  1  1  0  1  0  1   0   0   1   1
+Stage 3  1  1  0  1  1  0  1  0  1   0   0   1   1
 
-```julia
-zᵒ[:,:,1]              # Code block 11: Product 1 set up
-```
-
-```text
-3×13 Matrix{Int64}:
- 1  1  0  1  1  0  1  0  1  0  0  1  1
- 1  1  0  1  1  0  1  0  1  0  0  1  1
- 1  1  0  1  1  0  1  0  1  0  0  1  1
-```
-
-```julia
-# Code block 12: Product 2 production level/Demand
-prt([xᵒ[:,:,2]; d[:,2]']; rows = [string.("Stage ", 1:m); "Demand"],
-    cols = string.(1:t), row_title = "Week")
-```
-
-```text
+Product 2: production level and demand
    Week   1   2   3  4  5   6   7   8   9  10  11  12  13
 ─────────────────────────────────────────────────────────
 Stage 1   0   0  28  0  0  22   0  31   0  23  28   0   0
 Stage 2   0   0  28  0  0  22   0  31   0  23  28   0   0
 Stage 3   0   0  28  0  0  22   0  31   0  23  28   0   0
  Demand  17  14  17  4  7  10  12  18  13  23   8  17   3
-```
 
-```julia
-yᵒ[:,:,2]              # Code block 13: Product 2 inventory level
-```
+Product 2: inventory level
+   Week   1   2  3   4  5  6   7  8   9  10  11  12  13  14
+───────────────────────────────────────────────────────────
+Stage 1   0   0  0   0  0  0   0  0   0   0   0   0   0   0
+Stage 2   0   0  0   0  0  0   0  0   0   0   0   0   0   0
+Stage 3  31  14  0  11  7  0  12  0  13   0   0  20   3   0
 
-```text
-3×14 Matrix{Float64}:
-  0.0   0.0  0.0   0.0  0.0  0.0   0.0  0.0   0.0  0.0  0.0   0.0  0.0  0.0
-  0.0   0.0  0.0   0.0  0.0  0.0   0.0  0.0   0.0  0.0  0.0   0.0  0.0  0.0
- 31.0  14.0  0.0  11.0  7.0  0.0  12.0  0.0  13.0  0.0  0.0  20.0  3.0  0.0
-```
-
-```julia
-zᵒ[:,:,2]              # Code block 14: Product 2 set up
-```
-
-```text
-3×13 Matrix{Int64}:
- 0  0  1  0  0  1  0  1  0  1  1  0  0
- 0  0  1  0  0  1  0  1  0  1  1  0  0
- 0  0  1  0  0  1  0  1  0  1  1  0  0
+Product 2: set up
+   Week  1  2  3  4  5  6  7  8  9  10  11  12  13
+──────────────────────────────────────────────────
+Stage 1  0  0  1  0  0  1  0  1  0   1   1   0   0
+Stage 2  0  0  1  0  0  1  0  1  0   1   1   0   0
+Stage 3  0  0  1  0  0  1  0  1  0   1   1   0   0
 ```
 
 Each week every stage is set up for one product, and every stage makes the same amount of it, so the products move through all three stages within the week and all of the inventory is held at stage 3, as finished product. The first product is made in 8 weeks and the second in 5, the 13 weeks between them; the count by hand said at least 7 and 4. The stages are in step because each stage upstream can make at least as much of each product in a week as stage 3, so a plan that repeats stage 3’s schedule at stages 1 and 2 holds no inventory between them, and with nothing charged for a switch, nothing is gained by running a stage ahead; Ex. 3 adds that charge.
 
-Fig. 3 draws the constraint matrix of the model just solved by blocks, its columns grouped by product and its rows by product, the linking row last:
+Fig. 4 draws the constraint matrix of the model just solved by blocks, its columns grouped by product and its rows by product, the linking row last:
 
 Show the code that draws this figure
 
 ```julia
-# Code block 15: the constraint matrix by blocks, a block per product
+# Code block 10: the constraint matrix by blocks, a block per product
 # Product k's block spans x in [(k-1)W, kW] and y in [-kH, -(k-1)H];
 # its columns are x, y, (v,) z at xc, yc, vc, zc, its rows top down
 ink, boxc = colorant"#252525", colorant"#8c8c8c"
@@ -978,14 +972,14 @@ blocks!(Axis(fig[1, 1]; aspect = DataAspect()))
 fig
 ```
 
-Figure 3: The constraint matrix of Ex. 2’s model by blocks: each product’s flow balance, rows (a) and (b), and capacity, row (c), in a block of its own over its objective coefficients, zeros outside the two blocks, and the linking row (f) at the bottom, outlined in red, the only row that joins the products.
+Figure 4: The constraint matrix of Ex. 2’s model by blocks: each product’s flow balance, rows (a) and (b), and capacity, row (c), in a block of its own over its objective coefficients, zeros outside the two blocks, and the linking row (f) at the bottom, outlined in red, the only row that joins the products.
 
 The two products’ models share nothing but the linking rows, which is the structure the decomposition methods above exploit.
 
 Calculate total production cost and total inventory cost:
 
 ```julia
-size(cᵖ), size(xᵒ)   # Code block 16: cᵖ to reshape to (3, 1, 2) for xᵒ
+size(cᵖ), size(xᵒ)   # Code block 11: cᵖ to reshape to (3, 1, 2) for xᵒ
 ```
 
 ```text
@@ -993,7 +987,7 @@ size(cᵖ), size(xᵒ)   # Code block 16: cᵖ to reshape to (3, 1, 2) for xᵒ
 ```
 
 ```julia
-# Code block 17: the production and inventory costs
+# Code block 12: the production and inventory costs
 # Reshaped cᵖ broadcast for multiplication with xᵒ
 TCᵖ = sum((reshape(cᵖ,m,1,g).*xᵒ)[:])
 TCⁱ = sum((reshape(cⁱ,m,1,g).*yᵒ[:,2:end,:])[:])  # First period excluded
@@ -1005,7 +999,7 @@ TCᵖ, TCⁱ
 ```
 
 ```julia
-TCᵖ + TCⁱ, TCᵒ   # Code block 18: their sum, and the total
+TCᵖ + TCⁱ, TCᵒ   # Code block 13: their sum, and the total
 ```
 
 ```text
@@ -1014,10 +1008,10 @@ TCᵖ + TCⁱ, TCᵒ   # Code block 18: their sum, and the total
 
 The production cost is the same in every plan that meets the demand, since every ton demanded and not on hand has to pass through all three stages, so what the plan determines is the inventory, \$201.11 of the \$64,765.11. The two routes to the total agree, the Balance check of Lecture 1.2.
 
-Without the linking constraint, each product is a separate single-product model, which is Model 2 with nothing shared: no stage has a shared capacity ($u_i = \infty$) and no setups. Code block 19 solves Ex. 2 that way:
+Without the linking constraint, each product is a separate single-product model, which is Model 2 with nothing shared: no stage has a shared capacity ($u_i = \infty$) and no setups. Code block 14 solves Ex. 2 that way:
 
 ```julia
-# Code block 19: Ex. 2 without linking, each product on its own
+# Code block 14: Ex. 2 without linking, each product on its own
 TCⁿ = prodinv_coupled(cᵖ, zeros(m), cⁱ, d, u, fill(Inf, m),
                       zeros(Int, m, t), LBʸ, UBʸ).TC
 TCⁿ, TCᵒ
@@ -1184,10 +1178,10 @@ Table 5: Setup indicators $z_{ijk}$ and switchover indicators $v_{ijk}$ of one s
 | 6 | 1 | 0 | 0 | 0 |
 | 7 | 1 | 0 | 0 | 0 |
 
-In order to ensure that a switchover occurs only the first period that production switched to a different product, the constraint $-v_j + z_j - z_{j-1} \le 0$, row (g) for one stage and product, can be used. There are eight possible combinations of values that the three binary variables can take. In the table that Code block 20 prints below, the combination $[ 0 \; 1 \; 0 = 1 \nleq 0 ]$ is not feasible (i.e., allowing a product switch without incurring a switchover), and this constraint ensures that this cannot happen. The combination $[ 1 \; 1 \; 0 = 0 \leq 0 ]$ is feasible and will occur; the other three combinations where a switchover is indicated ($v_j = 1$) are feasible but would never occur because they would only add an additional unnecessary switchover cost and the objective is to minimize cost.
+In order to ensure that a switchover occurs only the first period that production switched to a different product, the constraint $-v_j + z_j - z_{j-1} \le 0$, row (g) for one stage and product, can be used. There are eight possible combinations of values that the three binary variables can take. In the table that Code block 15 prints below, the combination $[ 0 \; 1 \; 0 = 1 \nleq 0 ]$ is not feasible (i.e., allowing a product switch without incurring a switchover), and this constraint ensures that this cannot happen. The combination $[ 1 \; 1 \; 0 = 0 \leq 0 ]$ is feasible and will occur; the other three combinations where a switchover is indicated ($v_j = 1$) are feasible but would never occur because they would only add an additional unnecessary switchover cost and the objective is to minimize cost.
 
 ```julia
-# Code block 20: the truth table of row (g)
+# Code block 15: the truth table of row (g)
 # columns: vⱼ, zⱼ, zⱼ₋₁, the row's left side, and whether it is ≤ 0
 T = [0 0 0; 0 0 1; 0 1 0; 0 1 1; 1 0 0; 1 0 1; 1 1 0; 1 1 1]
 TT(f) = hcat(T, [f(row...) for row in eachrow(T)],
@@ -1237,14 +1231,14 @@ Example 3: Shared plant with switchovers
 
 The problem is the same as Ex. 2, except that there is a switchover cost associated with switching the production of one of the products on a resource to the other product. There is no switchover cost in subsequent periods if the same product continues to be produced on the same resource. The costs per switchover for each stage of each product are \$400, \$90, and \$50, and \$600, \$110, and \$70, respectively. The plant is currently set up to produce each stage of the first product. Determine the amount of each product that should be produced to minimize total costs over the planning horizon.
 
-The problem is Model 4 with Ex. 2’s data, the switchover costs $c_{ik}^w$, and the initial setup $z_{ik}^0$, 1 for the first product at every stage. Every statement of this problem since 2012 gives the switchover cost of stage 3 for the second product as \$60, while every published solution computes with \$70; the statement above follows the solutions, and Code block 36 shows what the \$60 would change, the Source check of Lecture 1.2.
+The problem is Model 4 with Ex. 2’s data, the switchover costs $c_{ik}^w$, and the initial setup $z_{ik}^0$, 1 for the first product at every stage. Every statement of this problem since 2012 gives the switchover cost of stage 3 for the second product as \$60, while every published solution computes with \$70; the statement above follows the solutions, and Code block 24 shows what the \$60 would change, the Source check of Lecture 1.2.
 
 The example is the same as Ex. 2 but for the switchover requirement and its cost, so everything else is almost identical. The additional information is the initial setup for each product: in period 1, the system is set up to produce product 1 and nothing for product 2. The 31 tons of initial inventory are the first two weeks’ demand for product 2, which covers at least two periods of product 2 and so allows the stages to be set up for product 1 if they are not already; here they already are.
 
-Code block 21 enters the data, Ex. 2’s with the switchover costs, the bounds on inventory and the initial setup:
+Code block 16 enters the data, Ex. 2’s with the switchover costs, the bounds on inventory and the initial setup:
 
 ```julia
-# Code block 21: Ex. 3's data, the bounds and the initial setup
+# Code block 16: Ex. 3's data, the bounds and the initial setup
 # demand in each period, each product (ton)
 d = [6 40 33 24 29 24 16 13 14 17 18 43 25
     17 14 17  4  7 10 12 18 13 23  8 17  3]'
@@ -1277,10 +1271,10 @@ h = 0.3 / (365.25 / 7) = 0.005749486652977412
 y⁰ = [0 0; 0 0; 0 sum(d[[1 2], 2])] = [0 0; 0 0; 0 31]
 ```
 
-Code block 22 solves the problem with the implementation of Model 4:
+Code block 17 solves the problem with the implementation of Model 4:
 
 ```julia
-# Code block 22: Ex. 3 solved with prodinv_switch
+# Code block 17: Ex. 3 solved with prodinv_switch
 TCᵒ, xᵒ, yᵒ, zᵒ, vᵒ = prodinv_switch(cᵖ, cʷ, cⁱ, d, u, z⁰, LBʸ, UBʸ)
 @show TCᵒ;
 ```
@@ -1289,106 +1283,90 @@ TCᵒ, xᵒ, yᵒ, zᵒ, vᵒ = prodinv_switch(cᵖ, cʷ, cⁱ, d, u, z⁰, LBʸ
 TCᵒ = 67314.92484599589
 ```
 
-The plan for each product, its production with its demand beneath, its inventory, the stages set up for it and the switchovers to it:
+Code block 18 prints the plan for each product, its production with its demand beneath, its inventory, the stages set up for it and the switchovers to it, in a loop over the products as Code block 9 does:
 
 ```julia
-# Code block 23: product 1, production and demand
-prt([xᵒ[:,:,1]; d[:,1]']; rows = [string.("Stage ", 1:m); "Demand"],
-    cols = string.(1:t), row_title = "Week")
+# Code block 18: the plan for each product
+for k in 1:g
+    println()                                   # a blank line above each
+    prt([xᵒ[:,:,k]; d[:,k]']; rows = [stages; "Demand"],
+        cols = string.(1:t), row_title = "Week",
+        title = "Product $k: production level and demand")
+    println()
+    prt(yᵒ[:,:,k]; rows = stages, cols = string.(1:t+1),
+        row_title = "Week", title = "Product $k: inventory level")
+    println()
+    prt(zᵒ[:,:,k]; rows = stages, cols = string.(1:t),
+        row_title = "Week", title = "Product $k: set up")
+    println()
+    prt(vᵒ[:,:,k]; rows = stages, cols = string.(1:t),
+        row_title = "Week", title = "Product $k: switchovers")
+end
 ```
 
 ```text
+
+Product 1: production level and demand
    Week   1   2   3   4   5   6   7   8   9  10  11  12  13
 ───────────────────────────────────────────────────────────
 Stage 1  35  50   0  50  50  57  60   0   0   0   0   0   0
 Stage 2  35  50   0  50  50  49   0   0   0   0   0  43  25
 Stage 3  35  50   0  50  50   0   0   0  49   0   0  43  25
  Demand   6  40  33  24  29  24  16  13  14  17  18  43  25
-```
 
-```julia
-yᵒ[:,:,1]              # Code block 24: product 1 inventory level
-```
+Product 1: inventory level
+   Week  1   2   3  4   5   6   7   8   9  10  11  12  13  14
+─────────────────────────────────────────────────────────────
+Stage 1  0   0   0  0   0   0   8  68  68  68  68  68  25   0
+Stage 2  0   0   0  0   0   0  49  49  49   0   0   0   0   0
+Stage 3  0  29  39  6  32  53  29  13   0  35  18   0   0   0
 
-```text
-3×14 Matrix{Float64}:
- 0.0   0.0   0.0  0.0   0.0   0.0   8.0  …  68.0  68.0  68.0  68.0  25.0  0.0
- 0.0   0.0   0.0  0.0   0.0   0.0  49.0     49.0   0.0   0.0   0.0   0.0  0.0
- 0.0  29.0  39.0  6.0  32.0  53.0  29.0      0.0  35.0  18.0   0.0   0.0  0.0
-```
+Product 1: set up
+   Week  1  2  3  4  5  6  7  8  9  10  11  12  13
+──────────────────────────────────────────────────
+Stage 1  1  1  0  1  1  1  1  0  0   0   0   0   0
+Stage 2  1  1  0  1  1  1  0  0  0   0   0   1   1
+Stage 3  1  1  0  1  1  0  0  0  1   0   0   1   1
 
-```julia
-zᵒ[:,:,1]              # Code block 25: product 1 set up
-```
+Product 1: switchovers
+   Week  1  2  3  4  5  6  7  8  9  10  11  12  13
+──────────────────────────────────────────────────
+Stage 1  0  0  0  1  0  0  0  0  0   0   0   0   0
+Stage 2  0  0  0  1  0  0  0  0  0   0   0   1   0
+Stage 3  0  0  0  1  0  0  0  0  1   0   0   1   0
 
-```text
-3×13 Matrix{Int64}:
- 1  1  0  1  1  1  1  0  0  0  0  0  0
- 1  1  0  1  1  1  0  0  0  0  0  1  1
- 1  1  0  1  1  0  0  0  1  0  0  1  1
-```
-
-```julia
-vᵒ[:,:,1]              # Code block 26: product 1 switchovers
-```
-
-```text
-3×13 Matrix{Int64}:
- 0  0  0  1  0  0  0  0  0  0  0  0  0
- 0  0  0  1  0  0  0  0  0  0  0  1  0
- 0  0  0  1  0  0  0  0  1  0  0  1  0
-```
-
-```julia
-# Code block 27: product 2, production and demand
-prt([xᵒ[:,:,2]; d[:,2]']; rows = [string.("Stage ", 1:m); "Demand"],
-    cols = string.(1:t), row_title = "Week")
-```
-
-```text
+Product 2: production level and demand
    Week   1   2   3  4  5   6   7   8   9  10  11  12  13
 ─────────────────────────────────────────────────────────
 Stage 1   0   0  50  0  0   0   0  31   0  23  28   0   0
 Stage 2   0   0  38  0  0   0  12  31   0  23  28   0   0
 Stage 3   0   0  28  0  0  10  12  31   0  23  28   0   0
  Demand  17  14  17  4  7  10  12  18  13  23   8  17   3
+
+Product 2: inventory level
+   Week   1   2  3   4   5   6   7  8   9  10  11  12  13  14
+─────────────────────────────────────────────────────────────
+Stage 1   0   0  0  12  12  12  12  0   0   0   0   0   0   0
+Stage 2   0   0  0  10  10  10   0  0   0   0   0   0   0   0
+Stage 3  31  14  0  11   7   0   0  0  13   0   0  20   3   0
+
+Product 2: set up
+   Week  1  2  3  4  5  6  7  8  9  10  11  12  13
+──────────────────────────────────────────────────
+Stage 1  0  0  1  0  0  0  0  1  1   1   1   0   0
+Stage 2  0  0  1  0  0  0  1  1  1   1   1   0   0
+Stage 3  0  0  1  0  0  1  1  1  0   1   1   0   0
+
+Product 2: switchovers
+   Week  1  2  3  4  5  6  7  8  9  10  11  12  13
+──────────────────────────────────────────────────
+Stage 1  0  0  1  0  0  0  0  1  0   0   0   0   0
+Stage 2  0  0  1  0  0  0  1  0  0   0   0   0   0
+Stage 3  0  0  1  0  0  1  0  0  0   1   0   0   0
 ```
 
 ```julia
-yᵒ[:,:,2]              # Code block 28: product 2 inventory level
-```
-
-```text
-3×14 Matrix{Float64}:
-  0.0   0.0  0.0  12.0  12.0  12.0  12.0  0.0   0.0  0.0  0.0   0.0  0.0  0.0
-  0.0   0.0  0.0  10.0  10.0  10.0   0.0  0.0   0.0  0.0  0.0   0.0  0.0  0.0
- 31.0  14.0  0.0  11.0   7.0   0.0   0.0  0.0  13.0  0.0  0.0  20.0  3.0  0.0
-```
-
-```julia
-zᵒ[:,:,2]              # Code block 29: product 2 set up
-```
-
-```text
-3×13 Matrix{Int64}:
- 0  0  1  0  0  0  0  1  1  1  1  0  0
- 0  0  1  0  0  0  1  1  1  1  1  0  0
- 0  0  1  0  0  1  1  1  0  1  1  0  0
-```
-
-```julia
-vᵒ[:,:,2]              # Code block 30: product 2 switchovers
-```
-
-```text
-3×13 Matrix{Int64}:
- 0  0  1  0  0  0  0  1  0  0  0  0  0
- 0  0  1  0  0  0  1  0  0  0  0  0  0
- 0  0  1  0  0  1  0  0  0  1  0  0  0
-```
-
-```julia
-# Code block 31: switchovers at each stage
+# Code block 19: switchovers at each stage
 vec(sum(vᵒ, dims = (2, 3)))
 
 ```
@@ -1408,12 +1386,12 @@ It is useful to look at the setup indicators beside the switchover indicators, t
 
 Counted at each stage, they are 3 switchovers at stage 1, 4 at stage 2 and 6 at stage 3, the fewest where they cost the most. Read against the setup indicators, they are where they should be: stage 1, set up for product 1 from the start, is charged nothing in week 1; it switches over to product 2 in week 3, back to product 1 in week 4, which it then makes through week 7 with one switchover, and to product 2 again in week 8.
 
-Fig. 4 sets the two plans one above the other, what each stage is set up for in each week and the tons it makes:
+Fig. 5 sets the two plans one above the other, what each stage is set up for in each week and the tons it makes:
 
 Show the code that draws this figure
 
 ```julia
-# Code block 32: what each stage is set up for, Ex. 2 and Ex. 3
+# Code block 20: what each stage is set up for, Ex. 2 and Ex. 3
 pc = [colorant"#cfe3f5", colorant"#f8dcc2"]    # product 1, product 2
 function setups!(ax, x, z, title)
     hidedecorations!(ax); hidespines!(ax)
@@ -1453,29 +1431,29 @@ rowgap!(fig.layout, 2)
 fig
 ```
 
-Figure 4: What each stage is set up for in each week, and the tons it makes: (a) Ex. 2’s plan, the three stages in step every week; (b) Ex. 3’s, in which stage 1, whose switchovers cost the most, makes product 1 ahead, and the stages are set up for different products in the same week.
+Figure 5: What each stage is set up for in each week, and the tons it makes: (a) Ex. 2’s plan, the three stages in step every week; (b) Ex. 3’s, in which stage 1, whose switchovers cost the most, makes product 1 ahead, and the stages are set up for different products in the same week.
 
 Ex. 2’s stages are in step every week. Ex. 3’s switchover costs change that: in weeks 6 and 7 stage 1 is still making product 1 while stage 3 has switched to product 2, and in week 9 stage 3 makes product 1 from inventory built earlier while stages 1 and 2 stay set up for product 2.
 
-Fig. 5 draws the constraint matrix of Ex. 3’s model in the same way:
+Fig. 6 draws the constraint matrix of Ex. 3’s model in the same way:
 
 Show the code that draws this figure
 
 ```julia
-# Code block 33: Ex. 3's constraint matrix by blocks
+# Code block 21: Ex. 3's constraint matrix by blocks
 fig = Figure(size = (680, 330), figure_padding = 4)
 blocks!(Axis(fig[1, 1]; aspect = DataAspect()); switch = true)
 fig
 ```
 
-Figure 5: The constraint matrix of Ex. 3’s model, drawn as Fig. 3 draws Ex. 2’s: each product’s block now has its switchover variables $v$, their cost $c^w$ and its switchover rows (g) as well, and only the linking row (f) joins the products.
+Figure 6: The constraint matrix of Ex. 3’s model, drawn as Fig. 4 draws Ex. 2’s: each product’s block now has its switchover variables $v$, their cost $c^w$ and its switchover rows (g) as well, and only the linking row (f) joins the products.
 
 The switchover rows each concern one product, so they fall inside its block, and the two products’ models are still joined by the linking rows alone.
 
 Calculate total production cost, total inventory cost and total switchover cost:
 
 ```julia
-# Code block 34: the three costs, their sum, and the total
+# Code block 22: the three costs, their sum, and the total
 # Reshaped cᵖ broadcast for multiplication with xᵒ
 @show TCᵖ = sum((reshape(cᵖ,m,1,g).*xᵒ)[:])
 # First period excluded
@@ -1499,10 +1477,10 @@ What is really important is always to have an orthogonal way of verifying that a
 
 With the cost calculated two different ways, a run of the whole script after the change can give two results that disagree, the total more or less than its components. The production cost is computed directly from the production levels; the inventory cost from the second period on, since either the initial or the final inventory is counted, not both (Lecture 4.3); and the switchover cost from the switchover indicators. If all of that checked out before the variables were changed, the difference is a variable in the model missed in the change, such as an upper bound not yet written the new way, and it can take two or three changes to find them all. That is why the cost is always worth calculating both ways: it checks the model, and otherwise there is only the math program’s result, with no way of knowing whether it is right. The breakdown also gives the components’ relative magnitudes: the production cost is very significant, the inventory cost relatively minor, and the switchover cost somewhat significant.
 
-Code block 35 solves Ex. 3 again with every switchover cost set to zero, and Ex. 2 again beside it:
+Code block 23 solves Ex. 3 again with every switchover cost set to zero, and Ex. 2 again beside it:
 
 ```julia
-# Code block 35: switchover costs at zero, against Ex. 2
+# Code block 23: switchover costs at zero, against Ex. 2
 TC0 = prodinv_switch(cᵖ, zeros(m, g), cⁱ, d, u, z⁰, LBʸ, UBʸ).TC
 TC2 = prodinv_excl(cᵖ, cⁱ, d, u, LBʸ, UBʸ).TC
 TC0, TC2
@@ -1528,10 +1506,10 @@ $$
 
 That is the production cost of both Ex. 2’s plan and this one, by an independent route, the Triangulate check of Lecture 1.2.
 
-Code block 36 solves the problem with the \$60 that the statement has always given:
+Code block 24 solves the problem with the \$60 that the statement has always given:
 
 ```julia
-# Code block 36: the statement's $60 at stage 3 for product 2
+# Code block 24: the statement's $60 at stage 3 for product 2
 cʷ60 = [400 600; 90 110; 50 60]
 r60 = prodinv_switch(cᵖ, cʷ60, cⁱ, d, u, z⁰, LBʸ, UBʸ)
 @show r60.TC
@@ -1594,7 +1572,23 @@ Example 4(a): Switchovers by hand
 
 Determine the switchovers at each stage, and their cost, from the setup indicators.
 
-A stage switches over to a product in a month in which it is set up for the product and was not the month before, its setup before month 1 the initial setup, row (g) read as in Table 5. Every stage starts set up for product 1, so month 1 has no switchover. Reading each stage’s two rows of setup indicators across the months:
+Table 8 repeats Table 5, a stage’s setup and switchover indicators, and Fig. 7 sets out the plan’s setups at each stage, the initial setup first, with the switchovers they make and their costs:
+
+Table 8: Setup indicators $z_{ijk}$ and switchover indicators $v_{ijk}$ of one stage $i$ for products $k = 1, 2$ over seven periods, repeated from Table 5.
+
+| Period $j$ | $z_{ij1}$ | $z_{ij2}$ | $v_{ij1}$ | $v_{ij2}$ |
+|---|---|---|---|---|
+| 1 | 0 | 0 | 0 | 0 |
+| 2 | 1 | 0 | 1 | 0 |
+| 3 | 1 | 0 | 0 | 0 |
+| 4 | 0 | 1 | 0 | 1 |
+| 5 | 1 | 0 | 1 | 0 |
+| 6 | 1 | 0 | 0 | 0 |
+| 7 | 1 | 0 | 0 | 0 |
+
+Figure 7: Ex. 4’s setups at each stage, the initial setup first, each month numbered by the product the stage is set up for, and the switchovers they make outlined in blue with their costs: a month set up for a product that the month before was not. Each stage’s total is at the right.
+
+A stage switches over to a product in a month in which it is set up for the product and was not the month before, its setup before month 1 the initial setup, row (g) read as in Table 8. Every stage starts set up for product 1, so month 1 has no switchover. Reading each stage’s two rows of setup indicators across the months:
 
 - Stage 1 is set up for product 2 in months 2 and 3 and for product 1 from month 4 on, its last month idle but still set up for product 1: switchovers to product 2 in month 2 and to product 1 in month 4.
 - Stage 2 is set up for product 1 in months 1 and 2, product 2 in month 3, product 1 in months 4 and 5, and product 2 in month 6: switchovers in months 3, 4 and 6.
@@ -1619,6 +1613,10 @@ Example 4(b): Cost of the plan by hand
 
 Determine the plan’s production, inventory and switchover costs, and its total cost, by hand.
 
+Fig. 8 sets the plan out on each product’s network: the production and the demand it gives in red, and in blue the inventory each node carries out, what came in less what went on:
+
+Figure 8: Ex. 4’s plan on each product’s network, a month to a column: the production at each stage and the demand, with the inventory at the start, in red, and the inventory each node carries out, found by flow balance, in blue.
+
 The inventories follow from flow balance, as in Ex. 1(b). Stage 2 passes on everything it makes in the month it makes it, so it holds nothing. For the first product, stage 1 carries $45 - 20 = 25$ tons out of month 1, and stage 3 carries $25 - 10 = 15$ tons out of month 2 and $40 - 15 = 25$ out of month 5. For the second product, stage 1 carries 20 tons out of month 2 and $20 + 35 - 40 = 15$ out of months 3, 4 and 5, and stage 3 carries $25 - 10 = 15$ out of month 1, $40 - 25 = 15$ out of month 3 and $15 - 10 = 5$ out of month 4. At a monthly carrying rate of $0.3/12 = 0.025$, a ton held at stages 1, 2 and 3 costs \$2.50, \$22.50 and \$32.50 a month for the first product, and \$5, \$35 and \$55 for the second. Then, with the 105 tons of the first product and the 80 less 25 held, 55 tons, of the second that pass through all three stages, the costs are:
 
 $$
@@ -1639,10 +1637,10 @@ Example 4(c): Plan solved with the model
 
 Determine the plan that minimizes the total cost, and that cost, with the implementation of Model 4.
 
-This part is the one done with code, as in a homework problem; parts (a) and (b) are the ones done by hand, as on an exam. Code block 37 enters the data, and Code block 38 solves the problem with the implementation of Model 4:
+This part is the one done with code, as in a homework problem; parts (a) and (b) are the ones done by hand, as on an exam. Code block 25 enters the data, and Code block 26 solves the problem with the implementation of Model 4:
 
 ```julia
-# Code block 37: Ex. 4's data
+# Code block 25: Ex. 4's data
 # capacity of each stage for each product (ton)
 u = [50 35; 60 45; 70 55]
 d = [20 10 15 20 15 25
@@ -1662,7 +1660,7 @@ UBʸ = [reshape(y⁰, m, 1, g) fill(Inf, m, t-1, g) reshape(yᵗ⁺¹, m, 1, g)]
 ```
 
 ```julia
-# Code block 38: Ex. 4 solved with prodinv_switch
+# Code block 26: Ex. 4 solved with prodinv_switch
 r4 = prodinv_switch(cᵖ, cʷ, cⁱ, d, u, z⁰, LBʸ, UBʸ)
 @show r4.TC
 @show sum(r4.v);
@@ -1679,10 +1677,10 @@ Example 4(d): Plan given against the model’s
 
 Compare the plan given and its cost, found by hand in parts (a) and (b), with the model’s plan and cost from part (c).
 
-Code block 39 sets the plan given beside the model’s and holds the model’s cost to the one found by hand:
+Code block 27 sets the plan given beside the model’s and holds the model’s cost to the one found by hand:
 
 ```julia
-# Code block 39: the plan given against the model's
+# Code block 27: the plan given against the model's
 X = cat([45 0 0 20 40 0; 20 25 0 20 40 0; 20 25 0 20 40 0],
         [0 20 35 0 0 0; 0 0 40 0 0 15; 0 0 40 0 0 15]; dims = 3)
 @assert round(r4.TC, digits = 2) == 270112.50
@@ -1702,9 +1700,9 @@ Production \$257,500.00, inventory \$3,612.50, and 8 switchovers \$9,000.00, for
 
 Example 5: Twenty-six-week plan and its reports
 
-A plant can use a three-stage process to produce two products. A 26-week rolling horizon is used for planning production. The products’ forecasted demand, in tons, is Table 8:
+A plant can use a three-stage process to produce two products. A 26-week rolling horizon is used for planning production. The products’ forecasted demand, in tons, is Table 9:
 
-Table 8: Ex. 5’s forecast demand for each product in each week, weeks 1 to 13 and 14 to 26 side by side, and its total over the 26 weeks (ton).
+Table 9: Ex. 5’s forecast demand for each product in each week, weeks 1 to 13 and 14 to 26 side by side, and its total over the 26 weeks (ton).
 
 | Week | Product 1 | Product 2 | Week | Product 1 | Product 2 |
 |---|---|---|---|---|---|
@@ -1733,10 +1731,10 @@ Determine the plan that minimizes total cost over the 26 weeks, and check it.
 
 Before solving it, a count by hand says whether the weeks are enough, as for Ex. 2. Over the 26 weeks the first product needs 628 tons, and the second 338 less the 11 already held, 327 tons. At stage 3, which can make 50 tons a week of the first product or 35 of the second, the first needs at least $\lceil 628/50 \rceil = 13$ weeks and the second $\lceil 327/35 \rceil = 10$, 23 of the 26; stages 1 and 2 need 18 and 20. The plan should be feasible, with three weeks to spare at stage 3, the Prior check of Lecture 1.2.
 
-Code block 40 enters the data, Ex. 3’s with 26 weeks of demand, the bounds on inventory and the initial setup:
+Code block 28 enters the data, Ex. 3’s with 26 weeks of demand, the bounds on inventory and the initial setup:
 
 ```julia
-# Code block 40: Ex. 5's data, the bounds and the initial setup
+# Code block 28: Ex. 5's data, the bounds and the initial setup
 # demand in each period, each product (ton): weeks 1-13, then 14-26
 d = hcat([26, 20, 20, 23, 41, 10, 27, 14, 26, 27, 14, 23, 14,
           13, 27, 31, 32, 51, 22, 13, 16, 17, 28, 36, 27, 30],
@@ -1771,10 +1769,10 @@ h = 0.3 / (365.25 / 7) = 0.005749486652977412
 y⁰ = [0 0; 0 0; 0 sum(d[[1 2], 2])] = [0 0; 0 0; 0 11]
 ```
 
-Code block 40 is Code block 21 with 26 weeks of demand, each product’s weeks set over two lines, 1 to 13 and 14 to 26, as in Table 8. Code block 41 solves the problem with the implementation of Model 4, unchanged, and times the solve:
+Code block 28 is Code block 16 with 26 weeks of demand, each product’s weeks set over two lines, 1 to 13 and 14 to 26, as in Table 9. Code block 29 solves the problem with the implementation of Model 4, unchanged, and times the solve:
 
 ```julia
-# Code block 41: Ex. 5 solved with prodinv_switch, and timed
+# Code block 29: Ex. 5 solved with prodinv_switch, and timed
 secs = @elapsed r5 = prodinv_switch(cᵖ, cʷ, cⁱ, d, u, z⁰, LBʸ, UBʸ)
 @show r5.TC
 @show round(Int, secs);
@@ -1785,10 +1783,10 @@ r5.TC = 149745.64188911687
 round(Int, secs) = 56
 ```
 
-Here the solve takes about a minute, 56 seconds on this page’s render. Code block 42 finds the plan’s production, inventory and switchover costs as Code block 34 does for Ex. 3, and Code block 43 adds them and checks the total against the problem’s published solution:
+Here the solve takes about a minute, 56 seconds on this page’s render. Code block 30 finds the plan’s production, inventory and switchover costs as Code block 22 does for Ex. 3, and Code block 31 adds them and checks the total against the problem’s published solution:
 
 ```julia
-# Code block 42: the production, inventory and switchover costs
+# Code block 30: the production, inventory and switchover costs
 # Reshaped cᵖ broadcast for multiplication with r5.x
 @show TCᵖ = sum((reshape(cᵖ,m,1,g).*r5.x)[:])
 # First period excluded
@@ -1803,7 +1801,7 @@ TCʷ = sum((reshape(cʷ, m, 1, g) .* r5.v)[:]) = 3260
 ```
 
 ```julia
-# Code block 43: their sum, and the published total
+# Code block 31: their sum, and the published total
 @assert round(r5.TC, digits = 2) == 149745.64
 @show TCᵖ + TCⁱ + TCʷ
 @show r5.TC;
@@ -1827,7 +1825,7 @@ $$
 
 $$
 
-That is the solver’s production cost, by an independent route, the Triangulate check of Lecture 1.2. And the total is the \$149,745.64 of the problem’s published solution, a case already known, the Landmark check of Lecture 1.2, which Code block 43 asserts.
+That is the solver’s production cost, by an independent route, the Triangulate check of Lecture 1.2. And the total is the \$149,745.64 of the problem’s published solution, a case already known, the Landmark check of Lecture 1.2, which Code block 31 asserts.
 
 Total cost \$149,745.64: production \$145,286, inventory \$1,199.64, and switchovers \$3,260, with 4, 7 and 9 switchovers at stages 1, 2 and 3.
 
@@ -1845,10 +1843,10 @@ Example 5(b): A report for each stage
 
 Report the plan to the person running each stage: what the stage makes of each product in each week.
 
-A stage’s report is the reading of a plan stage by stage that follows Ex. 4(a): what the stage makes of each product in each week. Code block 44 makes it a DataFrame of the plan’s production at the stage, and report sets a DataFrame as a table, without the row numbers, types and size that a DataFrame shows by default; Table 9 is the three stages’ reports:
+A stage’s report is the reading of a plan stage by stage that follows Ex. 4(a): what the stage makes of each product in each week. Code block 32 makes it a DataFrame of the plan’s production at the stage, and report sets a DataFrame as a table, without the row numbers, types and size that a DataFrame shows by default; Table 10 is the three stages’ reports:
 
 ```julia
-# Code block 44: a report for the person running each stage
+# Code block 32: a report for the person running each stage
 using DataFrames
 report(df) = HTML("<div class=\"report\">" * sprint(io -> show(io,
     MIME("text/html"), df; eltypes = false, summary = false,
@@ -1865,7 +1863,7 @@ end
 - 2 MIME("text/html") asks show for the DataFrame’s HTML form, the table a web page displays, and the three keywords set to false leave out the row of column types, the line giving its size, such as “26×3 DataFrame”, and the row numbers.
 - 3 display puts each stage’s table on the page. Without it nothing in the loop would appear, since only the last value of a cell is shown, and the value of a for loop is nothing.
 
-Table 9: What each stage makes of each product in each week (ton).
+Table 10: What each stage makes of each product in each week (ton).
 
 (a) Stage 1
 
@@ -1966,10 +1964,10 @@ Example 5(c): A report for each product
 
 Report the plan to each product’s product manager: its demand, what is finished each week and the finished inventory on hand.
 
-Code block 45 makes a product’s report a DataFrame of its demand, what stage 3 finishes and the finished inventory at the end of each week, and sets one for each product with Code block 44’s report; Table 10 is the two products’ reports:
+Code block 33 makes a product’s report a DataFrame of its demand, what stage 3 finishes and the finished inventory at the end of each week, and sets one for each product with Code block 32’s report; Table 11 is the two products’ reports:
 
 ```julia
-# Code block 45: a report for each product's product manager
+# Code block 33: a report for each product's product manager
 for k in 1:g
     display(report(DataFrame("Week" => 1:t, "Demand" => d[:, k],
         "Finished" => round.(Int, r5.x[m, :, k]),
@@ -1977,7 +1975,7 @@ for k in 1:g
 end
 ```
 
-Table 10: Each product’s demand, the tons finished at stage 3 and the finished inventory at the end of each week (ton).
+Table 11: Each product’s demand, the tons finished at stage 3 and the finished inventory at the end of each week (ton).
 
 (a) Product 1
 
