@@ -1780,10 +1780,10 @@ secs = @elapsed r5 = prodinv_switch(cᵖ, cʷ, cⁱ, d, u, z⁰, LBʸ, UBʸ)
 
 ```text
 r5.TC = 149745.64188911687
-round(Int, secs) = 58
+round(Int, secs) = 60
 ```
 
-Here the solve takes about a minute, 58 seconds on this page’s render. Code block 30 finds the plan’s production, inventory and switchover costs as Code block 22 does for Ex. 3, and Code block 31 adds them and checks the total against the problem’s published solution:
+Here the solve takes about a minute, 60 seconds on this page’s render. Code block 30 finds the plan’s production, inventory and switchover costs as Code block 22 does for Ex. 3, and Code block 31 adds them and checks the total against the problem’s published solution:
 
 ```julia
 # Code block 30: the production, inventory and switchover costs
