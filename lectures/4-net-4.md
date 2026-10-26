@@ -475,11 +475,23 @@ Figure 2: Ex. 1’s setup, without its weeks: each material is extracted, trucke
 
 Example 1(a): Ten-week plan
 
-Determine the ten-week plan and its cost with Model 2, after a lower bound on the cost by hand.
+Determine the ten-week plan and its cost with Model 2, after a lower bound on the cost and the most setups in a week by hand.
 
 Before any model is solved, part of the cost is fixed by flow balance alone. The demand of the ten weeks, 218 tons of the first material and 129 of the second, all has to be extracted, at \$120 and \$200 a ton, whatever the plan; and since the five tons at the destination at the start are the five wanted at the end, all 347 tons have to be shipped. A load can carry at most its capacity, so shipping them takes at least $\lceil 347/10 \rceil = 35$ truck trips and $\lceil 347/25 \rceil = 14$ trailer loads. That is the throughput count of Lecture 1.3, Sec. 5, done in loads rather than machines, and it bounds the cost from below: no plan costs less than extraction plus the fewest loads, the Bounds check of Lecture 1.2.
 
-Code block 3 enters the data, Code block 4 computes the bound, and Code block 5 solves the problem with the implementation of Model 2:
+The same flow balance gives the most setups in a week, $\bar{z}_{ij}$, that Model 2 needs, by Eq. 5 in Lecture 4.3 with the demand summed over the materials. Through the trucks, stage 2, and the trailers, stage 3, pass the 347 tons of demand, 218 of the first material and 129 of the second, plus the five tons of the second material wanted at the destination at the end less the five there at the start; the site and the station start and end empty. No week can carry more than all of them, so:
+
+$$
+\begin{aligned}
+\bar{z}_{2j} &= \left\lceil \frac{1}{10} \Bigl( (218 + 129) + (5 - 5) \Bigr) \right\rceil = \left\lceil \frac{347}{10} \right\rceil = \lceil 34.7 \rceil = 35 \\
+\bar{z}_{3j} &= \left\lceil \frac{1}{25} \Bigl( (218 + 129) + (5 - 5) \Bigr) \right\rceil = \left\lceil \frac{347}{25} \right\rceil = \lceil 13.88 \rceil = 14
+\end{aligned}
+
+$$
+
+Extraction, which shares nothing, has no setups. The fewest loads over the ten weeks are the most in any one week, a bound as loose as possible, as it should be; it just has to be finite.
+
+Code block 3 enters the data, Code block 4 computes both bounds, and Code block 5 solves the problem with the implementation of Model 2:
 
 ```julia
 # Code block 3: Ex. 1's data
@@ -498,20 +510,20 @@ yᵗ⁺¹ = [0 0; 0 0; 0 5]                  # final inventory (ton)
 uʸ = [20 20; Inf Inf; Inf Inf]          # storage capacity (ton)
 LBʸ = [reshape(y⁰, m, 1, g) zeros(m, t-1, g) reshape(yᵗ⁺¹, m, 1, g)]
 UBʸ = hcat(reshape(y⁰, m, 1, g), repeat(reshape(uʸ, m, 1, g), 1, t-1),
-           reshape(yᵗ⁺¹, m, 1, g))
-# most setups: none to extract, up to 20 trucks or trailers a week
-z̄ = [zeros(Int, 1, t); fill(20, 2, t)];
+           reshape(yᵗ⁺¹, m, 1, g));
 ```
 
 ```julia
-# Code block 4: a lower bound on the cost, by flow balance
-ship = sum(d) + sum(y⁰) - sum(yᵗ⁺¹)    # tons to ship
-@show loads = ceil.(Int, ship ./ u[2:3])      # trucks, trailers
-LB = sum(cᵖ[1, :] .* vec(sum(d, dims = 1))) + sum(cˢ[2:3] .* loads)
+# Code block 4: a lower bound on the cost, and the most setups
+ship = sum(d) - sum(y⁰) + sum(yᵗ⁺¹)            # tons to ship
+@show min_loads = ceil.(Int, ship ./ u[2:3])   # fewest trucks, trailers
+max_loads = min_loads                          # the most in any one week
+z̄ = [zeros(Int, 1, t); repeat(max_loads, 1, t)] # none to extract
+LB = sum(cᵖ[1, :] .* vec(sum(d, dims = 1))) + sum(cˢ[2:3] .* min_loads)
 ```
 
 ```text
-loads = ceil.(Int, ship ./ u[2:3]) = [35, 14]
+min_loads = ceil.(Int, ship ./ u[2:3]) = [35, 14]
 ```
 
 ```text
@@ -554,9 +566,9 @@ Example 1(b): Cost of a given plan by hand
 
 Using some different data (as noted below, otherwise use the data given in Ex. 1) and only a three-week planning horizon, determine the total production, inventory, and transport cost over the horizon. The forecasted demand for both materials is 20, 10, 45 and 12, 25, 5 tons, respectively. It costs \$600 and \$400 to extract each ton of material at the facility, and the annual inventory carrying rate is 0.5. Currently, 20 tons of the second material is in inventory at the final destination. A different amount of material can be in inventory at the end of the planning period. For each material, each period, 30, 30, 30 and 16, 17, 17 tons, respectively, are produced; 30, 10, 50 and 0, 20, 30 tons are transported to the staging station; and 22, 8, 60 and 0, 17, 33 tons are transported to the final destination.
 
-Fig. 3 sets the plan out on each material’s network: the flows it gives in red, and in blue the inventory each node carries out, what came in less what went on, with both materials’ trucks and trailers each week below them:
+Fig. 3 sets the plan out on each material’s network, with both materials’ trucks and trailers each week below them: red is given, and blue has to be determined, here the inventory each node carries out, what came in less what went on, and each week’s loads:
 
-Figure 3: Ex. 1(b)‘s plan on each material’s network, a week to a column: (a) and (b) the extraction, truck and trailer flows and the demand, with the inventory at the start, in red, and the inventory each node carries out, found by flow balance, in blue; (c) the two materials’ tons on each week’s trucks and trailers, and the loads that carry them.
+Figure 3: Ex. 1(b)’s plan on each material’s network, a week to a column, in which red is given and blue has to be determined: (a) and (b) the extraction, truck and trailer flows, the demand and the inventory at the start, given, and the inventory each node carries out, determined by flow balance; (c) the two materials’ tons on each week’s trucks and trailers, given, and their sum and the loads that carry it at each vehicle’s capacity, determined.
 
 The plan’s flows are given, so the inventories follow from flow balance, as in Ex. 5(b) in Lecture 4.3: at each stage, the inventory carried out of a week is what came in less what went on. The site has nothing at the start and the staging station nothing; the destination has the 20 tons of the second material. For the first material,
 
@@ -1572,23 +1584,11 @@ Example 4(a): Switchovers by hand
 
 Determine the switchovers at each stage, and their cost, from the setup indicators.
 
-Table 8 repeats Table 5, a stage’s setup and switchover indicators, and Fig. 7 sets out the plan’s setups at each stage, the initial setup first, with the switchovers they make and their costs:
+Fig. 7 sets out the plan’s setups at each stage, the initial setup first, with the switchovers they make and their costs:
 
-Table 8: Setup indicators $z_{ijk}$ and switchover indicators $v_{ijk}$ of one stage $i$ for products $k = 1, 2$ over seven periods, repeated from Table 5.
+Figure 7: Ex. 4’s setups at each stage, the initial setup first, each month numbered by the product the stage is set up for, in which red is given and blue has to be determined: the setups, given, and the switchovers they make, outlined with their costs, a month set up for a product that the month before was not, and each stage’s total at the right, determined.
 
-| Period $j$ | $z_{ij1}$ | $z_{ij2}$ | $v_{ij1}$ | $v_{ij2}$ |
-|---|---|---|---|---|
-| 1 | 0 | 0 | 0 | 0 |
-| 2 | 1 | 0 | 1 | 0 |
-| 3 | 1 | 0 | 0 | 0 |
-| 4 | 0 | 1 | 0 | 1 |
-| 5 | 1 | 0 | 1 | 0 |
-| 6 | 1 | 0 | 0 | 0 |
-| 7 | 1 | 0 | 0 | 0 |
-
-Figure 7: Ex. 4’s setups at each stage, the initial setup first, each month numbered by the product the stage is set up for, and the switchovers they make outlined in blue with their costs: a month set up for a product that the month before was not. Each stage’s total is at the right.
-
-A stage switches over to a product in a month in which it is set up for the product and was not the month before, its setup before month 1 the initial setup, row (g) read as in Table 8. Every stage starts set up for product 1, so month 1 has no switchover. Reading each stage’s two rows of setup indicators across the months:
+A stage switches over to a product in a month in which it is set up for the product and was not the month before, its setup before month 1 the initial setup: $v_{ijk} = 1$ where $z_{ijk} = 1$ and $z_{i(j-1)k} = 0$, the paid switch of row (g). Every stage starts set up for product 1, so month 1 has no switchover. Reading each stage’s two rows of setup indicators across the months:
 
 - Stage 1 is set up for product 2 in months 2 and 3 and for product 1 from month 4 on, its last month idle but still set up for product 1: switchovers to product 2 in month 2 and to product 1 in month 4.
 - Stage 2 is set up for product 1 in months 1 and 2, product 2 in month 3, product 1 in months 4 and 5, and product 2 in month 6: switchovers in months 3, 4 and 6.
@@ -1613,9 +1613,9 @@ Example 4(b): Cost of the plan by hand
 
 Determine the plan’s production, inventory and switchover costs, and its total cost, by hand.
 
-Fig. 8 sets the plan out on each product’s network: the production and the demand it gives in red, and in blue the inventory each node carries out, what came in less what went on:
+Fig. 8 sets the plan out on each product’s network: red is given, and blue has to be determined, here only the inventory each node carries out, what came in less what went on:
 
-Figure 8: Ex. 4’s plan on each product’s network, a month to a column: the production at each stage and the demand, with the inventory at the start, in red, and the inventory each node carries out, found by flow balance, in blue.
+Figure 8: Ex. 4’s plan on each product’s network, a month to a column, in which red is given and blue has to be determined: the production at each stage, the demand and the inventory at the start, given, and the inventory each node carries out, determined by flow balance.
 
 The inventories follow from flow balance, as in Ex. 1(b). Stage 2 passes on everything it makes in the month it makes it, so it holds nothing. For the first product, stage 1 carries $45 - 20 = 25$ tons out of month 1, and stage 3 carries $25 - 10 = 15$ tons out of month 2 and $40 - 15 = 25$ out of month 5. For the second product, stage 1 carries 20 tons out of month 2 and $20 + 35 - 40 = 15$ out of months 3, 4 and 5, and stage 3 carries $25 - 10 = 15$ out of month 1, $40 - 25 = 15$ out of month 3 and $15 - 10 = 5$ out of month 4. At a monthly carrying rate of $0.3/12 = 0.025$, a ton held at stages 1, 2 and 3 costs \$2.50, \$22.50 and \$32.50 a month for the first product, and \$5, \$35 and \$55 for the second. Then, with the 105 tons of the first product and the 80 less 25 held, 55 tons, of the second that pass through all three stages, the costs are:
 
@@ -1700,9 +1700,9 @@ Production \$257,500.00, inventory \$3,612.50, and 8 switchovers \$9,000.00, for
 
 Example 5: Twenty-six-week plan and its reports
 
-A plant can use a three-stage process to produce two products. A 26-week rolling horizon is used for planning production. The products’ forecasted demand, in tons, is Table 9:
+A plant can use a three-stage process to produce two products. A 26-week rolling horizon is used for planning production. The products’ forecasted demand, in tons, is Table 8:
 
-Table 9: Ex. 5’s forecast demand for each product in each week, weeks 1 to 13 and 14 to 26 side by side, and its total over the 26 weeks (ton).
+Table 8: Ex. 5’s forecast demand for each product in each week, weeks 1 to 13 and 14 to 26 side by side, and its total over the 26 weeks (ton).
 
 | Week | Product 1 | Product 2 | Week | Product 1 | Product 2 |
 |---|---|---|---|---|---|
@@ -1769,7 +1769,7 @@ h = 0.3 / (365.25 / 7) = 0.005749486652977412
 y⁰ = [0 0; 0 0; 0 sum(d[[1 2], 2])] = [0 0; 0 0; 0 11]
 ```
 
-Code block 28 is Code block 16 with 26 weeks of demand, each product’s weeks set over two lines, 1 to 13 and 14 to 26, as in Table 9. Code block 29 solves the problem with the implementation of Model 4, unchanged, and times the solve:
+Code block 28 is Code block 16 with 26 weeks of demand, each product’s weeks set over two lines, 1 to 13 and 14 to 26, as in Table 8. Code block 29 solves the problem with the implementation of Model 4, unchanged, and times the solve:
 
 ```julia
 # Code block 29: Ex. 5 solved with prodinv_switch, and timed
@@ -1780,10 +1780,10 @@ secs = @elapsed r5 = prodinv_switch(cᵖ, cʷ, cⁱ, d, u, z⁰, LBʸ, UBʸ)
 
 ```text
 r5.TC = 149745.64188911687
-round(Int, secs) = 56
+round(Int, secs) = 58
 ```
 
-Here the solve takes about a minute, 56 seconds on this page’s render. Code block 30 finds the plan’s production, inventory and switchover costs as Code block 22 does for Ex. 3, and Code block 31 adds them and checks the total against the problem’s published solution:
+Here the solve takes about a minute, 58 seconds on this page’s render. Code block 30 finds the plan’s production, inventory and switchover costs as Code block 22 does for Ex. 3, and Code block 31 adds them and checks the total against the problem’s published solution:
 
 ```julia
 # Code block 30: the production, inventory and switchover costs
@@ -1843,7 +1843,7 @@ Example 5(b): A report for each stage
 
 Report the plan to the person running each stage: what the stage makes of each product in each week.
 
-A stage’s report is the reading of a plan stage by stage that follows Ex. 4(a): what the stage makes of each product in each week. Code block 32 makes it a DataFrame of the plan’s production at the stage, and report sets a DataFrame as a table, without the row numbers, types and size that a DataFrame shows by default; Table 10 is the three stages’ reports:
+A stage’s report is the reading of a plan stage by stage that follows Ex. 4(a): what the stage makes of each product in each week. Code block 32 makes it a DataFrame of the plan’s production at the stage, and report sets a DataFrame as a table, without the row numbers, types and size that a DataFrame shows by default; Table 9 is the three stages’ reports:
 
 ```julia
 # Code block 32: a report for the person running each stage
@@ -1863,7 +1863,7 @@ end
 - 2 MIME("text/html") asks show for the DataFrame’s HTML form, the table a web page displays, and the three keywords set to false leave out the row of column types, the line giving its size, such as “26×3 DataFrame”, and the row numbers.
 - 3 display puts each stage’s table on the page. Without it nothing in the loop would appear, since only the last value of a cell is shown, and the value of a for loop is nothing.
 
-Table 10: What each stage makes of each product in each week (ton).
+Table 9: What each stage makes of each product in each week (ton).
 
 (a) Stage 1
 
@@ -1964,7 +1964,7 @@ Example 5(c): A report for each product
 
 Report the plan to each product’s product manager: its demand, what is finished each week and the finished inventory on hand.
 
-Code block 33 makes a product’s report a DataFrame of its demand, what stage 3 finishes and the finished inventory at the end of each week, and sets one for each product with Code block 32’s report; Table 11 is the two products’ reports:
+Code block 33 makes a product’s report a DataFrame of its demand, what stage 3 finishes and the finished inventory at the end of each week, and sets one for each product with Code block 32’s report; Table 10 is the two products’ reports:
 
 ```julia
 # Code block 33: a report for each product's product manager
@@ -1975,7 +1975,7 @@ for k in 1:g
 end
 ```
 
-Table 11: Each product’s demand, the tons finished at stage 3 and the finished inventory at the end of each week (ton).
+Table 10: Each product’s demand, the tons finished at stage 3 and the finished inventory at the end of each week (ton).
 
 (a) Product 1
 

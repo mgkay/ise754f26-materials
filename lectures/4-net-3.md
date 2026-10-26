@@ -191,11 +191,11 @@ solve for:
 (b) inventory at each stage carried into each period.
 
 subject to:
-(a) flow balance at each stage that feeds the next: what is produced or carried in is either passed on to the next stage or carried out;
-(b) flow balance at the last stage, which feeds demand: what is produced or carried in either meets the period’s demand or is carried out;
-(c) capacity: production at each stage in each period is no more than its capacity;
-(d) initial and final inventory: inventory at each stage at the start and at the end of the horizon is given;
-(e) storage: inventory at each stage between periods is no more than its storage capacity.
+(a) Flow balance: at each stage that feeds the next, what is produced or carried in is either passed on to the next stage or carried out;
+(b) Flow balance: at the last stage, which feeds demand, what is produced or carried in either meets the period’s demand or is carried out;
+(c) Capacity: production at each stage in each period is no more than its capacity;
+(d) Initial and final inventory: inventory at each stage at the start and at the end of the horizon is given;
+(e) Storage: inventory at each stage between periods is no more than its storage capacity.
 
 assumptions:
 (a) production cost and inventory cost per ton at each stage are constant;
@@ -213,14 +213,14 @@ $$
 \mathrlap{\text{Minimize}} & & & & & \\[2pt]
 \mathrlap{\qquad \displaystyle \sum_{i=1}^{m} \sum_{j=1}^{t} c_i^p\, x_{ij} + \sum_{i=1}^{m} \sum_{j=2}^{t+1} c_i^i\, y_{ij}} & & & & & \\[16pt]
 \mathrlap{\text{subject to}} & & & & & \\[8pt]
-& -x_{ij} + x_{(i+1)j} - y_{ij} + y_{i(j+1)} & = & 0, & \hphantom{k}\mathllap{i} = 1, \dots, m-1 & (a) \\[-2pt]
+& \textcolor{#d21f26}{\small\text{Flow balance}}\enspace\mathopen{} -x_{ij} + x_{(i+1)j} - y_{ij} + y_{i(j+1)} & = & 0, & \hphantom{k}\mathllap{i} = 1, \dots, m-1 & (a) \\[-2pt]
 & & & & \hphantom{k}\mathllap{j} = 1, \dots, t & \\[8pt]
-& -x_{mj} - y_{mj} + y_{m(j+1)} & = & -d_j, & \hphantom{k}\mathllap{j} = 1, \dots, t & (b) \\[8pt]
-& x_{ij} & \le & u_{ij}, & \hphantom{k}\mathllap{i} = 1, \dots, m & (c) \\[-2pt]
+& \textcolor{#d21f26}{\small\text{Flow balance}}\enspace\mathopen{} -x_{mj} - y_{mj} + y_{m(j+1)} & = & -d_j, & \hphantom{k}\mathllap{j} = 1, \dots, t & (b) \\[8pt]
+& \textcolor{#d21f26}{\small\text{Capacity}}\enspace\mathopen{} x_{ij} & \le & u_{ij}, & \hphantom{k}\mathllap{i} = 1, \dots, m & (c) \\[-2pt]
 & & & & \hphantom{k}\mathllap{j} = 1, \dots, t & \\[8pt]
-& y_{i1} & = & y_i^0, & \hphantom{k}\mathllap{i} = 1, \dots, m & (d) \\[8pt]
+& \textcolor{#d21f26}{\small\text{Initial and final inventory}}\enspace\mathopen{} y_{i1} & = & y_i^0, & \hphantom{k}\mathllap{i} = 1, \dots, m & (d) \\[8pt]
 & y_{i(t+1)} & = & y_i^{t+1}, & \hphantom{k}\mathllap{i} = 1, \dots, m & (d) \\[8pt]
-& y_{ij} & \le & u_i^y, & \hphantom{k}\mathllap{i} = 1, \dots, m & (e) \\[-2pt]
+& \textcolor{#d21f26}{\small\text{Storage}}\enspace\mathopen{} y_{ij} & \le & u_i^y, & \hphantom{k}\mathllap{i} = 1, \dots, m & (e) \\[-2pt]
 & & & & \hphantom{k}\mathllap{j} = 2, \dots, t & \\[8pt]
 & x_{ij},\ y_{ij} & \ge & 0 & &
 \end{array}
@@ -292,7 +292,7 @@ prodinv (generic function with 1 method)
 
 Flow balance makes it possible to determine some of the flows in a production-inventory network by hand. Given a diagram of the network with only some of its flows, the missing flows are filled in from the flow balance at its nodes. Doing so is a good way of demonstrating an understanding of the basic structure of these networks.
 
-Missing flows are not something to expect in practice, and filling them in is not part of the normal use of these models. Where some are missing, this is a way to fill them in; it works only because the structure of the model is such that some of the data can be determined from the rest. It is brought up here because it is a useful way of testing an understanding of that structure. Were flows to be found to any large extent, it would be coded up, so that the model determined them automatically. Exs. 1 and 2 are two such tests, the first with one flow missing and the second with data of several kinds missing.
+Missing flows are not something to expect in practice, and filling them in is not part of the normal use of these models. Where some are missing, this is a way to fill them in; it works only because the structure of the model is such that some of the data can be determined from the rest. It is brought up here because it is a useful way of testing an understanding of that structure. Were flows to be found to any large extent, it would be coded up, so that the model determined them automatically. Ex. 1 and 2 are two such tests, the first with one flow missing and the second with data of several kinds missing.
 
 Example 1: One missing flow
 
@@ -785,14 +785,17 @@ Raw math programming output is not typically very interpretable, so part of the 
 The optimal production flows, with the required demands beneath them, are:
 
 ```julia
-[xᵒ; d']                      # Code block 9: production, then demand
+# Code block 9: production, then demand
+prt([xᵒ; d']; rows = [string.("Stage ", 1:m); "Demand"],
+    cols = string.(1:t), row_title = "Period")
 ```
 
 ```text
-3×3 Matrix{Float64}:
- 45.0   0.0  35.0
- 45.0   0.0   0.0
- 20.0  10.0  15.0
+ Period   1   2   3
+───────────────────
+Stage 1  45   0  35
+Stage 2  45   0   0
+ Demand  20  10  15
 ```
 
 The optimal inventory flows are:
@@ -1029,14 +1032,17 @@ The latest plan carries 35 tons at stage 1 into month 4, built ahead for the 75 
 The optimal production flows, with the required demands beneath them, are:
 
 ```julia
-[xᵒ; d']                      # Code block 17: production, then demand
+# Code block 17: production, then demand
+prt([xᵒ; d']; rows = [string.("Stage ", 1:m); "Demand"],
+    cols = string.(1:t), row_title = "Period")
 ```
 
 ```text
-3×6 Matrix{Float64}:
-  0.0  25.0  30.0  40.0   0.0  40.0
-  0.0  30.0   0.0  70.0   0.0  30.0
- 25.0  15.0  10.0  50.0  25.0  15.0
+ Period   1   2   3   4   5   6
+───────────────────────────────
+Stage 1   0  25  30  40   0  40
+Stage 2   0  30   0  70   0  30
+ Demand  25  15  10  50  25  15
 ```
 
 The optimal inventory flows are:
@@ -1107,12 +1113,12 @@ Table 3: Single-product problems in this lecture: whether capacity’s availabil
 
 | Capacity | Problem | Solved by |
 |---|---|---|
-| Set outside the model: $u_{ij}$ given, $0$ where unavailable | no setup cost, Model 2’s assumptions hold (Exs. 3, 7) | greedy procedure, Model 2; its plan is optimal, costing the same as the linear program’s |
-| | no setup cost, a storage limit binds (Ex. 4) | linear program, Model 1; the greedy plan breaks the limit |
-| | no setup cost, a base resource and a costlier one, a multigraph (Sec. 2.4) | minimum cost network flow on the multigraph, as in Lecture 4.2 |
+| Set outside the model: $u_{ij}$ given, $0$ where unavailable | no setup cost, Model 2’s assumptions hold (Ex. 3, 7) | greedy procedure, Model 2; its plan is optimal, costing the same as the linear program’s |
+| no setup cost, a storage limit binds (Ex. 4) | linear program, Model 1; the greedy plan breaks the limit | |
+| no setup cost, a base resource and a costlier one, a multigraph (Sec. 2.4) | minimum cost network flow on the multigraph, as in Lecture 4.2 | |
 | Gated inside the model by indicators $z_{ij}$ | no setup cost (Sec. 3) | linear program, Model 1: the indicators determine nothing |
-| | setup cost, one stage, no capacity limit (Sec. 3 note) | dynamic program of Wagner and Whitin |
-| | setup cost, stages with capacity (Exs. 5, 6) | mixed-integer linear program, Model 3 |
+| setup cost, one stage, no capacity limit (Sec. 3 note) | dynamic program of Wagner and Whitin | |
+| setup cost, stages with capacity (Ex. 5, 6) | mixed-integer linear program, Model 3 | |
 
 The indicator gates capacity in row (c) of Eq. 3 below, $x_{ij} \le u_i z_{ij}$, and the setup cost puts it in the objective, as $c_i^s z_{ij}$.
 
@@ -1138,11 +1144,11 @@ solve for:
 (c) number of setups at each stage in each period.
 
 subject to:
-(a) flow balance at each stage that feeds the next: what is produced or carried in is either passed on to the next stage or carried out;
-(b) flow balance at the last stage, which feeds demand: what is produced or carried in either meets the period’s demand or is carried out;
-(c) capacity: production at each stage in each period is no more than its capacityper setup times its number of setups;
-(d) initial and final inventory: inventory at each stage at the start and at the end of the horizon is given;
-(e) storage: inventory at each stage between periods is no more than its storage capacity.
+(a) Flow balance: at each stage that feeds the next, what is produced or carried in is either passed on to the next stage or carried out;
+(b) Flow balance: at the last stage, which feeds demand, what is produced or carried in either meets the period’s demand or is carried out;
+(c) Capacity: production at each stage in each period is no more than its capacityper setup times its number of setups;
+(d) Initial and final inventory: inventory at each stage at the start and at the end of the horizon is given;
+(e) Storage: inventory at each stage between periods is no more than its storage capacity.
 
 assumptions:
 (a) production cost and inventory cost per ton at each stage are constant;
@@ -1203,6 +1209,15 @@ Some inputs are “lumpy,” that is, the cost of utilizing the input is the sam
 Constraint (c) represents available production capacity and uses the setups $z$ to indicate whether production occurs. The capacity is assumed to be available in discrete units that are either at 100% of the unit’s capacity or not available at all. Integer decision variables are used to make these decisions. This internal capacity decision requires the model to be solved as a MILP.
 
 Producing anything therefore requires a setup, and a setup is paid for in the objective. For a machine, $\bar{z}_{ij}$ is 1 in a period in which it is available and 0 in one in which it is down; for trucks, it is as many as could ever be needed. With no setup costs and machines only, Model 3 is Model 1 with capacities $u_{ij} = u_i\bar{z}_{ij}$.
+
+The most setups. How many trucks could ever be needed is calculated from the data, an important step in setting up the model whenever a stage’s setups are a count rather than an indicator. Flow balance, rows (a), (b) and (d), fixes the tons that pass through stage $i$ over the whole horizon: the demand, plus the final inventory less the initial at stage $i$ and at every stage after it. No single period can carry more than all of them, so
+
+$$
+\bar{z}_{ij} = \Biggl\lceil \frac{1}{u_i} \Biggl( \sum_{j'=1}^{t} d_{j'} + \sum_{i'=i}^{m} \bigl( y_{i'}^{t+1} - y_{i'}^0 \bigr) \Biggr) \Biggr\rceil
+\tag{5}
+$$
+
+The bound should be as loose as possible, all of the horizon’s tons in a single period; there is no advantage to trying to tighten it. It just has to be finite. A storage capacity that is not limited, row (e), can be infinite, because inventory is a continuous variable. The setups are integer, and branch and bound (Lecture 2.7, Sec. 1.3) reaches an integer solution by splitting a variable’s range, $z_{ij} \le 3$ on one branch and $z_{ij} \ge 4$ on the other; a finite range is what guarantees that the splitting comes to an end. A solver given infinity will often still finish, because the setup cost keeps the number of setups small, but then it is the costs, not the model, that end the search.
 
 Time spent setting up a machine when the machine is stopped and can not be operating is termed the machine’s internal setup time; in contrast, the machine’s external setup time is the time required to prepare to produce a particular part on the machine that does not require the machine to be stopped (e.g., fixture preparation). A machine’s “down time” represents the percentage of time the machine is not available for production due to repair or planned maintenance; it does not include internal setup time because the machine is still available for production during this time.
 
@@ -1310,14 +1325,17 @@ TCᵒ = 212275.0
 The optimal production flows, with the required demands beneath them, are:
 
 ```julia
-[xᵒ; d']                      # Code block 25: production, then demand
+# Code block 25: production, then demand
+prt([xᵒ; d']; rows = [string.("Stage ", 1:m); "Demand"],
+    cols = string.(1:t), row_title = "Period")
 ```
 
 ```text
-3×6 Matrix{Float64}:
-  0.0  25.0  30.0  40.0   0.0  40.0
-  0.0  30.0   0.0  70.0   0.0  30.0
- 25.0  15.0  10.0  50.0  25.0  15.0
+ Period   1   2   3   4   5   6
+───────────────────────────────
+Stage 1   0  25  30  40   0  40
+Stage 2   0  30   0  70   0  30
+ Demand  25  15  10  50  25  15
 ```
 
 The optimal inventory flows are:
@@ -1375,7 +1393,7 @@ Example 5(b): Cost of a given plan by hand
 
 Using some different data as noted below (otherwise, use the data given in Ex. 5) and only a three-month planning horizon, determine the total variable production, inventory, and setup cost over the horizon. The forecasted demand is 22, 3, and 33 tons per month. The product loses five percent of its value after one month. Each month, 20, 4, 40 and 25, 0, 37 tons, respectively, are produced at each stage. Currently, five tons of material is in storage at stage one and none at stage two; at the end of the planning period, seven tons of material should be in storage at stage one and four at stage two.
 
-The production values, the inputs to the network, are given, so the missing data can be inferred using the flow balance equations, as in Exs. 1 and 2, and the costs then computed from them.
+The production values, the inputs to the network, are given, so the missing data can be inferred using the flow balance equations, as in Ex. 1 and 2, and the costs then computed from them.
 
 Going month by month, the inventory carried out of each node is what came in less what went on:
 
@@ -1465,6 +1483,15 @@ cTL = 1357.1957156767282
 
 The truckload’s setup cost is one truck’s charge, \$1,357.2, with no cost per ton, and its capacity per setup is the maximum payload, 6.11 tons.
 
+With no inventory at either end, all of the year’s 20 tons pass through stage 2, the trucks, and no week can need more trucks than it takes to carry all of them. By Eq. 5, with $m = 2$ stages, $t = 52$ weeks and the maximum payload as the capacity per setup $u_2$, the most trucks in a week is:
+
+$$
+\bar{z}_{2j} = \Biggl\lceil \frac{1}{6.11} \Biggl( \sum_{j'=1}^{52} \frac{20}{52} + (0 - 0) \Biggr) \Biggr\rceil = \left\lceil \frac{20}{6.11} \right\rceil = \lceil 3.27 \rceil = 4
+
+$$
+
+Code block 32 gives the model this bound in every week.
+
 Example 6(a): Weekly plan
 
 Determine the weekly plan for the year.
@@ -1481,7 +1508,7 @@ function weekly(v)
     cˢ = [0.0, cTL]                 # setup costs ($/setup)
     u = [f, qmax]                   # capacity per setup (ton)
     z̄ = [ones(Int, 1, weeks);       # most setups in a week: the plant,
-         fill(10, 1, weeks)]        #   and trucks, more than ever needed
+         fill(ceil(Int, f/qmax), 1, weeks)]  # and trucks for all f tons
     cⁱ = h/weeks .* [v, v + cTL/qmax]   # inventory cost ($/ton-week)
     LBʸ = zeros(2, weeks + 1)       # no inventory at either end
     UBʸ = [zeros(2) fill(Inf, 2, weeks - 1) zeros(2)]
@@ -1496,14 +1523,14 @@ mean(diff(tl25))                               # weeks between trucks
 
 ```text
 length(tl25) = 7
-mean(r25.x[2, tl25]) = 2.8571428571326174
+mean(r25.x[2, tl25]) = 2.857142857143381
 ```
 
 ```text
-7.5
+7.333333333333333
 ```
 
-The plan sends 7 trucks in the year, about 2.86 tons each, one every 7.5 weeks on average. Lecture 3.3 found the same shipment by an entirely different route, minTLC, its total logistics cost minimized over a continuous shipment size.
+The plan sends 7 trucks in the year, about 2.86 tons each, one every 7.3 weeks on average. Lecture 3.3 found the same shipment by an entirely different route, minTLC, its total logistics cost minimized over a continuous shipment size.
 
 As Lecture 3.3 put it, most companies more realistically do batch production: a customer’s product is produced over a very short time, so there is essentially no inventory at the origin. With consumption still constant at the destination, $\alpha = 0 + 1/2 = 1/2$, where before, with inventory at both ends, it was 1.
 
@@ -1551,7 +1578,7 @@ res85 = minTLC((f = f, s = s, a = 1/2, v = 85000, h = 0.3, d = d), tr,
 
 ```text
 length(tl85) = 13
-mean(r85.x[2, tl85]) = 1.5384615384613836
+mean(r85.x[2, tl85]) = 1.5384615384614784
 mean(diff(tl85)) = 4.0
 res85.qᵒ = 1.4590868568949196
 ```
@@ -1861,11 +1888,11 @@ b\,(1 - u) = \tau u, \qquad b = \frac{\tau u}{1 - u}
 
 $$
 
-The plan that has to see the outage spans, in turn, the $\delta$ periods already committed at its front, the $b$ periods of build-ahead and the $\tau$ periods of the outage, the three spans Fig. 8(b) brackets, so its horizon is at least their sum. With $b$ substituted, and since $\tau u + \tau (1 - u) = \tau$, the sum is Eq. 5:
+The plan that has to see the outage spans, in turn, the $\delta$ periods already committed at its front, the $b$ periods of build-ahead and the $\tau$ periods of the outage, the three spans Fig. 8(b) brackets, so its horizon is at least their sum. With $b$ substituted, and since $\tau u + \tau (1 - u) = \tau$, the sum is Eq. 6:
 
 $$
 H \ge \delta + b + \tau = \delta + \frac{\tau u}{1 - u} + \tau = \delta + \frac{\tau}{1 - u}
-\tag{5}
+\tag{6}
 $$
 
 where
@@ -1875,9 +1902,9 @@ where
 - $\tau$ = length of the outage (periods)
 - $u$ = utilization of the resource in the periods before the outage.
 
-By Eq. 5, with materials on hand ($\delta = 0$), a month-long outage at 90% utilization needs a horizon of 10 months, and at 95%, 20; a lead time adds to each. The horizon grows as $1/(1-u)$, the factor by which cycle time grows in Lecture 1.3’s VUT equation (Eq. 6 in Lecture 1.3): a busy resource has little idle capacity to build ahead with, which is one reason a month of maintenance can call for years of planning; the other is that the plan has to span the maintenance cycle, so that it can determine when each plant is down.
+By Eq. 6, with materials on hand ($\delta = 0$), a month-long outage at 90% utilization needs a horizon of 10 months, and at 95%, 20; a lead time adds to each. The horizon grows as $1/(1-u)$, the factor by which cycle time grows in Lecture 1.3’s VUT equation (Eq. 6 in Lecture 1.3): a busy resource has little idle capacity to build ahead with, which is one reason a month of maintenance can call for years of planning; the other is that the plan has to span the maintenance cycle, so that it can determine when each plant is down.
 
-The lead time is counted once in Eq. 5, not once for each period of the build-ahead, because the materials for a build-ahead are not all ordered at one time and left to sit for two or three periods; they are ordered each period, so a two-period lead time overlaps each period of the build-ahead.
+The lead time is counted once in Eq. 6, not once for each period of the build-ahead, because the materials for a build-ahead are not all ordered at one time and left to sit for two or three periods; they are ordered each period, so a two-period lead time overlaps each period of the build-ahead.
 
 The plan is re-solved every period, so the numbers get less certain the further out they are, and are more subject to change. Each run can also change what was planned for the coming periods, which unsettles everyone who works to the plan; companies damp this by freezing the nearest periods of the plan, at some cost.13
 
@@ -1907,7 +1934,7 @@ Example 7(a): By hand
 
 Determine the horizon from the capacities and the demand, before any plan is solved.
 
-Stage 2 has no capacity in months 2 and 3, an outage of two months, so their demand, 10 and 15 tons, has to be made in month 1. In the terms of Eq. 5’s count, with the materials on hand ($\delta = 0$), stage 2’s idle capacity in month 1, 60 − 20 = 40 tons, covers the outage’s 25 tons, so the build-ahead is one month, and the plan made in month 1 has to span it and the outage: $H \ge 0 + 1 + 2 = 3$ months. That is an estimate committed before any plan is solved, the Prior check of Lecture 1.2.
+Stage 2 has no capacity in months 2 and 3, an outage of two months, so their demand, 10 and 15 tons, has to be made in month 1. In the terms of Eq. 6’s count, with the materials on hand ($\delta = 0$), stage 2’s idle capacity in month 1, 60 − 20 = 40 tons, covers the outage’s 25 tons, so the build-ahead is one month, and the plan made in month 1 has to span it and the outage: $H \ge 0 + 1 + 2 = 3$ months. That is an estimate committed before any plan is solved, the Prior check of Lecture 1.2.
 
 Example 7(b): In Julia
 
