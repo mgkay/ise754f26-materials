@@ -1114,11 +1114,11 @@ Table 3: Single-product problems in this lecture: whether capacity’s availabil
 | Capacity | Problem | Solved by |
 |---|---|---|
 | Set outside the model: $u_{ij}$ given, $0$ where unavailable | no setup cost, Model 2’s assumptions hold (Ex. 3, 7) | greedy procedure, Model 2; its plan is optimal, costing the same as the linear program’s |
-| no setup cost, a storage limit binds (Ex. 4) | linear program, Model 1; the greedy plan breaks the limit | |
-| no setup cost, a base resource and a costlier one, a multigraph (Sec. 2.4) | minimum cost network flow on the multigraph, as in Lecture 4.2 | |
+| | no setup cost, a storage limit binds (Ex. 4) | linear program, Model 1; the greedy plan breaks the limit |
+| | no setup cost, a base resource and a costlier one, a multigraph (Sec. 2.4) | minimum cost network flow on the multigraph, as in Lecture 4.2 |
 | Gated inside the model by indicators $z_{ij}$ | no setup cost (Sec. 3) | linear program, Model 1: the indicators determine nothing |
-| setup cost, one stage, no capacity limit (Sec. 3 note) | dynamic program of Wagner and Whitin | |
-| setup cost, stages with capacity (Ex. 5, 6) | mixed-integer linear program, Model 3 | |
+| | setup cost, one stage, no capacity limit (Sec. 3 note) | dynamic program of Wagner and Whitin |
+| | setup cost, stages with capacity (Ex. 5, 6) | mixed-integer linear program, Model 3 |
 
 The indicator gates capacity in row (c) of Eq. 3 below, $x_{ij} \le u_i z_{ij}$, and the setup cost puts it in the objective, as $c_i^s z_{ij}$.
 
@@ -1136,7 +1136,7 @@ The number of truckloads in a week is not restricted to one, and typically there
 
 Model 3 generalizes Model 1 with the number of setups at each stage in each period. A machine is set up at most once in a period, so for a machine the number is the indicator; for trucks it is a count.
 
-minimize: total production, inventoryand setup cost over the planning horizon
+minimize: total production, inventory and setup cost over the planning horizon
 
 solve for:
 (a) production at each stage in each period;
@@ -1146,7 +1146,7 @@ solve for:
 subject to:
 (a) Flow balance: at each stage that feeds the next, what is produced or carried in is either passed on to the next stage or carried out;
 (b) Flow balance: at the last stage, which feeds demand, what is produced or carried in either meets the period’s demand or is carried out;
-(c) Capacity: production at each stage in each period is no more than its capacityper setup times its number of setups;
+(c) Capacity: production at each stage in each period is no more than its capacity per setup times its number of setups;
 (d) Initial and final inventory: inventory at each stage at the start and at the end of the horizon is given;
 (e) Storage: inventory at each stage between periods is no more than its storage capacity.
 

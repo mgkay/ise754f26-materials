@@ -63,7 +63,7 @@ Model 1: Competitive beach
 
 Cooperative location. On the competitive beach, each stand maximizing its own share of the market drives the two together and both stands sit at the center of the beach. These are the worst possible locations with respect to how far customers have to walk. Now suppose on a different beach, the competition is removed. A single resort buys the beach and grants a single owner the exclusive right to sell hot dogs on it. Freed from the fight over market share, the owner would want to place two stands at locations that minimize customer travel so that excessive walking discourages the least amount of customer demand (Model 2). Changing who owns the stands changes the objective; the remaining assumptions of uniform demand, an identical product, and nearest-stand choice carry over unchanged.
 
-maximize: share of the market a stand captures minimize: average distance a customer travels to reach a stand
+~~maximize: share of the market a stand captures~~ minimize: average distance a customer travels to reach a stand
 
 solve for:
 (a) where each stand locates, any point along the beach.
@@ -73,7 +73,7 @@ subject to: none
 return: pair of stand locations
 
 assumptions:
-(a) the two stands are owned independently, so each competes for customers a single owner controls both stands;
+(a) ~~the two stands are owned independently, so each competes for customers~~ a single owner controls both stands;
 (b) customers are spread uniformly along the beach;
 (c) both stands sell an identical product at the same price;
 (d) each customer buys from the nearer stand.
@@ -229,7 +229,7 @@ Variant of Model 4: Fair (equitable) apartment location
 
 The fair location fixes how the driving is shared, but not how much driving there is in total. A couple that cares more about the total mileage, rather than about who bears the driving burden, would pose the question the other way around: they might instead minimize the total distance driven, adding the mileage up rather than balancing it. The new objective simply drops the square.
 
-minimize: total weighted squared distance from the apartment to the two workplaces
+minimize: total weighted ~~squared~~ distance from the apartment to the two workplaces
 
 solve for:
 (a) location $x$ of the apartment, any point along the corridor.
@@ -260,7 +260,7 @@ This coincidence, the fair point equalling the centroid, is exact only because t
 
 Locating in Raleigh can in fact be the best of both worlds, but only once the objective is widened again. Concentrating the trips at Raleigh may let the couple keep one car instead of two, a saving with a clear dollar value. That saving does belong in the objective, and folding it in requires, as with the customer’s choice of beach, weighting the incommensurable together: once travel is evaluated at a shared rate, the miles and the cost of a car are both in dollars and can be added into a single total cost. Fairness is handled differently. Raleigh leaves the Durham partner bearing the whole commute, and rather than add that imbalance to the objective, the couple determines it outside the objective, through a compensating task such as cooking. The widened objective therefore minimizes total cost alone, with the car folded in and the even split arranged separately.
 
-minimize: total weighted distance from the apartment to the two workplaces total couple cost: both partners’ travel valued at the couple’s single shared rate, plus the cost of the vehicles the couple keeps
+minimize: ~~total weighted distance from the apartment to the two workplaces~~ total couple cost: both partners’ travel valued at the couple’s single shared rate, plus the cost of the vehicles the couple keeps
 
 solve for:
 (a) location $x$ of the apartment, any point along the corridor;
@@ -269,7 +269,7 @@ solve for:
 subject to:
 (a) one-car: the second car can be given up only if the apartment is located in Raleigh, where the partner who works and studies there can walk
 
-return: location $x$ of the apartmentcouple’s plan: where to live, and whether to keep the second car
+return: ~~location $x$ of the apartment~~ couple’s plan: where to live, and whether to keep the second car
 
 assumptions:
 (a) apartment can be located anywhere along the corridor;
@@ -517,10 +517,10 @@ Table 1: The linear minisum objective and its five nonlinear relatives.
 |---|---|---|---|
 | Linear | minisum | $\min \sum_i w_i d_i$ | Sec. 1, 4; 2.2 Sec. 3 |
 | Nonlinear | center of gravity | $\min \sum_i w_i d_i^2$ | Sec. 3 |
-| minimax | $\min\{\max_i d_i\}$ | Sec. 5; 2.2 Sec. 4 | |
-| maximin | $\max\{\min_i d_i\}$ | Sec. 5; 2.2 Sec. 4 | |
-| fixed cost (affine) | $\min \sum_i (k_i + w_i d_i)$ | later lecture | |
-| economy of scale | $\min \sum_i w_i \sqrt{d_i}$ | not covered | |
+| | minimax | $\min\{\max_i d_i\}$ | Sec. 5; 2.2 Sec. 4 |
+| | maximin | $\max\{\min_i d_i\}$ | Sec. 5; 2.2 Sec. 4 |
+| | fixed cost (affine) | $\min \sum_i (k_i + w_i d_i)$ | later lecture |
+| | economy of scale | $\min \sum_i w_i \sqrt{d_i}$ | not covered |
 
 Three of the five nonlinear forms have appeared in this lecture: the center of gravity of Sec. 3, and the minimax and maximin of Sec. 5. The fixed-cost form, which adds a fixed charge $k_i$ for using a facility to the linear travel cost, is the one nonlinear case this course solves, taken up with discrete location in a later lecture. The last, economy of scale, is listed only to mark the range: where squaring the distance penalizes a long trip more than proportionally, the square root does the opposite, its cost growing slower than distance. Choosing among these objectives, not solving any one, remains the modeling decision the lecture has been about.
 

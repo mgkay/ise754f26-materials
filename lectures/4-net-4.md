@@ -188,9 +188,9 @@ Table 2: Multiple-product problems in this lecture: what the products share, the
 |---|---|---|
 | None: each product has its own resources | products planned one at a time (Ex. 2 without its linking rows) | LP for each product, Lecture 4.3’s Model 1 |
 | Combined: products share a resource’s capacity, by coupling constraints | shared capacity given, no setup cost | LP, Model 1 |
-| trucks and trailers shared, a setup cost for each load (Ex. 1) | MILP, Model 2, setups an integer count | |
+| | trucks and trailers shared, a setup cost for each load (Ex. 1) | MILP, Model 2, setups an integer count |
 | Exclusive: a resource set up for one product a period, by linking constraints | no switchover cost (Ex. 2) | MILP, Model 3 |
-| switchover cost when a stage changes product (Ex. 3, 4) | MILP, Model 4 | |
+| | switchover cost when a stage changes product (Ex. 3, 4) | MILP, Model 4 |
 
 ## 2. Coupling constraints
 
@@ -205,7 +205,7 @@ solve for:
 subject to:
 (a) Flow balance: at each stage that feeds the next, for each product, what is produced or carried in is either passed on to the next stage or carried out;
 (b) Flow balance: at the last stage, which feeds each product’s demand, what is produced or carried in either meets the period’s demand or is carried out;
-(c) Capacity: production of each product at each stage in each period is no more than its capacitythat product’s capacity;
+(c) Capacity: production of each product at each stage in each period is no more than ~~its capacity~~ that product’s capacity;
 (d) Initial and final inventory: inventory of each product at each stage at the start and at the end of the horizon is given;
 (e) Storage: inventory of each product at each stage between periods is no more than its storage capacity;
 (f) Coupling: the combined production of all products at a stage in a period is no more than its capacity.
@@ -273,7 +273,7 @@ A truck that is shared can be represented by the number of trucks, with a constr
 
 Model 2 generalizes Model 1 as Model 3 in Lecture 4.3 generalizes Model 1 in Lecture 4.3: the shared capacity, given in Model 1, is the capacity per setup times the number of setups, determined in the model, each setup at a cost. It is also Model 3 in Lecture 4.3 with a product index.
 
-minimize: total production, inventoryand setup cost over the planning horizon
+minimize: total production, inventory and setup cost over the planning horizon
 
 solve for:
 (a) production of each product at each stage in each period;
@@ -286,7 +286,7 @@ subject to:
 (c) Capacity: production of each product at each stage in each period is no more than that product’s capacity;
 (d) Initial and final inventory: inventory of each product at each stage at the start and at the end of the horizon is given;
 (e) Storage: inventory of each product at each stage between periods is no more than its storage capacity;
-(f) Coupling: the combined production of all products at a stage in a period is no more than its capacityper setup times its number of setups.
+(f) Coupling: the combined production of all products at a stage in a period is no more than its capacity per setup times its number of setups.
 
 assumptions:
 (a) production cost and inventory cost per ton of each product at each stage are constant;
@@ -564,7 +564,7 @@ Total cost \$70,264.67: extraction \$51,960, inventory \$104.67, and 35 trucks a
 
 Example 1(b): Cost of a given plan by hand
 
-Using some different data (as noted below, otherwise use the data given in Ex. 1) and only a three-week planning horizon, determine the total production, inventory, and transport cost over the horizon. The forecasted demand for both materials is 20, 10, 45 and 12, 25, 5 tons, respectively. It costs \$600 and \$400 to extract each ton of material at the facility, and the annual inventory carrying rate is 0.5. Currently, 20 tons of the second material is in inventory at the final destination. A different amount of material can be in inventory at the end of the planning period. For each material, each period, 30, 30, 30 and 16, 17, 17 tons, respectively, are produced; 30, 10, 50 and 0, 20, 30 tons are transported to the staging station; and 22, 8, 60 and 0, 17, 33 tons are transported to the final destination.
+Using some different data (as noted below, otherwise use the data given in Ex. 1) and only a three-week planning horizon, determine the total production, inventory, and transport cost over the horizon. The forecasted demand for both materials is 20, 10, 45 and 12, 25, 5 tons, respectively. It costs \$600 and \$400 to extract each ton of material at the facility, and the annual inventory carrying rate is 0.5. The facility can extract up to 30 and 20 tons per week of each material, respectively. Currently, 20 tons of the second material is in inventory at the final destination. A different amount of material can be in inventory at the end of the planning period. For each material, each period, 30, 30, 30 and 16, 17, 17 tons, respectively, are produced; 30, 10, 50 and 0, 20, 30 tons are transported to the staging station; and 22, 8, 60 and 0, 17, 33 tons are transported to the final destination.
 
 Fig. 3 sets the plan out on each material’s network, with both materials’ trucks and trailers each week below them: red is given, and blue has to be determined, here the inventory each node carries out, what came in less what went on, and each week’s loads:
 
@@ -675,7 +675,7 @@ solve for:
 subject to:
 (a) Flow balance: at each stage that feeds the next, for each product, what is produced or carried in is either passed on to the next stage or carried out;
 (b) Flow balance: at the last stage, which feeds each product’s demand, what is produced or carried in either meets the period’s demand or is carried out;
-(c) Capacity: production of a product at eacha stage in eacha period is no more than its capacity, and zero unless the stage is set up for it;
+(c) Capacity: production of a product at ~~each~~ a stage in ~~each~~ a period is no more than its capacity, and zero unless the stage is set up for it;
 (d) Initial and final inventory: inventory of each product at each stage at the start and at the end of the horizon is given;
 (e) Storage: inventory of each product at each stage between periods is no more than its storage capacity;
 (f) Linking: each stage is set up for at most one product in each period.
@@ -1055,7 +1055,7 @@ Producing complementary products on shared equipment is one way to cope with dem
 
 Model 4 generalizes Model 3 by adding a switchover indicator for each stage, period and product, its cost to the objective, and the rows (g) that set it.5 A switchover is treated as what setup reduction calls an external setup, one done while the stage is still producing, rather than an internal one, done only once the stage has stopped:6 it costs money but takes none of the stage’s capacity, which here is mostly its time. That is the model’s assumption (d), written down as the Model Format Reference asks of every model.
 
-minimize: total production, inventoryand switchover cost over the planning horizon
+minimize: total production, inventory and switchover cost over the planning horizon
 
 solve for:
 (a) production of each product at each stage in each period;
@@ -1076,7 +1076,7 @@ assumptions:
 (a) production cost and inventory cost per ton of each product at each stage are constant;
 (b) demand for each product in each period is given;
 (c) production can pass through every stage within the period it starts in;
-(d) setting a stage up for a product costs nothinga switchover to a product costs the same whatever product the stage was set up for before, and takes none of itsthe stage’s capacity;
+(d) ~~setting a stage up for a product costs nothing~~ a switchover to a product costs the same whatever product the stage was set up for before, and takes none of ~~its~~ the stage’s capacity;
 (e) inventory carries no share of the switchover costs.
 
 Model 4: Switchover costs
@@ -1780,10 +1780,10 @@ secs = @elapsed r5 = prodinv_switch(cᵖ, cʷ, cⁱ, d, u, z⁰, LBʸ, UBʸ)
 
 ```text
 r5.TC = 149745.64188911687
-round(Int, secs) = 57
+round(Int, secs) = 60
 ```
 
-Here the solve takes about a minute, 57 seconds on this page’s render. Code block 30 finds the plan’s production, inventory and switchover costs as Code block 22 does for Ex. 3, and Code block 31 adds them and checks the total against the problem’s published solution:
+Here the solve takes about a minute, 60 seconds on this page’s render. Code block 30 finds the plan’s production, inventory and switchover costs as Code block 22 does for Ex. 3, and Code block 31 adds them and checks the total against the problem’s published solution:
 
 ```julia
 # Code block 30: the production, inventory and switchover costs
@@ -2061,7 +2061,7 @@ S. Shingo, A Revolution in Manufacturing: The SMED System, Productivity Press, 1
 
 -
 
-A setup and a switchover are, in the lot-sizing literature, a set-up and a start-up, with changeover for the switch from one product to another, its cost often depending on the pair: L. A. Wolsey, “Uncapacitated lot-sizing problems with start-up costs,” Operations Research 37(5), 1989, 741-747, whose start-up row, $z_i \ge x_i - x_{i-1}$, is row (g); R. Jans and Z. Degraeve, “Modeling industrial lot sizing problems: a review,” International Journal of Production Research 46(6), 2008, 1619-1643.
+A setup and a switchover are, in the lot-sizing literature, a set-up and a start-up, with changeover for the switch from one product to another, its cost often depending on the pair: L. A. Wolsey, “Uncapacitated lot-sizing problems with start-up costs,” Operations Research 37(5), 1989, 741-747, whose start-up row is row (g); R. Jans and Z. Degraeve, “Modeling industrial lot sizing problems: a review,” International Journal of Production Research 46(6), 2008, 1619-1643.
 
 -
 
