@@ -250,7 +250,7 @@ $$
 where
 
 - $r^{\star}$ = minimum cost tour
-- $r$ = tour, the sequence of nodes $(r_1, \ldots, r_{n+1})$ of Table 1, starting and ending at the depot, node 1
+- $r$ = tour, the route as a sequence of nodes $(r_1, \ldots, r_{n+1})$ of Table 1, starting and ending at the depot, node 1
 - $\Pi(S)$ = permutations of the set $S$.
 
 ## 2. TSP as a MILP
@@ -1188,7 +1188,7 @@ Figure 10: The pairwise saving of Eq. 8, for customers $i$ and $j$ served from a
 
 The approximation goes back to two-thirds of the radius, the aggregate distance of Lecture 2.5, Sec. 5: modeling an area with many people spread over it, such as a county or a census block, as a circle, the average distance from a DC at its center is two-thirds of the radius. To estimate the solution of a TSP from that idea, the radius is made equal to one, to make things easy, and instead of two separate round trips from the DC to two points, the two are combined into one route, which replaces the two one-way trips back to the DC with a single triangle, the pairwise saving of Eq. 8. The distance traveled on it, the route of Fig. 11, is two-thirds out, two-thirds back, and the diagonal between the two points, $\sqrt{2(2/3)^2}$, and the whole route simplifies to $\frac{2}{3}(2 + \sqrt{2})$; for two customers, that is what the distance would be expected to be in a circle of radius one. That is not terribly useful just for two customers, but it generalizes. The right triangle is meant to represent the average: given a DC and a starting point anywhere along the radius of two-thirds, if a second point is picked at random, equally likely anywhere on the circle, what is the average of the smaller angle between them? A simulation of it a million times, in a circle of 360 degrees, gives a minimum of zero, when the same point is picked twice, a maximum of 180, when it is on the other side of the circle, and an average of 90, which is why the triangle has a right angle. For a half circle the average angle is not 45 but 60, which is not obvious; rather than work it out with calculus, a few lines of code can let the computer do the work. Put to work, the two-customer route gives a way of estimating the length of an entire TSP.
 
-The estimate rests on two results. The first is the expected distance from the center of a circle of radius $r$, $d_a = \frac{2r}{3}$, the average distance derived in Lecture 2.5, Sec. 5, as Eq. 6 in Lecture 2.5, and the second is that the expected angle between two points is $90^\circ$. Let the area be $a = \pi$ so that the radius is $r = 1$. The expected distance of an $m = 2$ customer route, in Fig. 11, is:
+The estimate rests on two results. The first is the expected distance from the center of a circle of radius $r$, $d_a = \frac{2r}{3}$, the average distance derived in Lecture 2.5, Sec. 5, as Eq. 6 in Lecture 2.5, and the second is that the expected angle between two points is $90^\circ$. Let the area be $a = \pi$ so that the radius is 1. The expected distance of an $m = 2$ customer route, in Fig. 11, is:
 
 $$
 \begin{aligned} \hat{d}_2^{TSP} &= \frac{2}{3} + \sqrt{2\left(\frac{2}{3}\right)^2} + \frac{2}{3} \\ &= 2\left(\frac{2}{3}\right) + \sqrt{2\left(\frac{2}{3}\right)^2} \\ &= \frac{2}{3}\left(2 + \sqrt{2}\right) \end{aligned}
@@ -1197,7 +1197,7 @@ $$
 
 where
 
-- $\hat{d}_2^{TSP}$ = expected tour length from a central DC through two customers, $r = 1$.
+- $\hat{d}_2^{TSP}$ = expected length of a two-customer tour from a central DC, radius 1.
 
 In the terms of Eq. 8, with both customers at the expected distance $\frac{2}{3}$ and the expected right angle between them, the expected pairwise saving of the two customers is
 
@@ -1220,7 +1220,7 @@ fig = Figure(size = (330, 330))
 ax = Axis(fig[1, 1]; aspect = DataAspect())
 hidedecorations!(ax); hidespines!(ax)
 θ = range(0, 2π, length = 361)
-lines!(ax, cos.(θ), sin.(θ); color = bluec, linewidth = 1.6)  # r = 1
+lines!(ax, cos.(θ), sin.(θ); color = bluec, linewidth = 1.6)  # radius 1
 lines!(ax, (2/3) .* cos.(θ), (2/3) .* sin.(θ); color = dcc,
        linewidth = 1.3, linestyle = :dash)     # the expected distance
 d = 2 / 3
@@ -1242,7 +1242,7 @@ text!(ax, d / 2 - 0.035, d / 2 - 0.035;       # inside the triangle,
       fontsize = 14, rotation = -π / 4, align = (:center, :top))
 text!(ax, 0.82cosd(-45) + 0.025cosd(45),
       0.82sind(-45) + 0.025sind(45);
-      text = L"r = 1", color = bluec, fontsize = 13, rotation = -π / 4,
+      text = L"1", color = bluec, fontsize = 13, rotation = -π / 4,
       align = (:center, :bottom))              # between the two circles
 text!(ax, 0.0, 1.0 - 0.06; text = L"a = \pi", color = ink, fontsize = 15,
       align = (:center, :top))
