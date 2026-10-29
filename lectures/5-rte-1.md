@@ -429,6 +429,20 @@ Show the code that draws this figure
 # (makemap draws one map per figure, so the three frames are plain axes in
 # longitude and latitude, scaled by the cosine of the mean latitude)
 (xl, yl) = mapbbox(df.LON, df.LAT; xexpand = 0.14, yexpand = 0.16)
+lab = Dict(aligntext(df.LON, df.LAT; offsetamt = 5))
+al, os = copy(lab[:align]), copy(lab[:offset])
+# moved by hand where, in some round, an arc, the border or another name
+# crosses the place Logjam's aligntext gives
+for (nm, a, o) in [("Charlotte", (:right, :bottom), (-5, 3)),
+                   ("Concord", (:left, :top), (5, -3)),
+                   ("High Point", (:left, :top), (4, -4)),
+                   ("Durham", (:left, :bottom), (5, 3)),
+                   ("Cary", (:right, :top), (-6, -4)),
+                   ("Fayetteville", (:right, :top), (-4, -4)),
+                   ("Wilmington", (:right, :top), (-3, -4))]
+    i = findfirst(==(nm), df.NAME)
+    al[i], os[i] = a, o
+end
 fig = Figure(size = (687, 640))
 cells = [fig[1, 1], fig[1, 2], fig[2, 1:2]]
 for (k, rd) in enumerate(nc10.rounds)
@@ -447,7 +461,7 @@ for (k, rd) in enumerate(nc10.rounds)
     end
     scatter!(ax, df.LON, df.LAT; color = bluec, markersize = 8)
     text!(ax, df.LON, df.LAT; text = df.NAME, fontsize = k < 3 ? 11 : 12,
-          color = ink, aligntext(df.LON, df.LAT; offsetamt = 5)...)
+          color = ink, align = al, offset = os)
 end
 rowsize!(fig.layout, 2, Relative(0.6))
 fig
@@ -541,26 +555,25 @@ tspspfillcur(XY4) = [1, 4, 2, 3, 1]
 # Code block 8: positions on a grid, rows from y = 1 down to y = 0
 g = (0:10) ./ 10
 Θ = [sfcpos(x, y) for y in reverse(g), x in g]
-grid = DataFrame(round.(Θ, RoundNearestTiesAway, digits = 3),
-                 string.(g))
-insertcols!(grid, 1, :y => reverse(g))
-prt(grid)
+prt(round.(Θ, RoundNearestTiesAway, digits = 3);
+    rows = string.(reverse(g)), cols = string.(g), row_title = "y",
+    allfrac = 3)
 ```
 
 ```text
-       y     0.0     0.1     0.2     0.3     0.4     0.5     0.6     0.7     0.8     0.9     1.0
-────────────────────────────────────────────────────────────────────────────────────────────────
- 1  1.00  0.2500  0.2540  0.2650  0.2980  0.3090  0.4380  0.4410  0.4520  0.4850  0.4960  0.5000
- 2  0.90  0.2460  0.2570  0.2710  0.2920  0.3050  0.4340  0.4450  0.4580  0.4790  0.4930  0.5040
- 3  0.80  0.2350  0.2290  0.2790  0.2830  0.3330  0.4230  0.4170  0.4670  0.4710  0.5210  0.5150
- 4  0.70  0.2020  0.2080  0.1580  0.1540  0.3540  0.3900  0.3960  0.5960  0.5920  0.5420  0.5480
- 5  0.60  0.1910  0.1800  0.1670  0.1460  0.1320  0.3790  0.6180  0.6040  0.5830  0.5700  0.5590
- 6  0.50  0.1880  0.1840  0.1730  0.1400  0.1290  0.3750  0.6210  0.6100  0.5770  0.5660  0.5630
- 7  0.40  0.0590  0.0700  0.0830  0.1040  0.1180  0.8710  0.6320  0.6460  0.6670  0.6800  0.6910
- 8  0.30  0.0480  0.0420  0.0920  0.0960  0.8960  0.8600  0.8540  0.6540  0.6580  0.7080  0.7020
- 9  0.20  0.0150  0.0210  0.9710  0.9670  0.9170  0.8270  0.8330  0.7830  0.7790  0.7290  0.7350
-10  0.10  0.0040  0.9930  0.9790  0.9580  0.9450  0.8160  0.8050  0.7920  0.7710  0.7570  0.7460
-11  0.00  0.0000  0.9960  0.9850  0.9520  0.9410  0.8130  0.8090  0.7980  0.7650  0.7540  0.7500
+  y    0.0    0.1    0.2    0.3    0.4    0.5    0.6    0.7    0.8    0.9    1.0
+────────────────────────────────────────────────────────────────────────────────
+1.0  0.250  0.254  0.265  0.298  0.309  0.438  0.441  0.452  0.485  0.496  0.500
+0.9  0.246  0.257  0.271  0.292  0.305  0.434  0.445  0.458  0.479  0.493  0.504
+0.8  0.235  0.229  0.279  0.283  0.333  0.423  0.417  0.467  0.471  0.521  0.515
+0.7  0.202  0.208  0.158  0.154  0.354  0.390  0.396  0.596  0.592  0.542  0.548
+0.6  0.191  0.180  0.167  0.146  0.132  0.379  0.618  0.604  0.583  0.570  0.559
+0.5  0.188  0.184  0.173  0.140  0.129  0.375  0.621  0.610  0.577  0.566  0.563
+0.4  0.059  0.070  0.083  0.104  0.118  0.871  0.632  0.646  0.667  0.680  0.691
+0.3  0.048  0.042  0.092  0.096  0.896  0.860  0.854  0.654  0.658  0.708  0.702
+0.2  0.015  0.021  0.971  0.967  0.917  0.827  0.833  0.783  0.779  0.729  0.735
+0.1  0.004  0.993  0.979  0.958  0.945  0.816  0.805  0.792  0.771  0.757  0.746
+0.0  0.000  0.996  0.985  0.952  0.941  0.813  0.809  0.798  0.765  0.754  0.750
 ```
 
 Show the code that draws this figure
@@ -575,13 +588,18 @@ fig = Figure(size = (360, 360))
 ax = Axis(fig[1, 1]; aspect = DataAspect(), xticks = 0:0.2:1,
           yticks = 0:0.2:1, xgridvisible = false, ygridvisible = false)
 lines!(ax, vec(X)[ij], vec(Y)[ij]; color = (ink, 0.55), linewidth = 0.5)
+# each label on a white card, centred beside its point and clear of the
+# tour (the axis is about 300 px across its 0 to 1)
+at = XY4 .+ [0.0 0.08; 0.10 -0.07; -0.10 0.07; 0.10 -0.07]
+scatter!(ax, at[:, 1], at[:, 2]; marker = Rect, color = :white,
+         markersize = fill((76, 26), 4))
 r4 = tspspfillcur(XY4)
 lines!(ax, XY4[r4, 1], XY4[r4, 2]; color = bluec, linewidth = 2)
 scatter!(ax, XY4[:, 1], XY4[:, 2]; color = redc, markersize = 10)
-text!(ax, XY4[:, 1], XY4[:, 2];
+text!(ax, at[:, 1], at[:, 2];
       text = [rich("$i: ", rich(string(round(θ4[i], digits = 3)),
                                 color = bluec)) for i in 1:4],
-      color = ink, fontsize = 13, offset = (6, 6))
+      color = ink, fontsize = 13, align = (:center, :center))
 limits!(ax, 0, 1, 0, 1)
 fig
 ```
@@ -609,9 +627,9 @@ function arc6!(ax, i, j; color = ink, dashed = false, off = 0.0)
     v = [u[2], -u[1]] .* off               # shifted to the arc's right
     t, h = p .+ r6 .* u .+ v, q .- r6 .* u .+ v
     if dashed                              # a dashed shaft, then its head
-        lines!(ax, [t[1], h[1] - 0.07u[1]], [t[2], h[2] - 0.07u[2]];
+        lines!(ax, [t[1], h[1] - 0.11u[1]], [t[2], h[2] - 0.11u[2]];
                color = color, linewidth = 1.3, linestyle = :dash)
-        scatter!(ax, [h[1] - 0.05u[1]], [h[2] - 0.05u[2]];
+        scatter!(ax, [h[1] - 0.09u[1]], [h[2] - 0.09u[2]];
                  marker = :rtriangle, rotation = atan(u[2], u[1]),
                  markersize = 9, color = color)
     else
@@ -641,9 +659,9 @@ for (i, j, off) in [(1, 4, 0.0), (4, 3, 0.07), (3, 2, -0.07),
 end
 for (i, j, c, dy) in [(1, 2, redc, -0.12), (1, 2, bluec, 0.12),
                       (3, 4, redc, 0.0), (4, 5, bluec, 0.0)]  # removed
-    m = mid(i, j)
-    text!(ax, m[1], m[2] + dy; text = "×", color = c, fontsize = 22,
-          align = (:center, :center))
+    m = mid(i, j)                          # a mark on the arc
+    scatter!(ax, [m[1]], [m[2] + dy]; marker = '×', markersize = 22,
+             color = c)
 end
 for i in 1:size(P6, 1)                     # nodes over the arcs
     poly!(ax, Circle(Point2f(P6[i, 1], P6[i, 2]), r6); color = :white,
@@ -1186,7 +1204,7 @@ $$
 
 where
 
-- $\hat{d}_2^{TSP}$ = expected length of a tour from a DC at the center through two customers, in a circle of radius 1.
+- $\hat{d}_2^{TSP}$ = expected tour length from a central DC through two customers, $r = 1$.
 
 In the terms of Eq. 8, with both customers at the expected distance $\frac{2}{3}$ and the expected right angle between them, the expected pairwise saving of the two customers is
 
@@ -1244,7 +1262,10 @@ Figure 11: The two-customer route through a DC at the center of a circle of area
 By fixing one point, the average smaller angle to a second point can be found by integrating the minimum angle function, $f(\theta) = \min(\theta, 2\pi - \theta)$, and averaging it over the full circle:
 
 $$
-E[\text{angle}] = \frac{1}{2\pi} \int_0^{2\pi} \min(\theta, 2\pi - \theta)\, d\theta = \cdots = \frac{1}{2\pi}\left[\frac{\pi^2}{2} + \frac{\pi^2}{2}\right] = \frac{\pi}{2} = 90^\circ
+\begin{aligned}
+E[\text{angle}] &= \frac{1}{2\pi} \int_0^{2\pi} \min(\theta, 2\pi - \theta)\, d\theta \\
+&= \cdots = \frac{1}{2\pi}\left[\frac{\pi^2}{2} + \frac{\pi^2}{2}\right] = \frac{\pi}{2} = 90^\circ
+\end{aligned}
 \tag{11}
 $$
 
@@ -1303,9 +1324,16 @@ hidedecorations!(ax1); hidespines!(ax1)
 lines!(ax1, cos.(θ), sin.(θ); color = bluec, linewidth = 1.6)
 scatter!(ax1, P[:, 1], P[:, 2]; color = redc, markersize = 3)
 scatter!(ax1, [0.0], [0.0]; color = ink, markersize = 7)
-text!(ax1, 0.04, -0.02; text = "DC", color = ink, fontsize = 12,
-      align = (:left, :top))
-text!(ax1, -0.72, 0.62; text = L"a", color = ink, fontsize = 18)
+# each label where the customers leave it the most room
+gap(c) = minimum(hypot.(P[:, 1] .- c[1], P[:, 2] .- c[2]))
+cDC = argmax(gap, [r .* (cosd(t), sind(t))
+                   for t in 0:15:345 for r in (0.14, 0.17)])
+ca = argmax(gap, [(x, y) for x in -0.7:0.02:-0.4
+                  for y in 0.4:0.02:0.7 if hypot(x, y) < 0.8])
+text!(ax1, cDC...; text = "DC", color = ink, fontsize = 12,
+      align = (:center, :center))
+text!(ax1, ca...; text = L"a", color = ink, fontsize = 18,
+      align = (:center, :center))
 Label(fig[2, 1], "(a)"; color = ink, fontsize = 14,
       tellwidth = false)               # caption below
 b = (0.45, -0.05, 0.14)                # the square (b) zooms into
@@ -1321,7 +1349,8 @@ for i in 0:2, j in 0:2                 # one customer per square
     scatter!(ax2, [i + 0.5], [j + 0.5]; color = redc, markersize = 12)
 end
 lines!(ax2, [1, 2, 2, 1, 1], [2, 2, 3, 3, 2]; color = ink, linewidth = 2)
-text!(ax2, 1.5, 3.1; text = L"\frac{1}{\sqrt{s}} = \sqrt{\frac{a}{m}}",
+text!(ax2, 1.5, 3.1;
+      text = L"\frac{1}{\sqrt{\delta}} = \sqrt{\frac{a}{m}}",
       color = ink, fontsize = 15, align = (:center, :bottom))
 text!(ax2, 3.1, 1.5; text = L"\sqrt{\frac{a}{m}}", color = ink,
       fontsize = 15, align = (:left, :center))
@@ -1335,16 +1364,28 @@ fig
 
 Figure 12: Customers spread uniformly over an area $a$, in (a), and in (b) the small square of (a) zoomed into: each customer has, on average, a square of side $\sqrt{a/m}$ to itself, the expected distance between neighboring customers.
 
-The estimate of the length of a tour through $m$ customers in an area $a$ is found in three steps. First, its form is posited, with an unknown coefficient $\varphi$:
+With the two-customer route of Eq. 9, built on the two results, the estimate extends to any number of customers. Given $m$ customers in an area $a$, the density is $\delta = m/a$, and the expected distance between customers is $\delta^{-0.5} = \sqrt{a/m}$, resulting in an estimated total route distance that is proportional to $\varphi m \sqrt{a/m}$, as Fig. 12 pictures:
 
 $$
 \hat{d}_m^{TSP} = \varphi\, m \sqrt{\frac{a}{m}} = \varphi \sqrt{ma}
 \tag{12}
 $$
 
-Second, Eq. 12 for $m = 2$ is equated to the expected two-customer route of Eq. 9, the two round trips less the expected pairwise saving of Eq. 10; and third, the equation is solved for $\varphi$. In detail:
+Use the known distance $\hat{d}_2^{TSP}$ for $m = 2$ to determine $\varphi$. For $a = \pi$ and $m = 2$, Eq. 12 equals the two-customer route of Eq. 9, the two round trips less the expected pairwise saving of Eq. 10, with $\varphi$ the only unknown:
 
-With the two-customer route of Eq. 9, built on the two results, the estimate extends to any number of customers. Given $m$ customers in an area $a$, the density is $s = m/a$, and the expected distance between customers is $s^{-0.5} = \sqrt{a/m}$, resulting in an estimated total route distance that is proportional to $\varphi m \sqrt{a/m}$, as Fig. 12 pictures. Use the known distance $\hat{d}_2^{TSP}$ for $m = 2$ to determine $\varphi$. For $a = \pi$ and $m = 2$, $\varphi 2 \sqrt{\frac{\pi}{2}} = \frac{2}{3}\left(2 + \sqrt{2}\right)$, which gives $\varphi = \frac{2\left(\sqrt{2} + 1\right)}{3\sqrt{\pi}} \approx 0.908$, so that, for a route passing through the center (DC) of a circular region,
+$$
+\varphi\, 2 \sqrt{\frac{\pi}{2}} = \frac{2}{3}\left(2 + \sqrt{2}\right)
+
+$$
+
+This gives
+
+$$
+\varphi = \frac{2\left(\sqrt{2} + 1\right)}{3\sqrt{\pi}} \approx 0.908
+
+$$
+
+so that, for a route passing through the center (DC) of a circular region,
 
 $$
 \boxed{\; \hat{d}_m^{TSP} = \varphi\sqrt{ma} \approx 0.908\sqrt{ma} \;}
@@ -1353,7 +1394,7 @@ $$
 
 where
 
-- $\hat{d}_m^{TSP}$ = estimated length of a tour from a DC at the center through $m$ customers (mi)
+- $\hat{d}_m^{TSP}$ = estimated length of a tour from a central DC through $m$ customers (mi)
 - $m$ = number of customers
 - $a$ = area of the region (mi²)
 - $\varphi$ = tour constant, fitted to the two-customer route
@@ -1472,7 +1513,10 @@ TCᴱ = 0.908 * sqrt(nrow(df) * a) = 2106.4535225676354
 Substituted into Eq. 13, the 100 counties and the 53,818.56 square miles of the state give
 
 $$
-\hat{d}_{100}^{TSP} \approx 0.908\sqrt{ma} = 0.908\sqrt{100 \times 53{,}818.56} = 0.908 \times 2{,}319.88 = 2{,}106.45 \text{ mi}
+\begin{aligned}
+\hat{d}_{100}^{TSP} &\approx 0.908\sqrt{ma} = 0.908\sqrt{100 \times 53{,}818.56} \\
+&= 0.908 \times 2{,}319.88 = 2{,}106.45 \text{ mi}
+\end{aligned}
 
 $$
 
@@ -1689,21 +1733,25 @@ function near(s, lon, lat)                 # the link of sign s nearest
     j = argmin(hypot.(x .- lon, y .- lat))
     return x[j], y[j]
 end
-for (s, lon, lat, al) in [("I 40", -81.6, 35.75, (:center, :bottom)),
-                          ("I 85", -79.6, 35.55, (:left, :top)),
-                          ("I 95", -78.0, 35.2, (:left, :center)),
-                          ("I 77", -80.9, 36.3, (:right, :center)),
-                          ("I 26", -82.6, 35.2, (:right, :center))]
+signs = [("I 40", -81.0, 35.75, (:center, :top), (0, -6)),
+         ("I 85", -79.6, 35.55, (:left, :top), (4, 0)),
+         ("I 95", -78.0, 35.2, (:left, :center), (4, 0)),
+         ("I 77", -80.9, 36.3, (:right, :center), (4, 0)),
+         ("I 26", -82.45, 35.3, (:left, :bottom), (5, 4))]
+for (s, lon, lat, al, off) in signs
     text!(ax, near(s, lon, lat)...; text = replace(s, " " => "-"),
           fontsize = 10, color = (ink, 0.7), font = :bold, align = al,
-          offset = (4, 0))
+          offset = off)
 end
-for (nm, v) in [("Raleigh", -1), ("Charlotte", -1), ("Wilmington", -1),
-                 ("Asheville", 1)]        # below the point, or above it
+places = [("Raleigh", (:left, :center), (6, 0)),      # each clear
+          ("Charlotte", (:right, :top), (-14, -14)),  # of the tour
+          ("Wilmington", (:left, :top), (5, -4)),
+          ("Asheville", (:left, :bottom), (14, 14))]
+for (nm, al, off) in places
     c = only(filter(r -> r.STFIP == st2fips(:NC) && r.NAME == nm,
                     usplace()))
     text!(ax, c.LON, c.LAT; text = nm, fontsize = 11, color = ink,
-          align = (:center, v < 0 ? :top : :bottom), offset = (0, 5v))
+          align = al, offset = off)
 end
 fig
 ```
