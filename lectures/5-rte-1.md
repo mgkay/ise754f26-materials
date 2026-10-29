@@ -128,11 +128,11 @@ fig
 
 Figure 3: A tour of six nodes, starting and ending at the depot, node 1.
 
-Table 1: The tour of Fig. 3 as a node sequence $r$: each position $k$ in the sequence, above, and the node $r_k$ visited there, below. Positions 1 to 6 are a permutation of the six nodes, and position 7 is its start node again.
+Table 1: The tour of Fig. 3 as a node sequence $\pi$: each position $k$ in the sequence, above, and the node $\pi_k$ visited there, below. Positions 1 to 6 are a permutation of the six nodes, and position 7 is its start node again.
 
 | $k$ | 1 | 2 | 3 | 4 | 5 | 6 | 7 |
 |---|---|---|---|---|---|---|---|
-| $r_k$ | 1 | 2 | 3 | 4 | 5 | 6 | 1 |
+| $\pi_k$ | 1 | 2 | 3 | 4 | 5 | 6 | 1 |
 
 For the six nodes of Fig. 3, the number of possible tours is
 
@@ -220,7 +220,7 @@ Figure 4: A tour whose arcs cross (black), and the arcs that replace the crossin
 
 Even a problem with $n = 13$ already has about half a billion solutions (Eq. 2), so no direct approach that looks at all of them is feasible. The reason for $n - 1$ instead of $n$ is that the starting node is arbitrary: node 1 or any of the others could be picked to start, so $n!$ can be divided by $n$, leaving $(n - 1)!$. Where the distances are symmetric, the count reduces to $(n - 1)!/2$ (Eq. 3). Finally, where the arcs are Euclidean, the distances modeled as Euclidean or great circle distances between points, there is a nice heuristic for looking at routing solutions in many situations: whenever a route has two arcs crossing each other, as in Fig. 4, it cannot be optimal. It can always be improved by getting rid of the crossover.
 
-The TSP is stated as a model in Model 1. Its mathematical formulation, Eq. 4, takes the cheapest of the $(n - 1)!$ tours of Eq. 1, each a permutation of the nodes other than the depot. Sec. 2 formulates it as a math program, a special case of the linear assignment problem, Model 1 in Lecture 4.2, with one constraint added, and Sec. 3 solves it by improving a tour, searching the permutations one change at a time.
+The TSP is stated as a model in Model 1. Its mathematical formulation, Eq. 4, takes the cheapest of the $(n - 1)!$ tours of Eq. 1, each a permutation of the nodes other than the depot. Ex. 1 does exactly that for ten cities, by brute force. Sec. 2 formulates it as a math program, a special case of the linear assignment problem, Model 1 in Lecture 4.2, with one constraint added, and Sec. 3 solves it by improving a tour, searching the permutations one change at a time.
 
 minimize: total cost of a tour through every node
 
@@ -243,15 +243,87 @@ Special case of Model 1: Linear assignment in Lecture 4.2
 Model 1 formulation: Mathematical formulation
 
 $$
-r^{\star} = \arg\min_{r} \left\{ \sum_{k=1}^{n} c_{r_k r_{k+1}} \;:\; r_1 = r_{n+1} = 1,\ (r_2, \ldots, r_n) \in \Pi(\{2, \ldots, n\}) \right\}
+\pi^{\star} = \arg\min_{\pi} \left\{ \sum_{k=1}^{n} c_{\pi_k \pi_{k+1}} \;:\; \pi_1 = \pi_{n+1} = 1,\ (\pi_2, \ldots, \pi_n) \in \Pi(\{2, \ldots, n\}) \right\}
 \tag{4}
 $$
 
 where
 
-- $r^{\star}$ = minimum cost tour
-- $r$ = tour, the route as a sequence of nodes $(r_1, \ldots, r_{n+1})$ of Table 1, starting and ending at the depot, node 1
+- $\pi^{\star}$ = minimum cost tour
+- $\pi$ = tour, the route as a sequence of nodes $(\pi_1, \ldots, \pi_{n+1})$ of Table 1, starting and ending at the depot, node 1
 - $\Pi(S)$ = permutations of the set $S$.
+
+One of the goals of doing a mathematical formulation, as opposed to a math-programming formulation, is that, in the math formulation, it is typically obvious what the brute force needs to be. The fact that one is minimizing over all permutations in the math formulation provides an obvious way to do the brute force. The basic idea is to do brute-force optimization as the initial approach to get insight and get a known optimal solution, which other heuristic or math programming techniques can be judged against.
+
+Combinatorial optimization refers to procedures used to find solutions from a collection of finite objects that characterize possible solution instances. These procedures fall into three broad categories. Brute-force optimization is to enumerate all possible solutions to find the global optimum. Heuristics look at a small fraction of possible solutions to find a local optimum that may not be the global optimum. Optimal procedures look at a small fraction of possible solutions to find the global optimum solution.
+
+Heuristics and optimal procedures efficiently look at a small fraction of the possible solution instances to find a locally or globally optimal solution, but it is possible in many cases if the number of solutions is not too big to brute-force generate all possible solutions to find the global optimum. The ability to generate solution instances is useful for many reasons. One is brute-force optimization: if “small enough” (around $n = 12$, typically), it can be used to find the global optimum by searching through all instances. Each candidate solution can be evaluated directly by a rule, algorithm, or simulation that would be difficult or impossible to express in the precise mathematical form needed for traditional optimization. Another is heuristic validation: test heuristics on small instances where the global optimum can be determined in order to validate before using the heuristic for larger instances where it is not feasible to generate all instances.
+
+Beyond some size, any combinatorial problem has many more potential solutions than there would ever be room or time to evaluate, so brute force always hits some upper limit. It is still worth the time, because computers are now so fast and have so much storage space that what would have been completely infeasible for even the smallest problems 20 years ago is now within the realm of the reasonable. Where there is no other way of getting an idea of how to solve a problem, a brute-force approach might be the only one that is actually feasible.
+
+A brute-force version of at least a small version of a problem can be up and running in minutes, or at most an hour or so. Once it is, there is a validated solution to the problem, and for many problems it is hard even to come up with a valid solution once they get complicated enough, beyond $n$ equal to 1, 2 or 3. That solution can then be used to validate heuristic solutions, and even math-programming formulations, confirming that on the smaller problems the math program gives the same correct optimal answer.
+
+Example 1: Ten NC cities by brute force
+
+Determine the minimum great circle distance tour through the ten NC cities with a population over 100,000 of Ex. 2 in Lecture 4.1 by brute force, looking at every tour of the mathematical formulation Eq. 4.
+
+Code block 4 reads the ten cities from the Logjam gazetteer, as Ex. 2 in Lecture 4.1 does:
+
+```julia
+# Code block 4: the NC cities over 100,000, from the Logjam gazetteer
+using DataFrames, Logjam
+df = filter(r -> (r.STFIP == st2fips(:NC)) && (r.POP > 100_000),
+            usplace())
+select!(df, :NAME, :LAT, :LON, :POP)
+prt(df)
+```
+
+```text
+           NAME    LAT     LON      POP
+───────────────────────────────────────
+           Cary  35.78  -78.82  174,721
+      Charlotte  35.21  -80.83  874,579
+        Concord  35.39  -80.64  105,240
+         Durham  35.98  -78.90  283,506
+   Fayetteville  35.08  -78.97  208,501
+     Greensboro  36.10  -79.83  299,035
+     High Point  35.99  -79.99  114,059
+        Raleigh  35.83  -78.64  467,665
+     Wilmington  34.21  -77.89  115,451
+  Winston-Salem  36.10  -80.26  249,545
+```
+
+One permutation at a time. As long as the permutations are not all generated first, brute force stays feasible even for fairly large problems: each call for a permutation gives just the next one in the sequence, not all of the billions or trillions of them. It may take some time, but it uses essentially no memory, since none of those permutations has to be stored. The Combinatorics package’s permutations is designed to generate one at a time, which is what makes this convenient.
+
+Code block 5 computes the great circle distances between them, the arc costs $c_{ij}$ of a symmetric TSP, and costs every tour that starts and ends at the first city, as the permutations of cities 2 to 10 taken one at a time, keeping the cheapest, which is the mathematical formulation of Eq. 4 worked in full:
+
+```julia
+# Code block 5: great circle distances, and every tour by brute force
+using Combinatorics
+P = hcat(df.LON, df.LAT)               # one row per city
+D = dists(P, P, :mi)
+n = size(D, 1)
+tours = ([1; p; 1] for p ∈ permutations(2:n))
+TCᵒ, πᵒ = minimum((sum(D[π[k], π[k+1]] for k ∈ 1:n), π)
+                  for π ∈ tours)
+@show length(tours)                    # the tours looked at
+@show TCᵒ                              # the cheapest of them
+@show πᵒ;                              # the tour that costs it
+
+```
+
+- 1 Parentheses, not square brackets, make tours a generator: each tour is built from the next permutation only when minimum asks for it, so the tours are looked at one at a time and never held in memory together. Square brackets would build and store every tour first.
+- 2 Each tour is paired with its cost, the sum of Eq. 4, and minimum compares the pairs by cost first, so it returns the cheapest cost together with its tour.
+
+```text
+length(tours) = 362880
+TCᵒ = 487.69081619689393
+πᵒ = [1, 4, 6, 7, 10, 3, 2, 5, 9, 8, 1]
+```
+
+With $n = 10$, the 362,880 tours looked at are the $(n - 1)!$ of Eq. 1, and the cheapest costs 487.69 mi. Its reverse costs the same, since great circle distances are symmetric, which is why Eq. 3 halves the count.
+
+The optimal tour of the ten cities is 1-4-6-7-10-3-2-5-9-8-1, of 487.69 mi, the cheapest of all 362,880 tours.
 
 ## 2. TSP as a MILP
 
@@ -361,7 +433,7 @@ end
 
 ```
 
-- 1 HiGHS stops by default once its solution is proved within 0.01% of the optimum; a gap of 0 makes it prove the tour optimal, which the Landmark checks of Ex. 2 and 3 rely on.
+- 1 HiGHS stops by default once its solution is proved within 0.01% of the optimum; a gap of 0 makes it prove the tour optimal, which the Landmark checks of Ex. 2, 3 and 4 rely on.
 - 2 A solved binary can come back as 0.9999999 rather than 1, so a value above 0.5 is read as 1; each node’s successor is the one node its row of $x$ sends it to.
 - 3 A subtour through the nodes of $S_k$ uses $|S_k|$ arcs among them, and a tour can use at most $|S_k| - 1$, so the subtour just found cannot come back; others can, which is why the loop solves again.
 
@@ -369,42 +441,14 @@ end
 TSP (generic function with 1 method)
 ```
 
-Example 1: Ten NC cities
+Example 2: Ten NC cities as a MILP
 
-Determine the minimum great circle distance tour through the ten NC cities with a population over 100,000 of Ex. 2 in Lecture 4.1, by solving the formulation of Model 1 one round at a time, starting from its assignment problem.
+Determine the minimum great circle distance tour through the ten NC cities of Ex. 1, by solving the formulation of Model 1 one round at a time, starting from its assignment problem, and determine whether its tour is the one Ex. 1 found by brute force.
 
-Code block 4 reads the ten cities from the Logjam gazetteer, as Ex. 2 in Lecture 4.1 does:
-
-```julia
-# Code block 4: the NC cities over 100,000, from the Logjam gazetteer
-using DataFrames, Logjam
-df = filter(r -> (r.STFIP == st2fips(:NC)) && (r.POP > 100_000),
-            usplace())
-select!(df, :NAME, :LAT, :LON, :POP)
-prt(df)
-```
-
-```text
-           NAME    LAT     LON      POP
-───────────────────────────────────────
-           Cary  35.78  -78.82  174,721
-      Charlotte  35.21  -80.83  874,579
-        Concord  35.39  -80.64  105,240
-         Durham  35.98  -78.90  283,506
-   Fayetteville  35.08  -78.97  208,501
-     Greensboro  36.10  -79.83  299,035
-     High Point  35.99  -79.99  114,059
-        Raleigh  35.83  -78.64  467,665
-     Wilmington  34.21  -77.89  115,451
-  Winston-Salem  36.10  -80.26  249,545
-```
-
-Code block 5 computes the great circle distances between them, the arc costs $c_{ij}$ of a symmetric TSP, and solves Model 1, printing the cost and the number of subtours of each round:
+Code block 6 solves Model 1 on the great circle distances of Code block 5, printing the cost and the number of subtours of each round:
 
 ```julia
-# Code block 5: great circle distances, and the TSP solved in rounds
-P = hcat(df.LON, df.LAT)               # one row per city
-D = dists(P, P, :mi)
+# Code block 6: the TSP solved in rounds
 nc10 = TSP(D)
 rounds = DataFrame(round = eachindex(nc10.rounds),
                    mi = [rd.TC for rd in nc10.rounds],
@@ -420,12 +464,12 @@ prt(rounds)
 3      3  487.69         1
 ```
 
-Round 1 solves rows (a) and (b) alone, the assignment problem. Its solution, 301.99 mi, leaves and enters each city exactly once, as the two rows require, and is still not a tour: it is 4 subtours, Cary, Durham and Raleigh; Charlotte and Concord; Fayetteville and Wilmington; and Greensboro, High Point and Winston-Salem (Fig. 5). Adding row (c) for each of them and solving again joins them into 3 larger subtours, at 450.86 mi, and adding row (c) for those gives, in round 3, a single tour of 487.69 mi. Each round solves the TSP with only some of its subtour constraints, so its cost is a lower bound on the optimal tour’s, the Bounds check of Lecture 1.2, and the costs can only rise from round to round; the tour of the last round satisfies every subtour constraint without their having been added, so it is the optimal tour.
+Round 1 solves rows (a) and (b) alone, the assignment problem. Its solution, 301.99 mi, leaves and enters each city exactly once, as the two rows require, and is still not a tour: it is 4 subtours, Cary, Durham and Raleigh; Charlotte and Concord; Fayetteville and Wilmington; and Greensboro, High Point and Winston-Salem (Fig. 5). Adding row (c) for each of them and solving again joins them into 3 larger subtours, at 450.86 mi, and adding row (c) for those gives, in round 3, a single tour of 487.69 mi. Each round solves the TSP with only some of its subtour constraints, so its cost is a lower bound on the optimal tour’s, the Bounds check of Lecture 1.2, and the costs can only rise from round to round; the tour of the last round satisfies every subtour constraint without their having been added, so it is the optimal tour. It is also the tour Ex. 1 found by brute force, at the same 487.69 mi, so the optimum known before the math program was solved is a Landmark check of Lecture 1.2 on it, confirming that on this small problem the formulation and its implementation give the correct optimal answer.
 
 Show the code that draws this figure
 
 ```julia
-# Code block 6: each round's solution, drawn on a map
+# Code block 7: each round's solution, drawn on a map
 # (makemap draws one map per figure, so the three frames are plain axes in
 # longitude and latitude, scaled by the cosine of the mean latitude)
 (xl, yl) = mapbbox(df.LON, df.LAT; xexpand = 0.14, yexpand = 0.16)
@@ -467,7 +511,7 @@ rowsize!(fig.layout, 2, Relative(0.6))
 fig
 ```
 
-Figure 5: The three rounds of Ex. 1: the assignment problem’s four subtours, then three, then the optimal tour.
+Figure 5: The three rounds of Ex. 2: the assignment problem’s four subtours, then three, then the optimal tour.
 
 The optimal tour of the ten cities is 487.69 mi, found in round 3.
 
@@ -536,10 +580,10 @@ end
 tspspfillcur (generic function with 2 methods)
 ```
 
-Code block 7 computes the positions of the four points of Fig. 7 and their tour, and Code block 8 the positions of an 11 × 11 grid of points of the unit square, which can be read against Fig. 7:
+Code block 8 computes the positions of the four points of Fig. 7 and their tour, and Code block 9 the positions of an 11 × 11 grid of points of the unit square, which can be read against Fig. 7:
 
 ```julia
-# Code block 7: the four points, their positions and their tour
+# Code block 8: the four points, their positions and their tour
 XY4 = [0.8 0.8; 0.1 0.2; 0.3 0.7; 0.7 0.2]       # points 1 to 4
 θ4 = sfcpos.(XY4[:, 1], XY4[:, 2])
 @show round.(θ4, digits = 3)
@@ -552,7 +596,7 @@ tspspfillcur(XY4) = [1, 4, 2, 3, 1]
 ```
 
 ```julia
-# Code block 8: positions on a grid, rows from y = 1 down to y = 0
+# Code block 9: positions on a grid, rows from y = 1 down to y = 0
 g = (0:10) ./ 10
 Θ = [sfcpos(x, y) for y in reverse(g), x in g]
 prt(round.(Θ, RoundNearestTiesAway, digits = 3);
@@ -579,7 +623,7 @@ prt(round.(Θ, RoundNearestTiesAway, digits = 3);
 Show the code that draws this figure
 
 ```julia
-# Code block 9: the curve, drawn by joining a grid's points in curve order
+# Code block 10: the curve, by joining a grid's points in curve order
 gr = 0:0.02:1
 X = [x for y in gr, x in gr]
 Y = [y for y in gr, x in gr]
@@ -608,16 +652,16 @@ Figure 7: The spacefilling curve over the unit square, and the tour it gives thr
 
 On a problem whose optimal solution is known, the spacefilling curve does the worst, but it is arguably the easiest.
 
-Ex. 3(c) measures its tour of the 100 NC counties against the optimal tour.
+Ex. 4(c) measures its tour of the 100 NC counties against the optimal tour.
 
 The one important thing about the TSP is how to improve a tour. A construction procedure is not really needed today: a randomly generated permutation of the integers is a feasible starting point, since any sequence of the numbers 1 through 6 is a valid tour, and it turns out that all of the work is done by the improvement procedure.
 
-With maybe a hundred different random starting points, a solution probably within a percent of the optimal can be found, which Ex. 3 tests. The improvement procedure is two-opt (2-opt). Where the exchange procedure of the UFL in Lecture 2.4 exchanges nodes, 2-opt exchanges arcs. In Fig. 8, the letters a to f are the arcs of the tour 1-2-3-4-5-6-1, and the first change gets rid of arcs a and c and adds instead an arc from 1 to 3 and another from 2 to 4, replacing two arcs with two other arcs so that the tour is still feasible: it now goes from 1 to 3, back to 2 and over to 4. Since the two new arcs cross, that change does not improve the tour. Most changes do not, and 2-opt is looking for the few that do; with Euclidean costs a change that worsens the tour would show a crossing, and otherwise its cost would go up. Each change is so cheap to compute that the computer can be left to do the work, rather than designing something more specialized; unless there are thousands and thousands of nodes, a random permutation works fine, and that simplifies the effort quite a bit. A change is made by taking the segment between the two arcs removed and flipping it. Removing a and c flips 2-3 into 3-2; removing a and d gives the route 1-4-3-2-5, the segment 2-3-4 flipped; removing a and e flips everything from 2 to 5. These are the 2-opt changes, and they continue with b and d, b and e, and on through d and f. With $n = 6$ there are nine of them in all, $n(n - 3)/2$ (Eq. 6). That number grows as $n^2$, so even for $n = 100$, where looking at all of the tours is out of the question, the changes can be dealt with, and they give decent routes. This is worth spending some time to understand. Many arc changes are not feasible: any two arcs incident to the same node, such as a and f or a and b, cannot be exchanged, so two arcs can be exchanged only when at least one arc separates them.
+With maybe a hundred different random starting points, a solution probably within a percent of the optimal can be found, which Ex. 4 tests. The improvement procedure is two-opt (2-opt). Where the exchange procedure of the UFL in Lecture 2.4 exchanges nodes, 2-opt exchanges arcs. In Fig. 8, the letters a to f are the arcs of the tour 1-2-3-4-5-6-1, and the first change gets rid of arcs a and c and adds instead an arc from 1 to 3 and another from 2 to 4, replacing two arcs with two other arcs so that the tour is still feasible: it now goes from 1 to 3, back to 2 and over to 4. Since the two new arcs cross, that change does not improve the tour. Most changes do not, and 2-opt is looking for the few that do; with Euclidean costs a change that worsens the tour would show a crossing, and otherwise its cost would go up. Each change is so cheap to compute that the computer can be left to do the work, rather than designing something more specialized; unless there are thousands and thousands of nodes, a random permutation works fine, and that simplifies the effort quite a bit. A change is made by taking the segment between the two arcs removed and flipping it. Removing a and c flips 2-3 into 3-2; removing a and d gives the route 1-4-3-2-5, the segment 2-3-4 flipped; removing a and e flips everything from 2 to 5. These are the 2-opt changes, and they continue with b and d, b and e, and on through d and f. With $n = 6$ there are nine of them in all, $n(n - 3)/2$ (Eq. 6). That number grows as $n^2$, so even for $n = 100$, where looking at all of the tours is out of the question, the changes can be dealt with, and they give decent routes. This is worth spending some time to understand. Many arc changes are not feasible: any two arcs incident to the same node, such as a and f or a and b, cannot be exchanged, so two arcs can be exchanged only when at least one arc separates them.
 
 Show the code that draws this figure
 
 ```julia
-# Code block 10: the changes that remove arc a with arc c, and with arc d,
+# Code block 11: the changes that remove arc a with arc c, and with arc d,
 # beside the table of all nine changes
 tourarcs = [(1, 2, "a"), (2, 3, "b"), (3, 4, "c"), (4, 5, "d"),
             (5, 6, "e"), (6, 1, "f")]      # 1-2-3-4-5-6-1, lettered
@@ -671,7 +715,7 @@ for i in 1:size(P6, 1)                     # nodes over the arcs
 end
 xlims!(ax, -0.6, 2.3); ylims!(ax, -1.1, 2.3)
 # the table beside it: the arc letters over the tour, then each change of
-# the loop of Code block 11, its reversed segment boxed
+# the loop of Code block 12, its reversed segment boxed
 tb = Axis(fig[1, 2])
 hidedecorations!(tb); hidespines!(tb)
 text!(tb, (1:6) .+ 0.5, zeros(6); text = last.(tourarcs), color = dcc,
@@ -685,11 +729,11 @@ changes = [(i, j) for i = 1:length(tour)-2
            for j = i+2:min(length(tour)-1, length(tour)+i-3)]
 for (k, (i, j)) in enumerate(changes)
     y = -1.0 - k
-    rk = vcat(tour[1:i], reverse(tour[i+1:j]), tour[j+1:end])
+    πk = vcat(tour[1:i], reverse(tour[i+1:j]), tour[j+1:end])
     text!(tb, 0.0, y; text = tourarcs[i][3] * "-" * tourarcs[j][3],
           color = dcc, font = :bold, fontsize = 14,
           align = (:center, :center))
-    text!(tb, 1:7, fill(y, 7); text = string.(rk), color = ink,
+    text!(tb, 1:7, fill(y, 7); text = string.(πk), color = ink,
           fontsize = 14, align = (:center, :center))
     c = k == 1 ? redc : k == 2 ? bluec : dcc   # a-c and a-d as drawn
     lines!(tb, [i + 0.6, j + 0.4, j + 0.4, i + 0.6, i + 0.6],
@@ -703,22 +747,22 @@ fig
 
 Figure 8: Two 2-opt changes of the tour 1-2-3-4-5-6-1, whose arcs are lettered a to f, and all nine of its changes. Removing arcs a and c (red ×) adds the red arcs and reverses 2-3; removing arcs a and d (blue ×) adds the blue arcs and reverses 2-3-4. Each row of the table is the sequence a change gives, named by the two arcs it removes, with the segment it reverses boxed.
 
-Code block 11 lists the nine changes of the tour 1-2-3-4-5-6-1, each with its segment flipped, in the order of the letters of Fig. 8, starting with a and c and ending with d and f:
+Code block 12 lists the nine changes of the tour 1-2-3-4-5-6-1, each with its segment flipped, in the order of the letters of Fig. 8, starting with a and c and ending with d and f:
 
 ```julia
-# Code block 11: the nine 2-opt changes of the tour 1-2-3-4-5-6-1
-r = [1:6; 1]
-println(r)
-for i = 1:length(r)-2
-    for j = i+2:min(length(r)-1, length(r)+i-3)
-        println(vcat(r[1:i], reverse(r[i+1:j]), r[j+1:end]))
+# Code block 12: the nine 2-opt changes of the tour 1-2-3-4-5-6-1
+π = [1:6; 1]
+println(π)
+for i = 1:length(π)-2
+    for j = i+2:min(length(π)-1, length(π)+i-3)
+        println(vcat(π[1:i], reverse(π[i+1:j]), π[j+1:end]))
     end
 end
 
 ```
 
 - 1 $j$ starts two past $i$, so the two arcs removed are never adjacent, and when $i = 1$ it stops one short, since the last arc, back into node 1, is adjacent to the first.
-- 2 The tour up to $r_i$, then the segment from $r_{i+1}$ to $r_j$ reversed, then the rest: the arcs out of $r_i$ and out of $r_j$ are removed, and arcs from $r_i$ to $r_j$ and from $r_{i+1}$ to $r_{j+1}$ are added.
+- 2 The tour up to $\pi_i$, then the segment from $\pi_{i+1}$ to $\pi_j$ reversed, then the rest: the arcs out of $\pi_i$ and out of $\pi_j$ are removed, and arcs from $\pi_i$ to $\pi_j$ and from $\pi_{i+1}$ to $\pi_{j+1}$ are added.
 
 ```text
 [1, 2, 3, 4, 5, 6, 1]
@@ -733,7 +777,7 @@ end
 [1, 2, 3, 4, 6, 5, 1]
 ```
 
-The number of sequences considered at the end to verify a local optimum, for $n$ nodes, is the number of rows the loop of Code block 11 prints after its first:
+The number of sequences considered at the end to verify a local optimum, for $n$ nodes, is the number of rows the loop of Code block 12 prints after its first:
 
 $$
 \overbrace{\sum_{j = 3}^{n - 1} ( 1 )}^{\text{first arc } a} + \overbrace{\sum_{i = 2}^{n - 2} \sum_{j = i + 2}^{n} ( 1 )}^{\text{arcs } b \text{ to } n - 2} = \frac{n ( n - 3 )}{2} = 9 \text{ for } n = 6
@@ -749,16 +793,16 @@ The other symbol, $n$, is that of Eq. 1.
 
 It is a first improvement procedure: others look at all the possibilities and take the best, but this one makes any improvement as soon as it sees it, and the new sequence becomes the base point. Whenever there is an improvement, the clock is put back and the scan starts again at the first change; it is not a continuation.
 
-The 2-opt procedure is a formulation of Model 1 written as pseudocode. Where Eq. 4 takes the minimum over every permutation, 2-opt looks only at the tours one change away from the current one, moves to the first of them that is cheaper, and stops at a tour that none of them improves. It is the loop of Code block 11 with a cost check added.6
+The 2-opt procedure is a formulation of Model 1 written as pseudocode. Where Eq. 4 takes the minimum over every permutation, 2-opt looks only at the tours one change away from the current one, moves to the first of them that is cheaper, and stops at a tour that none of them improves. It is the loop of Code block 12 with a cost check added.6
 
 Model 1 formulation: Two-opt improvement
 
 ```text
 algorithm twoopt;
-{ input:  tour r = (r₁, …, rₙ₊₁) of n nodes, rₙ₊₁ = r₁; cost c(r)    }
-{ output: tour rᵒ that no 2-opt change improves, and its cost TCᵒ   }
+{ input:  tour π = (π₁, …, πₙ₊₁) of n nodes, πₙ₊₁ = π₁; cost c(π)    }
+{ output: tour πᵒ that no 2-opt change improves, and its cost TCᵒ   }
 begin
-    rᵒ := r, TCᵒ := c(r);              { the start is the best so far  }
+    πᵒ := π, TCᵒ := c(π);              { the start is the best so far  }
     done := false;
     while not done do                  { until a scan improves nothing }
     begin
@@ -768,20 +812,20 @@ begin
             j := i + 2;
             while done and j ≤ min(n, n + i − 2) do
             begin
-                r′ := r with rᵢ₊₁, …, rⱼ reversed;  { a 2-opt change      }
-                if c(r′) < TCᵒ then                { strictly better     }
-                    rᵒ := r′, TCᵒ := c(r′), done := false;
+                π′ := π with πᵢ₊₁, …, πⱼ reversed;  { a 2-opt change }
+                if c(π′) < TCᵒ then                { strictly better }
+                    πᵒ := π′, TCᵒ := c(π′), done := false;
                 j := j + 1;
             end;
             i := i + 1;
         end;
-        r := rᵒ;                       { scan again from the new tour  }
+        π := πᵒ;                       { scan again from the new tour  }
     end;
-    return rᵒ, TCᵒ;
+    return πᵒ, TCᵒ;
 end;
 ```
 
-Line 15 is the change of Fig. 8, the arcs from $r_i$ and into $r_{j+1}$ removed and the segment between them reversed, and line 16 keeps it only if it lowers the cost. The bounds on $i$ and $j$ in lines 10 and 13 are those of Code block 11, whose length(r) is $n + 1$, so that the two arcs removed are never adjacent, and they give the $n(n - 3)/2$ changes of Eq. 6. Line 17 sets done to false, which ends both scans at once, so the procedure takes the first improving change rather than the best one, and line 22 starts the scan again from the tour that change gave.
+Line 15 is the change of Fig. 8, the arcs from $\pi_i$ and into $\pi_{j+1}$ removed and the segment between them reversed, and line 16 keeps it only if it lowers the cost. The bounds on $i$ and $j$ in lines 10 and 13 are those of Code block 12, whose length(π) is $n + 1$, so that the two arcs removed are never adjacent, and they give the $n(n - 3)/2$ changes of Eq. 6. Line 17 sets done to false, which ends both scans at once, so the procedure takes the first improving change rather than the best one, and line 22 starts the scan again from the tour that change gave.
 
 Model 1 implementation: Two-opt improvement
 
@@ -800,17 +844,17 @@ Model 1 formulation: Multi-start
 
 ```text
 algorithm multistart;
-{ input:  n nodes, cost c(r) of a tour r, number of starts N   }
-{ output: best tour rᵒ found, and its cost TCᵒ                  }
+{ input:  n nodes, cost c(π) of a tour π, number of starts N   }
+{ output: best tour πᵒ found, and its cost TCᵒ                  }
 begin
     TCᵒ := ∞;
     for k := 1 to N do
     begin
-        r := a random tour of the n nodes;   { easy construction }
-        r′, TC′ := twoopt with r;            { improvement       }
-        if TC′ < TCᵒ then rᵒ := r′, TCᵒ := TC′;
+        π := a random tour of the n nodes;   { easy construction }
+        π′, TC′ := twoopt with π;            { improvement       }
+        if TC′ < TCᵒ then πᵒ := π′, TCᵒ := TC′;
     end;
-    return rᵒ, TCᵒ;
+    return πᵒ, TCᵒ;
 end;
 ```
 
@@ -823,16 +867,16 @@ Model 1 implementation: Multi-start
 using Random
 randtour(n) = (tour = randperm(n); push!(tour, tour[1]))
 
-function multistart(n, rTCh; nruns = 100)
-    rᵒ, TCᵒ = nothing, Inf
+function multistart(n, πTCh; nruns = 100)
+    πᵒ, TCᵒ = nothing, Inf
     for i = 1:nruns
-        r, TC = twoopt(randtour(n), rTCh)
+        π, TC = twoopt(randtour(n), πTCh)
         if TC < TCᵒ
-            rᵒ, TCᵒ = r, TC
+            πᵒ, TCᵒ = π, TC
             println(i, ": ", TCᵒ)
         end
     end
-    return rᵒ, TCᵒ
+    return πᵒ, TCᵒ
 end
 ```
 
@@ -840,11 +884,11 @@ end
 multistart (generic function with 1 method)
 ```
 
-Example 2: Six-node tour
+Example 3: Six-node tour
 
 Determine a tour of the six nodes of Fig. 3 by 2-opt improvement of the tour 1-2-3-4-5-6-1, under the arc costs $D$ of Eq. 7, by hand, in Julia, and by multi-start from random starting tours, and determine how far the tours it finds are from the optimum.
 
-The arc costs of Ex. 2 are
+The arc costs of Ex. 3 are
 
 $$
 D = \begin{bmatrix}
@@ -864,7 +908,7 @@ where
 
 Note that $D$ is not symmetric: the cost from node 1 to node 2 is 8, and from node 2 to node 1 is 3, as on two one-way streets.
 
-Example 2(a): By hand
+Example 3(a): By hand
 
 Determine the tour that 2-opt reaches from 1-2-3-4-5-6-1, listing each sequence in the order the procedure considers it, with its cost.
 
@@ -875,11 +919,11 @@ c_{12} + c_{23} + c_{34} + c_{45} + c_{56} + c_{61} = 8 + 1 + 3 + 10 + 10 + 6 = 
 
 $$
 
-From it, the procedure considers the nine changes of Code block 11 in order and keeps the first that lowers the cost; from the tour that gives, it starts its scan again. Table 2 lists every sequence it considers, in order, and Fig. 9 draws each tour it keeps, red given and blue to be determined:
+From it, the procedure considers the nine changes of Code block 12 in order and keeps the first that lowers the cost; from the tour that gives, it starts its scan again. Table 2 lists every sequence it considers, in order, and Fig. 9 draws each tour it keeps, red given and blue to be determined:
 
-Figure 9: The tours 2-opt keeps in Ex. 2(a), from the starting tour to the local optimum. Red is given: the cost of each arc. Blue has to be determined: the arcs each change adds, and the tour’s cost after it, with the cost before it in gray. The arcs a change removes are dashed and crossed (×).
+Figure 9: The tours 2-opt keeps in Ex. 3(a), from the starting tour to the local optimum. Red is given: the cost of each arc. Blue has to be determined: the arcs each change adds, and the tour’s cost after it, with the cost before it in gray. The arcs a change removes are dashed and crossed (×).
 
-Table 2: The sequences 2-opt considers in Ex. 2(a), in order, with their costs. In each, the segment its change reverses is shaded blue, and Change counts the changes looked at since the last tour kept, in the order of the rows of the table in Fig. 8; each kept sequence is the tour the scan starts again from. A scan stops at its first change that lowers the cost, so only the last, from the local optimum, looks at all 9 changes of Eq. 6, verifying that none is lower: 2-opt does its most work at the end.
+Table 2: The sequences 2-opt considers in Ex. 3(a), in order, with their costs. In each, the segment its change reverses is shaded blue, and Change counts the changes looked at since the last tour kept, in the order of the rows of the table in Fig. 8; each kept sequence is the tour the scan starts again from. A scan stops at its first change that lowers the cost, so only the last, from the local optimum, looks at all 9 changes of Eq. 6, verifying that none is lower: 2-opt does its most work at the end.
 
 | | Sequence | Cost | Change | | |
 |---|---|---|---|---|---|
@@ -908,14 +952,14 @@ The procedure works just as well on an asymmetric cost matrix, such as that of o
 
 2-opt from 1-2-3-4-5-6-1, of cost 38, reaches the local optimum 1-5-4-2-3-6-1, of cost 12.
 
-Example 2(b): In Julia
+Example 3(b): In Julia
 
-Determine the same trace in Julia, and the same tour with Logjam’s twoopt, and determine whether they agree with Ex. 2(a).
+Determine the same trace in Julia, and the same tour with Logjam’s twoopt, and determine whether they agree with Ex. 3(a).
 
-This part is the one done with code, as in a homework problem; part (a) is the one done by hand, as on an exam. The cost of a tour is the sum of the costs of its arcs. Code block 12 computes each arc’s cost with Logjam’s segcost, which Lecture 4.1, Sec. 5 introduced, for the tour r of Code block 11, and Code block 13 sums them:
+This part is the one done with code, as in a homework problem; part (a) is the one done by hand, as on an exam. The cost of a tour is the sum of the costs of its arcs. Code block 13 computes each arc’s cost with Logjam’s segcost, which Lecture 4.1, Sec. 5 introduced, for the tour π of Code block 12, and Code block 14 sums them:
 
 ```julia
-# Code block 12: the arc costs of Ex. 2, and each arc's cost on the tour
+# Code block 13: the arc costs of Ex. 3, and each arc's cost on the tour
 D = [
      0     8     6     9     1     5
      3     0     1     5     4     2
@@ -924,12 +968,12 @@ D = [
      6     7    10     1     0    10
      6     2     5     2     1     0]
 
-@show r
-segcost(r, D)
+@show π
+segcost(π, D)
 ```
 
 ```text
-r = [1, 2, 3, 4, 5, 6, 1]
+π = [1, 2, 3, 4, 5, 6, 1]
 ```
 
 ```text
@@ -943,48 +987,48 @@ r = [1, 2, 3, 4, 5, 6, 1]
 ```
 
 ```julia
-# Code block 13: the tour's cost
-rTCh(r) = sum(segcost(r, D))
-rTCh(r)
+# Code block 14: the tour's cost
+πTCh(π) = sum(segcost(π, D))
+πTCh(π)
 ```
 
 ```text
 38
 ```
 
-Code block 14 is a printing version of twoopt: it prints each sequence it considers with its cost, an asterisk marking each one it keeps, and so reproduces Table 2.
+Code block 15 is a printing version of twoopt: it prints each sequence it considers with its cost, an asterisk marking each one it keeps, and so reproduces Table 2.
 
 ```julia
-# Code block 14: twoopt, printing each sequence it considers
-function twoopt_prt(r, rTCh)
-    rᵒ, TCᵒ = copy(r), rTCh(r)
-    println("*", TCᵒ, ": ", rᵒ)
+# Code block 15: twoopt, printing each sequence it considers
+function twoopt_prt(π, πTCh)
+    πᵒ, TCᵒ = copy(π), πTCh(π)
+    println("*", TCᵒ, ": ", πᵒ)
     done = false
     while !done
         done = true
-        for i = 1:length(r)-2
-            for j = i+2:min(length(r)-1, length(r)+i-3)
-                r′ = vcat(r[1:i], reverse(r[i+1:j]), r[j+1:end])
-                TC = rTCh(r′)
+        for i = 1:length(π)-2
+            for j = i+2:min(length(π)-1, length(π)+i-3)
+                π′ = vcat(π[1:i], reverse(π[i+1:j]), π[j+1:end])
+                TC = πTCh(π′)
                 if TC < TCᵒ
-                    rᵒ, TCᵒ = r′, TC
-                    println("*", TCᵒ, ": ", rᵒ)
+                    πᵒ, TCᵒ = π′, TC
+                    println("*", TCᵒ, ": ", πᵒ)
                     done = false
                     break
                 else
-                    println(" ", TC, ": ", r′)
+                    println(" ", TC, ": ", π′)
                 end
             end
             if done == false
                 break
             end
         end
-        r = copy(rᵒ)
+        π = copy(πᵒ)
     end
-    return rᵒ, TCᵒ
+    return πᵒ, TCᵒ
 end
 
-twoopt_prt(r, rTCh)
+twoopt_prt(π, πTCh)
 ```
 
 ```text
@@ -1017,43 +1061,43 @@ twoopt_prt(r, rTCh)
 Logjam’s twoopt runs the same loop without the printing:
 
 ```julia
-twoopt(r, rTCh)                        # Code block 15: Logjam's 2-opt
+twoopt(π, πTCh)                        # Code block 16: Logjam's 2-opt
 ```
 
 ```text
 ([1, 5, 4, 2, 3, 6, 1], 12)
 ```
 
-Logjam’s twoopt returns the tour of Ex. 2(a), 1-5-4-2-3-6-1, and its cost of 12. The tour found by hand and the one the implementation finds agree, a Triangulate check of Lecture 1.2: solving Ex. 2(a) by hand, as Table 2 does, and running Logjam’s code reach the same tour by two different routes, a person and a program.
+Logjam’s twoopt returns the tour of Ex. 3(a), 1-5-4-2-3-6-1, and its cost of 12. The tour found by hand and the one the implementation finds agree, a Triangulate check of Lecture 1.2: solving Ex. 3(a) by hand, as Table 2 does, and running Logjam’s code reach the same tour by two different routes, a person and a program.
 
 It is important to get the mechanics right: once it has been done by hand and verified with the procedure, it is known really well, and the steps should be the same as the code’s.
 
-Example 2(c): Multi-start
+Example 3(c): Multi-start
 
 Determine the best tour that multi-start finds from 100 random starting tours.
 
 A random tour is a random permutation of the nodes with its first node repeated at its end, the permutation plus start node of Table 1.
 
-Code block 16 draws one from a seed, since without one every run would give a different tour, which is probably not what is wanted:
+Code block 17 draws one from a seed, since without one every run would give a different tour, which is probably not what is wanted:
 
 ```julia
-# Code block 16: a random tour, the construction of multi-start
+# Code block 17: a random tour, the construction of multi-start
 Random.seed!(2024)
 
-@show r = randtour(6);
+@show π = randtour(6);
 ```
 
 ```text
-r = randtour(6) = [4, 5, 6, 3, 2, 1, 4]
+π = randtour(6) = [4, 5, 6, 3, 2, 1, 4]
 ```
 
-Code block 17 runs the multi-start of Sec. 3 from 100 of them, 2-opt from each, printing each improvement on the best so far:
+Code block 18 runs the multi-start of Sec. 3 from 100 of them, 2-opt from each, printing each improvement on the best so far:
 
 ```julia
-# Code block 17: multi-start, 2-opt from 100 random tours
+# Code block 18: multi-start, 2-opt from 100 random tours
 n, nruns = 6, 100
-rᵒ, TCᵒ = multistart(n, rTCh; nruns)
-@show rᵒ
+πᵒ, TCᵒ = multistart(n, πTCh; nruns)
+@show πᵒ
 @show TCᵒ;
 ```
 
@@ -1062,25 +1106,25 @@ rᵒ, TCᵒ = multistart(n, rTCh; nruns)
 2: 13
 5: 12
 20: 9
-rᵒ = [2, 1, 5, 4, 3, 6, 2]
+πᵒ = [2, 1, 5, 4, 3, 6, 2]
 TCᵒ = 9
 ```
 
-From 100 random starts, the best tour 2-opt finds costs 9, below the 12 of the single start of Ex. 2(a).
+From 100 random starts, the best tour 2-opt finds costs 9, below the 12 of the single start of Ex. 3(a).
 
 The best of 100 random starts is 2-1-5-4-3-6-2, of cost 9.
 
-Example 2(d): Against the optimum
+Example 3(d): Against the optimum
 
-Determine the optimal tour, by looking at all 120 tours and by solving the formulation of Model 1, and how far the tours of Ex. 2(a) and 2(c) are from it.
+Determine the optimal tour, by looking at all 120 tours and by solving the formulation of Model 1, and how far the tours of Ex. 3(a) and 3(c) are from it.
 
-With only six nodes, brute force is reasonable: Code block 18 lists every tour that starts and ends at node 1, as the permutations of nodes 2 to 6, costs each one, which is the mathematical formulation of Eq. 4 worked in full, and solves Model 1 with the implementation of Sec. 2:
+With only six nodes, brute force is reasonable: Code block 19 lists every tour that starts and ends at node 1, as the permutations of nodes 2 to 6, costs each one, which is the mathematical formulation of Eq. 4 worked in full, and solves Model 1 with the implementation of Sec. 2:
 
 ```julia
-# Code block 18: all 120 tours by brute force, and the formulation
-using Combinatorics
-tours = [[1; p; 1] for p ∈ permutations(2:6)]
-TCs = rTCh.(tours)
+# Code block 19: all 120 tours by brute force, and the formulation
+tours = ([1; p; 1] for p ∈ permutations(2:6))   # as in Ex. 1
+TCs = [πTCh(π) for π ∈ tours]                   # only the costs
+
 ex2 = TSP(D)
 @show length(tours)                    # the tours looked at
 @show minimum(TCs)                     # the cheapest of them
@@ -1099,7 +1143,7 @@ ex2.tour = [1, 5, 4, 3, 6, 2, 1]
 length(ex2.rounds) = 1
 ```
 
-Both give the optimal tour, 1-5-4-3-6-2-1 at a cost of 9, the only one of the 120 tours at that cost, and the formulation needs a single round: the assignment problem’s solution on these costs is already a tour, with no subtour, which is why Ex. 1 is on the NC cities instead. The optimum is a Landmark check of Lecture 1.2 on the 2-opt tours: the best of the 100 starts of Ex. 2(c) is optimal, and the local optimum of Ex. 2(a) is 33% above it. The count of 120 is an Assumptions check as well: Eq. 3 halves the count only when costs are symmetric, and under $D$ the tour 1-2-3-4-5-6-1 costs 38 while its reverse, 1-6-5-4-3-2-1, costs 13, so all 120 have to be looked at. So is the crossing argument of Sec. 1, which needs Euclidean costs and which Ex. 2(a)’s trace therefore sets aside.
+Both give the optimal tour, 1-5-4-3-6-2-1 at a cost of 9, the only one of the 120 tours at that cost, and the formulation needs a single round: the assignment problem’s solution on these costs is already a tour, with no subtour, which is why Ex. 2 is on the NC cities instead. The optimum is a Landmark check of Lecture 1.2 on the 2-opt tours: the best of the 100 starts of Ex. 3(c) is optimal, and the local optimum of Ex. 3(a) is 33% above it. The count of 120 is an Assumptions check as well: Eq. 3 halves the count only when costs are symmetric, and under $D$ the tour 1-2-3-4-5-6-1 costs 38 while its reverse, 1-6-5-4-3-2-1, costs 13, so all 120 have to be looked at. So is the crossing argument of Sec. 1, which needs Euclidean costs and which Ex. 3(a)’s trace therefore sets aside.
 
 The optimal tour is 1-5-4-3-6-2-1, of cost 9.
 
@@ -1127,7 +1171,7 @@ Fig. 10 draws the two: the route saves the trip back from $i$ and the trip out t
 Show the code that draws this figure
 
 ```julia
-# Code block 19: the pairwise saving of two customers served from a DC
+# Code block 20: the pairwise saving of two customers served from a DC
 PS = [0.0 0.0; 0.15 1.0; 1.1 0.25]     # the DC, customer i, customer j
 rs = 0.09                              # node radius, data units
 function trip!(ax, i, j; color = ink, dashed = false, off = 0.035)
@@ -1215,11 +1259,11 @@ The saving is 0.39, and the two-customer route of Eq. 9 is the two round trips, 
 Show the code that draws this figure
 
 ```julia
-# Code block 20: the two-customer route in a circle of radius 1
+# Code block 21: the two-customer route in a circle of radius 1
 fig = Figure(size = (330, 330))
 ax = Axis(fig[1, 1]; aspect = DataAspect())
 hidedecorations!(ax); hidespines!(ax)
-θ = range(0, 2π, length = 361)
+θ = range(0, 2pi, length = 361)
 lines!(ax, cos.(θ), sin.(θ); color = bluec, linewidth = 1.6)  # radius 1
 lines!(ax, (2/3) .* cos.(θ), (2/3) .* sin.(θ); color = dcc,
        linewidth = 1.3, linestyle = :dash)     # the expected distance
@@ -1239,10 +1283,10 @@ text!(ax, 0.47, -0.04; text = L"\frac{2}{3}", color = ink, fontsize = 15,
       align = (:center, :top))
 text!(ax, d / 2 - 0.035, d / 2 - 0.035;       # inside the triangle,
       text = L"\sqrt{2(2/3)^2}", color = ink, # clear of the dashed circle
-      fontsize = 14, rotation = -π / 4, align = (:center, :top))
+      fontsize = 14, rotation = -pi / 4, align = (:center, :top))
 text!(ax, 0.82cosd(-45) + 0.025cosd(45),
       0.82sind(-45) + 0.025sind(45);
-      text = L"1", color = bluec, fontsize = 13, rotation = -π / 4,
+      text = L"1", color = bluec, fontsize = 13, rotation = -pi / 4,
       align = (:center, :bottom))              # between the two circles
 text!(ax, 0.0, 1.0 - 0.06; text = L"a = \pi", color = ink, fontsize = 15,
       align = (:center, :top))
@@ -1266,10 +1310,10 @@ where
 
 - $\theta$ = angle from the fixed point to the second point, around the circle (radians).
 
-The same angle can also be found by simulation, as Lecture 1.3, Sec. 7, does for a queue. The span is how much of the circle is looked at, starting with 360 degrees, and a million random angles are generated; there is no need to make actual points in the circle, only random numbers times the span. A function gives the absolute difference between two angles, allowing for the fact that it rolls over at 360, and displaying the minimum, maximum and mean gives 90. With that done, the same can be done for a span of 180, which gives 60. That is not a mathematical proof, but computationally it is good enough. Code block 21 does this:
+The same angle can also be found by simulation, as Lecture 1.3, Sec. 7, does for a queue. The span is how much of the circle is looked at, starting with 360 degrees, and a million random angles are generated; there is no need to make actual points in the circle, only random numbers times the span. A function gives the absolute difference between two angles, allowing for the fact that it rolls over at 360, and displaying the minimum, maximum and mean gives 90. With that done, the same can be done for a span of 180, which gives 60. That is not a mathematical proof, but computationally it is good enough. Code block 22 does this:
 
 ```julia
-# Code block 21: the average angle between two random points, simulated
+# Code block 22: the average angle between two random points, simulated
 Random.seed!(1)
 absdiffdeg(a, b) = min(360 - mod(a - b, 360), mod(a - b, 360))
 n = 10^6
@@ -1299,7 +1343,7 @@ The 90 degrees can be verified two ways. A simulation of a million pairs of poin
 Show the code that draws this figure
 
 ```julia
-# Code block 22: customers spread uniformly, and the square each one has
+# Code block 23: customers spread uniformly, and the square each one has
 Random.seed!(242)
 mpts = 300                             # customers in the circle
 P = Matrix{Float64}(undef, 0, 2)
@@ -1313,7 +1357,7 @@ end
 fig = Figure(size = (687, 320))
 ax1 = Axis(fig[1, 1]; aspect = DataAspect())
 hidedecorations!(ax1); hidespines!(ax1)
-θ = range(0, 2π, length = 361)
+θ = range(0, 2pi, length = 361)
 lines!(ax1, cos.(θ), sin.(θ); color = bluec, linewidth = 1.6)
 scatter!(ax1, P[:, 1], P[:, 2]; color = redc, markersize = 3)
 scatter!(ax1, [0.0], [0.0]; color = ink, markersize = 7)
@@ -1395,10 +1439,10 @@ where
 
 Is the estimate any good? With its assumptions it should be pretty accurate for $m = 2$, the case it was equated to.
 
-Code block 23 draws $m$ customers uniformly at random in a circle of area $\pi$ and puts the DC at its center; for each draw it solves Model 1 exactly, to $m = 50$, and improves the tour in the order drawn by 2-opt, to $m = 200$, with enough draws at each $m$ to total 1,000 customers, so that each mean is about equally precise; Table 3 compares the mean lengths of those tours with Eq. 13:
+Code block 24 draws $m$ customers uniformly at random in a circle of area $\pi$ and puts the DC at its center; for each draw it solves Model 1 exactly, to $m = 50$, and improves the tour in the order drawn by 2-opt, to $m = 200$, with enough draws at each $m$ to total 1,000 customers, so that each mean is about equally precise; Table 3 compares the mean lengths of those tours with Eq. 13:
 
 ```julia
-# Code block 23: the estimate against optimal and 2-opt tours
+# Code block 24: the estimate against optimal and 2-opt tours
 function disk(m)                     # m points uniform in the unit disk,
     P = Matrix{Float64}(undef, 0, 2) # by rejection from the square
     while size(P, 1) < m
@@ -1409,7 +1453,7 @@ function disk(m)                     # m points uniform in the unit disk,
     end
     return P
 end
-φ = 2(sqrt(2) + 1) / (3sqrt(π))
+φ = 2(sqrt(2) + 1) / (3sqrt(pi))
 Random.seed!(150)
 est = DataFrame(m = Int[], reps = Int[], estimate = Float64[],
                 exact = Float64[], twoopt = Float64[])
@@ -1418,9 +1462,9 @@ for m in (2, 5, 10, 20, 50, 100, 200)
     Ps = [[0.0 0.0; disk(m)] for _ in 1:reps]   # the DC at the center
     Ds = [dists(P, P, 2) for P in Ps]           # Euclidean
     TC = m ≤ 50 ? [TSP(D).TC for D in Ds] : [NaN]   # exact, to m = 50
-    TC2 = [twoopt([1:m+1; 1], r -> sum(segcost(r, D)))[2]
+    TC2 = [twoopt([1:m+1; 1], π -> sum(segcost(π, D)))[2]
            for D in Ds]
-    push!(est, (m, reps, φ * sqrt(m * π), sum(TC) / length(TC),
+    push!(est, (m, reps, φ * sqrt(m * pi), sum(TC) / length(TC),
                 sum(TC2) / reps))
 end
 est.ratio = est.estimate ./ est.exact
@@ -1429,7 +1473,7 @@ prt(est)
 
 ```
 
-- 1 A point uniform in the square from $-1$ to 1 is kept only if it falls inside the unit circle, which leaves the kept points uniform over the circle; about $\pi/4$ of them, 79%, are kept. Code block 22 draws its customers the same way.
+- 1 A point uniform in the square from $-1$ to 1 is kept only if it falls inside the unit circle, which leaves the kept points uniform over the circle; about $\pi/4$ of them, 79%, are kept. Code block 23 draws its customers the same way.
 - 2 2-opt starts from the tour that visits the customers in the order they were drawn, which is itself a random tour, so it needs no random start of its own.
 
 Table 3: The estimate of Eq. 13 against the mean length of optimal tours, to $m = 50$, and of 2-opt tours, to $m = 200$, each through a DC at the center of a circle of area $\pi$ and $m$ customers drawn uniformly in it, over reps draws totaling 1,000 customers. Past $m = 50$ an optimal tour takes too long to solve, and past $m = 200$ so does 2-opt.
@@ -1450,7 +1494,7 @@ For two customers the estimate is close to the optimal tours, as its derivation 
 
 The estimate also holds up when the region is not a circle: North Carolina is oblong, and the fact that it is not circular does not seem to affect it much.
 
-For the tour of North Carolina, Ex. 3 finds the estimate within a percent of the optimal tour, so even if the area is not circular, the approximation is still pretty reasonable.
+For the tour of North Carolina, Ex. 4 finds the estimate within a percent of the optimal tour, so even if the area is not circular, the approximation is still pretty reasonable.
 
 NoteThe constant in the literature
 
@@ -1462,38 +1506,38 @@ Reading their own text, rather than a number quoted from it, is a Source check o
 
 The Christofides and Eilon result holds for points anywhere in the circle, whereas the estimate of Eq. 13 assumes that the DC is located at the center of the circle. That probably accounts for most of the difference.
 
-Table 4 summarizes the ways Secs. 1 to 4 solve or estimate the TSP, by what the problem has; Ex. 3 applies all of them to one problem.
+Table 4 summarizes the ways Secs. 1 to 4 solve or estimate the TSP, by what the problem has; Ex. 4 applies all of them to one problem.
 
 Table 4: Ways to solve or estimate the TSP, by what the problem has.
 
 | The problem has | Method | What it gives |
 |---|---|---|
-| handful of nodes, such as the six of Ex. 2 | every tour, by brute force (Code block 18) | optimal tour; the $(n - 1)!$ tours outgrow brute force by $n = 13$ (Sec. 1) |
-| up to about 100 nodes, and an optimal tour wanted (Ex. 1 and 3) | Model 1 as a math program, subtour constraints added as violated (Sec. 2) | optimal tour, proved optimal |
-| any number of nodes, and a good tour wanted quickly (Ex. 2 and 3) | 2-opt from random tours, multi-start (Sec. 3) | tour near the optimum, not proved optimal |
-| customers not yet known, only their number and the area (Ex. 3(a)) | estimate of Eq. 13 (Sec. 4) | expected length of a tour, not a tour |
+| handful of nodes, such as the ten of Ex. 1 and the six of Ex. 3 | every tour, by brute force (Code blocks 5 and 19) | optimal tour; the $(n - 1)!$ tours outgrow brute force by $n = 13$ (Sec. 1) |
+| up to about 100 nodes, and an optimal tour wanted (Ex. 2 and 4) | Model 1 as a math program, subtour constraints added as violated (Sec. 2) | optimal tour, proved optimal |
+| any number of nodes, and a good tour wanted quickly (Ex. 3 and 4) | 2-opt from random tours, multi-start (Sec. 3) | tour near the optimum, not proved optimal |
+| customers not yet known, only their number and the area (Ex. 4(a)) | estimate of Eq. 13 (Sec. 4) | expected length of a tour, not a tour |
 
-Example 3: Tour of North Carolina
+Example 4: Tour of North Carolina
 
 Determine the minimum great-circle distance tour that visits the population centers of each North Carolina county, after first estimating its length, and then the minimum road-distance tour.
 
 It is a hard problem in theory, since for $n = 100$, $(n - 1)! \approx 9.33 \times 10^{155}$, and easy in practice, using multi-start random tour construction and 2-opt improvement, since each final 2-opt verification requires $n(n - 3)/2 = 4{,}850$ tour cost calculations (Eq. 6).
 
-Example 3(a): Estimate first
+Example 4(a): Estimate first
 
 Determine the length of the tour that Eq. 13 estimates, before any tour is built.
 
-Code block 24 reads the 100 counties from the Logjam gazetteer, each with the population center that is its point, and its land and water area:
+Code block 25 reads the 100 counties from the Logjam gazetteer, each with the population center that is its point, and its land and water area:
 
 ```julia
-# Code block 24: the NC counties, from the Logjam gazetteer
+# Code block 25: the NC counties, from the Logjam gazetteer
 df = filter(r -> (r.STFIP == st2fips(:NC)), uscounty());
 ```
 
-With $m = 100$ and the area of the state, in square miles, Eq. 13 gives the estimate in Code block 25:
+With $m = 100$ and the area of the state, in square miles, Eq. 13 gives the estimate in Code block 26:
 
 ```julia
-# Code block 25: the estimated length of the tour
+# Code block 26: the estimated length of the tour
 @show a = sum(df.ALAND) + sum(df.AWATER)
 @show TCᴱ = 0.908sqrt(nrow(df)*a);
 ```
@@ -1513,57 +1557,57 @@ $$
 
 $$
 
-The estimate is 2,106.45 mi. Writing it down before any tour is built makes it a Prior check of Lecture 1.2: the tours of Ex. 3(b) and 3(c) are judged against a number fixed in advance.
+The estimate is 2,106.45 mi. Writing it down before any tour is built makes it a Prior check of Lecture 1.2: the tours of Ex. 4(b) and 4(c) are judged against a number fixed in advance.
 
 All the estimate needs to know is the area and the number of stops.
 
 The estimated length of a tour of the 100 counties is 2,106.45 mi.
 
-Example 3(b): Multi-start 2-opt
+Example 4(b): Multi-start 2-opt
 
 Determine the best tour that 2-opt finds from 100 random starting tours, under great circle distances.
 
-Code block 26 computes the great circle distance between every pair of county points, so that the tour cost rTCh of Code block 13, which reads D, now costs a tour of the counties:
+Code block 27 computes the great circle distance between every pair of county points, so that the tour cost πTCh of Code block 14, which reads D, now costs a tour of the counties:
 
 ```julia
-# Code block 26: great circle distances between the county points
+# Code block 27: great circle distances between the county points
 XY = hcat(df.LON, df.LAT)
 D = dists(XY, XY, :mi);
 ```
 
-Code block 27 draws a random tour of the 100 counties and costs it with rTCh, and Fig. 13 draws it:
+Code block 28 draws a random tour of the 100 counties and costs it with πTCh, and Fig. 13 draws it:
 
 ```julia
-# Code block 27: a random tour of the counties, and its cost
+# Code block 28: a random tour of the counties, and its cost
 Random.seed!(2024)
-r = randtour(nrow(df))
-@show rTCh(r);
+π = randtour(nrow(df))
+@show πTCh(π);
 ```
 
 ```text
-rTCh(r) = 15704.014343120863
+πTCh(π) = 15704.014343120863
 ```
 
 Show the code that draws this figure
 
 ```julia
-# Code block 28: the random tour on a map
+# Code block 29: the random tour on a map
 fig, ax = makemap(df.LON, df.LAT; xexpand=0.05)
 resize!(fig, 687, 300)
-lines!(ax, df.LON[r], df.LAT[r], color=:red, linewidth=.5)
+lines!(ax, df.LON[π], df.LAT[π], color=:red, linewidth=.5)
 fig
 ```
 
 Figure 13: A random tour of the population centers of the 100 NC counties, the starting point of 2-opt.
 
-Code block 29 runs the multi-start of Sec. 3 from 100 random tours of the counties, from the same seed, printing each improvement on the best so far:
+Code block 30 runs the multi-start of Sec. 3 from 100 random tours of the counties, from the same seed, printing each improvement on the best so far:
 
 ```julia
-# Code block 29: multi-start, 2-opt from 100 random tours of the counties
+# Code block 30: multi-start, 2-opt from 100 random tours of the counties
 Random.seed!(2024)
 
 n, nruns = nrow(df), 100
-rᵒ, TCᵒ = multistart(n, rTCh; nruns);
+πᵒ, TCᵒ = multistart(n, πTCh; nruns);
 ```
 
 ```text
@@ -1579,10 +1623,10 @@ rᵒ, TCᵒ = multistart(n, rTCh; nruns);
 Show the code that draws this figure
 
 ```julia
-# Code block 30: the best tour on a map
+# Code block 31: the best tour on a map
 fig, ax = makemap(df.LON, df.LAT; xexpand=0.05)
 resize!(fig, 687, 300)
-lines!(ax, df.LON[rᵒ], df.LAT[rᵒ], color=:red, linewidth=.5)
+lines!(ax, df.LON[πᵒ], df.LAT[πᵒ], color=:red, linewidth=.5)
 fig
 ```
 
@@ -1592,14 +1636,14 @@ From random starting tours such as that of Fig. 13, each time a start gave a bet
 
 The best of 100 random starts is 2,141.21 mi.
 
-Example 3(c): Against the optimum
+Example 4(c): Against the optimum
 
 Determine the optimal tour, by solving the formulation of Model 1, and how far the estimate and the multi-start tour are from it.
 
-Code block 31 solves Model 1 with the implementation of Sec. 2, and Code block 33 sets each tour and estimate of Ex. 3 against the optimum, as a percent above it:
+Code block 32 solves Model 1 with the implementation of Sec. 2, and Code block 34 sets each tour and estimate of Ex. 4 against the optimum, as a percent above it:
 
 ```julia
-# Code block 31: the optimal tour of the counties, by the formulation
+# Code block 32: the optimal tour of the counties, by the formulation
 nc = TSP(D)
 @show round(nc.TC, digits = 2)
 @show length(nc.rounds);
@@ -1612,25 +1656,25 @@ length(nc.rounds) = 14
 
 NoteThe spacefilling curve on the counties
 
-Code block 32 builds the tour of the spacefilling curve of Sec. 3, which needs nothing but a sort, and improves it by 2-opt:
+Code block 33 builds the tour of the spacefilling curve of Sec. 3, which needs nothing but a sort, and improves it by 2-opt:
 
 ```julia
-# Code block 32: the spacefilling curve's tour, and that tour after 2-opt
-rsfc = tspspfillcur(XY)
-rsfc2, TCsfc2 = twoopt(rsfc, rTCh)
-@show round(rTCh(rsfc), digits = 2)
+# Code block 33: the spacefilling curve's tour, and that tour after 2-opt
+πsfc = tspspfillcur(XY)
+πsfc2, TCsfc2 = twoopt(πsfc, πTCh)
+@show round(πTCh(πsfc), digits = 2)
 @show round(TCsfc2, digits = 2);
 ```
 
 ```text
-round(rTCh(rsfc), digits = 2) = 2826.21
+round(πTCh(πsfc), digits = 2) = 2826.21
 round(TCsfc2, digits = 2) = 2237.74
 ```
 
 The curve’s tour is 34% above the optimum, and 6.2% after 2-opt.
 
 ```julia
-# Code block 33: each tour and estimate of Ex. 3 against the optimum
+# Code block 34: each tour and estimate of Ex. 4 against the optimum
 cmp = DataFrame(tour = ["estimate", "multi-start 2-opt", "optimal"],
                 mi = [TCᴱ, TCᵒ, nc.TC])
 cmp.above = 100 .* (cmp.mi ./ nc.TC .- 1)      # % above the optimum
@@ -1645,20 +1689,20 @@ prt(cmp)
             optimal  2,107.56   0.00
 ```
 
-The optimal tour is 2,107.56 mi, after 14 rounds of subtour constraints. Against it, the estimate is within 0.05%. The multi-start tour is 1.6% above, which narrowly misses the “within a percent” that Sec. 3 expects of about a hundred random starts, a Prior check of Lecture 1.2 that the starts fail by a little. The optimum is a Landmark check on both: the estimate, fixed in Ex. 3(a) before any tour was built, turns out much closer for the counties than for the random customers of Table 3, and the heuristic tour can be measured against a tour known to be best.
+The optimal tour is 2,107.56 mi, after 14 rounds of subtour constraints. Against it, the estimate is within 0.05%. The multi-start tour is 1.6% above, which narrowly misses the “within a percent” that Sec. 3 expects of about a hundred random starts, a Prior check of Lecture 1.2 that the starts fail by a little. The optimum is a Landmark check on both: the estimate, fixed in Ex. 4(a) before any tour was built, turns out much closer for the counties than for the random customers of Table 3, and the heuristic tour can be measured against a tour known to be best.
 
 The optimal tour of the 100 counties is 2,107.56 mi, and the best of the 100 starts is 1.6% above it.
 
 The tour of North Carolina visits the population centers of its 100 counties, with the great circle distances between them as the distance matrix. Plugging into the estimation formula gives about 2,106 miles, and the best of 100 random permutations improved by 2-opt is 2,141; running a thousand starts found a tour only about three miles shorter, effectively a rounding error, so the estimate and the tour differ by about 1.7%. In the same way, all 3,000 or so counties of the United States could be toured: adding up their land and water areas from the database and taking 0.908 times the square root of the number of counties times that area would give an estimate of the length of a tour of the whole country. That opens up tactical considerations, the subject of Lecture 5.3: for a delivery van spending 2 or 3 minutes at each customer and traveling at an average of 35 miles an hour, the maximum distance it can travel in a day is known, and the formula can be solved for $m$, the maximum number of customers, because the distance can be estimated without knowing any particular set of customers. That gives a way of determining, tactically, how many customers to assign to each driver tomorrow, even for a completely new situation, analytically rather than from historical knowledge. Results like this one are not often found, but this one is useful for tactical and probably even strategic applications. The TSP is also a problem whose solutions can be seen, as with location. That visual insight breaks down once a vehicle routing problem has constraints such as time windows, which Lecture 5.3 adds, within which each customer has to be delivered: routes then backtrack to meet the windows, and the geography disappears, as it does with inventory, so it helps to develop the insight on problems like these first and then use it on the more complicated ones. One last thought: any random permutation is a feasible TSP, but with the interleaved pickups and deliveries of Fig. 1, whose sequencing Lecture 5.2 takes up, a sequence must not reach a delivery point before its pickup, so the sequencing constraints have to be enforced on any solution generated, and with an equal mix of pickups and deliveries a random permutation has asymptotically zero probability of being feasible. Such problems have to rely on a construction procedure that builds only feasible solutions, which is hard construction. The TSP is the special case with essentially no constraints, where all the work can be done by the improvement procedure; as more and more constraints are added, it goes the other way, until the construction finds what is probably the only feasible route, which cannot be improved. For many problems, a feasible solution is all that is wanted, and finding one is a big accomplishment.
 
-Example 3(d): On the roads
+Example 4(d): On the roads
 
 Determine the optimal tour of the counties on the road miles of Logjam’s FAF5 road network, and how much the circuity factor of 1.2 of Lecture 2.2, Sec. 7, and the estimate of Eq. 13 must be adjusted to match it.
 
-Code block 34 builds the road network of Lecture 4.1, Sec. 4, around the county points, as Code blocks 43 and 48 there do, computes the shortest road distance between every pair of them, and compares it with the great circle distance:
+Code block 35 builds the road network of Lecture 4.1, Sec. 4, around the county points, as Code blocks 43 and 48 there do, computes the shortest road distance between every pair of them, and compares it with the great circle distance:
 
 ```julia
-# Code block 34: road distances between the county points, on FAF5
+# Code block 35: road distances between the county points, on FAF5
 using SimpleWeightedGraphs
 N, L = prune_reindex(faf5nodes(), faf5links())   # nodes numbered from 1
 Nc, Lc = cropnetwork(N, L, df.LON, df.LAT)       # a box around the points
@@ -1683,10 +1727,10 @@ sum(Dr[off]) / sum(D[off]) = 1.1753360011244567
 sum(Dr[short]) / sum(D[short]) = 1.3449135308631321
 ```
 
-Every road distance is at least its great circle distance, a Bounds check of Lecture 1.2 on the network’s distances. Over all pairs, the circuity is 1.175, close to the 1.2 that Lecture 2.2, Sec. 7, uses; for pairs under 50 miles apart it is 1.345, which is the Assumptions check of Lecture 1.2 on that factor: a single circuity of 1.2 understates the short trips, and a tour of the counties is made of short trips. Code block 35 solves Model 1 on road miles, which are not symmetric, and compares the result with the great circle tour of Ex. 3(c) scaled by 1.2 and driven on the roads:
+Every road distance is at least its great circle distance, a Bounds check of Lecture 1.2 on the network’s distances. Over all pairs, the circuity is 1.175, close to the 1.2 that Lecture 2.2, Sec. 7, uses; for pairs under 50 miles apart it is 1.345, which is the Assumptions check of Lecture 1.2 on that factor: a single circuity of 1.2 understates the short trips, and a tour of the counties is made of short trips. Code block 36 solves Model 1 on road miles, which are not symmetric, and compares the result with the great circle tour of Ex. 4(c) scaled by 1.2 and driven on the roads:
 
 ```julia
-# Code block 35: the optimal tour on road miles
+# Code block 36: the optimal tour on road miles
 ncr = TSP(Dr)
 @show 1.2nc.TC                         # great circle optimum, x 1.2
 @show sum(segcost(nc.tour, Dr))        # the great circle tour, driven
@@ -1708,7 +1752,7 @@ Fig. 15 draws the optimal tour on the roads, each leg along its shortest path.
 Show the code that draws this map
 
 ```julia
-# Code block 36: the optimal road tour, each leg along its roads
+# Code block 37: the optimal road tour, each leg along its roads
 legs = zip(ncr.tour[1:end-1], ncr.tour[2:end])
 path = reduce(vcat, [tracepath(Pr[i], i, j)[1:end-1] for (i, j) in legs])
 push!(path, path[1])                       # back to where it started
