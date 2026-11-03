@@ -613,11 +613,11 @@ Compute part (b)’s three costs from the plan with code, and check them against
 This part is the one done with code, as in a homework problem; part (b) is the one done by hand, as on an exam. Code block 6 computes the same three costs from the plan and checks them against the answers published with the problem, the Landmark check of Lecture 1.2:
 
 ```julia
-# Code block 6: Ex. 1(b)'s plan, costed
+# Code block 6: Ex. 1(b)'s plan, and its costs
 X = cat([30 30 30; 30 10 50; 22 8 60],   # x[i,j,k]: stage i, week j,
         [16 17 17; 0 20 30; 0 17 33];    #   material k (ton)
         dims = 3)
-Db = [20 12; 10 25; 45 5]                # demand in week j for material k
+Db = [20 12; 10 25; 45 5]                # demand in week j, material k
 Y = zeros(3, 4, 2)                       # inventory, by flow balance
 Y[3, 1, 2] = 20
 for k in 1:2, j in 1:3
@@ -626,7 +626,8 @@ for k in 1:2, j in 1:3
     end
     Y[3, j+1, k] = Y[3, j, k] + X[3, j, k] - Db[j, k]
 end
-loads = ceil.(Int, dropdims(sum(X, dims = 3), dims = 3)[2:3, :] ./ u[2:3])
+loads = ceil.(Int,
+              dropdims(sum(X, dims = 3), dims = 3)[2:3, :] ./ u[2:3])
 cᵖb = [600 400; 0 0; 0 0]
 cⁱb = cumsum(cᵖb .+ cˢ./u, dims = 1)*0.5/52
 PC = sum(reshape(cᵖb, 3, 1, 2) .* X)
@@ -1780,10 +1781,10 @@ secs = @elapsed r5 = prodinv_switch(cᵖ, cʷ, cⁱ, d, u, z⁰, LBʸ, UBʸ)
 
 ```text
 r5.TC = 149745.64188911687
-round(Int, secs) = 60
+round(Int, secs) = 59
 ```
 
-Here the solve takes about a minute, 60 seconds on this page’s render. Code block 30 finds the plan’s production, inventory and switchover costs as Code block 22 does for Ex. 3, and Code block 31 adds them and checks the total against the problem’s published solution:
+Here the solve takes about a minute, 59 seconds on this page’s render. Code block 30 finds the plan’s production, inventory and switchover costs as Code block 22 does for Ex. 3, and Code block 31 adds them and checks the total against the problem’s published solution:
 
 ```julia
 # Code block 30: the production, inventory and switchover costs
@@ -2049,7 +2050,7 @@ Herbert A. Simon, “The Architecture of Complexity,” Proceedings of the Ameri
 
 -
 
-J. P. Womack, D. T. Jones and D. Roos, The Machine That Changed the World, Rawson Associates, 1990, ch. 3: in 1950 Eiji Toyoda spent three months at the Rouge, then the largest and most efficient factory in the world, when Toyota had produced 2,685 cars in all and the Rouge was producing 7,000 a day.
+Toyota Motor Corporation, 75 Years of Toyota, Part 1, Ch. 2, Sec. 7, Item 1, “Training at the Ford Motor Company and Observation of American Machinery Manufacturers”: Eiji Toyoda, recalling his training at Ford, put Ford’s daily output at 8,000 units to Toyota’s 40, and the difference between the two companies mainly in the scale of production.
 
 -
 
@@ -2057,7 +2058,7 @@ Associated Press, “U.S. auto factories cutting back on summer downtime,” May
 
 -
 
-S. Shingo, A Revolution in Manufacturing: The SMED System, Productivity Press, 1985, the method by which the time to change the dies of a 1,000-ton press at Toyota went from four hours to three minutes.
+A. Smalley, “A Brief History of Set-Up Reduction,” Art of Lean, 2006: in Toyota’s Honsha press shop, a changeover took one to four hours on each machine in the late 1950s, and the average was reduced to 15 minutes in 1962 and to 3 minutes in 1971.
 
 -
 
@@ -2065,4 +2066,4 @@ A setup and a switchover are, in the lot-sizing literature, a set-up and a start
 
 -
 
-S. Shingo, A Revolution in Manufacturing: The SMED System, Productivity Press, 1985, the method of single-minute exchange of die, whose first step is to separate a setup’s internal operations, which can be done only with the machine stopped, from its external ones, which can be done while it runs, and to move all that can be moved from the first to the second.
+S. Shingo, A Revolution in Manufacturing: The SMED System, Productivity Press, 1985, as summarized by A. C. Moreira and G. C. S. Pais, “Single minute exchange of die: a case study implementation,” Journal of Technology Management & Innovation 6(1), 2011, 129-146, p. 134: the method classifies a setup’s operations as internal, those that can be done only with the machine stopped, or external, those that can be done while it runs, and then converts internal operations into external ones.
