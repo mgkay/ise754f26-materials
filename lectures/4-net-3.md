@@ -1420,7 +1420,7 @@ $$
 Code block 30 computes the same three costs from the plan, and checks them against the answers published with the problem, the Landmark check of Lecture 1.2:
 
 ```julia
-# Code block 30: Ex. 5(b)'s plan, costed
+# Code block 30: Ex. 5(b)'s plan, and its costs
 X = [20 4 40; 25 0 37]              # production at stage i in month j
 db = [22, 3, 33]                    # demand in month j
 Y = zeros(2, 4)                     # inventory, by flow balance
@@ -1431,7 +1431,7 @@ for j in 1:3
 end
 @assert Y[:, 4] == [7, 4]           # the final inventories required
 cⁱb = cumsum(cᵖ + cˢ./u)*0.05       # monthly carrying rate 0.05
-Z = X .> 0                          # a setup wherever there is production
+Z = X .> 0                          # a setup wherever production > 0
 VPC, IC, SC = sum(cᵖ.*X), sum(cⁱb.*Y[:, 2:end]), sum(cˢ.*Z)
 @assert all((VPC, IC, SC) .≈ (62400, 673.75, 54000))  # published
 @show VPC
@@ -1904,7 +1904,7 @@ where
 
 By Eq. 6, with materials on hand ($\delta = 0$), a month-long outage at 90% utilization needs a horizon of 10 months, and at 95%, 20; a lead time adds to each. The horizon grows as $1/(1-u)$, the factor by which cycle time grows in Lecture 1.3’s VUT equation (Eq. 6 in Lecture 1.3): a busy resource has little idle capacity to build ahead with, which is one reason a month of maintenance can call for years of planning; the other is that the plan has to span the maintenance cycle, so that it can determine when each plant is down.
 
-The lead time is counted once in Eq. 6, not once for each period of the build-ahead, because the materials for a build-ahead are not all ordered at one time and left to sit for two or three periods; they are ordered each period, so a two-period lead time overlaps each period of the build-ahead.
+The lead time is counted once in Eq. 6, not once for each period of the build-ahead, because the materials for a build-ahead are not all ordered at one time and left to sit for two or three periods; they are ordered each period, so a two-period lead time overlaps each period of the build-ahead. With more than one outage, every plan still looks the same number of periods ahead, so the horizon is the longest that any one outage’s count gives; where one outage falls within another’s build-ahead, the two are counted back together, which makes the horizon longer than either count alone.
 
 The plan is re-solved every period, so the numbers get less certain the further out they are, and are more subject to change. Each run can also change what was planned for the coming periods, which unsettles everyone who works to the plan; companies damp this by freezing the nearest periods of the plan, at some cost.13
 
