@@ -135,7 +135,7 @@ $h$ = funds + storage + obsolescence, and $16\% \approx 5\%$ funds $+\ 6\%$ stor
 
 Table 3: Inventory carrying rate by product type.
 
-| Product | $h$ |
+| Product | $\boldsymbol{h}$ |
 |---|---|
 | Low-value product (construction) | 5–10% |
 | General durable manufactured goods | 25–30% |

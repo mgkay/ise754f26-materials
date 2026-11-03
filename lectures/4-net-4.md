@@ -1181,7 +1181,7 @@ The tricky part is how to model the switchover constraints. They use the $z$ var
 
 Table 5: Setup indicators $z_{ijk}$ and switchover indicators $v_{ijk}$ of one stage $i$ for products $k = 1, 2$ over seven periods.
 
-| Period $j$ | $z_{ij1}$ | $z_{ij2}$ | $v_{ij1}$ | $v_{ij2}$ |
+| Period $\boldsymbol{j}$ | $\boldsymbol{z_{ij1}}$ | $\boldsymbol{z_{ij2}}$ | $\boldsymbol{v_{ij1}}$ | $\boldsymbol{v_{ij2}}$ |
 |---|---|---|---|---|
 | 1 | 0 | 0 | 0 | 0 |
 | 2 | 1 | 0 | 1 | 0 |
@@ -1221,7 +1221,7 @@ Table 6 lists each of the eight combinations by what it means for the stage:
 
 Table 6: The eight combinations of row (g) for one stage and product: the paid switch, a switch with its switchover cost, is the one the row must allow; the unpaid switch, a switch with none, is the one it must rule out, its left side 1; and an extra cost, a switchover paid with no switch, is feasible but never at least cost.
 
-| $v_j$ | $z_j$ | $z_{j-1}$ | $-v_j + z_j - z_{j-1}$ | Case |
+| $\boldsymbol{v_j}$ | $\boldsymbol{z_j}$ | $\boldsymbol{z_{j-1}}$ | $\boldsymbol{-v_j + z_j - z_{j-1}}$ | Case |
 |---|---|---|---|---|
 | 0 | 0 | 0 | 0 | no setup |
 | 0 | 0 | 1 | $-1$ | setup ends |
@@ -1781,10 +1781,10 @@ secs = @elapsed r5 = prodinv_switch(cᵖ, cʷ, cⁱ, d, u, z⁰, LBʸ, UBʸ)
 
 ```text
 r5.TC = 149745.64188911687
-round(Int, secs) = 59
+round(Int, secs) = 79
 ```
 
-Here the solve takes about a minute, 59 seconds on this page’s render. Code block 30 finds the plan’s production, inventory and switchover costs as Code block 22 does for Ex. 3, and Code block 31 adds them and checks the total against the problem’s published solution:
+Here the solve takes about a minute, 79 seconds on this page’s render. Code block 30 finds the plan’s production, inventory and switchover costs as Code block 22 does for Ex. 3, and Code block 31 adds them and checks the total against the problem’s published solution:
 
 ```julia
 # Code block 30: the production, inventory and switchover costs

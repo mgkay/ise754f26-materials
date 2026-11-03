@@ -636,7 +636,7 @@ Figure 3: Inter-shipment inventory fraction alternatives. Constant production ho
 
 Table 2: Inventory fraction $\alpha$ for the four production–consumption regimes.
 
-| Regime | $\alpha_O$ | $\alpha_D$ | $\alpha$ |
+| Regime | $\boldsymbol{\alpha_O}$ | $\boldsymbol{\alpha_D}$ | $\boldsymbol{\alpha}$ |
 |---|---|---|---|
 | Constant production / constant consumption | ½ | ½ | 1 |
 | Constant production / immediate consumption | ½ | 0 | ½ |

@@ -389,7 +389,7 @@ Logistics Costs and U.S. Gross Domestic Product, Federal Highway Administration,
 
 -
 
-CSCMP’s 33rd Annual State of Logistics Report, as reported in John Schulz, “State of Logistics 2022: Out of sync,” Logistics Management, 2022 https://www.logisticsmgmt.com/article/state_of_logistics_out_of_sync.
+CSCMP’s 33rd Annual State of Logistics Report, as reported in Schulz, “State of Logistics 2022.”
 
 -
 
@@ -509,7 +509,7 @@ Tag and reader photographs, Wikimedia Commons, http://en.wikipedia.org/wiki/File
 
 -
 
-NAIOP Research Foundation, The New Age of Trade: The Americas. The foundation’s copy at naiop.org/foundation/newageoftrade.pdf no longer resolves, checked 18 September 2026.
+NAIOP Research Foundation, The New Age of Trade.
 
 -
 
