@@ -287,7 +287,7 @@ Table 1: Throughput-feasible capacity plan for the four-workstation line.
 
 NoteA yield paradox: lower yield, shorter cycle time
 
-A counterintuitive consequence follows. Lowering a station’s yield raises the rate of units that must enter it, $r_a = r_d / y$. With work in process held fixed, Little’s Law confirms that the cycle time then falls rather than rises. The gain is not free: the higher input rate is met only by adding capacity, on the order of a third more at a yield of 0.75.
+A counterintuitive consequence follows. Lowering a station’s yield raises the rate of units that must enter it, $r_a = r_d / y$. With work in process held fixed, Little’s Law confirms that the cycle time then falls rather than rises. The gain is not free: the higher input rate is handled only by adding capacity, on the order of a third more at a yield of 0.75.
 
 ## 6. Level 2: Cycle-time estimation
 

@@ -1031,7 +1031,7 @@ Table 2: The nine validation checks, each with the memorable case worked out in 
 |---|---|---|---|
 | Screens | Units | Do the units work out? | Pizza delivery |
 | | Bounds | Does it break a hard limit? | Bathtub |
-| | Assumptions | Are the preconditions met here? | Spherical cow |
+| | Assumptions | Are the preconditions satisfied here? | Spherical cow |
 | Expectations | Prior | Does it land inside the estimate committed before the run? | Guesstimate |
 | | Nudge | Does the answer move the right way? | Hotel shower |
 | | Landmark | Does it hit a case already known? | Home to home |
@@ -1047,7 +1047,7 @@ Units. Do the units work out? Miles divided by miles-per-hour must come out in h
 
 Bounds. Does the answer break a hard limit? A bathtub whose faucet runs faster than its drain will overflow, and no cleverness about how the water is poured changes that. A probability above one, a trailer loaded past its rated capacity, a negative waiting time: an answer on the wrong side of a hard limit is wrong regardless of the reasoning that produced it. (Lecture 1.3 turns this bathtub into the utilization condition of a queue.)
 
-Assumptions. Are the formula’s preconditions met by this instance? In the old physics joke, a theorist solves a dairy farm’s troubles beginning “assume a spherical cow in a vacuum”: the model is exact, and useless, because its fine print fits no actual cow. Every formula carries fine print the same way, and the check is to read it against the situation at hand before trusting the number. The models of Lecture 1.1 state their assumptions for exactly this reason.
+Assumptions. Are the formula’s preconditions satisfied by this instance? In the old physics joke, a theorist solves a dairy farm’s troubles beginning “assume a spherical cow in a vacuum”: the model is exact, and useless, because its fine print fits no actual cow. Every formula carries fine print the same way, and the check is to read it against the situation at hand before trusting the number. The models of Lecture 1.1 state their assumptions for exactly this reason.
 
 #### Expectations
 
@@ -1202,7 +1202,7 @@ That is worth one deliberate look, because it is the same artifact the rule asks
 
 ### 3.4 The tooling is a result too
 
-The nine checks were introduced on computed results: a number, a table, a plot. An LLM-based assistant of the kind Section 2 described, working middle-to-middle, produces a second kind of output that is easier to overlook: tooling, the general name for the machinery of the work, everything that does something, as distinct from the answers it produces. A script is one type of tooling, the type already met in Section 3.3: a program written to carry out an analysis. The category is wider than scripts, though. The Project.toml that pins the course packages (Section 1.9) is tooling that computes nothing at all; it configures. And as a project grows past one sitting, the assistant writes tooling on its own initiative: small helper programs that rename files, check formats, or keep one file synchronized with another, so that a chore is done by machinery instead of memory. All of it comes from the same next-token engine as the prose and the Julia, it is wrong in the same fluent, confident ways (Section 2.9), and it deserves the same nine checks, with a sharper motivation: a wrong number is wrong once, while a wrong tool is wrong on every future run, silently, wherever it is reused.
+The nine checks were introduced on computed results: a number, a table, a plot. An LLM-based assistant of the kind Section 2 described, working middle-to-middle, produces a second kind of output that is easier to overlook: tooling, the general name for the machinery of the work, everything that does something, as distinct from the answers it produces. A script is one type of tooling, the type already introduced in Section 3.3: a program written to carry out an analysis. The category is wider than scripts, though. The Project.toml that pins the course packages (Section 1.9) is tooling that computes nothing at all; it configures. And as a project grows past one sitting, the assistant writes tooling on its own initiative: small helper programs that rename files, check formats, or keep one file synchronized with another, so that a chore is done by machinery instead of memory. All of it comes from the same next-token engine as the prose and the Julia, it is wrong in the same fluent, confident ways (Section 2.9), and it deserves the same nine checks, with a sharper motivation: a wrong number is wrong once, while a wrong tool is wrong on every future run, silently, wherever it is reused.
 
 Tooling defects are the quietest of the quiet errors of Section 3.1, because a broken tool usually still reports success. The three examples that follow are real, found in the AI-assisted workflow that builds this course’s materials, and each begins with the one piece of background it needs.
 

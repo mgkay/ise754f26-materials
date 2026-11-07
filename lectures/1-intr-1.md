@@ -135,7 +135,7 @@ solve for:
 (c) whether each product is in production in each period, yes or no.
 
 subject to:
-(a) demand: each product’s demand is met every period;
+(a) demand: each product’s demand is satisfied every period;
 (b) capacity: production stays within capacity every period;
 (c) startup: a product incurs a startup cost when its production begins, not in every period it continues.
 
@@ -505,7 +505,7 @@ Success: the last step runs a check of eleven things and prints READY, saving th
 
 READY is the smoke test of the whole chain: the tools are installed, the pinned Julia runs, and the course’s packages load. It is also the first instance of something this course returns to constantly, which is confirming a result mechanically rather than trusting that it looks right.
 
-If a step fails, paste the error into Claude Code and let it fix it. Recovering with the agent is the course’s method, met a week early, and the check names which of the eleven failed so there is something specific to paste.
+If a step fails, paste the error into Claude Code and let it fix it. Recovering with the agent is the course’s method, used a week early, and the check names which of the eleven failed so there is something specific to paste.
 
 NoteWhich Anthropic account? Pro, Max, Team, Console
 

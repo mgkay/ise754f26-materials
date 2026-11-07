@@ -1609,7 +1609,7 @@ Common codes used in logistics include the following:
 
 - UNSPSC (United Nations Standard Products and Services Code). A hierarchical 8-digit code that can be used to classify all products and services at the segment, family, class, and commodity levels.
 - GPC (Global Product Catalog). A directory of product attributes that allows independent data repositories to be synchronized for global, multi-industry supply chain messaging and reporting.
-- GTIN (Global Trade Item Number). All-numeric system for assigning globally unique codes to trade items (products and services). GTIN includes UPC, ISBN, and NDC.
+- GTIN (Global Trade Item Number). All-numeric system for assigning globally unique codes to trade items (products and services). GTIN includes the next three codes.
 - UPC (Universal Product Code). The standard bar code for retail items in North America.
 - ISBN (International Standard Book Numbering). An international standard code for books.
 - NDC (National Drug Code). A code maintained by the FDA for identifying prescription drugs and some over the counter drugs.

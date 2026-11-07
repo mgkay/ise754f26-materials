@@ -817,7 +817,7 @@ The first evidence that it may be answerable is already on the page. Fig. 4 scat
 
 Lecture 1.3 Sec. 5 turns that from an impression into a test. A plant’s nameplate rate is optimistic: the throughput-feasible minimum inflates the arrival rate by yield loss and the process time by availability, so a site that looks adequate against its rated output can still be infeasible. Running it against the table above produces something more useful than a yes or a no. It produces pointed questions: whether the plant asked to more than double its current output can be taken there at all, and what it would cost. Those are questions a client can answer in a phone call, which a request for all their customer data is not.
 
-Where the constraint genuinely cannot be met, the answer is not to re-run the UFL and hope. It is to say what capacity each site may have and let the model respect it, which is a mixed-integer formulation and is Lecture 2.7.
+Where the constraint genuinely cannot be satisfied, the answer is not to re-run the UFL and hope. It is to say what capacity each site may have and let the model respect it, which is a mixed-integer formulation and is Lecture 2.7.
 
 The second question has an answer that costs surprisingly little. A national Popco needs no new method: take every three-digit ZIP in the continental United States as a candidate site, keep the western plants among the candidates, let each candidate’s market be the ZIPs within 200 miles of it, carry the same fixed cost, and solve the same UFL. The rate transfers on the assumption that a firm whose fleet, product and service pattern are unchanged buys miles at about the same rate in a new region, which is the transfer case of Sec. 2.
 

@@ -25,7 +25,7 @@ Companion script
 
 ## 1. Introduction to MILP
 
-What computer technology has had the biggest impact on industry since 1990? Data science and analytics; AI, meaning visual and voice recognition, ChatGPT and the rest; or MILP solver improvements?
+What computer technology has had the biggest impact on industry since 1990? Data science and analytics; AI, meaning visual and voice recognition, ChatGPT and the rest; or mixed-integer linear program (MILP) solver improvements?
 
 It is the third, and its biggest impact has been on tactical decisions: production planning and scheduling.
 
@@ -656,7 +656,7 @@ Solving report
   Primal bound      30
   Dual bound        30
   Gap               0% (tolerance: 0.01%)
-  P-D integral      0.000219051130525
+  P-D integral      0.000427668056791
   Solution status   feasible
                     30 (objective)
                     0 (bound viol.)
@@ -699,9 +699,9 @@ The figures for the earlier window are larger and they are a different study. Fr
 
 Reading the two windows together is what makes the point sharper rather than weaker. Single-thread hardware gains flattened through the 2010s while algorithmic gains did not, so the claim that algorithm improvement has outrun computer speed over the period is more true now than when it was first made.8
 
-Table 2 is the field a model is handed to. JuMP supports many more than these;9 what the table gives is the few that are met in practice.
+Table 2 is the field a model is handed to. JuMP supports many more than these;9 what the table gives is the few that are used in practice.
 
-Table 2: The commercial and open-source MIP solvers most often met.
+Table 2: The commercial and open-source MIP solvers most often used.
 
 | Solver | Kind | Note |
 |---|---|---|
@@ -901,7 +901,7 @@ Sites 1 and 4 at $TC =$ 600
 
 That is the same pair of sites, and the same total cost, that the hybrid heuristic of Lecture 2.4 reached on this data by a wholly different route, and the agreement of two independent procedures is a Triangulate check on both.
 
-It is also more than that, and the more is what this section is for. Lecture 2.4 could say that its heuristics had stopped improving; it could not say that nothing better existed, because a heuristic has no way to know. The MILP does: branch and bound terminates by proving that the bound and the incumbent have met, so 600 is not merely the best answer found but the best answer there is.
+It is also more than that, and the more is what this section is for. Lecture 2.4 could say that its heuristics had stopped improving; it could not say that nothing better existed, because a heuristic has no way to know. The MILP does: branch and bound terminates by proving that the bound and the incumbent have converged, so 600 is not merely the best answer found but the best answer there is.
 
 Example 3: Popco’s plants to optimality
 
@@ -1639,9 +1639,9 @@ prt(grow)
    objects  binaries  bins  seconds
 ───────────────────────────────────
 1       20       420     6     0.00
-2       50     2,550    15     0.25
-3      100    10,100    31     1.31
-4      200    40,200    61    11.08
+2       50     2,550    15     0.20
+3      100    10,100    31     1.09
+4      200    40,200    61     9.57
 ```
 
 Ten times the objects is a hundred times the variables and rather more than a hundred times the work. Sixty seconds covers two hundred objects several times over and three hundred comfortably, and stops somewhere past that rather than running all afternoon on an instance nobody meant to pose. A limit that is never reached costs nothing, which is the argument for always setting one.
@@ -1666,15 +1666,15 @@ prt(loose)
 ```text
     gap  bins  seconds
 ──────────────────────
-  exact    61    10.13
-     1%    61     9.63
-     2%    62     6.15
-     5%    62     6.18
+  exact    61     9.30
+     1%    61     9.07
+     2%    62     5.95
+     5%    62     5.77
 ```
 
 NoteReading a solve that stopped early
 
-Whichever setting ends the search, the model still holds an answer and the way to tell what kind of answer it is does not change. termination_status(bp) returns OPTIMAL when the search finished, TIME_LIMIT when the clock ran out, and OBJECTIVE_LIMIT when a tolerance was met; relative_gap(bp) says how far from proven the incumbent is, and has_values(bp) says whether there is an incumbent at all, which on a hard instance in a short window there may not be. An answer returned at the time limit is a feasible packing and is usually a good one; what it is not is a proof, and the gap is the size of what is unproven.
+Whichever setting ends the search, the model still holds an answer and the way to tell what kind of answer it is does not change. termination_status(bp) returns OPTIMAL when the search finished, TIME_LIMIT when the clock ran out, and OBJECTIVE_LIMIT when a tolerance was reached; relative_gap(bp) says how far from proven the incumbent is, and has_values(bp) says whether there is an incumbent at all, which on a hard instance in a short window there may not be. An answer returned at the time limit is a feasible packing and is usually a good one; what it is not is a proof, and the gap is the size of what is unproven.
 
 Where a heuristic earns its place is the other way round from set covering. Heuristics are only needed when it is not feasible to otherwise find an optimal solution. Where realistic-size instances of a problem can be formulated as a MILP and easily solved, for example the set covering problem, there is no need to consider the use of heuristics; but in the case of bin packing, even relatively small instances of size 200 were difficult BIPs to solve and thus the use of a heuristic is helpful. Also, in some cases like bin packing, the heuristic solution can be used as an initial incumbent solution to improve the effectiveness of the BIP.
 
