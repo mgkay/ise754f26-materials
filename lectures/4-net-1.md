@@ -1796,7 +1796,7 @@ Table 4: OSRM’s routes from High Point to Goldsboro, fastest first, as the req
 
 Fig. 17 draws the two routes found here. The 2018 figures were computed on older roads, before I-42 east of Raleigh, so they are history rather than a check. A current landmark is OSRM, an open-source router running on OpenStreetMap data (© OpenStreetMap contributors), asked on 2026-10-09 by Code block 55 for its fastest route, the first row of Table 4: 138.36 mi in 3 h 0 min, by US 421 and US 64 and then around Raleigh on NC 540 and I-42. That follows the corridor of the shortest route of Code block 53, 137.6 mi, which FAF5’s times put at 2 h 55 min, within 5 min of OSRM: the Landmark check of Lecture 1.2. The two disagree about which route is fastest, because the answer turns on the speeds assumed: on FAF5’s free-flow times the longer route by the Interstates saves 11 min.9
 
-Lecture 2.7, Sec. 3, anticipated an application of set covering, Model 4 in Lecture 2.7, to a road network: the fewest intersections such that every intersection is within a stated reach of a selected one, the selected intersections being truck terminals. Locating transshipment terminals adds one condition, that each terminal lie within a day’s drive of another so that a driver can carry freight between them, and with that condition in the formulation from the start the problem is Model 2, a special case of set covering.
+Lecture 2.7, Sec. 3, anticipated an application of set covering, Model 4 in Lecture 2.7, to a road network: the fewest intersections such that every intersection is within a stated reach of a selected one, the selected intersections being truck terminals. Locating transshipment terminals adds one condition, that each terminal lie within a day’s drive of another so that a driver can carry freight between them, and with that condition in the formulation from the start the problem is Model 2, a restriction of set covering.
 
 minimize: number of terminals
 
@@ -1813,7 +1813,7 @@ assumptions:
 
 Model 2: Transshipment terminals
 
-Special case of Model 4: Set covering in Lecture 2.7
+Restriction of Model 4: Set covering in Lecture 2.7
 
 Model 2 formulation: Transshipment terminals
 

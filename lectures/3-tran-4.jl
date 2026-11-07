@@ -269,7 +269,7 @@ weightline(w, nm, role)
 # Classify the DC by comparing its inbound and outbound weights,
 # physical and monetary.
 # Code block 7: tons, truckloads and weights in and out of the DC
-idxin, idxout = 1:2, 3:5           # suppliers in, customers out
+idxin, idxout = 1:2, 3:5                    # suppliers in, customers out
 @show sum(sh.f[idxin]), sum(sh.f[idxout])   # ton/yr
 @show sum(n[idxin]), sum(n[idxout])         # TL/yr
 @show sum(w[idxin]), sum(w[idxout])         # $/mi-yr
@@ -532,7 +532,7 @@ CXY = [getindex.(C, :LON) getindex.(C, :LAT)]
 # The DC
 DCcity = "Memphis"
 DC = loc2lonlat(DCcity; state = :TN)
-DCXY = [DC.LON DC.LAT]
+DCXY = [DC.LON DC.LAT];
 # Code block 19: the suppliers, the DC and the customers
 using GeoMakie
 

@@ -46,7 +46,7 @@ alts = [  # label, stops, first stop (x, y), stop offsets, empty legs
     ("(f) Multiple routes", "PDPDPD", 0.43, -4.51,
      [0, 3.0, 4.75, 5.8, 7.1, 9.0], [2, 4])]
 r1 = 0.26                                  # stop radius, data units
-fig = Figure(size = (687, 372))
+fig = Figure(size = (687, 379))
 ax = Axis(fig[1, 1]; aspect = DataAspect())
 hidedecorations!(ax); hidespines!(ax)
 for (lab, s, x0, y0, xs, empty) in alts
@@ -80,7 +80,7 @@ lines!(ax, [xe[1], xe[1], xe[2], xe[2]], [-4.36, -4.28, -4.28, -4.36];
        color = bluec, linewidth = 1.0)
 text!(ax, sum(xe) / 2, -4.06; text = "empty", color = bluec,
       fontsize = 12, align = (:center, :center))
-xlims!(ax, -1.25, 9.75); ylims!(ax, -5.2, 0.4)
+xlims!(ax, -1.25, 9.75); ylims!(ax, -5.3, 0.4)
 fig
 ```
 
@@ -130,7 +130,7 @@ Figure 3: A tour of six nodes, starting and ending at the depot, node 1.
 
 Table 1: The tour of Fig. 3 as a node sequence $\pi$: each position $k$ in the sequence, above, and the node $\pi_k$ visited there, below. Positions 1 to 6 are a permutation of the six nodes, and position 7 is its start node again.
 
-| $k$ | 1 | 2 | 3 | 4 | 5 | 6 | 7 |
+| $\boldsymbol{k}$ | 1 | 2 | 3 | 4 | 5 | 6 | 7 |
 |---|---|---|---|---|---|---|---|
 | $\pi_k$ | 1 | 2 | 3 | 4 | 5 | 6 | 1 |
 
@@ -153,9 +153,9 @@ A delivery van’s day is a TSP of that size. The 6,112 Amazon routes in the tra
 
 The TSP is the basic routing problem, and in vehicle routing problems it is basically just a subroutine. What makes it simple and easy to solve is that it is unconstrained: any permutation is a feasible route. All that is done is to take a permutation of the integers 1 through 6 and make it into a tour, assuming a return to wherever it starts, by repeating its first node, the depot 1, at the end. The tour can also be thought of in arcs rather than nodes, and that is the better way, since it is how the problem is formulated, in Sec. 2, and how a tour is changed, by moving arcs around, in Sec. 3.
 
-Location sequence, not route. A TSP’s tour is a location sequence, the order in which its nodes are visited. Route is kept for the multi-stop routes of Lecture 5.2, whose shipments each have their own origin and destination.
+Location sequence, not route. A TSP’s tour is a location sequence, the order in which its nodes are visited. Route is kept for the pickup and delivery routes of Lecture 5.2, whose shipments each have their own origin and destination.
 
-A tour’s sequence of nodes is called a location sequence rather than a route, although route might seem the more appropriate term. The reason is that the multi-stop routes of Lecture 5.2, whose shipments each have their own origin and destination, distinguish a route from a location sequence, and the two are not the same thing; so for the TSP the term is location sequence, for consistency with that later discussion. The cost of a tour is then the sum of the costs of the segments of its location sequence.
+A tour’s sequence of nodes is called a location sequence rather than a route, although route might seem the more appropriate term. The reason is that the pickup and delivery routes of Lecture 5.2, whose shipments each have their own origin and destination, distinguish a route from a location sequence, and the two are not the same thing; so for the TSP the term is location sequence, for consistency with that later discussion. The cost of a tour is then the sum of the costs of the segments of its location sequence.
 
 When the arc costs are asymmetric, there are only best-known solutions for large $n$, among the $(n - 1)!$ tours of Eq. 2. When they are symmetric, $c_{ij} = c_{ji}$, the count is halved (Eq. 3), and the TSP is solved to optimality using binary integer programming (BIP), the subject of Sec. 2. In the Euclidean case, the arc costs are the distances between nodes, as in Fig. 4.
 
@@ -220,7 +220,7 @@ Figure 4: A tour whose arcs cross (black), and the arcs that replace the crossin
 
 Even a problem with $n = 13$ already has about half a billion solutions (Eq. 2), so no direct approach that looks at all of them is feasible. The reason for $n - 1$ instead of $n$ is that the starting node is arbitrary: node 1 or any of the others could be picked to start, so $n!$ can be divided by $n$, leaving $(n - 1)!$. Where the distances are symmetric, the count reduces to $(n - 1)!/2$ (Eq. 3). Finally, where the arcs are Euclidean, the distances modeled as Euclidean or great circle distances between points, there is a nice heuristic for looking at routing solutions in many situations: whenever a route has two arcs crossing each other, as in Fig. 4, it cannot be optimal. It can always be improved by getting rid of the crossover.
 
-The TSP is stated as a model in Model 1. Its mathematical formulation, Eq. 4, takes the cheapest of the $(n - 1)!$ tours of Eq. 1, each a permutation of the nodes other than the depot. Ex. 1 does exactly that for ten cities, by brute force. Sec. 2 formulates it as a math program, a special case of the linear assignment problem, Model 1 in Lecture 4.2, with one constraint added, and Sec. 3 solves it by improving a tour, searching the permutations one change at a time.
+The TSP is stated as a model in Model 1. Its mathematical formulation, Eq. 4, takes the cheapest of the $(n - 1)!$ tours of Eq. 1, each a permutation of the nodes other than the depot. Ex. 1 does exactly that for ten cities, by brute force. Sec. 2 formulates it as a math program, a restriction of the linear assignment problem, Model 1 in Lecture 4.2, with one constraint added, and Sec. 3 solves it by improving a tour, searching the permutations one change at a time.
 
 minimize: total cost of a tour through every node
 
@@ -238,7 +238,7 @@ assumptions:
 
 Model 1: Traveling salesman problem
 
-Special case of Model 1: Linear assignment in Lecture 4.2
+Restriction of Model 1: Linear assignment in Lecture 4.2
 
 Model 1 formulation: Mathematical formulation
 

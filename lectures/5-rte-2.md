@@ -2043,104 +2043,22 @@ Table 4: The constructions of route sequencing and what distinguishes them, each
 | randomized insertion | no | anywhere | offline | multiple |
 | random routes | no | — | offline | multiple |
 
-NotePeriodic multi-stop routing
-
-The routes of Secs. 1 to 3 are built once, for the shipments at hand. When the same shipments repeat, periodically, the periodic shipments of Lecture 3.3 carry over to a route, with one difference.
-
-The more general situation than routing from a single depot is a route of pickups and deliveries, built in particular to minimize total logistics cost. That goes back to the periodic shipments of Lecture 3.3: with several shipments on a truck, it was convenient to treat them as one aggregate shipment. The one difficulty with such a route is what is on board. The first route of Fig. 15 picks up shipments 1, 2 and 3 and then drops off 3, 2 and 1, and the numbers beneath each segment are the shipments on board over it: after the first pickup just shipment 1, after the second 1 and 2, then all three, and then back to two and to one. There is just one peak, where all three shipments are on board, which is called a single load mix. The second route picks up 1 and 2, drops off 1, leaving 2 on board, picks up 3, leaving 2 and 3, and then has just 3 on board: there are two places with different mixes of loads, a first and a second load mix. With two load mixes, capacity cannot be looked at for all of the shipments as one aggregate. A different mix of shipments is on board over each, so the truck could be at capacity on one load mix and, because the shipments differ, at capacity a second time on the other, where all of the shipments together would be well past its capacity. So what has to be determined is which load mix reaches the maximum capacity, since the two are unlikely to be at capacity at the same time: the sizes are set to leave the most capacity available on whichever load mix has the least.
-
-Show the code that draws this figure
-
-```julia
-# Code block 49: the load mixes of two routes
-let  # set in the lecture math's serif, as the insertion positions are
-    fig = Figure(size = (380, 250), figure_padding = 4,
-                 fonts = (; regular = Makie.MathTeXEngine.texfont()))
-    ax = Axis(fig[1, 1]; aspect = DataAspect())
-    hidedecorations!(ax); hidespines!(ax)
-    dy = 0.62  # a row's height
-    # a route's stops along a rule, beneath each segment the shipments on
-    # board, and a box around each load mix: a loading followed by an
-    # unloading, where what is on board peaks
-    function loadmix!(r, y0, cap)
-        n, ld = length(r), isorigin(r)
-        text!(ax, 2.0 .* (0:n-1), fill(y0, n); text = string.(r),
-              fontsize = 16, color = ink, align = (:center, :center))
-        lines!(ax, [-0.4, 2n - 1.6], [y0 - 0.45, y0 - 0.45]; color = ink,
-               linewidth = 1)
-        onboard(k) = sort(setdiff(r[1:k][ld[1:k]], r[1:k][.!ld[1:k]]))
-        depth = maximum(length(onboard(k)) for k in 1:n-1)
-        for k in 1:n-1                     # the segment after stop k
-            s = onboard(k)
-            ys = y0 - 0.95 .- dy .* (0:length(s)-1)
-            text!(ax, fill(2k - 1.0, length(s)), ys; text = string.(s),
-                  fontsize = 16, color = ink, align = (:center, :center))
-            if ld[k] && !ld[k+1]           # a load mix, boxed
-                poly!(ax, Rect(2k - 1.42, ys[end] - 0.36, 0.84,
-                               y0 - 0.2 - ys[end] + 0.36);
-                      color = :transparent, strokecolor = bluec,
-                      strokewidth = 1.5)
-            end
-        end
-        yb = y0 - 0.95 - dy * (depth - 1) - 0.5
-        text!(ax, n - 1.0, yb; text = cap, fontsize = 15, color = ink,
-              align = (:center, :top))     # its subcaption
-        return yb
-    end
-    yb = loadmix!([1, 2, 3, 3, 2, 1], 0.0, "(a) A single load mix")
-    yb = loadmix!([1, 2, 1, 3, 2, 3], yb - 1.3,
-                  "(b) A first and a second load mix")
-    xlims!(ax, -0.6, 10.6); ylims!(ax, yb - 0.6, 0.45)
-    fig
-end
-```
-
-Figure 15: Load mixes. Beneath each segment of a route are the shipments on board, and a box marks each load mix, where a loading is followed by an unloading: (a) the route $(1, 2, 3, 3, 2, 1)$ has a single load mix; (b) the route $(1, 2, 1, 3, 2, 3)$ has a first and a second load mix.
-
-Show the code that draws this figure
-
-```julia
-# Code block 50: the single load-mix instance on the map
-shM = DataFrame(b = [1, 3, 2], e = [5, 4, 6])  # its three shipments
-fig, ax = makemap(x, y; xexpand=0.3)
-resize!(fig, 600, 520)
-lines!(ax, sh2ln(shM, x), sh2ln(shM, y), color=:red)
-for (b, e) in zip(shM.b, shM.e)  # each shipment's direction
-    legarrows!(ax, x[[b, e]], y[[b, e]]; color=:red, onmap=true)
-end
-loc = rte2loc([1, 2, 3, 1, 2, 3], shM)
-lines!(ax, x[loc], y[loc], color=:green)
-legarrows!(ax, x[loc], y[loc]; color=:green, onmap=true, at=0.4)
-scatter!(ax, x, y)
-text!(ax, x, y, text=citylabel.(eachindex(City), Ref(shM));
-      align=lalign, offset=loff)  # placed as in Fig. 2
-fig
-```
-
-Figure 16: The single load-mix instance through the cities of Ex. 2: shipment 1 from Raleigh to Savannah, 2 from Asheville to Jacksonville and 3 from Athens to Gainesville, shipped independently (red) and consolidated on the route $(1, 2, 3, 1, 2, 3)$ (green), which has all three on board from Athens to Savannah. The two load-mix instance is the route of Fig. 4.
-
-In the single load-mix instance of Fig. 16, the route starts in Raleigh; drawn this way, a route of a few shipments can be read on the map, though a more complicated one gets hard to see. The route picks up shipment 1 in Raleigh, shipment 2 in Asheville and shipment 3 in Athens, Georgia, and then drops off shipment 1 in Savannah, Georgia, where nothing is picked up, shipment 2 in Jacksonville, and shipment 3 last, in Gainesville. That is how a route is read: the sequence of pickups and deliveries on the map. In the two load-mix instance, the route of Fig. 4, there is again a pickup in Raleigh and a pickup of shipment 2 in Asheville, but shipment 1 is then dropped off in Athens, and between Athens and Savannah there are no pickups or deliveries. In Savannah shipment 3 is picked up, shipment 2 is dropped off in Jacksonville, and shipment 3 in Gainesville: two different load mixes occur on this route, where the other has just one.
-
-The two load-mix instance is Ex. 2’s three shipments on the route $(1, 2, 1, 3, 2, 3)$ of Ex. 3(b). What carries over from Lecture 3.3 is the aggregate shipment of its Sec. 5.2, evaluated by the minimum-TLC model of Model 1 in Lecture 3.3, and what is new is the load mix:
-
-The details need not all be understood: the calculation is basically an application of what Lecture 3.3 did for two products shipped together as a single aggregate shipment, extended to a route, and the only difference is that a route may have different load mixes, which have to be incorporated. First, the optimal size of the aggregate shipment is calculated directly from the formula that minimizes total logistics cost, with the aggregate annual demand, the aggregate value, a weighted average of the individual values per ton, and the inventory fraction $\alpha$, all of which carry over from Lecture 3.3; the truck’s capacity is not yet considered, and only the minimum charge is included. That size is then broken into the individual shipment sizes in proportion to each shipment’s share of the aggregate demand. Next, each load mix of the route has its own density, since what matters is the density of each load mix, not of all the shipments in aggregate: in Lecture 3.3 there was one aggregate density because there was essentially one load mix. From those densities, the calculation determines the dominant load mix, the one most constraining with respect to the truck’s maximum payload, and the factor that reduces the shipment sizes enough to keep that load mix feasible. Every shipment size is reduced by that factor, even those not in the constraining load mix, since all of the shipments are assumed to be on the truck, at one shipment frequency. With those optimal sizes, the route’s total logistics cost is a direct generalization of the earlier one: for each shipment, the number of shipments a year times the charge per shipment, plus its inventory cost, added up over the shipments.
-
-Combining shipments that each have their own origin and destination into a route by minimizing their total logistics cost is a tactical solution, as opposed to traditional vehicle routing, which minimizes only the distance and the number of vehicles required.
+The routes of Secs. 1 to 3 are built once, for the shipments at hand. When the same shipments repeat, periodically, the periodic shipments of Lecture 3.3 carry over to a route, with one difference, its load mixes, the mixes of shipments on board over different parts of the route, which Lecture 5.3 takes up with the truck’s capacity. Combining shipments that each have their own origin and destination into a route by minimizing their total logistics cost is a tactical solution, as opposed to traditional vehicle routing, which minimizes only the distance and the number of vehicles required.
 
 ## 4. Load formation
 
 The basic idea is to handle the case where, for a set of shipments, multiple routes can be formed and some of the shipments can be independent. Even for a private company that owns all the shipments, it needs to be able to look at a situation and determine whether or not each shipment should be part of a consolidated load versus run as an independent shipment. The independent shipment is that of Lecture 3.2, a P2P TL shipment or an LTL shipment, which that lecture introduced as the alternative to a multi-stop consolidated load, with its independent transport charge $c_0$ of Eq. 16 in Lecture 3.2.
 
-The key idea is that minimum cost insertion will always add a shipment to a route. That is good and bad. But the savings procedure, using the default of not inserting negative savings, typically stops after all the positive savings have been used to create a route or multiple routes. At that point, there can be shipments left. What this means is these shipments may be better off as independent shipments. But this cannot really be determined without comparing the cost of the shipment added to an existing route. In this case, minimum cost insertion can be used because it will always add it to the route, and then what is looked at is the cost after the insertion versus the cost before the insertion. Take that differential cost and compare it to the independent cost, and pick the lesser of the two. This is the principal way of doing this.
+The key idea is that minimum cost insertion will always add a shipment to a route. That is good and bad. But the savings procedure, using the default of not inserting negative savings, typically stops after all the positive savings have been used to create a route or multiple routes. At that point, there can be shipments left. What this means is these shipments may be better off as independent shipments.
 
 The savings procedure creates a set of routes of several shipments, and when it is run, some shipments can be left that are not beneficial to combine with any other shipment. A shipment from somewhere in Wyoming to somewhere in Montana, for example, might have no other shipment within hundreds of miles; there is no way it will be combined with any other, so every saving it has with another shipment is negative, and the savings procedure never includes it. So when the savings procedure finishes, a check is needed that no shipments are left waiting, on no route; any that are become single-shipment routes, a good housekeeping step that accounts for every shipment not on an existing route.
 
 The next thing is that in the savings procedure, once the pairwise savings have been calculated, the shipments that do not appear in any of the positive savings pairs can be identified immediately as those that should be considered for independent shipment. Minimum cost insertion does not have that characteristic, and the cost of each shipment would have to be found as it is added. The sequencing would be dependent, so minimum cost insertion really does not work well for this. This is where the pairwise savings come into play.
 
-Code block 51 defines two functions for that housekeeping step: sh2rte creates a route for each shipment not in the existing routes, the single-shipment route $(k, k)$, and returns those shipments, and rte2idx gives the shipments on a route, its loadings. The routes of a set of shipments are then one vector of routes, each shipment on exactly one of them and a single-shipment route standing for a shipment shipped independently, and Lecture 5.3 keeps this form. The block applies sh2rte to five shipments, 1 and 2 on one route:
+Code block 49 defines two functions for that housekeeping step: sh2rte creates a route for each shipment not in the existing routes, the single-shipment route $(k, k)$, and returns those shipments, and rte2idx gives the shipments on a route, its loadings. The routes of a set of shipments are then one vector of routes, each shipment on exactly one of them and a single-shipment route standing for a shipment shipped independently, and Lecture 5.3 keeps this form. The block applies sh2rte to five shipments, 1 and 2 on one route:
 
 ```julia
-# Code block 51: rte2idx and sh2rte
+# Code block 49: rte2idx and sh2rte
 # a route's shipments, or those of each route of a vector of routes
 rte2idx(r::AbstractVector{<:Integer}) = r[isorigin(r)]
 rte2idx(R::AbstractVector{<:AbstractVector}) = rte2idx.(R)
@@ -2171,7 +2089,7 @@ idx1 = [3, 4, 5]
  [5, 5]
 ```
 
-Load formation is stated as a model in Model 2. It widens Model 1 from one route to the loads of a set of shipments, each shipment either on one of the routes or shipped independently, and its procedure is the one just described, written out below.
+Load formation is stated as a model in Model 2. It widens Model 1 from one route to the loads of a set of shipments, each shipment either on one of the routes or shipped independently. Its formulation is the savings procedure of Sec. 3, each route then improved by 2-opt, with the cost of a single-shipment route the shipment’s independent charge, so that the savings are those of Eq. 7, relative to the shipments shipped independently, and a shipment that savings leaves on a route of its own is shipped independently.
 
 minimize: total cost of ~~one route that loads and unloads every shipment of a load~~ the routes and of the shipments shipped independently
 
@@ -2202,19 +2120,15 @@ Model 2 formulation: Load formation
 
 ```text
 algorithm loadform;
-{ input:  shipments 1, …, n; independent charges; cost c(R) }
-{ output: routes, and the shipments shipped independently   }
+{ input:  shipments 1, …, n; cost c(R), with c((k, k)) = c₀(k), }
+{         the independent charge of shipment k                  }
+{ output: routes, and the shipments shipped independently       }
 begin
-    routes := savings, each route then improved by twoopt;
-    for each shipment k alone on a route do
-    begin
-        R := the route to which mincostinsert(k, R) adds least;
-        if c(mincostinsert(k, R)) − c(R) < c₀(k) then
-            R := twoopt(mincostinsert(k, R))
-        else
-            ship k independently;
-    end;
-    return the routes, and the shipments shipped independently;
+    routes := the routes of savings with more than one shipment,
+              each then improved by twoopt;
+    I := the shipments on none of the routes;
+    add the route (k, k) for each shipment k in I;
+    return the routes, and I, the shipments shipped independently;
 end;
 ```
 
@@ -2222,22 +2136,9 @@ Model 2 implementation: Load formation
 
 ```julia
 # Model: load formation
-function loadform(rteTCh, sh, c₀)
+function loadform(rteTCh, sh)
     R = [twoopt_rte(r, rteTCh)[1] for r in savings(rteTCh, sh)
          if length(r) > 2]                  # multi-shipment routes
-    _, idx1 = sh2rte(1:nrow(sh), R)         # the shipments on none
-    for k in idx1
-        Δ = [mincostinsert_rte(k, r, rteTCh)[2] - rteTCh(r)
-             for r in R]                    # the charge it adds
-        isempty(Δ) && continue              # no route to add it to
-        j = argmin(Δ)
-        println(k, ": added ", round(Δ[j], digits = 2),
-                ", independent ", round(c₀[k], digits = 2))
-        if Δ[j] < c₀[k]
-            r′ = mincostinsert_rte(k, R[j], rteTCh)[1]
-            R[j] = twoopt_rte(r′, rteTCh)[1]
-        end
-    end
     return sh2rte(1:nrow(sh), R)    # the others, single-shipment routes
 end
 ```
@@ -2256,10 +2157,10 @@ Determine each shipment’s independent transport charge as a P2P TL shipment.
 
 The 30 shipments of Ex. 8 run all over the state, and savings put nearly all of them on one route. Here the origins and destinations of 30 shipments are paired differently among the same 54 locations: most of the shipments run within the Charlotte area, and the others within the area around Raleigh or the Triad, around Greensboro, but for two in other parts of the state.
 
-A shipment shipped independently goes by itself as a P2P TL shipment, at the \$2.00 per loaded mile of Lecture 3.2’s charge_tl, with its minimum charge. A single truckload is charged by its miles alone, so Code block 52 needs only the miles from each shipment’s origin to its destination. The independent charge here is the TL charge alone, not the lesser of the TL and LTL charges that $c_0$ is in Lecture 3.2: with no capacity limit on a route’s truck, an LTL charge would make a small shipment cheap to ship alone however close it is to the others, and that case, with capacity, is taken up in Lecture 5.3.
+A shipment shipped independently goes by itself as a P2P TL shipment, at the \$2.00 per loaded mile of Lecture 3.2’s charge_tl, with its minimum charge. A single truckload is charged by its miles alone, so Code block 50 needs only the miles from each shipment’s origin to its destination. The independent charge here is the TL charge alone, not the lesser of the TL and LTL charges that $c_0$ is in Lecture 3.2: with no capacity limit on a route’s truck, an LTL charge would make a small shipment cheap to ship alone however close it is to the others, and that case, with capacity, is taken up in Lecture 5.3.
 
 ```julia
-# Code block 52: the 30 shipments, and each one's independent charge
+# Code block 50: the 30 shipments, and each one's independent charge
 shL = DataFrame(
     b = [15, 26, 23, 53, 35, 30, 39, 33, 34, 3, 9, 8, 29, 34, 38,
          32, 18, 17, 4, 4, 7, 30, 33, 22, 6, 19, 16, 8, 37, 14],
@@ -2274,36 +2175,43 @@ sum(c₀)                                 # all 30 shipped independently
 1814.738165773297
 ```
 
-Fig. 17 draws the 30 shipments, each shipped independently.
+Fig. 15 draws the 30 shipments, each shipped independently.
 
 Show the code that draws this figure
 
 ```julia
-# Code block 53: the 30 shipments on a map, by Code block 42's shmtmap
+# Code block 51: the 30 shipments on a map, by Code block 42's shmtmap
 shmtmap(shL, X30)[1]
 ```
 
-Figure 17: The 30 shipments of Ex. 9, each shipped independently from its origin to its destination (red), its direction by its arrow.
+Figure 15: The 30 shipments of Ex. 9, each shipped independently from its origin to its destination (red), its direction by its arrow.
 
 Example 9(b): Shipments on no route
 
-Determine the routes of more than one shipment that savings constructs, and the shipments on none of them.
+Determine the pairwise savings of the 30 shipments, relative to their independent charges, and the shipments in no pair with a positive saving, which no route of more than one shipment carries.
 
-A route’s charge is one truck’s, at the same \$2.00 per loaded mile over the route’s miles, since the truck has no capacity limit; for a route of one shipment that is the shipment’s own independent charge, which the @assert in Code block 54 checks. Code block 54 then constructs routes by savings on that charge, keeps those of more than one shipment, each improved by 2-opt, and finds the shipments on none of them with sh2rte:
+A route’s charge is one truck’s, at the same \$2.00 per loaded mile over the route’s miles, since the truck has no capacity limit; for a route of one shipment that is the shipment’s own independent charge, which the @assert in Code block 52 checks. So the pairwise savings of Eq. 7 on that charge are relative to the shipments shipped independently, $c_i$ being the independent charge of shipment $i$. Code block 52 lists them with Logjam’s pairwisesavings, showing the five largest, and finds the shipments in no pair with a positive saving:
 
 ```julia
-# Code block 54: route charge, routes by savings, and shipments on none
+# Code block 52: route charge, and the pairwise savings
 rTCLh(rte) = max(2.00 * rteTC(rte, shL, D30), mincharge_tl())
 @assert all(rTCLh([k, k]) ≈ c₀[k] for k in 1:nrow(shL))
-R = [twoopt_rte(r, rTCLh)[1] for r in savings(rTCLh, shL)
-     if length(r) > 2]                    # its multi-shipment routes
-@show length.(R) .÷ 2                     # shipments on each
-RL, idx1 = sh2rte(1:nrow(shL), R)
-idx1                                      # the shipments on none
+ijs = pairwisesavings(rTCLh, shL)          # positive, largest first
+prt(hcat(ijs...)[1:5, :]; cols = ["i", "j", "Saving"],
+    row_title = "Pair")                    # the five largest
+@show length(ijs[3])                       # pairs with a positive saving
+idx1 = setdiff(1:nrow(shL), ijs[1], ijs[2])  # the shipments in none
 ```
 
 ```text
-length.(R) .÷ 2 = [12, 7, 9]
+Pair   i   j  Saving
+────────────────────
+   1   6  22   48.43
+   2  10  20   47.76
+   3   8   9   45.00
+   4   8  16   45.00
+   5   8  23   45.00
+length(ijs[3]) = 90
 ```
 
 ```text
@@ -2312,17 +2220,18 @@ length.(R) .÷ 2 = [12, 7, 9]
  4
 ```
 
-Shipments 2 and 4 are on no route of more than one shipment, since savings merges every shipment in a pair with a positive saving: they are the candidates for independent shipment.
+Shipments 2 and 4 are in no pair with a positive saving, so savings never puts either on a route: they are the candidates for independent shipment.
 
 Example 9(c): The loads
 
 Determine the routes and the shipments shipped independently, and the charge of the loads.
 
-Code block 55 runs load formation, printing for each shipment on no route the least charge its insertion adds to a route and its independent charge. Its routes are one vector, in the form of Code block 51, in which each shipment shipped independently is a single-shipment route at its independent charge, and the block prints that vector a route to a line, RL[i] being route i:
+Code block 53 runs load formation, savings on the route charge, each route then improved by 2-opt. Its routes are one vector, in the form of Code block 49, in which each shipment shipped independently is a single-shipment route at its independent charge, and the block prints that vector a route to a line, RL[i] being route i:
 
 ```julia
-# Code block 55: load formation on the 30 shipments
-RL, indL = loadform(rTCLh, shL, c₀)
+# Code block 53: load formation on the 30 shipments
+RL, indL = loadform(rTCLh, shL)
+@assert indL == idx1                    # those in no positive saving
 for i in eachindex(RL)                  # the vector of routes
     println("RL[$i] = [", join(RL[i], ","), "]")
 end
@@ -2330,8 +2239,6 @@ TCload = sum(rTCLh.(RL))                # a single-shipment route at c₀
 ```
 
 ```text
-2: added 267.09, independent 60.53
-4: added 251.31, independent 146.7
 RL[1] = [6,22,13,15,13,7,15,29,7,23,8,29,16,22,14,9,23,5,8,6,16,14,9,5]
 RL[2] = [25,12,28,19,20,10,25,12,11,20,10,28,11,19]
 RL[3] = [18,17,21,27,21,1,26,1,27,30,26,3,17,24,24,18,30,3]
@@ -2343,18 +2250,18 @@ RL[5] = [4,4]
 1232.6418479871288
 ```
 
-Shipments 2 and 4 are shipped independently: for each, the charge added by inserting it at least cost is more than its independent charge. In RL, the routes of more than one shipment that savings constructs come first, routes 1 to 3, and the single-shipment routes that sh2rte adds come after them, routes 4 and 5, for shipments 2 and 4; each shipment appears twice in its route, at its loading and at its unloading.
+Shipments 2 and 4 are shipped independently: they are the shipments of Ex. 9(b) in no pair with a positive saving, which the @assert in Code block 53 checks, and savings leaves each on a route of its own. In RL, the routes of more than one shipment that savings constructs come first, routes 1 to 3, and the single-shipment routes that sh2rte adds come after them, routes 4 and 5, for shipments 2 and 4; each shipment appears twice in its route, at its loading and at its unloading.
 
 Shipment 4 is not added to any route, and it is better left as an independent shipment: the additional cost of traveling to its origin, and then of delivering it, means it fits none of the existing routes. That additional cost made adding it not beneficial, so it is better kept as an independent shipment.
 
 Some of the shipments left independent make sense on sight: a shipment outside all of the others is not worth combining with any of them, and keeping it as an independent shipment is more cost effective. That assumes a truck is available for it. A shipment in the middle of nowhere, out in Nome, Alaska, say, would realistically cost a lot even as an independent shipment; within North Carolina a truck can be assumed to show up anywhere, so modeling it as an independent shipment makes sense.
 
-In the vector of routes that loadform returns, a shipment shipped independently is a single-shipment route, so the routing functions treat it as one more route. Fig. 18 draws the loads formed, each route labeled by its place in the vector, and a single-shipment route also by the shipment it carries, in parentheses: route 4 is the single-shipment route of shipment 2, and that shipment is shipped independently.
+In the vector of routes that loadform returns, a shipment shipped independently is a single-shipment route, so the routing functions treat it as one more route. Fig. 16 draws the loads formed, each route labeled by its place in the vector, and a single-shipment route also by the shipment it carries, in parentheses: route 4 is the single-shipment route of shipment 2, and that shipment is shipped independently.
 
 Show the code that draws this figure
 
 ```julia
-# Code block 56: the loads on a map, by Code block 44's rtemap
+# Code block 54: the loads on a map, by Code block 44's rtemap
 function rtelabels!(ax, R, at)  # each route's label, placed by hand
     for (i, lon, lat, al) in at
         one = length(R[i]) == 2                    # one shipment
@@ -2372,7 +2279,7 @@ rtelabels!(ax, RL, [(1, -80.62, 35.25, (:left, :center)),
 fig
 ```
 
-Figure 18: The loads formed for the 30 shipments of Ex. 9, each route labeled by its place in the vector of routes: three routes of more than one shipment (green) and two single-shipment routes (red), each a shipment shipped independently, its number in parentheses; each leg’s direction by its arrow.
+Figure 16: The loads formed for the 30 shipments of Ex. 9, each route labeled by its place in the vector of routes: three routes of more than one shipment (green) and two single-shipment routes (red), each a shipment shipped independently, its number in parentheses; each leg’s direction by its arrow.
 
 The loads cost \$1,232.64, against \$1,814.74 with all 30 shipments shipped independently, 32.1% less.
 

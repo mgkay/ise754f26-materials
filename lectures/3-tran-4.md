@@ -48,7 +48,7 @@ where
 
 Because every $w_i$ is fixed before the DC is placed, minimizing $TC$ is the one-dimensional minisum problem of Model 8 in Lecture 2.1, solved by the weighted median.
 
-The worked example is the transshipment counterpart of Ex. 1 in Lecture 2.2, on the same stretch of I-40 (Fig. 1), with a DC in place of the plant.
+The example is the transshipment counterpart of Ex. 1 in Lecture 2.2, on the same stretch of I-40 (Fig. 1), with a DC in place of the plant.
 
 Figure 1: The I-40 corridor with mile markers: Asheville (50), Statesville (150), Winston-Salem (190), Greensboro (220), Durham (270), Raleigh (295), and Wilmington (420).
 
@@ -347,7 +347,7 @@ Tons pass straight through a DC, and the weights do not. Totaling the inbound an
 
 ```julia
 # Code block 7: tons, truckloads and weights in and out of the DC
-idxin, idxout = 1:2, 3:5           # suppliers in, customers out
+idxin, idxout = 1:2, 3:5                    # suppliers in, customers out
 @show sum(sh.f[idxin]), sum(sh.f[idxout])   # ton/yr
 @show sum(n[idxin]), sum(n[idxout])         # TL/yr
 @show sum(w[idxin]), sum(w[idxout])         # $/mi-yr
@@ -369,7 +369,7 @@ Measured by monetary weight the DC is weight losing, with more monetary weight c
 
 NoteFull truckloads in practice
 
-Is assuming full truckloads a gross error, made only because a one-dimensional location problem can then be solved by hand with a simple formula? For some products it does not hold at all. A company shipping blood plasma products, for example, might send a tractor-trailer across the country carrying a few hundred pounds, about 1% of its weight capacity, because the load is worth millions of dollars and getting it there is all that matters; the trailer is sealed and locked, since such trailers have been broken into for the value of what they carry. In general, though, shipments should be close to full truckloads. A business plan built on trucks that are 20% full and 80% wasted space, however well it minimized total logistics cost, would be rejected by any venture capitalist. Trucking is a thick market: a shipper whose trucks would run 80% empty is in effect running its own trucking company, and a small business should hire a carrier instead. The carrier has many other customers and runs close to full all the time, with the shipper’s goods perhaps one of 20 customers’ loads on a truck, so the goods effectively ship as a full truckload even though the shipper is not the one deciding to ship that way. Outside a really isolated area, a plan that ships a truck 80% air is a red flag that something is wrong with the analysis.
+Is assuming full truckloads a gross error, made only because a one-dimensional location problem can then be solved by hand with a simple formula? For some products it does not hold at all. A company shipping blood plasma products, for example, might send a tractor-trailer across the country carrying a few hundred pounds, about 1% of its weight capacity, because the load is worth millions of dollars and getting it there is all that matters; the trailer is sealed and locked, since such trailers have been broken into for the value of what they carry. In general, though, shipments should be close to full truckloads. A business plan built on trucks that are 20% full and 80% wasted space, however well it minimized total logistics cost, would be rejected by any venture capitalist. Trucking is a thick market: a shipper whose trucks would run 80% empty is in effect running its own trucking company, and a small business should hire a carrier instead. The carrier has many other customers and runs close to full all the time, with the shipper’s goods perhaps one of 20 customers’ loads on a truck, so the goods effectively ship as a full truckload even though the shipper is not the one making the decision to ship that way. Outside a really isolated area, a plan that ships a truck 80% air is a red flag that something is wrong with the analysis.
 
 FTL, since its size is fixed at the maximum payload, results in only constant weights for location, so there is a need to only minimize TC, since IC is constant in TLC:
 
@@ -463,7 +463,7 @@ The DC moves to mile 190, Winston-Salem. The floor adds 7.27 truckloads a year, 
 
 In addition to the change of location, the total transport costs increase due to the increase in the number of shipments. The increase in cost could also be calculated by hand, but this would require having to determine distances, which is tedious; it is the last line of Code block 8. The DC moving east, toward the customers whose weights the floor raised, is the direction the change should push it, which is the Nudge check of Lecture 1.2.
 
-The constraint changes only some of the numbers. The customer with the highest demand already receives more than 12 truckloads a year and passes through unchanged; the other two receive fewer than 12, so their shipments rise to 12 a year and their monetary weights are recalculated. The total weight becomes 160, and the DC moves from Statesville to Winston-Salem. Measured by monetary weight, the DC is now weight gaining. The demand has not changed, but deliveries to the smallest customer nearly double, so a truck to that customer runs about half empty and the outbound side uses its trucks less efficiently. That is very typical of a DC, with truckloads coming in and smaller, more expensive delivery vans going out. A DC with rail coming in and trucks going out is always weight gaining, since rail is so much cheaper on a monetary-weight basis; a DC is weight losing only when the same mode is used in and out and the frequency does not change, so that aggregation is the only effect. Whether more frequent deliveries are worth it cannot be decided from this problem, because it does not compute the total logistics cost. Ex. 2 in Lecture 3.3 did, and gave a dollar figure for the impact of a shorter shipment interval, the number a negotiation or a business analysis would start from.
+The constraint changes only some of the numbers. The customer with the highest demand already receives more than 12 truckloads a year and passes through unchanged; the other two receive fewer than 12, so their shipments rise to 12 a year and their monetary weights are recalculated. The total weight becomes 160, and the DC moves from Statesville to Winston-Salem. Measured by monetary weight, the DC is now weight gaining. The demand has not changed, but deliveries to the smallest customer nearly double, so a truck to that customer runs about half empty and the outbound side uses its trucks less efficiently. That is very typical of a DC, with truckloads coming in and smaller, more expensive delivery vans going out. A DC with rail coming in and trucks going out is always weight gaining, since rail is so much cheaper on a monetary-weight basis; a DC is weight losing only when the same mode is used in and out and the frequency does not change, so that aggregation is the only effect. Whether more frequent deliveries are worth it cannot be determined from this problem, because it does not compute the total logistics cost. Ex. 2 in Lecture 3.3 did, and gave a dollar figure for the impact of a shorter shipment interval, the number a negotiation or a business analysis would start from.
 
 Full truckloads to every customer may not be the whole situation, since a customer may want a monthly outbound frequency written into its contract. At present the first customer receives a shipment only about every two months, the second almost every month, and the third more than once a month, so the constraint does not affect the customers equally: it nearly doubles the shipments to the first, the customer with the lowest demand, and leaves the third, with half the demand, as it was. The example is set up with both suppliers in the west and the three customers in the east precisely so that the constraint makes a visible change; with suppliers and customers mixed along the route, it would probably not move the DC. Weight gaining is the more common case for a DC, since deliveries to customers typically face more stringent interval constraints and go in smaller trucks, more frequently. Physically, a DC usually changes little, but not always. Product can be lost, such as units that arrive damaged and cannot be repaired, and product can be added: it can be cheaper to do the last steps at the DC, such as filling something with a fluid that would be expensive to transport, or a limited final assembly. Beach balls and basketballs, for example, do not come from China inflated; every Walmart DC has a station that inflates them before they go on to the stores. Kitting at the DC, a limited assembly, sits between a product shipped assembled and flat-packed furniture assembled at home, and it is done for the transport efficiency. Once looked for, the phenomenon appears almost everywhere: the trade-off between cube and weight is the story behind many of the ways things are done in a supply chain.
 
@@ -619,7 +619,7 @@ The periodic shipments of Lecture 3.3 had one origin and one destination; at a D
 
 ### 2.3 Single-DC transshipment
 
-With a DC between the suppliers and the customers, each product is either cross-docked or stocked at the DC, and Model 1 states the problem of deciding which.
+With a DC between the suppliers and the customers, each product is either cross-docked or stocked at the DC, and Model 1 states the problem of determining which.
 
 A cross-docking set is a group of products whose suppliers all ship on one interval, the set’s own, so that its products arrive at the DC together and leave it the same day. A product in no set is stocked: held at the DC, and shipped in on its own interval. A delivery is everything a customer receives from the DC on one day. Each set makes a delivery to each customer on its interval, and a stocked product goes out either in one set’s deliveries or in a delivery that carries only stocked products. A shipment is uncoordinated when its size is its own optimal size, as in Lecture 3.3, and coordinated when its size is its annual flow times its set’s interval. Every shipment is therefore one of the four kinds in Table 1.
 
@@ -640,8 +640,8 @@ solve for:
 (c) for each stocked product, the set, if any, whose deliveries to the customers also carry it.
 
 subject to:
-(a) payload: no shipment is larger than one truck’s maximum payload;
-(b) interval: each set’s interval is at least one day.
+(a) Payload: no shipment is larger than one truck’s maximum payload;
+(b) Interval: each set’s interval is at least one day.
 
 assumptions:
 (a) DC location is given;
@@ -657,9 +657,10 @@ Model 1 formulation: Single-DC transshipment
 
 $$
 \begin{array}{rlrclll}
-& \text{Minimize} & \displaystyle \sum_{i \in I} TLC_i(q_i) & & & & \\[2pt]
-& \text{subject to} & 0 < q_i & \leq & q_{\max,i}, & i \in I_S & (a) \\[2pt]
-& & t_G & \geq & t_{\min}, & G \in \mathcal{G} & (b) \\[2pt]
+& \text{Minimize} & \displaystyle \sum_{i \in I} TLC_i(q_i) & & & & \\[16pt]
+& \text{subject to} & & & & & \\[2pt]
+& & \textcolor{#d21f26}{\small\text{Payload}}\quad\mathopen{} 0 < q_i & \leq & q_{\max,i}, & i \in I_S & (a) \\[2pt]
+& & \textcolor{#d21f26}{\small\text{Interval}}\quad\mathopen{} t_G & \geq & t_{\min}, & G \in \mathcal{G} & (b) \\[2pt]
 & & q_i & = & f_i\, t_G, & i \in I_G,\ G \in \mathcal{G} &
 \end{array}
 \tag{5}
@@ -682,7 +683,7 @@ where
 
 A model states its constraints in words, under subject to, and its formulation writes each one as a row with the same letter. Model 1’s two constraints, (a) payload and (b) interval, are about shipments: what a truck carries, and how often a set ships. Both are rows here, (a) for the shipments in from the suppliers and (b) for each set. A delivery needs no row (a), since one larger than a truck goes as two or more shipments.
 
-The row with no letter is not among Model 1’s constraints: it puts each set’s coordinated shipments, $I_G$, on the set’s interval. The sets $\mathcal{G}$ of solve-for (a) and the stocked products $S_G$ of solve-for (c) need no rows of their own; they decide which deliveries make up $I$ and $I_G$, and what each carries.
+The row with no letter is not among Model 1’s constraints: it puts each set’s coordinated shipments, $I_G$, on the set’s interval. The sets $\mathcal{G}$ of solve-for (a) and the stocked products $S_G$ of solve-for (c) need no rows of their own; they determine which deliveries make up $I$ and $I_G$, and what each carries.
 
 With $\mathcal{G}$ empty, every product is stocked, which is Model 2; with $S$ empty and $\mathcal{G}$ a single set, every product is cross-docked together, which is Model 3. The formulation says how any split is evaluated and nothing about how to search for a good one; Model 1 has no implementation here, on purpose.
 
@@ -698,9 +699,9 @@ solve for:
 (c) for each stocked product, the set, if any, whose deliveries to the customers also carry it.
 
 subject to:
-(a) payload: no shipment is larger than one truck’s maximum payload;
-(b) interval: each set’s interval is at least one day;
-(c) stocked: no sets, so every product is stocked at the DC.
+(a) Payload: no shipment is larger than one truck’s maximum payload;
+(b) Interval: each set’s interval is at least one day;
+(c) Stocked: no sets, so every product is stocked at the DC.
 
 assumptions:
 (a) DC location is given;
@@ -710,7 +711,7 @@ assumptions:
 
 Model 2: Uncoordinated transshipment
 
-Special case of Model 1: Single-DC transshipment
+Restriction of Model 1: Single-DC transshipment
 
 With every product stocked, every shipment is uncoordinated, with its own optimal shipment size, found as Lecture 3.3 found it for a single P2P shipment, with the DC’s inventory counted on the inbound side by Eq. 4:
 
@@ -773,9 +774,9 @@ solve for:
 (c) for each stocked product, the set, if any, whose deliveries to the customers also carry it.
 
 subject to:
-(a) payload: no shipment is larger than one truck’s maximum payload;
-(b) interval: each set’s interval is at least one day;
-(c) single set: every product is cross-docked, all in one set.
+(a) Payload: no shipment is larger than one truck’s maximum payload;
+(b) Interval: each set’s interval is at least one day;
+(c) Single set: every product is cross-docked, all in one set.
 
 assumptions:
 (a) DC location is given;
@@ -785,7 +786,7 @@ assumptions:
 
 Model 3: Perfect cross-docking
 
-Special case of Model 1: Single-DC transshipment
+Restriction of Model 1: Single-DC transshipment
 
 Under perfect cross-docking every shipment is coordinated, so the shipment sizes cannot be found one at a time: every shipment shares one interval $t$. The key is that a shipment’s size is then its annual flow times that interval, $q_i = f_i t$, so one interval fixes every size. The formulation keeps the objective of Eq. 6 and adds that relation as row (c):
 
@@ -793,10 +794,11 @@ Model 3 formulation: Perfect cross-docking
 
 $$
 \begin{array}{rlrclll}
-& \text{Minimize} & \displaystyle \sum_{i \in I} TLC_i(q_i) & & & & \\[2pt]
-& \text{subject to} & q_i & \leq & q_{\max,i}, & i \in I_S & (a) \\[2pt]
+& \text{Minimize} & \displaystyle \sum_{i \in I} TLC_i(q_i) & & & & \\[16pt]
+& \text{subject to} & & & & & \\[2pt]
+& & q_i & \leq & q_{\max,i}, & i \in I_S & (a) \\[2pt]
 & & t & \geq & t_{\min} & & (b) \\[2pt]
-& & q_i & = & f_i\, t, & i \in I & (c)
+& & \textcolor{#d21f26}{\small\text{Single set}}\quad\mathopen{} q_i & = & f_i\, t, & i \in I & (c)
 \end{array}
 \tag{7}
 $$
@@ -1078,12 +1080,7 @@ CXY = [getindex.(C, :LON) getindex.(C, :LAT)]
 # The DC
 DCcity = "Memphis"
 DC = loc2lonlat(DCcity; state = :TN)
-DCXY = [DC.LON DC.LAT]
-```
-
-```text
-1×2 Matrix{Float64}:
- -89.9666  35.109
+DCXY = [DC.LON DC.LAT];
 ```
 
 Show the code that draws this figure
@@ -1271,7 +1268,7 @@ With the DC already located in Memphis, uncoordinated inventory there costs more
 
 In general, no single choice between direct shipment and transshipment at a DC is always best: either can be the better, and total logistics cost is the means of assessing which.
 
-For a product to be cross-docked, its shipments into and out of the DC must have the same interval; if they differ, inventory is stored at the DC, and the extreme of that is no coordination at all. In practice most DCs are a mix of cross-docking and no coordination: each shipment is examined to decide whether it should be cross-docked or simply stored with no coordination, and different factors lead to different sets of shipments being cross-docked.
+For a product to be cross-docked, its shipments into and out of the DC must have the same interval; if they differ, inventory is stored at the DC, and the extreme of that is no coordination at all. In practice most DCs are a mix of cross-docking and no coordination: each shipment is examined to determine whether it should be cross-docked or simply stored with no coordination, and different factors lead to different sets of shipments being cross-docked.
 
 Ex. 3 in Sec. 3.2 locates this DC rather than placing it in Memphis.
 
@@ -1448,7 +1445,7 @@ There are two options for facility fixed costs. One is to use non-transport-rela
 
 Transport fixed costs are costs that are independent of shipment size (e.g., \$/mi vs. \$/ton-mi): costs that make it worthwhile to incur the inventory cost associated with larger shipment sizes in order to spread out the fixed cost. The main transport fixed cost is the indivisible labor cost for a human driver, which is why many logistics networks (e.g., Walmart, Lowe’s) are designed for all FTL transport.
 
-As long as total logistics cost includes every logistics-related cost, anything that makes a difference to the logistics network can be part of it. Supplier selection is an example: deciding whether to import a product or produce it domestically means different product costs for what is supplied, and those can be factored in. Total logistics cost is then the overall objective of network design, and its big pieces are the fixed costs. Facility fixed costs can be estimated by linear regression on the non-transport-related facility costs, a mix of top-down and bottom-up, as was done for Popco in Lecture 2.6, Sec. 3: the fixed cost is everything not accounted for by the size of the facility. That suits a manufacturing facility like Popco’s bottling plants, where there are economies of scale: producing more of one thing at one location is cheaper, a small plant still needs its one manager and its other staff without fully utilizing them, and larger plants buy raw material in larger shipments. A DC has the same economies of scale in being built, but it is quite common now not to build one at all. Instead of building a DC in Memphis, Denver or Kansas, a shipper can more likely rent space in a public warehouse, which almost every city in the country has, and store hundreds or thousands of pallets there, paying for the handling each time product goes in and out of storage and for the time it occupies space, with no big fixed component. That leaves the question of why every customer does not have its own DC, and the answer is the transport fixed cost: a truck needs a driver, and the driver cannot be divided, so the lumpiness of the driver gives rise to a fixed cost in transport. For manufacturing, the facility fixed cost is probably the main fixed cost limiting the number of new facilities; for pure distribution it is not a major factor, and the transport fixed cost is what drives the design. That is why companies like Walmart and Lowe’s design their whole logistics networks for full truckloads into the DC and full truckloads from the DC to the stores. A typical Walmart truck does not stop at six stores; it carries everything for one store, and rather than deadhead back empty, it adds a few miles to pick up from a nearby supplier and takes that load back to the DC.
+As long as total logistics cost includes every logistics-related cost, anything that makes a difference to the logistics network can be part of it. Supplier selection is an example: determining whether to import a product or produce it domestically means different product costs for what is supplied, and those can be factored in. Total logistics cost is then the overall objective of network design, and its big pieces are the fixed costs. Facility fixed costs can be estimated by linear regression on the non-transport-related facility costs, a mix of top-down and bottom-up, as was done for Popco in Lecture 2.6, Sec. 3: the fixed cost is everything not accounted for by the size of the facility. That suits a manufacturing facility like Popco’s bottling plants, where there are economies of scale: producing more of one thing at one location is cheaper, a small plant still needs its one manager and its other staff without fully utilizing them, and larger plants buy raw material in larger shipments. A DC has the same economies of scale in being built, but it is quite common now not to build one at all. Instead of building a DC in Memphis, Denver or Kansas, a shipper can more likely rent space in a public warehouse, which almost every city in the country has, and store hundreds or thousands of pallets there, paying for the handling each time product goes in and out of storage and for the time it occupies space, with no big fixed component. That leaves the question of why every customer does not have its own DC, and the answer is the transport fixed cost: a truck needs a driver, and the driver cannot be divided, so the lumpiness of the driver gives rise to a fixed cost in transport. For manufacturing, the facility fixed cost is probably the main fixed cost limiting the number of new facilities; for pure distribution it is not a major factor, and the transport fixed cost is what drives the design. That is why companies like Walmart and Lowe’s design their whole logistics networks for full truckloads into the DC and full truckloads from the DC to the stores. A typical Walmart truck does not stop at six stores; it carries everything for one store, and rather than deadhead back empty, it adds a few miles to pick up from a nearby supplier and takes that load back to the DC.
 
 Example 4: Number of regional DCs for Lowe’s
 
@@ -1562,7 +1559,7 @@ In production, ideally, raw material should arrive at a manufacturing facility j
 
 In distribution, the ideal of no storage can sometimes be realized using cross docking, where there is a direct flow of material from trucks at the receiving docks to the shipping docks without buffering or storage in-between, but cross docking requires detailed planning and coordination (e.g., implemented using electronic data interchange, EDI) that in many cases may not be feasible.
 
-In most cases, the benefits associated with buffering and storage are due to the fixed costs associated with the other elements of production and the impact of variability pooling on achieving a target service level, the subjects of Lectures 6.1 and 6.3. Storing a product allows the other elements of production to operate more efficiently on a per-unit basis because the fixed costs associated with utilizing the element can be spread over more products; e.g., storing up to a truckload of product in a facility reduces the per-unit costs of shipping, and WIP buffering or storage enables batch production, which reduces the per-unit setup costs.
+In most cases, the benefits associated with buffering and storage are due to the fixed costs associated with the other elements of production and the impact of variability pooling on achieving a target service level, the subjects of Lectures 6.1 and 6.2. Storing a product allows the other elements of production to operate more efficiently on a per-unit basis because the fixed costs associated with utilizing the element can be spread over more products; e.g., storing up to a truckload of product in a facility reduces the per-unit costs of shipping, and WIP buffering or storage enables batch production, which reduces the per-unit setup costs.
 
 ### 4.2 Types of warehouses
 
@@ -1658,7 +1655,7 @@ The Kiva mobile-robotic fulfillment system (Fig. 15) is a goods-to-person order 
 
 Figure 15: Kiva’s drive units moving storage pods, and the three founders of Kiva Systems.3
 
-The drive units move the shelves, so a person working in the warehouse does not spend the day walking miles up and down the aisles, but stands in one location while the stock comes to the station. Control is by multi-agent software. Each product to be shipped out of the warehouse is given a pseudo-currency according to its priority, say 100 units for a high-priority item, 50 for one that need not get anywhere quickly and 20 for another, and all the items that need to move through the warehouse constantly bid against each other to be picked next. When an operator is ready to pick, the item picked is the one that won the bid. Instead of the algorithms for planning and routing the operation that warehousing used to require, the whole of control is deciding how much pseudo-money to give each item; the agents work out the rest, with no central control.
+The drive units move the shelves, so a person working in the warehouse does not spend the day walking miles up and down the aisles, but stands in one location while the stock comes to the station. Control is by multi-agent software. Each product to be shipped out of the warehouse is given a pseudo-currency according to its priority, say 100 units for a high-priority item, 50 for one that need not get anywhere quickly and 20 for another, and all the items that need to move through the warehouse constantly bid against each other to be picked next. When an operator is ready to pick, the item picked is the one that won the bid. Instead of the algorithms for planning and routing the operation that warehousing used to require, the whole of control is determining how much pseudo-money to give each item; the agents work out the rest, with no central control.
 
 Wurman, one of Kiva’s three founders, may be the person at NC State who has had the biggest impact on warehousing, and the lesson is that he was a computer science professor, not an industrial engineer. Warehousing as it used to be done has changed: its control is now essentially software, and the agents work things out for themselves.
 
