@@ -23,7 +23,7 @@ Companion script
 
 ## 1. How many new facilities
 
-The location–allocation problem of the previous lecture takes the number of new facilities as an input. Two, three or four are handed to the procedure, and it returns good locations for that many; nothing in it indicates the correct number of new facilities to use. Starting at one, each additional NF reduces the total distance because there are more NFs to allocate to EFs. This could continue until there is an NF at every EF, which would reduce the total distance to almost nothing. But this cannot be the correct solution for most location problems because establishing and operating each NF incurs costs that do not scale directly with the number of NFs; a single NF serving a single EF would be far more expensive than a single larger NF able to serve multiple EFs due to economies of scale in production costs. The uncapacitated facility location problem, or UFL, puts both decisions into one problem: it determines how many new facilities to establish as well as where to put them.
+The location–allocation problem of the previous lecture takes the number of new facilities as an input. Two, three or four are handed to the procedure, and it returns good locations for that many; nothing in it indicates the correct number of new facilities (NFs) to use. Starting at one, each additional NF reduces the total distance because there are more NFs to allocate to existing facilities (EFs). This could continue until there is an NF at every EF, which would reduce the total distance to almost nothing. But this cannot be the correct solution for most location problems because establishing and operating each NF incurs costs that do not scale directly with the number of NFs; a single NF serving a single EF would be far more expensive than a single larger NF able to serve multiple EFs due to economies of scale in production costs. The uncapacitated facility location problem, or UFL, puts both decisions into one problem: it determines how many new facilities to establish as well as where to put them.
 
 The total costs considered by the UFL are the sum of transport costs and facility fixed costs. The two costs move in opposite directions, and Fig. 1 puts them on the same axes. Transport cost falls as facilities are added, since each existing facility comes to be served by a nearer one. Facility fixed cost rises, one increment per facility. Their sum is the red curve, and it has an interior minimum: the optimal number of new facilities is where the curve reaches it.
 
@@ -126,9 +126,9 @@ Model 1 formulation: ADD construction
 
 ```text
 algorithm ufladd;
-{ input:  sites N = {1,…,n} with fixed costs kᵢ, cost matrix C = (cᵢⱼ);      }
-{         TC(Y) = Σᵢ∈Y kᵢ + Σⱼ minᵢ∈Y cᵢⱼ, the total cost of the open set Y  }
-{ output: the open set Y and its total cost TC                              }
+{ input:  sites N = {1,…,n} with fixed costs kᵢ, cost matrix C = (cᵢⱼ); }
+{         TC(Y) = Σᵢ∈Y kᵢ + Σⱼ minᵢ∈Y cᵢⱼ, total cost of the open set Y }
+{ output: the open set Y and its total cost TC                          }
 begin
     Y := ∅;  TC := ∞;  done := false;
     while done = false do
@@ -161,9 +161,9 @@ Model 1 formulation: DROP construction
 
 ```text
 algorithm ufldrop;
-{ input:  sites N = {1,…,n} with fixed costs kᵢ, cost matrix C = (cᵢⱼ);      }
-{         TC(Y) = Σᵢ∈Y kᵢ + Σⱼ minᵢ∈Y cᵢⱼ, the total cost of the open set Y  }
-{ output: the open set Y and its total cost TC                              }
+{ input:  sites N = {1,…,n} with fixed costs kᵢ, cost matrix C = (cᵢⱼ); }
+{         TC(Y) = Σᵢ∈Y kᵢ + Σⱼ minᵢ∈Y cᵢⱼ, total cost of the open set Y }
+{ output: the open set Y and its total cost TC                          }
 begin
     Y := N;  TC := TC(N);  done := false;
     while done = false and |Y| > 1 do
@@ -218,7 +218,7 @@ $c_{ij} = w_j d_{ij} = f_j r d_{ij} = (1)(1) d_{ij} = d_{ij}$
 
 Table 2: Cost $c_{ij}$ of serving city $j$ from site $i$.
 
-| $c_{ij}$ | 1 | 2 | 3 | 4 | 5 |
+| $\boldsymbol{c_{ij}}$ | 1 | 2 | 3 | 4 | 5 |
 |---|---|---|---|---|---|
 | Asheville: 1 | 0 | 100 | 170 | 245 | 370 |
 | Statesville: 2 | 100 | 0 | 70 | 145 | 270 |
@@ -230,7 +230,7 @@ $Y = \{\ \}$
 
 Table 3: First pass, $Y = \{\,\}$: site 3 gives the smallest total.
 
-| $Y$ | 1 | 2 | 3 | 4 | 5 | $c_{Yj}$ | $k_Y$ | $c_{Yj} + k_Y$ |
+| $\boldsymbol{Y}$ | 1 | 2 | 3 | 4 | 5 | $\boldsymbol{c_{Yj}}$ | $\boldsymbol{k_Y}$ | $\boldsymbol{c_{Yj} + k_Y}$ |
 |---|---|---|---|---|---|---|---|---|
 | 1 | 0 | 100 | 170 | 245 | 370 | 885 | 150 | 1,035 |
 | 2 | 100 | 0 | 70 | 145 | 270 | 585 | 200 | 785 |
@@ -242,7 +242,7 @@ $Y = \{3\}$
 
 Table 4: Second pass, $Y = \{3\}$: adding site 1 gives the smallest total.
 
-| $Y$ | 1 | 2 | 3 | 4 | 5 | $c_{Yj}$ | $k_Y$ | $c_{Yj} + k_Y$ |
+| $\boldsymbol{Y}$ | 1 | 2 | 3 | 4 | 5 | $\boldsymbol{c_{Yj}}$ | $\boldsymbol{k_Y}$ | $\boldsymbol{c_{Yj} + k_Y}$ |
 |---|---|---|---|---|---|---|---|---|
 | 3,1 | 0 | 70 | 0 | 75 | 200 | 345 | 300 | 645 |
 | 3,2 | 100 | 0 | 0 | 75 | 200 | 375 | 350 | 725 |
@@ -253,7 +253,7 @@ $Y = \{3,1\}$
 
 Table 5: Third pass, $Y = \{3,1\}$: no third site beats 645, so the procedure stops.
 
-| $Y$ | 1 | 2 | 3 | 4 | 5 | $c_{Yj}$ | $k_Y$ | $c_{Yj} + k_Y$ |
+| $\boldsymbol{Y}$ | 1 | 2 | 3 | 4 | 5 | $\boldsymbol{c_{Yj}}$ | $\boldsymbol{k_Y}$ | $\boldsymbol{c_{Yj} + k_Y}$ |
 |---|---|---|---|---|---|---|---|---|
 | 3,1,2 | 0 | 0 | 0 | 75 | 200 | 275 | 500 | 775 |
 | 3,1,4 | 0 | 70 | 0 | 0 | 125 | 195 | 450 | 645 |
@@ -264,7 +264,7 @@ $Y^* = \{3,1\}$
 ```julia
 # Code block 1: five cities on the corridor, and the cost of serving each
 P = reshape([50, 150, 220, 295, 420], :, 1)   # mile markers along I-40
-k = [150, 200, 150, 150, 200]                 # fixed cost at each site
+k = [150, 200, 150, 150, 200]  # fixed cost at each site
 r, f = 1, 1                    # transport rate, annual flow
 w = r * f                      # monetary weight
 C = w * dists(P, P, 1)         # cost to serve each city from each site
@@ -427,8 +427,8 @@ Model 1 formulation: EXCHG improvement
 
 ```text
 algorithm uflxchg;
-{ input:  sites N, costs k and C as in ufladd, and an open set Y to improve }
-{ output: the improved open set Y and its total cost TC                    }
+{ input:  sites N, costs k and C as in ufladd, an open set Y to improve }
+{ output: the improved open set Y and its total cost TC                 }
 begin
     TC := TC(Y);  done := false;
     while |Y| > 1 and done = false do
@@ -680,7 +680,7 @@ where
 
 - $p$ = number of new facilities to locate.
 
-The symbols it shares with Eq. 1 carry the meanings given there. Set beside it, the difference is the whole model: the fixed-cost term is gone, and the count that Eq. 1 decides is here a constraint.
+The symbols it shares with Eq. 1 carry the meanings given there. Set beside it, the difference is the whole model: the fixed-cost term is gone, and the count that Eq. 1 determines is here a constraint.
 
 Model 2 implementation: p-median location
 
@@ -744,31 +744,7 @@ units = ud .* nc ./ sum(nc)          # units/yr by ZIP
 fz = units .* uwt                    # ton/yr by ZIP
 z = uszcta3()
 idx = [findfirst(==(zi), z.ZCTA3) for zi in zip]
-Pz = hcat(z.LON[idx], z.LAT[idx])         # ZIP centroids
-```
-
-```text
-28×2 Matrix{Float64}:
- -80.4362  36.2116
- -80.2664  36.0841
- -79.7938  35.9734
- -79.5868  35.8557
- -79.8206  36.0757
- -78.6415  35.794
- -78.6368  35.8213
- -78.9009  35.9803
- -77.5605  35.83
- -76.2912  36.1718
-   ⋮
- -80.8153  33.8728
- -80.9982  34.0538
- -81.9369  34.9057
- -80.0467  32.9426
- -79.2955  33.9648
- -82.4666  34.7218
- -80.9887  34.9308
- -81.7725  33.5232
- -80.823   32.3645
+Pz = hcat(z.LON[idx], z.LAT[idx]);   # ZIP centroids
 ```
 
 Demand is spread over the ZIPs in proportion to their customer counts, and each ZIP’s centroid stands for the customers in it. The transport rate is given, at \$0.25 per ton-mile; where such a rate comes from, and how it follows from a truck’s weight and cube limits, is Transport’s subject.
@@ -882,7 +858,7 @@ prt(DataFrame(machines = mmin, total = usd(TCmin),
 
 So the UFL opened 6, one short of the 7 that throughput feasibility requires. Opening the seventh does not fix it: the p-median that places seven machines costs \$1,249,936 a year and still asks 130.6% of one of them.
 
-Seven is a lower bound on the count, not a feasible answer, because it counts only the total work. It says nothing about how that work is distributed, and the distribution is what a location model decides.
+Seven is a lower bound on the count, not a feasible answer, because it counts only the total work. It says nothing about how that work is distributed, and the distribution is what a location model determines.
 
 Example 3(c): How many machines capacity requires
 
@@ -1048,7 +1024,7 @@ The cost being estimated is the one Eq. 1 in Lecture 2.2 put second in its ladde
 
 Both halves fall with size. Procurement improves with scale because a larger facility buys in larger quantities, on better terms and at lower transport cost per unit; local resources improve with scale because the lumpy ones, the supervisor, the maintenance crew, the utility hookup, are spread over more output. So production cost as a whole is subject to economies of scale: it rises with the production rate, but less than proportionally.
 
-Cost from an existing facility behaves as $TPC_\text{act}$ below: flat at $TPC_\text{min}$ until $f_\text{min}$ is reached, then rising as a power of the production rate. Economies of scale mean the exponent is below one, so average cost $APC_\text{act}$ falls as the facility grows.
+Cost from an existing facility behaves as $TPC_\text{act}$ below: flat at $TPC_\text{min}$ until $f_\text{min}$ is reached, then rising as a power of the production rate. Economies of scale mean the exponent is below one, so average cost $APC_\text{act}$ falls as the facility grows:
 
 $$
 \begin{aligned}
@@ -1164,7 +1140,7 @@ What makes L2 preserve totals is a property of the fit itself: its residuals sum
 
 Read that way, a simple linear regression is a generalization of the average. An average is a single number chosen to best represent a set of values; a fitted line is a functional average, a best representation that is allowed to depend on a variable $x$. Letting it depend on more variables, or on some other form of function, changes nothing essential. The idea throughout is the same: developing a means of best representing the data.
 
-That pairing is not new here, and it is worth recognizing where it has already been met. Model 5 in Lecture 2.1 and Model 6 in Lecture 2.1 are the same two objectives, differing by exactly one word: the equitable apartment location minimizes squared weighted distance and lands on the centroid, while the efficient one drops the square and lands on a weighted median at one of the cities. Lecture 2.1 makes the tie explicit, that “equalize-the-burden, center of gravity, arithmetic mean, and least squares are four names for the same balance condition,” and traces the same pair back to the average and median of Ex. 3 in Lecture 1.1.
+That pairing is not new here, and it is worth recognizing where it has already been seen. Model 5 in Lecture 2.1 and Model 6 in Lecture 2.1 are the same two objectives, differing by exactly one word: the equitable apartment location minimizes squared weighted distance and lands on the centroid, while the efficient one drops the square and lands on a weighted median at one of the cities. Lecture 2.1 makes the tie explicit, that “equalize-the-burden, center of gravity, arithmetic mean, and least squares are four names for the same balance condition,” and traces the same pair back to the average and median of Ex. 3 in Lecture 1.1.
 
 The robustness this buys, and gives up, is concrete in Ex. 1 in Lecture 2.1, the minisum location along I-40. Seven North Carolina cities put the weighted median at Winston-Salem, and Asheville is the westernmost of them. Now move Asheville to California. I-40 runs there, so it is a real move and not a thought experiment, and the median location does not shift at all: the procedure never reads a mile marker, only the order of the cities and their weights, so a city that is still the westernmost carries the same weight from two thousand miles away as from the mountains. The centroid has no such protection. The same move drags it far to the west, because a squared objective is pulled by how far a point sits, not merely by which side of the line it falls on. For a location that insensitivity is often welcome; for a cost curve that must scale, it is exactly the information the estimate cannot afford to lose.
 

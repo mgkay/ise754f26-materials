@@ -29,7 +29,7 @@ Companion script
 
 Every location problem so far has taken its existing facilities as given: a set of points, each with a weight. Where those points come from has not been asked. This lecture asks it, and the answer turns out to determine both what data can be obtained and what has to be done to the distances computed from it.
 
-Demand data comes in two kinds, and which kind a problem has decides everything that follows. Sometimes the demand is actual: the location of each customer is known, along with how much that customer bought. A company asking for its supply chain to be reviewed will send a spreadsheet of its thousand customers and last year’s demand for each, and the problem can be solved exactly as posed. Sometimes no such record exists, because the product was bought not by identifiable customers but by the general population. Demand is then population-inferred: it is assumed proportional to how people are dispersed across the region of interest, which is a reasonable assumption for any retail operation and the only one available.
+Demand data comes in two kinds, and which kind a problem has determines everything that follows. Sometimes the demand is actual: the location of each customer is known, along with how much that customer bought. A company asking for its supply chain to be reviewed will send a spreadsheet of its thousand customers and last year’s demand for each, and the problem can be solved exactly as posed. Sometimes no such record exists, because the product was bought not by identifiable customers but by the general population. Demand is then population-inferred: it is assumed proportional to how people are dispersed across the region of interest, which is a reasonable assumption for any retail operation and the only one available.
 
 The difference between the two is visible at a glance, and it is why the choice cannot be made casually. Plot the U.S. cities of at least ten thousand people and the result maps the country’s population: dense on both coasts, fairly even across the Midwest. Plot the country’s foundries instead and the picture is quite different, with very little in the South, little in the West beyond a strip of the coast, and a heavy concentration in the Great Lakes. Foundries are far more clustered than people are. So a problem whose customers are foundries must not be solved on population data; it needs the foundry locations themselves. Also, the customers of the foundries are likely to be other manufacturing and production facilities that have their own unique clustering, depending on the industry. Getting foundry data and each foundry’s customers’ data is the difficulty. This data is not typically public; for example, a project locating additive-manufacturing hubs to serve foundries had to purchase the data shown in Fig. 2.
 
@@ -96,6 +96,8 @@ The convenience comes at a price, and paying it is the theoretical business of t
 Locating a new facility at a region’s center of population does not reduce the travel distance to that population to zero. The great-circle distance computed from the aggregate point to itself is zero, and taking that at face value asserts that the whole region can be served at no transport cost. A distribution center off U.S. 70 near Garner does not serve Raleigh for nothing: the vans run, and the miles they cover are real. Treating the distance as zero does not slightly understate that cost, it discards it. What is needed instead is an estimate of the average distance from the center of a region to the population spread across it, and the assumption that makes such an estimate possible is that the population is spread uniformly over the region. That assumption is good enough for the purpose, and everything the rest of this lecture computes rests on it.
 
 ## 2. U.S. statistical geography
+
+### Census hierarchy
 
 Every data source in the next section is one of a small number of things the federal government defines, and they are arranged in a hierarchy. Knowing the hierarchy is what makes the choice in Sec. 3 a choice rather than a guess.
 
@@ -492,14 +494,14 @@ Figure 8: Two existing facilities and the single point that replaces them. The a
 
 The condition attached to that result is not decoration. The centroid is the right aggregate location because the objective is linear in distance, and it stops being right the moment the objective is not.
 
-Squared distance is the case the course has already met. Under a squared objective the substitution of Eq. 2 does not hold exactly: collapsing a cluster to its centroid leaves a residual term that depends on how spread out the cluster was, which is precisely the information the collapse discarded. So the centroid is not a universal representative. It is the representative for minisum.
+Squared distance is the case the course has already seen. Under a squared objective the substitution of Eq. 2 does not hold exactly: collapsing a cluster to its centroid leaves a residual term that depends on how spread out the cluster was, which is precisely the information the collapse discarded. So the centroid is not a universal representative. It is the representative for minisum.
 
-This is the fifth time the course has met one identity, and naming the earlier four is worth more than repeating the derivation:
+This is the fifth time the course has seen one identity, and naming the earlier four is worth more than repeating the derivation:
 
 - Lecture 1.1 introduced the mean beside the median, and the property that the mean is what scales.
 - Lecture 2.1 derived the centroid as the minimizer of squared distance at Eq. 3 in Lecture 2.1, and set the equitable objective of Model 5 in Lecture 2.1 against the efficient one of Model 6 in Lecture 2.1.
 - Lecture 2.2 used the weighted centroid as the starting point for its numerical search.
-- Lecture 2.4 met it again in an unexpected place: fitting production cost by least squares, where the residuals of an L2 fit sum to zero, which is what lets a fitted total be substituted for the data without disturbing the total.
+- Lecture 2.4 saw it again in an unexpected place: fitting production cost by least squares, where the residuals of an L2 fit sum to zero, which is what lets a fitted total be substituted for the data without disturbing the total.
 
 That last one is the same property as this section’s, stated in the language of regression rather than of geography. An aggregate demand point has to preserve the total it stands for, or every cost computed from it is wrong; residuals summing to zero is that preservation; and the point at which it holds is the weighted centroid. Lecture 2.1 puts it in one line: equalize-the-burden, center of gravity, arithmetic mean, and least squares are four names for one balance condition.
 
@@ -1061,7 +1063,7 @@ That the total can only rise is worth checking rather than assuming, and it foll
 
 How much the adjustment matters depends on how coarse the aggregation is, and it is worth knowing which way. Twenty demand points is where it bites: each one stands for a large region, so the distance it hides is large. Push the same problem to a hundred points and then to a thousand and the effect shrinks steadily, because each region is smaller and the distance inside it is a smaller share of the distance between them. At a thousand points, skipping the adjustment changes very little.
 
-That is a threshold rather than a rule, and it joins the two halves of this lecture: the resolution chosen in Sec. 3 decides how much the correction of Sec. 5 is worth. A coarse demand set needs it and a fine one nearly does not, which is another reason the resolution question is not a detail.
+That is a threshold rather than a rule, and it joins the two halves of this lecture: the resolution chosen in Sec. 3 determines how much the correction of Sec. 5 is worth. A coarse demand set needs it and a fine one nearly does not, which is another reason the resolution question is not a detail.
 
 Example 5: Aggregate EMCA
 
@@ -1081,31 +1083,7 @@ ud, uwt = 12e6, 15 / 2000              # units/yr in total, ton/unit
 fz = ud .* ncust ./ sum(ncust) .* uwt  # ton/yr by ZIP
 zc = uszcta3()
 iz = [findfirst(==(zi), zc.ZCTA3) for zi in zip]
-Pz = hcat(zc.LON[iz], zc.LAT[iz])      # ZIP centroids
-```
-
-```text
-28×2 Matrix{Float64}:
- -80.4362  36.2116
- -80.2664  36.0841
- -79.7938  35.9734
- -79.5868  35.8557
- -79.8206  36.0757
- -78.6415  35.794
- -78.6368  35.8213
- -78.9009  35.9803
- -77.5605  35.83
- -76.2912  36.1718
-   ⋮
- -80.8153  33.8728
- -80.9982  34.0538
- -81.9369  34.9057
- -80.0467  32.9426
- -79.2955  33.9648
- -82.4666  34.7218
- -80.9887  34.9308
- -81.7725  33.5232
- -80.823   32.3645
+Pz = hcat(zc.LON[iz], zc.LAT[iz]);     # ZIP centroids
 ```
 
 The land areas were available the whole time, in the same table the centroids came from, and they are what the earlier solution left on the floor.

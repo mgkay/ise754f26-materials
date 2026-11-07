@@ -19,15 +19,17 @@ Companion script
 
 2-loc-3.jl
 
-In a multifacility location problem, the number of NFs to be located can either be specified or can be determined as part of the location procedure. When the number of NFs is specified, the allocation of EFs to NFs can either be given or determined as part of what is then termed a location–allocation problem. If the NF-to-EF allocations are given and there are no interactions between the NFs, then the multifacility problem reduces to a series of single-facility location problems. The location–allocation problem remains difficult even when there are no interactions between the NFs because of the need to determine the allocations.
+In a multifacility location problem, the number of new facilities (NFs) to be located can either be specified or can be determined as part of the location procedure. When the number of NFs is specified, the allocation of existing facilities (EFs) to NFs can either be given or determined as part of what is then termed a location–allocation problem. If the NF-to-EF allocations are given and there are no interactions between the NFs, then the multifacility problem reduces to a series of single-facility location problems. The location–allocation problem remains difficult even when there are no interactions between the NFs because of the need to determine the allocations.
 
 Locating distribution centers is the most common multifacility location problem, and in the terms just set out it is a location–allocation problem: the number of DCs is either specified or determined as part of the procedure, their allocation of customers is determined rather than given, and there are typically no interactions between the DCs themselves. Most facilities are sited against a long list of considerations, of which transport is only one, but a DC exists to move goods, so its location is close to a pure transport decision. Each customer is normally served by a single DC, and which one that is depends on where the DCs are, so the location and the allocation have to be determined together.
 
 ## 1. Allocation
 
+### Allocation problem
+
 Before any facility is moved, there is a smaller problem worth isolating: given where the NFs already are, which one serves each EF, and what does that cost? This is the allocation problem, and it is the inner step of everything that follows.
 
-What makes it an allocation problem is that an EF need not be served by every NF. Where the NFs hold duplicate product, as distribution centers do, the sensible arrangement is for each to serve the EFs nearest it. That is a property of the application rather than of the model: were the NFs suppliers of different inputs instead, each EF would draw from all of them and no allocation would be left to decide.
+What makes it an allocation problem is that an EF need not be served by every NF. Where the NFs hold duplicate product, as distribution centers do, the sensible arrangement is for each to serve the EFs nearest it. That is a property of the application rather than of the model: were the NFs suppliers of different inputs instead, each EF would draw from all of them and no allocation would be left to determine.
 
 Figure 1: Allocation of four EFs to two NFs. Before, every NF could reach every EF; after, each EF is served by the NF nearest it.
 
@@ -276,7 +278,7 @@ where
 
 Here $d = 2$, for longitude and latitude. The first double sum is the only new thing, and it is what makes this one problem rather than $n$ of them: move facility $j$ and the cost of every link it has to another new facility moves with it.
 
-It is worth saying plainly how often this general problem gets solved. In thirty or forty years of consulting, never once. It is well developed as theory, and a graduate semester can be spent formulating it as a linear program, but no client has ever asked for manufacturing and distribution to be located together. The manufacturing sites are already there, and the distribution centers are located relative to them. Nor would anyone want them decided together: a plant costs orders of magnitude more than a distribution center, so it is sited on its own terms and the distribution follows.
+It is worth saying plainly how often this general problem gets solved. In thirty or forty years of consulting, never once. It is well developed as theory, and a graduate semester can be spent formulating it as a linear program, but no client has ever asked for manufacturing and distribution to be located together. The manufacturing sites are already there, and the distribution centers are located relative to them. Nor would anyone want them determined together: a plant costs orders of magnitude more than a distribution center, so it is sited on its own terms and the distribution follows.
 
 ### No interaction between new facilities
 
@@ -349,7 +351,7 @@ where
 
 That total runs over both an NF’s customers and its interactions with the other NFs. The two rules are not interchangeable in order. The co-location rule is applied to exhaustion first, each reduction folding two rows into one and so changing the totals the next comparison uses, and only then is the placement rule tried. Ex. 3(c) turns on exactly that: the co-location is what makes the placement possible, and neither facility can be placed before it.
 
-The procedure that applies it is stated at a high level, saying what each pass decides and nothing about how the matrices are kept. Folding one row into another, zeroing a diagonal, turning a placed facility into an existing one: all of that is real, none of it is the idea, and all of it is in the implementation below. Solving using the theorem by hand means applying the rules, not the bookkeeping.
+The procedure that applies it is stated at a high level, saying what each pass determines and nothing about how the matrices are kept. Folding one row into another, zeroing a diagonal, turning a placed facility into an existing one: all of that is real, none of it is the idea, and all of it is in the implementation below. Solving using the theorem by hand means applying the rules, not the bookkeeping.
 
 Model 2 formulation: Majority reduction algorithm
 
@@ -634,8 +636,9 @@ $$
 \text{Minimize} \quad & f(X, W) = \sum_{i=1}^{m} \sum_{j=1}^{n}
 w_{ji} \, d(X_j, P_i) &&\\[2pt]
 \text{subject to} \quad & \sum_{j=1}^{n} w_{ji} = w_i,
-&& i = 1, \ldots, m \quad (a)\\[2pt]
-& w_{ji} \ge 0, && j = 1, \ldots, n; \ i = 1, \ldots, m \quad (b)
+&& \hphantom{j}\mathllap{i} = 1, \ldots, m \quad (a)\\[2pt]
+& w_{ji} \ge 0, && j = 1, \ldots, n \quad (b)\\[-2pt]
+& && \hphantom{j}\mathllap{i} = 1, \ldots, m
 \end{aligned}
 
 $$
@@ -650,6 +653,10 @@ where
 = $(a_i, b_i)$
 - $d(X_j, P_i)$ = distance between NF $j$ and EF $i$
 - $w_i$ = flow requirement of EF $i$.
+
+- $f(X, W)$ = total transportation cost
+- $n$ = number of NFs
+- $m$ = number of EFs.
 
 Two different objects carry the letter $w$ here. The $w_{ji}$ are the elements of the matrix $W$, one NF’s allocated share of one EF’s requirement, and the $w_i$ are the elements of the vector $w$, an EF’s requirement in total. The statement is read as an objective function, then a colon, then the constraints to be enforced: each EF’s allocations sum to its requirement, and no allocation is negative. Without that second constraint the problem would be unbounded, since negative weights would let a minimization run off to negative infinity.
 
@@ -808,7 +815,7 @@ prt(DataFrame(start = ["[0, 200]", "[200, 500]"],
   [200, 500]  270  420  1,050
 ```
 
-Each axis is one facility’s location, and both span the mile markers along I-40. Two basins appear rather than one, so where the search starts decides which one it ends up in. As the problem gets bigger there are typically more basins to look at, and that is why it is a difficult problem.
+Each axis is one facility’s location, and both span the mile markers along I-40. Two basins appear rather than one, so where the search starts determines which one it ends up in. As the problem gets bigger there are typically more basins to look at, and that is why it is a difficult problem.
 
 Markers 190 and 295 at $TC =$ 1340, or markers 270 and 420 at $TC =$ 1050, according to where the search starts.
 
@@ -855,7 +862,7 @@ Three more passes determine it, each one repeating those two steps (Table 2).
 
 Table 2: The ALA procedure by hand from markers 0 and 200. Pass 4 reproduces pass 3’s allocation and neither facility moves, so the procedure stops.
 
-| pass | facilities at | facility 1 serves | facility 2 serves | $TC$ | move to |
+| pass | facilities at | facility 1 serves | facility 2 serves | $\boldsymbol{TC}$ | move to |
 |---|---|---|---|---|---|
 | 1 | 0, 200 | 50 | 150, 190, 220, 270, 295, 420 | 2,720 | 50, 270 |
 | 2 | 50, 270 | 50, 150 | 190, 220, 270, 295, 420 | 1,840 | 150, 295 |
@@ -877,7 +884,7 @@ Now facility 1 starts at marker 200 and facility 2 at marker 500, so the midpoin
 
 Table 3: The same procedure from markers 200 and 500, which settles in a single move.
 
-| pass | facilities at | facility 1 serves | facility 2 serves | $TC$ | move to |
+| pass | facilities at | facility 1 serves | facility 2 serves | $\boldsymbol{TC}$ | move to |
 |---|---|---|---|---|---|
 | 1 | 200, 500 | 50, 150, 190, 220, 270, 295 | 420 | 1,840 | 270, 420 |
 | 2 | 270, 420 | 50, 150, 190, 220, 270, 295 | 420 | 1,050 | 270, 420 |

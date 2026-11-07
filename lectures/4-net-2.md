@@ -260,9 +260,9 @@ function streets(p, L)
     k = Dict(zip(zip(L.SRC, L.DST), 1:nrow(L)))   # link of (SRC, DST)
     lk(u, v) = get(k, (u, v), get(k, (v, u), 0))  # either direction
     nm = [L.NAME[lk(u, v)] for (u, v) in zip(p, p[2:end])]
-    t = findall(!ismissing, nm)                 # the steps with a name
+    t = findall(!ismissing, nm)                   # the steps with a name
     a = [i for i in eachindex(t) if i == 1 || nm[t[i]] != nm[t[i-1]]]
-    b = [a[2:end] .- 1; length(t)]              # each run's first, last
+    b = [a[2:end] .- 1; length(t)]                # each run's first, last
     return DataFrame(Seg = eachindex(a), Street = nm[t[a]],
                      Steps = string.(t[a], "-", t[b]))
 end
@@ -517,8 +517,8 @@ solve for:
 (a) supply node assigned to each demand node.
 
 subject to:
-(a) supply: each supply node provides at most one unit;
-(b) demand: each demand node requires exactly one unit.
+(a) Supply: each supply node provides at most one unit;
+(b) Demand: each demand node requires exactly one unit.
 
 assumptions:
 (a) cost of assigning each supply node to each demand node is given;
@@ -531,10 +531,11 @@ Model 1 formulation: Linear assignment
 
 $$
 \begin{array}{rlrclll}
-& \text{Minimize} & \displaystyle \sum_{i \in S} \sum_{j \in D} c_{ij}\, x_{ij} & & & & \\[2pt]
-& \text{subject to} & \displaystyle \sum_{j \in D} x_{ij} & \le & 1, & i \in S & (a) \\[2pt]
-& & \displaystyle \sum_{i \in S} x_{ij} & = & 1, & j \in D & (b) \\[2pt]
-& & x_{ij} & \ge & 0, & i \in S,\ j \in D &
+& \text{Minimize} & \displaystyle \sum_{i \in S} \sum_{j \in D} c_{ij}\, x_{ij} & & & & \\[16pt]
+& \text{subject to} & & & & & \\[2pt]
+& & \textcolor{#d21f26}{\small\text{Supply}}\quad\mathopen{} \smash{\displaystyle \sum_{j \in D}}\, x_{ij} & \le & 1, & \hphantom{k}\mathllap{i} \in S & (a) \\[16pt]
+& & \textcolor{#d21f26}{\small\text{Demand}}\quad\mathopen{} \smash{\displaystyle \sum_{i \in S}}\, x_{ij} & = & 1, & \hphantom{k}\mathllap{j} \in D & (b) \\[16pt]
+& & x_{ij} & \ge & 0, & \hphantom{k}\mathllap{i} \in S,\ j \in D &
 \end{array}
 \tag{1}
 $$
@@ -596,7 +597,7 @@ $$
 
 one row for each car and one column for each passenger. Determine the assignment of cars to passengers, first by the greedy procedure and then as Model 1, and compare their total distances.
 
-Unter is a competitor to Uber. A ride-hailing service has a set of cars that are available and a set of passenger requests, so it is essentially solving a linear assignment problem in deciding which driver to assign to which passenger. Here there are three cars and three passengers, and the cost of an assignment is the distance of the car from the passenger, so the solution wanted is the one that minimizes the total distance with every passenger assigned a car. In terms of Model 1, the cars are the supply nodes, each providing one unit, the passengers are the demand nodes, each requiring one, and $c_{ij}$ is $d_{ij}$, the distance of car $i$ from passenger $j$, so the cost matrix is $D$.
+Unter is a competitor to Uber. A ride-hailing service has a set of cars that are available and a set of passenger requests, so it is essentially solving a linear assignment problem in determining which driver to assign to which passenger. Here there are three cars and three passengers, and the cost of an assignment is the distance of the car from the passenger, so the solution wanted is the one that minimizes the total distance with every passenger assigned a car. In terms of Model 1, the cars are the supply nodes, each providing one unit, the passengers are the demand nodes, each requiring one, and $c_{ij}$ is $d_{ij}$, the distance of car $i$ from passenger $j$, so the cost matrix is $D$.
 
 Fig. 3 draws the problem as a complete bipartite network, as Fig. 2 does for its suppliers and distribution centers: the cars are its supply nodes, the passengers its demand nodes, and each arc carries the car’s distance from the passenger.
 
@@ -1059,10 +1060,10 @@ Show the code that draws this map
 
 ```julia
 # Code block 34: the assignment on the streets
-orc = colorant"#e08214"                  # greedy, where it differs
+orc = colorant"#e08214"                     # greedy, where it differs
 streetU(k) = SimpleWeightedGraph(LU.SRC[k], LU.DST[k], LU.DIST[k];
                                  combine = min)
-lo = streetU(.!cU .& (LU.FCLASS .>= 6))  # as in Code block 9
+lo = streetU(.!cU .& (LU.FCLASS .>= 6))     # as in Code block 9
 hi = streetU(.!cU .& (LU.FCLASS .<= 5))
 route(i, j) = tracepath(PU[drv[i]], drv[i], pas[j])  # driver i to j
 rts = [[route(car(Xᵒ, j), j) for j in 1:length(pas)]; # LP, then
@@ -1133,8 +1134,8 @@ solve for:
 (a) amount shipped from each supply node to each demand node.
 
 subject to:
-(a) supply: each supply node provides at most one unitits supply;
-(b) demand: each demand node requires exactly one unitits demand.
+(a) Supply: each supply node provides at most ~~one unit~~ its supply;
+(b) Demand: each demand node requires exactly ~~one unit~~ its demand.
 
 assumptions:
 (a) cost per unit shipped from each supply node to each demand node is constant;
@@ -1148,10 +1149,10 @@ Model 2 formulation: Transportation
 
 $$
 \begin{array}{rlrclll}
-& \text{Minimize} & \displaystyle \sum_{i \in S} \sum_{j \in D} c_{ij}\, x_{ij} & & & & \\[2pt]
-& \text{subject to} & \displaystyle \sum_{j \in D} x_{ij} & \le & s_i, & i \in S & (a) \\[2pt]
-& & \displaystyle \sum_{i \in S} x_{ij} & = & d_j, & j \in D & (b) \\[2pt]
-& & x_{ij} & \ge & 0, & i \in S,\ j \in D &
+& \text{Minimize} & \displaystyle \sum_{i \in S} \sum_{j \in D} c_{ij}\, x_{ij} & & & & \\[16pt]
+& \text{subject to} & \smash{\displaystyle \sum_{j \in D}}\, x_{ij} & \le & s_i, & \hphantom{k}\mathllap{i} \in S & (a) \\[16pt]
+& & \smash{\displaystyle \sum_{i \in S}}\, x_{ij} & = & d_j, & \hphantom{k}\mathllap{j} \in D & (b) \\[16pt]
+& & x_{ij} & \ge & 0, & \hphantom{k}\mathllap{i} \in S,\ j \in D &
 \end{array}
 \tag{2}
 $$
@@ -1828,12 +1829,12 @@ solve for:
 (a) flow on each arc.
 
 subject to:
-(a) flow balance: at each node, flow out minus flow in is its net supply, and no more than it at a supply node;
-(b) arc bounds: the flow on each arc is between its lower and upper bound.
+(a) Flow balance: at each node, flow out minus flow in is its net supply, and no more than it at a supply node;
+(b) Arc bounds: the flow on each arc is between its lower and upper bound.
 
 assumptions:
 (a) cost per unit of flow on each arc is constant;
-(b) total supply is at least total demandeach node’s net supply is given: positive at a supply node, negative at a demand node, and zero at a node flow only passes through.
+(b) ~~total supply is at least total demand~~ each node’s net supply is given: positive at a supply node, negative at a demand node, and zero at a node flow only passes through.
 
 Model 3: Minimum cost network flow
 
@@ -1843,15 +1844,14 @@ Model 3 formulation: Minimum cost network flow
 
 $$
 \begin{array}{rlrclll}
-& \text{Minimize} & \displaystyle \sum_{k \in E} c_k\, x_k & & & & \\[2pt]
-& \text{subject to} & \displaystyle \sum_{k \in E} a_{ik}\, x_k & \le & s_i, & i \in V : s_i > 0 & (a) \\[2pt]
-& & \displaystyle \sum_{k \in E} a_{ik}\, x_k & = & s_i, & i \in V : s_i \le 0 & (a) \\[2pt]
-& & l_k \;\le\; x_k & \le & u_k, & k \in E & (b)
+& \text{Minimize} & \displaystyle \sum_{k \in E} c_k\, x_k & & & & \\[16pt]
+& \text{subject to} & & & & & \\[2pt]
+& & \smash{\displaystyle \sum_{k \in E}}\, a_{ik}\, x_k & \le & s_i, & i \in V : s_i > 0 & (a) \\[16pt]
+& & \smash{\displaystyle \sum_{k \in E}}\, a_{ik}\, x_k & = & s_i, & i \in V : s_i \le 0 & (a) \\[16pt]
+& & \textcolor{#d21f26}{\small\text{Arc bounds}}\quad\mathopen{} l_k \;\le\; x_k & \le & u_k, & k \in E & (b)
 \end{array}
 \tag{4}
 $$
-
-Both lines labeled (a) in Eq. 4 are row (a), flow balance, on purpose: the one constraint is written as an inequality at the supply nodes and as an equation at every other node.
 
 where
 
@@ -1864,6 +1864,8 @@ where
 - $u_k$ = upper bound on the flow on arc $k$, by default $\infty$ (units)
 - $V$ = nodes
 - $E$ = arcs.
+
+Both lines labeled (a) in Eq. 4 are row (a), flow balance, on purpose: the one constraint is written as an inequality at the supply nodes and as an equation at every other node.
 
 Model 3 states two constraints, and both are rows. Row (a), flow balance, is one row per node, written in two lines: the sum $\sum_k a_{ik} x_k$ is the flow out of node $i$ less the flow into it, which at a supply node can be no more than its supply, and elsewhere must equal the net supply, the negative of a demand at a demand node and zero at a transshipment node. At the supply and demand nodes of a transportation network, row (a) is exactly rows (a) and (b) of Eq. 2, which is why Model 2 is a special case of Model 3. Row (b), arc bounds, is new; with the defaults, $0$ and $\infty$, it is just the nonnegativity of the flows.
 
@@ -1914,17 +1916,20 @@ j = [2, 3, 4, 5, 5, 5]
 c = [2, 3, 4, 5, 1, 3]
 s = [6, 2, 0, 0, -8]
 A = list2incid(i, j, length(s))
-Matrix([c' 0; A s])
+prt([c' NaN; A s]; rows = ["Cost"; string.(1:length(s))],
+    cols = [["($a,$b)" for (a, b) in zip(i, j)]; "Supply"],
+    row_title = "Node")
 ```
 
 ```text
-6×7 Matrix{Float64}:
-  2.0   3.0   4.0   5.0   1.0   3.0   0.0
-  1.0   1.0   0.0   0.0   0.0   0.0   6.0
- -1.0   0.0   1.0   1.0   0.0   0.0   2.0
-  0.0  -1.0   0.0   0.0   1.0   0.0   0.0
-  0.0   0.0  -1.0   0.0   0.0   1.0   0.0
-  0.0   0.0   0.0  -1.0  -1.0  -1.0  -8.0
+Node  (1,2)  (1,3)  (2,4)  (2,5)  (3,5)  (4,5)  Supply
+──────────────────────────────────────────────────────
+Cost      2      3      4      5      1      3
+   1      1      1      0      0      0      0       6
+   2     -1      0      1      1      0      0       2
+   3      0     -1      0      0      1      0       0
+   4      0      0     -1      0      0      1       0
+   5      0      0      0     -1     -1     -1      -8
 ```
 
 Labeled, the same data are Table 4, in which each column is an arc, with its cost above it, and each row is a node, with its net supply at the right:
@@ -1933,12 +1938,12 @@ Table 4: The data of Fig. 8: each column an arc, with its cost $c_k$, and each r
 
 | | arc | (1,2) | (1,3) | (2,4) | (2,5) | (3,5) | (4,5) | |
 |---|---|---|---|---|---|---|---|---|
-| | $c_k$ | 2 | 3 | 4 | 5 | 1 | 3 | $s_i$ |
+| | $\boldsymbol{c_k}$ | 2 | 3 | 4 | 5 | 1 | 3 | $\boldsymbol{s_i}$ |
 | node | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 6 |
-| 2 | $-1$ | 0 | 1 | 1 | 0 | 0 | 2 | |
-| 3 | 0 | $-1$ | 0 | 0 | 1 | 0 | 0 | |
-| 4 | 0 | 0 | $-1$ | 0 | 0 | 1 | 0 | |
-| 5 | 0 | 0 | 0 | $-1$ | $-1$ | $-1$ | $-8$ | |
+| | 2 | $-1$ | 0 | 1 | 1 | 0 | 0 | 2 |
+| | 3 | 0 | $-1$ | 0 | 0 | 1 | 0 | 0 |
+| | 4 | 0 | 0 | $-1$ | 0 | 0 | 1 | 0 |
+| | 5 | 0 | 0 | 0 | $-1$ | $-1$ | $-1$ | $-8$ |
 
 Example 6: Small networks as flows
 
@@ -1994,18 +1999,21 @@ j = [2, 3, 3, 4, 4, 5, 5, 6, 6]
 c = [4, 2, 1, 5, 8, 10, 2, 6, 3]
 s = [1, 0, 0, 0, 0, -1]
 A = list2incid(i, j, length(s))
-Matrix([c' 0; A s])
+prt([c' NaN; A s]; rows = ["Cost"; string.(1:length(s))],
+    cols = [["($a,$b)" for (a, b) in zip(i, j)]; "Supply"],
+    row_title = "Node")
 ```
 
 ```text
-7×10 Matrix{Float64}:
-  4.0   2.0   1.0   5.0   8.0  10.0   2.0   6.0   3.0   0.0
-  1.0   1.0   0.0   0.0   0.0   0.0   0.0   0.0   0.0   1.0
- -1.0   0.0   1.0   1.0   0.0   0.0   0.0   0.0   0.0   0.0
-  0.0  -1.0  -1.0   0.0   1.0   1.0   0.0   0.0   0.0   0.0
-  0.0   0.0   0.0  -1.0  -1.0   0.0   1.0   1.0   0.0   0.0
-  0.0   0.0   0.0   0.0   0.0  -1.0  -1.0   0.0   1.0   0.0
-  0.0   0.0   0.0   0.0   0.0   0.0   0.0  -1.0  -1.0  -1.0
+Node  (1,2)  (1,3)  (2,3)  (2,4)  (3,4)  (3,5)  (4,5)  (4,6)  (5,6)  Supply
+───────────────────────────────────────────────────────────────────────────
+Cost      4      2      1      5      8     10      2      6      3
+   1      1      1      0      0      0      0      0      0      0       1
+   2     -1      0      1      1      0      0      0      0      0       0
+   3      0     -1     -1      0      1      1      0      0      0       0
+   4      0      0      0     -1     -1      0      1      1      0       0
+   5      0      0      0      0      0     -1     -1      0      1       0
+   6      0      0      0      0      0      0      0     -1     -1      -1
 ```
 
 Show the code that draws this figure
@@ -2017,7 +2025,7 @@ Show the code that draws this figure
 XY6 = [(0.0, 0.0), (1.0, 0.58), (1.0, -0.58), (2.0, 0.58),
        (2.0, -0.58), (3.0, 0.0)]
 fig = drawnet(XY6, i, j, string.(c), s; showzero = true, w = 440,
-              h = 230, lim = ((-0.6, 3.6), (-0.95, 0.95)),
+              h = 230, lim = ((-0.6, 3.6), (-1.0, 0.95)),
               side = [1, -1, -1, 1, 1, 1, -1, 1, -1])
 # The lower bound on arc (2,3), on the side of it clear of its cost
 text!(content(fig[1, 1]), 1.07, 0.24; text = L"l = 1", color = ink,
@@ -2052,20 +2060,22 @@ idx = findfirst(==((2, 3)), collect(zip(i, j)))   # Arc (2,3)'s index
 l = zeros(length(i))
 l[idx] = 1
 u = fill(Inf, length(i))
-[u l]
+prt([u l]; rows = ["($a,$b)" for (a, b) in zip(i, j)],
+    cols = ["u", "l"], row_title = "Arc")
 ```
 
 ```text
-9×2 Matrix{Float64}:
- Inf  0.0
- Inf  0.0
- Inf  1.0
- Inf  0.0
- Inf  0.0
- Inf  0.0
- Inf  0.0
- Inf  0.0
- Inf  0.0
+  Arc    u  l
+─────────────
+(1,2)  Inf  0
+(1,3)  Inf  0
+(2,3)  Inf  1
+(2,4)  Inf  0
+(3,4)  Inf  0
+(3,5)  Inf  0
+(4,5)  Inf  0
+(4,6)  Inf  0
+(5,6)  Inf  0
 ```
 
 ```julia
