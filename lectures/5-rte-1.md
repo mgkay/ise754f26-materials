@@ -295,7 +295,7 @@ prt(df)
 
 One permutation at a time. As long as the permutations are not all generated first, brute force stays feasible even for fairly large problems: each call for a permutation gives just the next one in the sequence, not all of the billions or trillions of them. It may take some time, but it uses essentially no memory, since none of those permutations has to be stored. The Combinatorics package’s permutations is designed to generate one at a time, which is what makes this convenient.
 
-Code block 5 computes the great circle distances between them, the arc costs $c_{ij}$ of a symmetric TSP, and costs every tour that starts and ends at the first city, as the permutations of cities 2 to 10 taken one at a time, keeping the cheapest, which is the mathematical formulation of Eq. 4 worked in full:
+Code block 5 computes the great circle distances between them, the arc costs $c_{ij}$ of a symmetric TSP, and computes the cost of every tour that starts and ends at the first city, as the permutations of cities 2 to 10 taken one at a time, keeping the cheapest, which is the mathematical formulation of Eq. 4 worked in full:
 
 ```julia
 # Code block 5: great circle distances, and every tour by brute force
@@ -1118,7 +1118,7 @@ Example 3(d): Against the optimum
 
 Determine the optimal tour, by looking at all 120 tours and by solving the formulation of Model 1, and how far the tours of Ex. 3(a) and 3(c) are from it.
 
-With only six nodes, brute force is reasonable: Code block 19 lists every tour that starts and ends at node 1, as the permutations of nodes 2 to 6, costs each one, which is the mathematical formulation of Eq. 4 worked in full, and solves Model 1 with the implementation of Sec. 2:
+With only six nodes, brute force is reasonable: Code block 19 lists every tour that starts and ends at node 1, as the permutations of nodes 2 to 6, computes the cost of each one, which is the mathematical formulation of Eq. 4 worked in full, and solves Model 1 with the implementation of Sec. 2:
 
 ```julia
 # Code block 19: all 120 tours by brute force, and the formulation
@@ -1567,7 +1567,7 @@ Example 4(b): Multi-start 2-opt
 
 Determine the best tour that 2-opt finds from 100 random starting tours, under great circle distances.
 
-Code block 27 computes the great circle distance between every pair of county points, so that the tour cost πTCh of Code block 14, which reads D, now costs a tour of the counties:
+Code block 27 computes the great circle distance between every pair of county points, so that the tour cost πTCh of Code block 14, which reads D, now computes the cost of a tour of the counties:
 
 ```julia
 # Code block 27: great circle distances between the county points
@@ -1575,7 +1575,7 @@ XY = hcat(df.LON, df.LAT)
 D = dists(XY, XY, :mi);
 ```
 
-Code block 28 draws a random tour of the 100 counties and costs it with πTCh, and Fig. 13 draws it:
+Code block 28 draws a random tour of the 100 counties and computes its cost with πTCh, and Fig. 13 draws it:
 
 ```julia
 # Code block 28: a random tour of the counties, and its cost

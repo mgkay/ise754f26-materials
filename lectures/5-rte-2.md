@@ -262,7 +262,7 @@ D
  335   60  340   90  275    0
 ```
 
-Code block 3 marks which elements of the route are loadings, the first occurrence of each shipment, translates the route into its location sequence, and costs each segment and the whole route:
+Code block 3 marks which elements of the route are loadings, the first occurrence of each shipment, translates the route into its location sequence, and computes the cost of each segment and the whole route:
 
 ```julia
 # Code block 3: the route's loadings, location sequence and cost
@@ -526,7 +526,7 @@ rteTC(rte, sh, D)
 
 The route of Code block 10 is not meant to be optimal; it is just a route to work with, and any route will do: a random route is essentially two random permutations mixed together, as the random tours of Lecture 5.1 were one. The first of the functions identifies which elements of a route are origins and which are destinations, since each shipment’s number appears twice: it gives the Boolean value true for the elements that are pickups, and its negation is then true for the deliveries. It uses Julia’s set data structure to keep track of which shipments have been seen: a shipment not yet seen is a pickup and is added to the set, and one already seen is a delivery. The next function does a lot of the work of the procedures: given a route, it translates it into its location sequence, using one of Julia’s most useful features, an ifelse that can be broadcast, so that for a pickup it takes the shipment’s beginning field b and otherwise its ending field e. This is critical, because whenever there is a route, its location sequence can immediately be found, and the location sequence is what is then used to look up the cost of each segment of the route. That is what the segment cost function does, the same segcost that Lecture 5.1 used for a tour, here given the location sequence: it picks out the element of the cost matrix for each segment of the route. Added up, they give 916.86, an improvement over the 1,006.18 of the three independent shipments, even though the route is not necessarily optimal.
 
-The five segment costs of Code block 12 are numbers picked from the matrix: the first segment, from location 1 to location 3, is 264, the entry in row 1 and column 3. The matrix here is the distance matrix D, but in general it can be a cost, which is why the functions call it C, and it is given the distance matrix because here distance and cost are the same. Most realistically the cost of a routing problem is the travel time, written T; it is rarely dollars, because the same trucks are used and their cost per mile is about the same, so that distance is a good substitute, but time is usually what constrains a route: hours-of-service rules, for example, allow a truck driver no more than 11 hours of driving, and a route may also have a maximum distance. So generically the term is cost, but it is usually a time or a distance, not dollars. Route total cost, rteTC, puts route-to-location and segment cost together: from the route, the shipments and the cost matrix it finds the location sequence, costs its segments and sums them, 916.86 for this route. It is the main worker bee. Every constraint is put into the route total cost, so the 2-opt, savings and minimum cost insertion procedures need no change when constraints are added. Here it is unconstrained and only adds up the segments; but with a limit of, say, 1,000 miles on a route, it could return a cost of infinity for a route that exceeds the limit, and in the savings procedure, which looks only at positive savings, an infinite cost of consolidating gives a savings of minus infinity. It is the same idea as the infinite cost that the maximin location of Lecture 2.2, Sec. 4, gives a point outside the region it must stay in, used in a routing context, and none of the routing code has to change. To use it, Code block 14 defines a one-line function rTDh of the route alone, since the distance matrix and the shipments do not change; it locks in their current values, and the h, for handle, marks it as a one-line function that does a calculation. The single-shipment route of shipment 1, $(1, 1)$, a pickup in Raleigh and a delivery in Athens, is a valid route whose cost is just the distance from location 1 to location 2 in the matrix, with nothing recalculated.
+The five segment costs of Code block 12 are numbers picked from the matrix: the first segment, from location 1 to location 3, is 264, the entry in row 1 and column 3. The matrix here is the distance matrix D, but in general it can be a cost, which is why the functions call it C, and it is given the distance matrix because here distance and cost are the same. Most realistically the cost of a routing problem is the travel time, written T; it is rarely dollars, because the same trucks are used and their cost per mile is about the same, so that distance is a good substitute, but time is usually what constrains a route: hours-of-service rules, for example, allow a truck driver no more than 11 hours of driving, and a route may also have a maximum distance. So generically the term is cost, but it is usually a time or a distance, not dollars. Route total cost, rteTC, puts route-to-location and segment cost together: from the route, the shipments and the cost matrix it finds the location sequence, computes its segment costs and sums them, 916.86 for this route. It is the main worker bee. Every constraint is put into the route total cost, so the 2-opt, savings and minimum cost insertion procedures need no change when constraints are added. Here it is unconstrained and only adds up the segments; but with a limit of, say, 1,000 miles on a route, it could return a cost of infinity for a route that exceeds the limit, and in the savings procedure, which looks only at positive savings, an infinite cost of consolidating gives a savings of minus infinity. It is the same idea as the infinite cost that the maximin location of Lecture 2.2, Sec. 4, gives a point outside the region it must stay in, used in a routing context, and none of the routing code has to change. To use it, Code block 14 defines a one-line function rTDh of the route alone, since the distance matrix and the shipments do not change; it locks in their current values, and the h, for handle, marks it as a one-line function that does a calculation. The single-shipment route of shipment 1, $(1, 1)$, a pickup in Raleigh and a delivery in Athens, is a valid route whose cost is just the distance from location 1 to location 2 in the matrix, with nothing recalculated.
 
 ```julia
 # Code block 14: the costs of some single- and multi-shipment routes
@@ -1254,7 +1254,7 @@ Example 5(b): In Julia
 
 Determine the same savings in Julia, and how the route compares with every tour from the depot.
 
-Code block 26 computes the saving of every pair, largest first, as the rows $(i, j, s_{ij})$ of a matrix, and then costs all 120 tours from the depot one at a time, as Code block 4 costs every route:
+Code block 26 computes the saving of every pair, largest first, as the rows $(i, j, s_{ij})$ of a matrix, and then computes the cost of all 120 tours from the depot one at a time, as Code block 4 computes the cost of every route:
 
 ```julia
 # Code block 26: the savings, largest first, and all 120 tours
@@ -1475,7 +1475,7 @@ r = savings(rTDh, sh) = [[1, 2, 1, 3, 2, 3]]
  849.1072994662491
 ```
 
-Shipments 2 and 3 have the largest saving, so savings merges them first, then inserts shipment 1, and constructs $(1, 2, 1, 3, 2, 3)$, the route minimum cost insertion built in Ex. 3(b). Code block 31 costs all 60 routes of the three shipments, one at a time, with the generator rtes of Code block 4:
+Shipments 2 and 3 have the largest saving, so savings merges them first, then inserts shipment 1, and constructs $(1, 2, 1, 3, 2, 3)$, the route minimum cost insertion built in Ex. 3(b). Code block 31 computes the cost of all 60 routes of the three shipments, one at a time, with the generator rtes of Code block 4:
 
 ```julia
 # Code block 31: Ex. 2's 60 routes by brute force
@@ -1598,7 +1598,7 @@ fig
 
 Figure 9: The tour of Fig. 8 improved by 2-opt.
 
-With every shipment loaded at Raleigh, a route is a tour: loading the five shipments in the order of a permutation $p$ and unloading them in the same order, the route $(p, p)$, visits the cities in that order. Code block 36 costs all $5! = 120$ such tours, one at a time, as Code block 4 costs the routes of Ex. 1:
+With every shipment loaded at Raleigh, a route is a tour: loading the five shipments in the order of a permutation $p$ and unloading them in the same order, the route $(p, p)$, visits the cities in that order. Code block 36 computes the cost of all $5! = 120$ such tours, one at a time, as Code block 4 computes the cost of the routes of Ex. 1:
 
 ```julia
 # Code block 36: all 120 tours from Raleigh by brute force

@@ -1046,7 +1046,7 @@ If multiple products are produced using exclusive shared resources, there is oft
 
 In the following model, the switchover cost is separate from the production cost in the objective function. There are no setup costs in this model; instead, there are switchover costs. They differ from setup costs in that the switchover cost is incurred only in a period when production switches to a different product at a given stage. As long as the same product continues to be produced in the next period, no additional switchover cost is incurred. This differs from a setup cost, which is incurred every period a stage produces, as in Lecture 4.3.
 
-Switchover costs extend the linking constraints of Sec. 3. A stage is still used exclusively for one product or the other, and what is added is the cost of the switchover each time the stage is switched to a product. Without that cost, a plan would probably switch between the products more frequently; with it, it is often to the plan’s advantage to keep a stage producing the same product a period longer and avoid a switchover, depending on the switchover cost’s relative magnitude. Inventory is what makes that possible: more of a product can be produced while a stage is set up for it, and the inventory then covers its demand over a longer stretch in which it is not produced. Exactly how to do that is hard to work out, and it is the math programming model that does all of the logic. Its objective now has three terms.
+Switchover costs extend the linking constraints of Sec. 3. A stage is still used exclusively for one product or the other, and what is added is the cost of the switchover each time the stage is switched to a product. Without that cost, a plan would probably switch between the products more frequently; with it, it is often to the plan’s advantage to keep a stage producing the same product a period longer and avoid a switchover, depending on the switchover cost’s relative magnitude. Inventory is what makes that possible: more of a product can be produced while a stage is set up for it, and the inventory then covers its demand over a longer stretch in which it is not produced. That inventory is economic stock, the role Lecture 3.3’s classification (Table 1 in Lecture 3.3) gives to inventory held to make production cheaper. Exactly how to do that is hard to work out, and it is the math programming model that does all of the logic. Its objective now has three terms.
 
 The first such problem was based on a project that two colleagues did for Ford Motor Company, which made glass not only for automobiles but for many commercial buildings, such as skyscrapers. Switching from one color of glass to another required shutting down all of the furnaces, and then weeks and millions of dollars to clear out the molten glass before switching over to produce another color. Ford’s planners were solving linear programs, since that was all they could handle, and determining by hand when capacity would be available for each of the products across its glass facilities in the United States. It was not until later that mixed-integer programming became good enough to model the switchover itself.
 
@@ -1426,9 +1426,9 @@ function setups!(ax, x, z, title)
         text!(ax, j - 0.5, 0.1; text = "$j", fontsize = 11,
               align = (:center, :bottom), color = ink)
     end
-    text!(ax, t / 2, 0.75; text = title, fontsize = 14,
-          align = (:center, :bottom), color = ink)
-    xlims!(ax, -1.6, t + 0.1); ylims!(ax, -m - 0.1, 1.45)
+    text!(ax, t / 2, -m - 0.2; text = title, fontsize = 14,
+          align = (:center, :top), color = ink)   # caption, below it
+    xlims!(ax, -1.6, t + 0.1); ylims!(ax, -m - 0.75, 0.6)
     return ax
 end
 r2 = prodinv_excl(cᵖ, cⁱ, d, u, LBʸ, UBʸ)     # Ex. 2's plan, again
@@ -1781,10 +1781,10 @@ secs = @elapsed r5 = prodinv_switch(cᵖ, cʷ, cⁱ, d, u, z⁰, LBʸ, UBʸ)
 
 ```text
 r5.TC = 149745.64188911687
-round(Int, secs) = 79
+round(Int, secs) = 58
 ```
 
-Here the solve takes about a minute, 79 seconds on this page’s render. Code block 30 finds the plan’s production, inventory and switchover costs as Code block 22 does for Ex. 3, and Code block 31 adds them and checks the total against the problem’s published solution:
+Here the solve takes about a minute, 58 seconds on this page’s render. Code block 30 finds the plan’s production, inventory and switchover costs as Code block 22 does for Ex. 3, and Code block 31 adds them and checks the total against the problem’s published solution:
 
 ```julia
 # Code block 30: the production, inventory and switchover costs
