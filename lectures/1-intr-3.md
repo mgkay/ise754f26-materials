@@ -642,7 +642,7 @@ The self-equalizing-headway method is due to John J. Bartholdi III and Donald D.
 
 -
 
-Hopp, W.J., and Spearman, M.L., 2000, Factory Physics: Foundations of Manufacturing Management, 2nd Ed., McGraw-Hill.
+Hopp, W.J., and Spearman, M.L., 2011, Factory Physics, 3rd Ed., Waveland Press.
 
 -
 
